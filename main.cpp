@@ -1,50 +1,62 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <chrono>
+
 #include "board.h"
 #include "rules.h"
 #include "rule_standard.h"
-#include "rule_white_kropki.h"
-#include "rule_black_kropki.h"
-#include "rule_odd_even.h"
 #include "position.h"
-
-#include "candidates.h"
 
 using namespace sudoku;
 
 int main() {
+    std::ifstream infile("test.txt");
+    if (!infile) {
+        std::cerr << "Failed to open test.txt\n";
+        return 1;
+    }
 
-    Board board;
-    board.add_rule<StandardRule>();
+    std::string line;
+    int puzzle_count = 0;
 
-    board.set_cell(Position{0, 3}, 1);
-    board.set_cell(Position{0, 5}, 2);
-    board.set_cell(Position{1, 1}, 6);
-    board.set_cell(Position{1, 7}, 7);
-    board.set_cell(Position{2, 2}, 8);
-    board.set_cell(Position{2, 6}, 9);
+    auto total_start = std::chrono::high_resolution_clock::now();
 
-    board.set_cell(Position{3, 0}, 4);
-    board.set_cell(Position{3, 8}, 3);
-    board.set_cell(Position{4, 1}, 5);
-    board.set_cell(Position{4, 5}, 7);
-    board.set_cell(Position{5, 0}, 2);
-    board.set_cell(Position{5, 4}, 8);
-    board.set_cell(Position{5, 8}, 1);
+    while (std::getline(infile, line)) {
+        if (line.length() < 81) {
+            std::cerr << "Skipping invalid line " << puzzle_count + 1 << ": not 81 digits.\n";
+            continue;
+        }
 
-    board.set_cell(Position{6, 2}, 9);
-    board.set_cell(Position{6, 6}, 8);
-    board.set_cell(Position{6, 8}, 5);
-    board.set_cell(Position{7, 1}, 7);
-    board.set_cell(Position{7, 7}, 6);
-    board.set_cell(Position{8, 3}, 3);
-    board.set_cell(Position{8, 5}, 4);
+        Board board;
+        board.add_rule<StandardRule>();
 
-    board.print();
+        // Fill board
+        for (int i = 0; i < 81; ++i) {
+            char ch = line[i];
+            if (ch >= '1' && ch <= '9') {
+                int value = ch - '0';
+                int row = i / 9;
+                int col = i % 9;
+                board.set_cell({row, col}, value);
+            }
+        }
 
+        // Solve
+        board.process_rule_candidates();
+        board.solve();
 
-    board.process_rule_candidates();
-    board.solve();
-    board.print();
+        // Uncomment to display each solved board
+        // std::cout << "Puzzle " << puzzle_count + 1 << " solved:\n";
+        // board.display();
+
+        ++puzzle_count;
+    }
+
+    auto total_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> total_time = total_end - total_start;
+
+    std::cout << "Solved " << puzzle_count << " puzzles in " << total_time.count() << " seconds.\n";
 
     return 0;
 }

@@ -24,6 +24,21 @@ struct Cell {
     constexpr Cell(Row r, Col c)
             : pos(r, c), value(EMPTY), candidates(CAND_ALL)
     {}
+
+    bool remove_candidate(Number number) {
+        if (value != EMPTY)
+            return false;
+        auto before = candidates;
+        candidates &= ~Candidates(number);
+        return candidates != before;
+    }
+    bool remove_candidate(Candidates mask) {
+        if (value != EMPTY)
+            return false;
+        auto before = candidates;
+        candidates &= ~mask;
+        return candidates != before;
+    }
 };
 
 } // namespace sudoku

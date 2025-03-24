@@ -6,7 +6,7 @@
 struct SolverStats {
     bool solutionFound;
     int nodesExplored;
-    long long timeTakenMs;
+    float timeTakenMs;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const SolverStats& stats) {

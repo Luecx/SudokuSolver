@@ -1,7 +1,10 @@
 #include "rule_standard.h"
+
+#include <bitset>
+
+#include <iostream>
 #include "board.h"
 #include "cell.h"
-#include <iostream>
 
 namespace sudoku {
 
@@ -44,7 +47,7 @@ namespace sudoku {
         return any_changed;
     }
 
-    bool hidden_singles(const std::vector<Cell*>& cells, Board& board) {
+    bool hidden_singles(const std::array<Cell*, BOARD_SIZE>& cells, Board& board) {
         bool changed = false;
         Candidates seen_once {Candidates::MASK_NONE};
         Candidates seen_twice{Candidates::MASK_NONE};
@@ -56,18 +59,62 @@ namespace sudoku {
                 seen_once  |= cell->candidates;
             }
         }
+        // those that are allowed to be placed are those that have been seen once but not twice
         Candidates to_place = seen_once & ~seen_twice;
         for (Cell* cell : cells) {
             if (cell->value != EMPTY) continue;
             if ((to_place & cell->candidates).count() == 1) {
-                if (cell->pos == Position{6, 8}) {
-                    auto before = cell->candidates;
-                    cell->candidates &= to_place;
-                    changed |= (cell->candidates != before);
-                } else {
-                    auto before = cell->candidates;
-                    cell->candidates &= to_place;
-                    changed |= (cell->candidates != before);
+                changed |= cell->remove_candidate(~to_place);
+            }
+        }
+        return changed;
+    }
+
+    bool pointing_values(Board* board) {
+        bool changed = false;
+        // go through each block
+        for (Row br = 0; br < 3; br++){
+            for (Col bc = 0; bc < 3; bc++) {
+                const std::array<Cell*, BOARD_SIZE>& block = board->get_block(br * 3, bc * 3);
+
+                // go through each value
+                for (Number num: {1, 2, 3, 4, 5, 6, 7, 8, 9}) {
+                    bool cols[3] = {false, false, false};
+                    bool rows[3] = {false, false, false};
+
+                    for (Cell *cell : block) {
+                        if (cell->value != EMPTY)
+                            continue;
+
+                        if (cell->candidates.test(num)) {
+                            cols[cell->pos.col % 3] = true;
+                            rows[cell->pos.row % 3] = true;
+                        }
+                    }
+
+                    if (!!cols[0] + !!cols[1] + !!cols[2] == 1) {
+                        Col col_id = (bc * 3) + (cols[0] ? 0 : cols[1] ? 1 : 2);
+                        for (Cell* other : board->get_col(col_id)) {
+                            // check if its outside this block, if not, continue
+                            if (board->get_block(other->pos.row, other->pos.col) == block)
+                                continue;
+
+                            // otherwise, remove
+                            changed |= other->remove_candidate(num);
+                        }
+                    }
+
+                    if (!!rows[0] + !!rows[1] + !!rows[2] == 1) {
+                        Row row_id = (br * 3) + (rows[0] ? 0 : rows[1] ? 1 : 2);
+                        for (Cell* other : board->get_row(row_id)) {
+                            // check if its outside this block, if not, continue
+                            if (board->get_block(other->pos.row, other->pos.col) == block)
+                                continue;
+
+                            // otherwise, remove
+                            changed |= other->remove_candidate(num);
+                        }
+                    }
                 }
             }
         }
@@ -79,43 +126,21 @@ namespace sudoku {
         // check if there is a row which has a candidate in a single cell;
         // if so, that cell must be that candidate.
         for (Row r = 0; r < BOARD_SIZE; ++r) {
-            changed |= hidden_singles({&board.get_cell(Position{r, 0}),
-                            &board.get_cell(Position{r, 1}),
-                            &board.get_cell(Position{r, 2}),
-                            &board.get_cell(Position{r, 3}),
-                            &board.get_cell(Position{r, 4}),
-                            &board.get_cell(Position{r, 5}),
-                            &board.get_cell(Position{r, 6}),
-                            &board.get_cell(Position{r, 7}),
-                            &board.get_cell(Position{r, 8})}, board);
+            changed |= hidden_singles(board.get_row(r), board);
         }
 
         for (Col c = 0; c < BOARD_SIZE; ++c) {
-            changed |= hidden_singles({&board.get_cell(Position{0, c}),
-                            &board.get_cell(Position{1, c}),
-                            &board.get_cell(Position{2, c}),
-                            &board.get_cell(Position{3, c}),
-                            &board.get_cell(Position{4, c}),
-                            &board.get_cell(Position{5, c}),
-                            &board.get_cell(Position{6, c}),
-                            &board.get_cell(Position{7, c}),
-                            &board.get_cell(Position{8, c})}, board);
+            changed |= hidden_singles(board.get_col(c), board);
         }
 
         for (Row br = 0; br < BOARD_SIZE; br += 3) {
             for (Col bc = 0; bc < BOARD_SIZE; bc += 3) {
-                changed |= hidden_singles(
-                               {&board.get_cell(Position{br + 0, bc + 0}),
-                                &board.get_cell(Position{br + 0, bc + 1}),
-                                &board.get_cell(Position{br + 0, bc + 2}),
-                                &board.get_cell(Position{br + 1, bc + 0}),
-                                &board.get_cell(Position{br + 1, bc + 1}),
-                                &board.get_cell(Position{br + 1, bc + 2}),
-                                &board.get_cell(Position{br + 2, bc + 0}),
-                                &board.get_cell(Position{br + 2, bc + 1}),
-                                &board.get_cell(Position{br + 2, bc + 2})}, board);
+                changed |= hidden_singles(board.get_block(br, bc), board);
             }
         }
+
+        changed |= pointing_values(&board);
+
         return changed;
     }
 
