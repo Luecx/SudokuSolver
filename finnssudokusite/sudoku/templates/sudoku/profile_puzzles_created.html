@@ -1,0 +1,108 @@
+{% if created_puzzles %}
+{% load formatting star_rating %}
+<div class="table-responsive" style="min-height: 400px;">
+  <table class="table table-striped table-hover small align-middle" id="createdTable">
+    <thead>
+    <tr>
+      <th style="width: 25%;" onclick="sortTable(0)">Name <span class="sort-indicator"></span></th>
+      <th style="width: 15%;" onclick="sortTable(1)">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th style="width: 20%;" onclick="sortTable(2)">Rating <span class="sort-indicator"></span></th>
+      <th style="width: 10%;" onclick="sortTable(3)">Avg Time <span class="sort-indicator"></span></th>
+      <th style="width: 30%;">
+        <div class="dropdown">
+          <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Tags
+          </span>
+          <ul class="dropdown-menu p-2" id="tagFilterMenu" style="max-height: 200px; overflow-y: auto;">
+            {% for tag in all_tags %}
+            <li>
+              <div class="form-check">
+                <input class="form-check-input tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="filterByTags()">
+                <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for puzzle in created_puzzles %}
+    <tr data-tags="{{ puzzle.tags.all|join:',' }}"
+        data-name="{{ puzzle.title|lower }}"
+        data-solves="{{ puzzle.solves }}"
+        data-attempts="{{ puzzle.attempts }}"
+        data-rating="{{ puzzle.average_rating|default:0 }}"
+        data-avgtime="{{ puzzle.average_time|floatformat:0 }}">
+      <td>{{ puzzle.title }}</td>
+      <td>{{ puzzle.solves }} / {{ puzzle.attempts }}</td>
+      <td>{% render_starbar puzzle.average_rating %}</td>
+      <td>{{ puzzle.average_time|humantime }}</td>
+      <td>
+        {% for tag in puzzle.tags.all %}
+        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p>You haven’t created any puzzles yet.</p>
+{% endif %}
+
+<script>
+  let currentSortCol = null;
+  let ascending = true;
+
+  function sortTable(colIndex) {
+    const table = document.getElementById("createdTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    if (currentSortCol === colIndex) {
+      ascending = !ascending;
+    } else {
+      ascending = true;
+      currentSortCol = colIndex;
+    }
+
+    rows.sort((a, b) => {
+      let valA, valB;
+
+      switch (colIndex) {
+        case 0: valA = a.dataset.name; valB = b.dataset.name; break;
+        case 1:
+          valA = parseFloat(a.dataset.solves) / Math.max(1, parseFloat(a.dataset.attempts));
+          valB = parseFloat(b.dataset.solves) / Math.max(1, parseFloat(b.dataset.attempts));
+          break;
+        case 2: valA = parseFloat(a.dataset.rating); valB = parseFloat(b.dataset.rating); break;
+        case 3: valA = parseFloat(a.dataset.avgtime); valB = parseFloat(b.dataset.avgtime); break;
+      }
+
+      if (typeof valA === 'string') {
+        return ascending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+      return ascending ? valA - valB : valB - valA;
+    });
+
+    document.querySelectorAll("#createdTable .sort-indicator").forEach(el => el.innerHTML = "");
+    const arrow = ascending ? "▲" : "▼";
+    table.querySelector(`thead tr th:nth-child(${colIndex + 1}) .sort-indicator`).innerText = arrow;
+
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  function filterByTags() {
+    const activeTags = Array.from(document.querySelectorAll(".tag-filter:checked")).map(el => el.value.toLowerCase());
+    const rows = document.querySelectorAll("#createdTable tbody tr");
+
+    rows.forEach(row => {
+      const rowTags = row.getAttribute("data-tags").toLowerCase();
+      const shouldShow = activeTags.every(tag => rowTags.includes(tag));
+      row.style.display = (activeTags.length === 0 || shouldShow) ? "" : "none";
+    });
+  }
+</script>

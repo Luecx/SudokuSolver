@@ -1,0 +1,30 @@
+{% extends 'sudoku/base.html' %}
+
+{% block content %}
+<h1>All Sudoku Puzzles</h1>
+
+{% if sudokus %}
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Title</th>
+    <th>Creator</th>
+    <th>Attempts</th>
+    <th>Solves</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for s in sudokus %}
+  <tr>
+    <td>{{ s.title }}</td>
+    <td>{{ s.created_by.username }}</td>
+    <td>{{ s.attempts }}</td>
+    <td>{{ s.solves }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No puzzles available.</p>
+{% endif %}
+{% endblock %}

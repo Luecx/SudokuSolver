@@ -1,0 +1,20 @@
+{# sudoku/templates/sudoku/components/creator_accordion.html #}
+<div class="accordion" id="ruleAccordion">
+  {% for rule in rule_handlers %}
+  <div class="accordion-item mb-3">
+    <h2 class="accordion-header px-3 d-flex justify-content-between align-items-center" id="heading{{ rule.id|capfirst }}">
+      <button class="accordion-button collapsed flex-grow-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ rule.id|capfirst }}">
+        {{ rule.label }}
+      </button>
+      <button id="btn{{ rule.id|capfirst }}" class="btn btn-sm btn-outline-primary ms-2">
+        <i class="fa fa-plus"></i>
+      </button>
+    </h2>
+    <div id="collapse{{ rule.id|capfirst }}" class="accordion-collapse collapse show" data-bs-parent="#ruleAccordion">
+      <div class="accordion-body p-2">
+        <ul id="list{{ rule.id|capfirst }}" class="list-group list-group-flush"></ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
