@@ -40,6 +40,9 @@ html, body {
 .cell {
     background-color: #fff;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,21 +51,31 @@ html, body {
     color: #000;
     user-select: none;
     transition: background-color 0.2s;
+    pointer-events: none; /* default: not interactive */
+}
+
+.cell.clickable {
     pointer-events: auto;
-}
-
-.cell.filled {
-    color: #000;
-}
-
-.cell:hover {
-    background-color: rgba(0, 0, 0, 0.05);
     cursor: pointer;
 }
 
-.cell.disabled {
-    pointer-events: none;
-    cursor: default;
+.cell.clickable:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cell.selectable {
+    pointer-events: auto;
+}
+
+/* Optional: Visual feedback for selectable-only cells */
+.cell.selectable:not(.clickable):hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    cursor: crosshair;
+}
+
+/* Filled state */
+.cell.filled {
+    color: #000;
 }
 
 /* Hint dots (DOM elements) */

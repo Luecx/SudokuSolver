@@ -1,9 +1,18 @@
-export const Board = (() => {
+import { getDefaultRuleHandlers } from "./rules.js";
+
+export function createBoard(container, canvas, grid) {
     const gridSize = 9;
     const paddingRatio = 0.1;
 
-    let canvas, ctx, container, grid, hintLayer;
-    let gridEnabled = true;
+    let ctx = canvas.getContext("2d");
+    let hintLayer = null;
+
+    let clickableEnabled = true;
+    let selectableEnabled = true;
+    let draggableEnabled = false;
+
+    let savedInteractionState = null;
+
     const handlers = {};
     let currentHandler = null;
 
@@ -12,16 +21,54 @@ export const Board = (() => {
     let edgeHintClick = null;
     let cornerHintClick = null;
 
-    function initBoard() {
-        container = document.querySelector(".board-container");
-        canvas = document.getElementById("board-canvas");
-        ctx = canvas.getContext("2d");
-        grid = document.getElementById("sudoku-board");
+    let cellSize = 0;
+    let usedSize = 0;
+    let rawPadding = 0;
+    let leftover = 0;
+    let gridOffset = 0;
 
-        // Optional: if #sudoku-board has no class
+    let isDragging = false;
+    let dragPath = [];
+    let lastDragCell = null;
+
+    const board = {
+        initBoard,
+        getCellTopLeft,
+        getCellCorners,
+        getAllHandlers,
+        getPadding: () => rawPadding,
+        getCellSize: () => cellSize,
+        getCanvasContext: () => ctx,
+        registerHandler,
+        startHandler,
+        stopHandler,
+        getCurrentHandlerName: () => currentHandler?.name || null,
+
+        enableClickable,
+        disableClickable,
+        enableSelectable,
+        disableSelectable,
+        enableDraggable,
+        disableDraggable,
+        saveInteractionState,
+        restoreInteractionState,
+
+        isClickableEnabled: () => clickableEnabled,
+        isSelectableEnabled: () => selectableEnabled,
+        isDraggableEnabled: () => draggableEnabled,
+        isDragging: () => isDragging,
+        getDraggingPath: () => [...dragPath],
+
+        showEdgeHints,
+        hideEdgeHints,
+        showCornerHints,
+        hideCornerHints,
+        render
+    };
+
+    function initBoard() {
         grid.classList.add("board");
 
-        // DOM layer for hints
         hintLayer = document.createElement("div");
         hintLayer.style.position = "absolute";
         hintLayer.style.top = "0";
@@ -32,14 +79,15 @@ export const Board = (() => {
         hintLayer.style.pointerEvents = "none";
         container.appendChild(hintLayer);
 
+        const ruleHandlers = getDefaultRuleHandlers(board);
+        ruleHandlers.forEach(registerHandler);
+
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-        generateCells();
     }
 
     function generateCells() {
         grid.innerHTML = "";
-        const cellSize = getCellSize();
 
         for (let r = 0; r < gridSize; r++) {
             for (let c = 0; c < gridSize; c++) {
@@ -49,18 +97,72 @@ export const Board = (() => {
                 cell.dataset.c = c;
                 cell.style.width = `${cellSize}px`;
                 cell.style.height = `${cellSize}px`;
-
                 grid.appendChild(cell);
             }
         }
+        updateCellClass();
 
         grid.addEventListener("click", (e) => {
-            if (!gridEnabled) return;
-            const cell = e.target.closest(".cell");
-            if (!cell) return;
+            const cell = e.target.closest(".cell.clickable");
+            if (!cell || !clickableEnabled) return;
             const r = parseInt(cell.dataset.r);
             const c = parseInt(cell.dataset.c);
-            click(r, c);
+            currentHandler?.onCellClick?.({r, c});
+            render();
+        });
+
+        grid.addEventListener("mousedown", (e) => {
+            if (!draggableEnabled || !selectableEnabled) return;
+            const cell = e.target.closest(".cell");
+            if (!cell) return;
+            e.preventDefault();
+
+            isDragging = true;
+            dragPath = [];
+
+            const r = parseInt(cell.dataset.r);
+            const c = parseInt(cell.dataset.c);
+            lastDragCell = `${r},${c}`;
+            currentHandler?.onCellDragNewCell?.({r,c});
+            dragPath.push({ r, c });
+            render();
+        });
+
+        grid.addEventListener("mousemove", (e) => {
+            if (!isDragging || !draggableEnabled || !selectableEnabled) return;
+            const cell = e.target.closest(".cell");
+            if (!cell) return;
+
+            const r = parseInt(cell.dataset.r);
+            const c = parseInt(cell.dataset.c);
+            const key = `${r},${c}`;
+
+            if (key !== lastDragCell) {
+                lastDragCell = key;
+
+                const alreadyInPath = dragPath.some(pt => pt.r === r && pt.c === c);
+                if (!alreadyInPath) {
+                    const newCell = { r, c };
+                    dragPath.push(newCell);
+                    currentHandler?.onCellDragNewCell?.(newCell); // ✅ trigger here
+                    render();
+                }
+            }
+        });
+
+
+        window.addEventListener("mouseup", () => {
+            if (!isDragging || !draggableEnabled) return;
+
+            isDragging = false;
+            lastDragCell = null;
+
+            if (currentHandler?.onDragCreating && dragPath.length > 0) {
+                currentHandler.onCellDrag([...dragPath]);
+            }
+
+            dragPath = [];
+            render();
         });
     }
 
@@ -69,27 +171,58 @@ export const Board = (() => {
         canvas.width = size;
         canvas.height = size;
 
-        const padding = getPadding();
-        const boardSize = size - 2 * padding;
-        grid.style.width = `${boardSize}px`;
-        grid.style.height = `${boardSize}px`;
-        grid.style.top = `${padding}px`;
-        grid.style.left = `${padding}px`;
+        rawPadding = Math.round(size * paddingRatio);
+        const boardSize = size - 2 * rawPadding;
 
+        cellSize = Math.floor(boardSize / gridSize);
+        usedSize = cellSize * gridSize;
+        leftover = boardSize - usedSize;
+        gridOffset = rawPadding + Math.floor(leftover / 2);
+
+        grid.style.width = `${usedSize}px`;
+        grid.style.height = `${usedSize}px`;
+        grid.style.top = `${gridOffset}px`;
+        grid.style.left = `${gridOffset}px`;
+
+        generateCells();
         updateHintDots();
         render();
-    }
-
-    function click(r, c) {
-        if (currentHandler?.onClickCreating) {
-            currentHandler.onClickCreating(r, c);
-            render();
-        }
     }
 
     function render() {
         if (!ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        for (let i = 0; i <= 9; i += 9) {
+            const pos = gridOffset + i * cellSize;
+            ctx.beginPath();
+            ctx.moveTo(gridOffset, pos);
+            ctx.lineTo(gridOffset + usedSize, pos);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos, gridOffset);
+            ctx.lineTo(pos, gridOffset + usedSize);
+            ctx.stroke();
+        }
+
+        ctx.strokeStyle = "#ccc";
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 9; i++) {
+            const pos = gridOffset + i * cellSize;
+            ctx.beginPath();
+            ctx.moveTo(gridOffset, pos);
+            ctx.lineTo(gridOffset + usedSize, pos);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos, gridOffset);
+            ctx.lineTo(pos, gridOffset + usedSize);
+            ctx.stroke();
+        }
+
+        ctx.restore();
 
         for (const handler of Object.values(handlers)) {
             handler.renderAll?.(ctx);
@@ -98,28 +231,20 @@ export const Board = (() => {
         currentHandler?.renderCreationOverlay?.(ctx);
     }
 
-    function getPadding() {
-        return Math.round(canvas.width * paddingRatio);
-    }
-
-    function getCellSize() {
-        return Math.floor((canvas.width * (1 - 2 * paddingRatio)) / gridSize);
-    }
-
     function getCellTopLeft(r, c) {
-        const step = getCellSize();
-        const pad = getPadding();
-        return { x: Math.round(pad + c * step), y: Math.round(pad + r * step) };
+        return {
+            x: gridOffset + c * cellSize,
+            y: gridOffset + r * cellSize
+        };
     }
 
     function getCellCorners(r, c) {
         const tl = getCellTopLeft(r, c);
-        const s = getCellSize();
         return {
             topLeft: { x: tl.x, y: tl.y },
-            topRight: { x: tl.x + s, y: tl.y },
-            bottomLeft: { x: tl.x, y: tl.y + s },
-            bottomRight: { x: tl.x + s, y: tl.y + s }
+            topRight: { x: tl.x + cellSize, y: tl.y },
+            bottomLeft: { x: tl.x, y: tl.y + cellSize },
+            bottomRight: { x: tl.x + cellSize, y: tl.y + cellSize }
         };
     }
 
@@ -141,26 +266,55 @@ export const Board = (() => {
         render();
     }
 
-    function getCurrentHandlerName() {
-        return currentHandler?.name || null;
+    function enableClickable() {
+        clickableEnabled = true;
+        updateCellClass();
     }
 
-    function disableMainGrid() {
-        gridEnabled = false;
-        updateGridClass();
+    function disableClickable() {
+        clickableEnabled = false;
+        updateCellClass();
     }
 
-    function enableMainGrid() {
-        gridEnabled = true;
-        updateGridClass();
+    function enableSelectable() {
+        selectableEnabled = true;
+        updateCellClass();
     }
 
-    function updateGridClass() {
-        if (!grid) return;
-        grid.classList.toggle("disabled", !gridEnabled);
-        grid.querySelectorAll(".cell").forEach(cell =>
-            cell.classList.toggle("disabled", !gridEnabled)
-        );
+    function disableSelectable() {
+        selectableEnabled = false;
+        updateCellClass();
+    }
+
+    function enableDraggable() {
+        draggableEnabled = true;
+    }
+
+    function disableDraggable() {
+        draggableEnabled = false;
+    }
+
+    function saveInteractionState() {
+        savedInteractionState = {
+            clickable: clickableEnabled,
+            selectable: selectableEnabled,
+            draggable: draggableEnabled,
+        };
+    }
+
+    function restoreInteractionState() {
+        if (!savedInteractionState) return;
+        clickableEnabled = savedInteractionState.clickable;
+        selectableEnabled = savedInteractionState.selectable;
+        draggableEnabled = savedInteractionState.draggable;
+        updateCellClass();
+    }
+
+    function updateCellClass() {
+        grid.querySelectorAll(".cell").forEach(cell => {
+            cell.classList.toggle("clickable", clickableEnabled);
+            cell.classList.toggle("selectable", selectableEnabled);
+        });
     }
 
     function showEdgeHints(pairs, onClick) {
@@ -188,16 +342,13 @@ export const Board = (() => {
     }
 
     function updateHintDots() {
-        if (!hintLayer) return;
         hintLayer.innerHTML = "";
-        const s = getCellSize();
 
-        // Edge hints
         for (const [a, b] of edgeHints) {
             const ax = getCellTopLeft(a.r, a.c);
             const bx = getCellTopLeft(b.r, b.c);
-            const cx = (ax.x + bx.x) / 2 + s / 2;
-            const cy = (ax.y + bx.y) / 2 + s / 2;
+            const cx = (ax.x + bx.x + cellSize) / 2;
+            const cy = (ax.y + bx.y + cellSize) / 2;
 
             const dot = document.createElement("div");
             dot.className = "hint-dot";
@@ -207,7 +358,6 @@ export const Board = (() => {
             hintLayer.appendChild(dot);
         }
 
-        // Corner hints
         for (const { r, c } of cornerHints) {
             const tl = getCellTopLeft(r, c);
             const cx = tl.x;
@@ -222,23 +372,9 @@ export const Board = (() => {
         }
     }
 
-    return {
-        initBoard,
-        getCellTopLeft,
-        getCellCorners,
-        getPadding,
-        getCellSize,
-        getCanvasContext: () => ctx,
-        registerHandler,
-        startHandler,
-        stopHandler,
-        getCurrentHandlerName,
-        disableMainGrid,
-        enableMainGrid,
-        showEdgeHints,
-        hideEdgeHints,
-        showCornerHints,
-        hideCornerHints,
-        render
-    };
-})();
+    function getAllHandlers() {
+        return Object.values(handlers);
+    }
+
+    return board;
+}

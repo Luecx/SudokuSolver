@@ -1,0 +1,91 @@
+/* --------- Accordion (Rahmen, Abstände) --------- */
+.accordion .accordion-item {
+    border: none;
+    background: transparent;
+}
+.accordion-header {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    padding: 0;
+    margin: 0;
+}
+.accordion-button {
+    flex-grow: 1;
+    padding: 0.3rem 0.6rem;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none;
+    transition: font-weight 0.2s ease;
+}
+.accordion-button:not(.collapsed) {
+    font-weight: bold;
+}
+.accordion-button:focus {
+    box-shadow: none;
+}
+.accordion-body {
+    padding: 0.5rem 0.75rem;
+}
+
+/* --------- Add Entry Button --------- */
+.add-entry {
+    list-style: none;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #0d6efd;
+    margin: 0.5rem 2.5rem;
+    padding: 0.5rem;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    display: flex;
+    height: 2rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+}
+.add-entry:hover {
+    background-color: #e2e6ea;
+}
+
+/* --------- Active = STOP variant --------- */
+.add-entry.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+.add-entry.warning:hover {
+    background-color: #ffe8a1;
+    border-color: #ffdf7e;
+}
+
+/* --------- List Items --------- */
+.list-group-item {
+    padding: 0.25rem 0.5rem !important;
+    padding-left: 3rem !important;
+    font-size: 0.85rem;
+    border: none;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+/* --------- Remove Button --------- */
+.btn-remove {
+    border: none !important;
+    background: transparent;
+    color: #dc3545;
+    padding: 0.2rem 0.4rem;
+    box-shadow: none;
+}
+.btn-remove:hover {
+    color: #a51e2d;
+}
+
+/* --------- Checkmark --------- */
+#ruleAccordion .text-success {
+    font-size: 1rem;
+}
