@@ -66,7 +66,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'sudoku' / 'static',
     ]
-CSRF_TRUSTED_ORIGINS = ['http://finny.ccrl']
+CSRF_TRUSTED_ORIGINS = ['http://finny.ccrl.live']
 CORS_ALLOW_ALL_ORIGINS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ALLOWED_HOSTS = ['*']
