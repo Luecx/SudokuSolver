@@ -13,24 +13,24 @@ class Sudoku(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="sudokus_created")
 
     # Sudoku content
-    puzzle_string = models.TextField(default='0'*81)
+    puzzle_string   = models.TextField(default='0'*81)
     solution_string = models.TextField(default='0'*81)
-    difficulty = models.CharField(max_length=50, blank=True)
-    is_public = models.BooleanField(default=True)
+    difficulty      = models.CharField(max_length=50, blank=True)
+    is_public       = models.BooleanField(default=True)
 
     # Tags (for filtering)
     tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")
 
     # Stats (aggregated from UserSudokuStats)
-    attempts = models.PositiveIntegerField(default=0)
-    solves = models.PositiveIntegerField(default=0)
-    total_time = models.PositiveIntegerField(default=0)
-    average_time = models.FloatField(default=0.0)
-    average_rating = models.FloatField(default=0.0)
-    ratings_count = models.PositiveIntegerField(default=0)
+    attempts        = models.PositiveIntegerField(default=0)
+    solves          = models.PositiveIntegerField(default=0)
+    total_time      = models.PositiveIntegerField(default=0)
+    average_time    = models.FloatField(default=0.0)
+    average_rating  = models.FloatField(default=0.0)
+    ratings_count   = models.PositiveIntegerField(default=0)
 
-    created_at = models.DateTimeField(default=timezone.now)
-    last_attempted = models.DateTimeField(null=True, blank=True)
+    created_at      = models.DateTimeField(default=timezone.now)
+    last_attempted  = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.title

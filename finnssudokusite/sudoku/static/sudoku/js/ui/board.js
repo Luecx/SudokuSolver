@@ -63,7 +63,11 @@ export function createBoard(container, canvas, grid) {
         hideEdgeHints,
         showCornerHints,
         hideCornerHints,
-        render
+        render,
+
+        getRulesJSON,
+        loadRulesJSON,
+        getTags,
     };
 
     function initBoard() {
@@ -375,6 +379,67 @@ export function createBoard(container, canvas, grid) {
     function getAllHandlers() {
         return Object.values(handlers);
     }
+
+    function removeIds(obj) {
+        if (Array.isArray(obj)) {
+            return obj.map(removeIds);
+        } else if (obj !== null && typeof obj === 'object') {
+            const result = {};
+            for (const [key, value] of Object.entries(obj)) {
+                if (key === 'id') continue; // skip id
+                result[key] = removeIds(value);
+            }
+            return result;
+        } else {
+            return obj;
+        }
+    }
+
+    function getRulesJSON() {
+        const allRules = [];
+
+        for (const [name, handler] of Object.entries(handlers)) {
+            if (Array.isArray(handler.rules) && handler.rules.length > 0) {
+                allRules.push({
+                    type: name,
+                    rules: handler.rules.map(rule => removeIds(rule))
+                });
+            }
+        }
+
+        return JSON.stringify(allRules, null, 2);
+    }
+
+    function loadRulesJSON(json) {
+        const parsed = typeof json === "string" ? JSON.parse(json) : json;
+
+        for (const { type, rules } of parsed) {
+            const handler = handlers[type];
+            if (!handler || !Array.isArray(rules)) continue;
+
+            for (const rule of rules) {
+                handler.add(rule); // your universal .add() method
+            }
+        }
+
+        render(); // re-render to show the rules
+    }
+
+    function getTags() {
+        const tagSet = new Set();
+
+        for (const handler of Object.values(handlers)) {
+            if (!handler || !Array.isArray(handler.rules)) continue;
+
+            // add if there are rules
+            if (handler.rules.length > 0)
+                tagSet.add(handler.tag);
+        }
+
+        return Array.from(tagSet).map(tag => ({ name: tag }));
+    }
+
+
 
     return board;
 }

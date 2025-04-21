@@ -4,6 +4,7 @@ import {RuleType} from "../rule_types.js";
 export function setupVRule(board) {
     const handler = new RuleTypeHandler("v", board);
     handler.label = "V Rule";
+    handler.tag  =  "XV";
 
     let possiblePairs = [];
     handler.rule_type = RuleType.SINGLE_CLICK_MANY;

@@ -4,7 +4,7 @@ import {RuleType} from "../rule_types.js";
 export function setupArrowRule(board) {
     const handler = new RuleTypeHandler("arrow", board);
     handler.label = "Arrow";
-
+    handler.tag  =  "Arrow";
     handler.rule_type = RuleType.MULTI_CLICK_MANY;
 
     let currentArrow = null;

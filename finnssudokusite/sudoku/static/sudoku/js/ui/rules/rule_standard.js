@@ -5,6 +5,7 @@ import {RuleType} from "../rule_types.js";
 export function setupStandardRule(board) {
     const handler = new RuleTypeHandler("standard", board);
     handler.label = "Standard";
+    handler.tag  =  "Standard";
 
     handler.rule_type = RuleType.SINGLE_CLICK_SINGLE;
 

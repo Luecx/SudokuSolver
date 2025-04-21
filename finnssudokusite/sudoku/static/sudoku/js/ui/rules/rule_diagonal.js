@@ -3,6 +3,7 @@ import {RuleType} from "../rule_types.js";
 export function setupDiagonalRule(board) {
     const handler = new RuleTypeHandler("diagonal", board);
     handler.label = "Diagonal";
+    handler.tag  =  "Diagonal";
 
     handler.rule_type = RuleType.SINGLE_CLICK_SINGLE;
 

@@ -3,6 +3,7 @@ import {RuleType} from "../rule_types.js";
 export function setupParityLine(board) {
     const handler = new RuleTypeHandler("parity", board);
     handler.label = "Parity Line";
+    handler.tag  =  "Parity";
 
     let currentLine = [];
 

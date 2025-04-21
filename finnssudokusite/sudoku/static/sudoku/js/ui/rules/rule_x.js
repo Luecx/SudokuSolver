@@ -4,6 +4,7 @@ import {RuleType} from "../rule_types.js";
 export function setupXRule(board) {
     const handler = new RuleTypeHandler("x", board);
     handler.label = "X Rule";
+    handler.tag  =  "XV";
 
     let possiblePairs = [];
     handler.rule_type = RuleType.SINGLE_CLICK_MANY;

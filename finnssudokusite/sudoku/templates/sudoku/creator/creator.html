@@ -8,78 +8,171 @@
 
 {% block content %}
 <h2 class="text-center mt-4">Create Your Sudoku</h2>
-  <div class="container-fluid mt-4">
+<div class="container-fluid mt-4">
     <div class="row h-100">
-      <!-- LEFT COLUMN -->
-      <div class="col-12 col-xl-3 d-flex flex-column p-3">
-        <!-- this box fills the col and scrolls internally -->
-        <div class="w-100 border rounded whitebox flex-fill overflow-auto pt-3">
-          <div id="ruleAccordion" class="accordion" style="max-height: 500px; overflow-y: scroll"></div>
+        <!-- LEFT COLUMN -->
+        <div class="col-12 col-xl-3 d-flex flex-column p-3">
+            <!-- this box fills the col and scrolls internally -->
+            <div class="w-100 border rounded whitebox flex-fill overflow-auto pt-3">
+                <div id="ruleAccordion" class="accordion" style="max-height: 500px; overflow-y: scroll"></div>
+            </div>
         </div>
-      </div>
 
-      <!-- CENTER COLUMN (the height “driver”) -->
-      <div class="col-12 col-xl-6  d-flex flex-column p-3">
-        <div class="w-100 border rounded whitebox flex-fill">
-          {% include "sudoku/creator/board.html" %}
+        <!-- CENTER COLUMN (the height “driver”) -->
+        <div class="col-12 col-xl-6  d-flex flex-column p-3">
+            <div class="w-100 border rounded whitebox flex-fill">
+                {% include "sudoku/creator/board.html" %}
+            </div>
         </div>
-      </div>
 
-      <!-- RIGHT COLUMN -->
-      <div class="col-12 col-xl-3  d-flex flex-column p-3">
-        <div class="w-100 border rounded whitebox flex-fill pt-3">
-          {% include "sudoku/creator/creator_solutioncheck.html" %}
+        <!-- RIGHT COLUMN -->
+        <div class="col-12 col-xl-3  d-flex flex-column p-3">
+            <div class="w-100 border rounded whitebox flex-fill pt-3">
+                {% include "sudoku/creator/creator_solutioncheck.html" %}
+            </div>
+
+            <!-- Submit Sudoku Button -->
+            <div class="mt-3 border rounded whitebox flex-fill pt-3 text-center">
+                <button id="submit-sudoku-btn" class="btn btn-success">Submit Sudoku</button>
+            </div>
+
+            <!-- Submit Modal -->
+            <div class="modal fade" id="submitSudokuModal" tabindex="-1" aria-labelledby="submitSudokuModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="submitSudokuModalLabel">Submit Your Sudoku</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="mb-3">
+                                <label for="sudoku-name" class="form-label">Sudoku Name</label>
+                                <input type="text" class="form-control" id="sudoku-name"
+                                       placeholder="Enter a name for your Sudoku">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Tags</label>
+                                <div id="sudoku-tags">
+                                    <!-- Tags will be inserted here dynamically -->
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="preview-board-container border rounded p-2">
+                                    <!-- Your board will be cloned and inserted here -->
+                                    <div id="sudoku-preview" class="position-relative">
+                                        <canvas id="preview-canvas"
+                                                class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+                                        <div id="preview-grid" class="grid-container">
+                                            <!-- Just a copy of the board grid -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </div>
     </div>
+</div>
 
 {% endblock %}
 
 {% block extra_scripts %}
-    <script>
-      // grab the two boxes
-      const centerBox    = document.querySelector('.col-md-6 .whitebox');
-      const accordionEl  = document.getElementById('ruleAccordion');
+<script>
+    // grab the two boxes
+    const centerBox   = document.querySelector('.col-xl-6 .whitebox');
+    const accordionEl = document.getElementById('ruleAccordion');
 
-      // a little helper that copies the center–box height into the accordion’s max-height
-      function syncAccordionHeight() {
+    // a little helper that copies the center–box height into the accordion’s max-height
+    function syncAccordionHeight() {
         const w = centerBox.getBoundingClientRect().width;
         accordionEl.style.maxHeight = Math.floor(w - 30) + 'px';
-      }
+    }
 
-      // whenever the center box resizes (or on load), re-sync
-      new ResizeObserver(syncAccordionHeight).observe(centerBox);
-      window.addEventListener('load',   syncAccordionHeight);
-      window.addEventListener('resize', syncAccordionHeight);
-    </script>
+    // whenever the center box resizes (or on load), re-sync
+    new ResizeObserver(syncAccordionHeight).observe(centerBox);
+    window.addEventListener('load'  , syncAccordionHeight);
+    window.addEventListener('resize', syncAccordionHeight);
+</script>
 <script>
-  window.IS_CREATOR_MODE = true;
+    window.IS_CREATOR_MODE = true;
 </script>
 <script type="module">
-  import { createBoard } from "{% static 'sudoku/js/ui/board.js' %}";
-  import { setupCreatorUI } from "{% static 'sudoku/js/ui/creator_ui.js' %}";
+    import {createBoard} from "{% static 'sudoku/js/ui/board.js' %}";
+    import {setupCreatorUI} from "{% static 'sudoku/js/ui/creator_ui.js' %}";
 
 
-  import {
-    Board,
-  } from "{% static 'sudoku/js/solver/board.js' %}";
-  import {StandardRule} from "{% static 'sudoku/js/solver/rules/include.js' %}";
-  import {Position} from "{% static 'sudoku/js/solver/position.js' %}";
+    import {
+        Board,
+    } from "{% static 'sudoku/js/solver/board.js' %}";
+    import {StandardRule} from "{% static 'sudoku/js/solver/rules/include.js' %}";
+    import {Position} from "{% static 'sudoku/js/solver/position.js' %}";
 
-  const board_solver = new Board();
-  board_solver.addRule(new StandardRule());
-  let solutions = board_solver.solve(10);
-  console.log(solutions[0].toString(false));
-  console.log(solutions[1].toString(false));
+    const board_solver = new Board();
+    board_solver.addRule(new StandardRule());
+    let solutions = board_solver.solve(10);
+    console.log(solutions[0].toString(false));
+    console.log(solutions[1].toString(false));
 
-  const container = document.querySelector(".board-container");
-  const canvas    = document.getElementById("board-canvas");
-  const grid      = document.getElementById("sudoku-board");
+    const container = document.querySelector(".board-container");
+    const canvas = document.getElementById("board-canvas");
+    const grid = document.getElementById("sudoku-board");
 
-  const board = createBoard(container, canvas, grid);
-  window.Board = board; // optional: make globally accessible
+    const board = createBoard(container, canvas, grid);
+    window.Board = board; // optional: make globally accessible
 
-  board.initBoard();
-  setupCreatorUI(board);
+    board.initBoard();
+
+    async function getGzippedSize(str) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const cs = new CompressionStream('gzip');
+        const compressedStream = new Response(data).body.pipeThrough(cs);
+        const compressedBuffer = await new Response(compressedStream).arrayBuffer();
+        return compressedBuffer.byteLength;
+    }
+
+    setupCreatorUI(board);
 </script>
+
+
+<script>
+    document.getElementById("submit-sudoku-btn").addEventListener("click", () => {
+        const modal = new bootstrap.Modal(document.getElementById('submitSudokuModal'));
+        modal.show();
+
+        // Fill the tags
+        const tagsContainer = document.getElementById("sudoku-tags");
+        tagsContainer.innerHTML = "";
+        const tags = window.Board.getTags() || [];
+
+        for (const tag of tags) {
+            const span = document.createElement("span");
+            span.className = "badge bg-secondary me-1";
+            span.textContent = tag.name || tag;
+            tagsContainer.appendChild(span);
+        }
+        console.log(tags)
+
+        // // Copy the board to preview (simplified)
+        // const previewGrid  = document.getElementById("preview-grid");
+        // const originalGrid = document.getElementById("sudoku-board");
+        // previewGrid.innerHTML = originalGrid.innerHTML;
+
+        // Optional: Copy solution overlay or canvas rendering if needed
+    });
+</script>
+
+
 {% endblock %}

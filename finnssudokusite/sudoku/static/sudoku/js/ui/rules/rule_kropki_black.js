@@ -3,6 +3,7 @@ import {RuleType} from "../rule_types.js";
 export function setupBlackKropkiRule(board) {
     const handler = new RuleTypeHandler("kropki_black", board);
     handler.label = "Black Kropki";
+    handler.tag  =  "Kropki";
 
     let possiblePairs = [];
 

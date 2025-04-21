@@ -8,6 +8,7 @@ export class RuleTypeHandler {
         this.label = name[0].toUpperCase() + name.slice(1); // e.g., "arrow" → "Arrow"
         this.board = board;  // Each handler is tied to a specific board instance
         this.rule_type = RuleType.SINGLE_CLICK_SINGLE;
+        this.tag   = "";
     }
 
     // Optional lifecycle hooks
