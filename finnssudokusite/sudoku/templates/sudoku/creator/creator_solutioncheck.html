@@ -1,0 +1,39 @@
+<div class="container">
+    <!-- Box mit Border -->
+    <div class="row p-3">
+        <div class="col-12">
+            <!-- Ladebalken -->
+            <div class="progress mb-3" style="height: 20px;">
+                <div id="loading-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%;">
+                    0%
+                </div>
+            </div>
+
+            <!-- Info-Anzeige -->
+            <div id="info-display" class="mb-3 text-muted">
+                Noch keine Berechnung durchgeführt.
+            </div>
+
+            <!-- Button für Modal -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#resultModal">
+                Ergebnisse anzeigen
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal für Ergebnisse -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultModalLabel">Sudoku Ergebnisse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+            </div>
+            <div class="modal-body" id="result-content">
+                <!-- Hier kannst du Ergebnisse einfügen -->
+                <p>Noch keine Ergebnisse verfügbar.</p>
+            </div>
+        </div>
+    </div>
+</div>

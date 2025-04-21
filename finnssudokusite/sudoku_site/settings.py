@@ -8,26 +8,26 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@finnssudokuapp.com'
 
 INSTALLED_APPS = [
-    'django.contrib.admin',         # ✅ this is missing!
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',      # ✅ recommended
-    'django.contrib.messages',      # ✅ recommended
+    'django.contrib.sessions',
+    'django.contrib.messages',
     'django.contrib.staticfiles',
     'sudoku',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',  # ⬅ wichtig für Admin/Login
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',  # ⬅ wichtig für Admin/Login
-    'django.contrib.messages.middleware.MessageMiddleware',  # ⬅ wichtig für Admin
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'sudoku.auth_backends.EmailOrUsernameBackend',  # <-- your custom backend
+    'sudoku.auth_backends.EmailOrUsernameBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

@@ -9,6 +9,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.db.models import Count
+from django.utils.timezone import make_aware, is_naive
 
 from .models import Sudoku, UserSudokuStats
 from .forms import UserRegisterForm
@@ -51,7 +52,10 @@ def leaderboard(request):
             continue
 
         # 1. Recency weight (solve‑date to today)
-        days_since = (now - stat.last_attempt).days
+        last_attempt = stat.last_attempt
+        if is_naive(last_attempt):
+            last_attempt = make_aware(last_attempt, timezone=timezone.utc)
+        days_since = (now - last_attempt).days
         w_rec = 2 ** (-days_since / HALF_LIFE_DAYS)
 
         # 2. Difficulty weight (Bayesian‑smoothed solve rate)
@@ -166,7 +170,7 @@ def profile(request):
     all_tags = Tag.objects.order_by("name")
 
 
-    return render(request, 'sudoku/profile.html', {
+    return render(request, 'sudoku/profile/profile.html', {
         'form': form,
         'solved_stats': solved_stats,
         'attempted_stats': attempted_stats,
@@ -185,17 +189,17 @@ def register(request):
 
             current_site = get_current_site(request)
             subject = 'Activate your Sudoku account'
-            message = render_to_string('sudoku/account_activation_email.html', {
+            message = render_to_string('sudoku/login/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user),
             })
             send_mail(subject, message, 'noreply@sudoku.com', [user.email])
-            return render(request, 'sudoku/activation_sent.html')
+            return render(request, 'sudoku/login/activation_sent.html')
     else:
         form = UserRegisterForm()
-    return render(request, 'sudoku/register.html', {'form': form})
+    return render(request, 'sudoku/login/register.html', {'form': form})
 
 
 def activate(request, uid, token):
@@ -208,19 +212,11 @@ def activate(request, uid, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
-        return render(request, 'sudoku/activation_success.html')
+        return render(request, 'sudoku/login/activation_success.html')
     else:
-        return render(request, 'sudoku/activation_invalid.html')
+        return render(request, 'sudoku/login/activation_invalid.html')
 
 
 
 def creator(request):
-    rule_handlers = [
-        {"id": "kropki_white", "label": "White Kropki"},
-        {"id": "kropki_black", "label": "Black Kropki"},
-        {"id": "v", "label": "V Rule"},
-        {"id": "x", "label": "X Rule"},
-        {"id": "arrow", "label": "Arrow Rule"},
-        {"id": "sandwich", "label": "Sandwich"},
-    ]
-    return render(request, "sudoku/creator.html", {"rule_handlers": rule_handlers})
+    return render(request, "sudoku/creator/creator.html")
