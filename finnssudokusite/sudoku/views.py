@@ -10,118 +10,17 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.db.models import Count
 from django.utils.timezone import make_aware, is_naive
-
-from .models import Sudoku, UserSudokuStats
-from .forms import UserRegisterForm
-from .models import Tag
-from collections import defaultdict, OrderedDict
-from django.contrib.auth import get_user_model
-import math
+from django.http import Http404
 from datetime import datetime, timezone
 
-
-def puzzles_view(request):
-    sudokus = Sudoku.objects.all().select_related("created_by")
-    return render(request, 'sudoku/puzzles.html', {'sudokus': sudokus})
-
-
-def leaderboard(request):
-
-    HALF_LIFE_DAYS = 60          # recency half‑life
-    LAMBDA_VOL      = 0.04       # volume boost coefficient
-    ALPHA, BETA     = 1, 2       # Bayesian smoothing for difficulty
-    DIFF_EXP        = 1.7        # exponent in difficulty weight
-
-    """Render the leaderboard using the Sudoku Power Index (SPI)."""
-
-    # Pull all successful solve records (best_time > 0) in one query
-    stats = (
-        UserSudokuStats.objects
-        .select_related('user', 'sudoku')
-        .filter(best_time__gt=0)
-    )
-
-    now = datetime.now(timezone.utc)
-    players = defaultdict(lambda: {'P': 0.0, 'N': 0.0, 'solved': 0})
-
-    for stat in stats:
-        puzzle = stat.sudoku
-
-        # Sanity checks
-        if (puzzle.average_time or 0) <= 0 or not stat.last_attempt:
-            continue
-
-        # 1. Recency weight (solve‑date to today)
-        last_attempt = stat.last_attempt
-        if is_naive(last_attempt):
-            last_attempt = make_aware(last_attempt, timezone=timezone.utc)
-        days_since = (now - last_attempt).days
-        w_rec = 2 ** (-days_since / HALF_LIFE_DAYS)
-
-        # 2. Difficulty weight (Bayesian‑smoothed solve rate)
-        solves   = puzzle.solves or 0
-        attempts = puzzle.attempts or 0
-        q = (solves + ALPHA) / (attempts + ALPHA + BETA)
-        w_diff = 1 + (1 - q) ** DIFF_EXP
-
-        # 3. Speed bonus (only positive if faster‑than‑average)
-        user_t = stat.best_time
-        avg_t  = puzzle.average_time
-        if user_t > 0 and avg_t > 0:
-            try:
-                delta_speed = max(0.0, math.log(avg_t / user_t))
-            except (ValueError, ZeroDivisionError):
-                delta_speed = 0.0
-        else:
-            delta_speed = 0.0
-
-        # Raw per‑puzzle points
-        p_ui = w_rec * w_diff * (1 + delta_speed)
-
-        rec = players[stat.user.username]
-        rec['P']      += p_ui        # strength sum
-        rec['N']      += w_rec       # volume (also recency‑weighted)
-        rec['solved'] += 1
-
-    # 4. Convert to raw ratings and find max
-    raw_scores = {}
-    R_max = 0.0
-    for user, data in players.items():
-        P, N = data['P'], data['N']
-        try:
-            R = P * (1 + LAMBDA_VOL * math.sqrt(N))
-        except ValueError:
-            R = 0.0
-
-        if isinstance(R, complex):
-            R = R.real
-
-        raw_scores[user] = {
-            'R': R,
-            'solved': data['solved']
-        }
-        if isinstance(R_max, complex):
-            R_max = R_max.real
-        R_max = max(R_max, R)
-
-    # 5. Final SPI (0‑100 scale)
-    leaderboard_data = []
-    for user, vals in raw_scores.items():
-        spi = 100 * vals['R'] / R_max if R_max else 0
-        leaderboard_data.append({
-            'user': user,
-            'score': round(spi, 2),
-            'solved': vals['solved']
-        })
-
-    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)
-
-    return render(request, "sudoku/leaderboard.html", {
-        "leaderboard": leaderboard_data
-    })
+from .models import Sudoku, UserSudokuStats, Tag
+from .forms import UserRegisterForm
+from .util.leaderboard import compute_leaderboard_scores
 
 
+# === General Views === #
 def index(request):
+    """Main landing page showing all Sudoku puzzles and user stats if logged in."""
     sudokus = Sudoku.objects.annotate(
         attempts_count=Count('attempts'),
         solves_count=Count('solves')
@@ -130,14 +29,36 @@ def index(request):
     if request.user.is_authenticated:
         stats = UserSudokuStats.objects.filter(user=request.user)
         user_stats = {us.sudoku_id: us.best_time for us in stats}
+
     return render(request, 'sudoku/index.html', {
         'sudokus': sudokus,
         'user_stats': user_stats,
     })
 
 
+def puzzles_view(request):
+    """Displays all puzzles available to play."""
+    sudokus = Sudoku.objects.all().select_related("created_by")
+    return render(request, 'sudoku/puzzles.html', {'sudokus': sudokus})
+
+
+def leaderboard(request):
+    """Renders the leaderboard using the computed Sudoku Power Index (SPI)."""
+    leaderboard_data = compute_leaderboard_scores()
+    return render(request, "sudoku/leaderboard.html", {
+        "leaderboard": leaderboard_data
+    })
+
+
+def creator(request):
+    """View to access the puzzle creator interface."""
+    return render(request, "sudoku/creator/creator.html")
+
+
+# === Profile Views === #
 @login_required
 def profile(request):
+    """Authenticated user's own profile page."""
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
@@ -147,39 +68,61 @@ def profile(request):
     else:
         form = PasswordChangeForm(user=request.user)
 
-    solved_stats = (
-        UserSudokuStats.objects
-        .filter(user=request.user, best_time__gt=0)
-        .select_related("sudoku")
-        .order_by("-date_solved")
-    )
-
-    attempted_stats = (
-        UserSudokuStats.objects
-        .filter(user=request.user, attempts__gt=0)
-        .select_related("sudoku")
-        .order_by("-last_attempt")
-    )
-
-    created_puzzles = (
-        Sudoku.objects
-        .filter(created_by=request.user)
-        .order_by("-id")
-    )
-
+    solved_stats = UserSudokuStats.objects.filter(user=request.user, best_time__gt=0).select_related("sudoku")
+    attempted_stats = UserSudokuStats.objects.filter(user=request.user, attempts__gt=0).select_related("sudoku")
+    created_puzzles = Sudoku.objects.filter(created_by=request.user)
     all_tags = Tag.objects.order_by("name")
-
 
     return render(request, 'sudoku/profile/profile.html', {
         'form': form,
-        'solved_stats': solved_stats,
-        'attempted_stats': attempted_stats,
-        'created_puzzles': created_puzzles,
+        'solved_stats': solved_stats.order_by("-date_solved"),
+        'attempted_stats': attempted_stats.order_by("-last_attempt"),
+        'created_puzzles': created_puzzles.order_by("-id"),
         'all_tags': all_tags,
     })
 
 
+def user_profile(request, username):
+    """Public profile view for another user."""
+    if request.user.username == username:
+        return redirect('profile')
+
+    User = get_user_model()
+    try:
+        target_user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        raise Http404("User does not exist.")
+
+    solved_stats = UserSudokuStats.objects.filter(user=target_user, best_time__gt=0).select_related("sudoku")
+    attempted_stats = UserSudokuStats.objects.filter(user=target_user, attempts__gt=0).select_related("sudoku")
+    created_puzzles = Sudoku.objects.filter(created_by=target_user)
+    all_tags = Tag.objects.order_by("name")
+
+    leaderboard = compute_leaderboard_scores()
+    rank, score = None, None
+    for i, entry in enumerate(leaderboard):
+        if entry['user'] == target_user.username:
+            rank = i + 1
+            score = entry['score']
+            break
+
+    return render(request, 'sudoku/profile/user_profile.html', {
+        'target_user': target_user,
+        'solved_stats': solved_stats.order_by("-date_solved"),
+        'attempted_stats': attempted_stats.order_by("-last_attempt"),
+        'created_puzzles': created_puzzles.order_by("-id"),
+        'all_tags': all_tags,
+        'rank': rank,
+        'score': score,
+        'done_count': solved_stats.count(),
+        'attempt_count': attempted_stats.count(),
+        'last_login': target_user.last_login,
+    })
+
+
+# === Auth Views === #
 def register(request):
+    """Handles user registration and sends activation email."""
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -199,10 +142,12 @@ def register(request):
             return render(request, 'sudoku/login/activation_sent.html')
     else:
         form = UserRegisterForm()
+
     return render(request, 'sudoku/login/register.html', {'form': form})
 
 
 def activate(request, uid, token):
+    """Verifies email activation token and activates user."""
     try:
         uid = force_str(urlsafe_base64_decode(uid))
         user = get_user_model().objects.get(pk=uid)
@@ -215,8 +160,3 @@ def activate(request, uid, token):
         return render(request, 'sudoku/login/activation_success.html')
     else:
         return render(request, 'sudoku/login/activation_invalid.html')
-
-
-
-def creator(request):
-    return render(request, "sudoku/creator/creator.html")

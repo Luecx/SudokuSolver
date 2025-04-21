@@ -42,7 +42,18 @@
     data-besttime="{{ stat.best_time }}"
     data-datesolved="{{ stat.date_solved|date:"U" }}">
     <td>{{ stat.sudoku.title }}</td>
-    <td>{{ stat.sudoku.created_by.username|default:"—" }}</td>
+    <td>
+      {% if stat.sudoku.created_by %}
+      {% if stat.sudoku.created_by.username == request.user.username %}
+      <a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
+      {% else %}
+      <a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
+      {% endif %}
+      {% else %}
+      —
+      {% endif %}
+    </td>
+
     <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
     <td>{% render_starbar stat.sudoku.average_rating %}</td>
     <td>{{ stat.sudoku.average_time|humantime }}</td>

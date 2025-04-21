@@ -9,6 +9,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('puzzles/', views.puzzles_view, name='puzzles'),
     path('profile/', views.profile, name='profile'),
+    path('user/<str:username>/', views.user_profile, name='user_profile'),
     path('register/', views.register, name='register'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('creator/', views.creator, name='creator'),

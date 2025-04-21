@@ -1,30 +1,131 @@
 {% extends 'sudoku/base.html' %}
+{% load formatting star_rating %}
 
 {% block content %}
-<h1>All Sudoku Puzzles</h1>
+<h2 class="text-center mt-4 mb-3">All Published Sudoku Puzzles</h2>
 
 {% if sudokus %}
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Title</th>
-    <th>Creator</th>
-    <th>Attempts</th>
-    <th>Solves</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for s in sudokus %}
-  <tr>
+<div class="table-responsive" style="min-height: 400px;">
+  <table class="table table-striped table-hover align-middle small" id="allPuzzlesTable">
+    <thead>
+    <tr>
+      <th onclick="sortAllTable(0)">Name <span class="sort-indicator"></span></th>
+      <th onclick="sortAllTable(1)">Creator <span class="sort-indicator"></span></th>
+      <th onclick="sortAllTable(2)">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th onclick="sortAllTable(3)">Rating <span class="sort-indicator"></span></th>
+      <th onclick="sortAllTable(4)">Avg Time <span class="sort-indicator"></span></th>
+      <th>
+        <div class="dropdown">
+          <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Tags
+          </span>
+          <ul class="dropdown-menu p-2" id="allTagFilterMenu" style="max-height: 200px; overflow-y: auto;">
+            {% for tag in all_tags %}
+            <li>
+              <div class="form-check">
+                <input class="form-check-input all-tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="filterAllByTags()">
+                <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for s in sudokus %}
+    <tr data-tags="{{ s.tags.all|join:',' }}"
+        data-name="{{ s.title|lower }}"
+        data-creator="{{ s.created_by.username|default_if_none:"" }}"
+    data-solves="{{ s.solves }}"
+    data-attempts="{{ s.attempts }}"
+    data-rating="{{ s.average_rating|default:0 }}"
+    data-avgtime="{{ s.average_time|floatformat:0 }}">
     <td>{{ s.title }}</td>
-    <td>{{ s.created_by.username }}</td>
-    <td>{{ s.attempts }}</td>
-    <td>{{ s.solves }}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+    <td>
+      {% if s.created_by %}
+      {% if s.created_by.username == request.user.username %}
+      <a href="{% url 'profile' %}">{{ s.created_by.username }}</a>
+      {% else %}
+      <a href="{% url 'user_profile' s.created_by.username %}">{{ s.created_by.username }}</a>
+      {% endif %}
+      {% else %}
+      —
+      {% endif %}
+    </td>
+    <td>{{ s.solves }} / {{ s.attempts }}</td>
+    <td>{% render_starbar s.average_rating %}</td>
+    <td>{{ s.average_time|humantime }}</td>
+    <td>
+      {% for tag in s.tags.all %}
+      <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+      {% endfor %}
+    </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
-<p>No puzzles available.</p>
+<p class="text-muted text-center">No puzzles available.</p>
 {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  let currentAllSortCol = null;
+  let allAscending = true;
+
+  function sortAllTable(colIndex) {
+    const table = document.getElementById("allPuzzlesTable");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    if (currentAllSortCol === colIndex) {
+      allAscending = !allAscending;
+    } else {
+      allAscending = true;
+      currentAllSortCol = colIndex;
+    }
+
+    rows.sort((a, b) => {
+      let valA, valB;
+
+      switch (colIndex) {
+        case 0: valA = a.dataset.name; valB = b.dataset.name; break;
+        case 1: valA = a.dataset.creator; valB = b.dataset.creator; break;
+        case 2:
+          valA = parseFloat(a.dataset.solves) / Math.max(1, parseFloat(a.dataset.attempts));
+          valB = parseFloat(b.dataset.solves) / Math.max(1, parseFloat(b.dataset.attempts));
+          break;
+        case 3: valA = parseFloat(a.dataset.rating); valB = parseFloat(b.dataset.rating); break;
+        case 4: valA = parseFloat(a.dataset.avgtime); valB = parseFloat(b.dataset.avgtime); break;
+        default: return 0;
+      }
+
+      if (typeof valA === 'string') {
+        return allAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+      return allAscending ? valA - valB : valB - valA;
+    });
+
+    document.querySelectorAll("#allPuzzlesTable .sort-indicator").forEach(el => el.innerHTML = "");
+    const arrow = allAscending ? "▲" : "▼";
+    table.querySelector(`thead tr th:nth-child(${colIndex + 1}) .sort-indicator`).innerText = arrow;
+
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  function filterAllByTags() {
+    const activeTags = Array.from(document.querySelectorAll(".all-tag-filter:checked")).map(el => el.value.toLowerCase());
+    const rows = document.querySelectorAll("#allPuzzlesTable tbody tr");
+
+    rows.forEach(row => {
+      const rowTags = row.getAttribute("data-tags").toLowerCase();
+      const shouldShow = activeTags.every(tag => rowTags.includes(tag));
+      row.style.display = (activeTags.length === 0 || shouldShow) ? "" : "none";
+    });
+  }
+</script>
 {% endblock %}
