@@ -2,7 +2,7 @@ import { getDefaultRuleHandlers } from "./rules.js";
 
 export function createBoard(container, canvas, grid) {
     const gridSize = 9;
-    const paddingRatio = 0.1;
+    const paddingRatio = 0.04;
 
     let ctx = canvas.getContext("2d");
     let hintLayer = null;
