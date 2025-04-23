@@ -1,4 +1,4 @@
-// src/rule_types.js
+// src/board_ruleTypes.js
 const RuleType = Object.freeze({
     SINGLE_CLICK_SINGLE: 'single_click_single',
     SINGLE_CLICK_MANY:   'single_click_many',

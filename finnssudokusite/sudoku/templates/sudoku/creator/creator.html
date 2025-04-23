@@ -110,20 +110,8 @@
 </script>
 <script type="module">
     import {createBoard} from "{% static 'sudoku/js/ui/board.js' %}";
+    import {SelectionTarget, SelectionMode} from "{% static 'sudoku/js/ui/board_selectionEnums.js' %}";
     import {setupCreatorUI} from "{% static 'sudoku/js/ui/creator_ui.js' %}";
-
-
-    import {
-        Board,
-    } from "{% static 'sudoku/js/solver/board.js' %}";
-    import {StandardRule} from "{% static 'sudoku/js/solver/rules/include.js' %}";
-    import {Position} from "{% static 'sudoku/js/solver/position.js' %}";
-
-    const board_solver = new Board();
-    board_solver.addRule(new StandardRule());
-    let solutions = board_solver.solve(10);
-    console.log(solutions[0].toString(false));
-    console.log(solutions[1].toString(false));
 
     const container = document.querySelector(".board-container");
     const canvas = document.getElementById("board-canvas");
@@ -133,6 +121,17 @@
     window.Board = board; // optional: make globally accessible
 
     board.initBoard();
+    board.setSelection({
+        target: SelectionTarget.CELLS,
+        mode: SelectionMode.MULTIPLE,
+        onCellAdded: ({ r, c }) => {
+            console.log("Cell selected:", r, c);
+        },
+        onCellsCleared: () => {
+            console.log("Selection cleared");
+        },
+        preserveOnModifier: "Shift", // hold Shift to preserve selection
+    });
 
     async function getGzippedSize(str) {
         const encoder = new TextEncoder();

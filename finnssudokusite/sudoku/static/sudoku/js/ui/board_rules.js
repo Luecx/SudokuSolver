@@ -1,4 +1,4 @@
-// rules.js
+// board_rules.js
 import { setupStandardRule }    from "./rules/rule_standard.js";
 import { setupWhiteKropkiRule } from "./rules/rule_kropki_white.js";
 import { setupBlackKropkiRule } from "./rules/rule_kropki_black.js";
@@ -17,13 +17,13 @@ import { setupParityLine } from "./rules/rule_parityline.js";
  */
 export function getDefaultRuleHandlers(board) {
     return [
-        setupStandardRule(board),
-        setupWhiteKropkiRule(board),
-        setupBlackKropkiRule(board),
-        setupArrowRule(board),
-        setupXRule(board),
-        setupVRule(board),
-        setupDiagonalRule(board),
-        setupParityLine(board),
+        // setupStandardRule(board),
+        // setupWhiteKropkiRule(board),
+        // setupBlackKropkiRule(board),
+        // setupArrowRule(board),
+        // setupXRule(board),
+        // setupVRule(board),
+        // setupDiagonalRule(board),
+        // setupParityLine(board),
     ];
 }

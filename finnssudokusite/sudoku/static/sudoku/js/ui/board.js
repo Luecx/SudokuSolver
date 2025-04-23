@@ -1,445 +1,82 @@
-import { getDefaultRuleHandlers } from "./rules.js";
+import { RuleManager } from "./board_ruleManager.js";
+import { BoardRenderer } from "./board_renderer.js";
+import { InteractionManager } from "./board_selectionManager.js";
+import { HintDotLayer } from "./board_hintDotLayer.js";
+import { CellLayer } from "./board_cellLayer.js";
 
+/**
+ * Initializes and returns a Sudoku board instance.
+ * Wires together modular components for rendering, interaction, rule handling, and hint display.
+ *
+ * @param {HTMLElement} container - The HTML element that wraps the canvas and grid.
+ * @param {HTMLCanvasElement} canvas - The canvas used for drawing overlays and rules.
+ * @param {HTMLElement} grid - The container element for HTML grid cells.
+ * @returns {Object} Board API with various interaction methods.
+ */
 export function createBoard(container, canvas, grid) {
     const gridSize = 9;
     const paddingRatio = 0.04;
 
-    let ctx = canvas.getContext("2d");
-    let hintLayer = null;
-
-    let clickableEnabled = true;
-    let selectableEnabled = true;
-    let draggableEnabled = false;
-
-    let savedInteractionState = null;
-
-    const handlers = {};
-    let currentHandler = null;
-
-    let edgeHints = [];
-    let cornerHints = [];
-    let edgeHintClick = null;
-    let cornerHintClick = null;
-
-    let cellSize = 0;
-    let usedSize = 0;
-    let rawPadding = 0;
-    let leftover = 0;
-    let gridOffset = 0;
-
-    let isDragging = false;
-    let dragPath = [];
-    let lastDragCell = null;
+    const ruleManager = new RuleManager();
+    const renderer = new BoardRenderer(canvas, gridSize, paddingRatio);
+    const hintLayer = new HintDotLayer(container, renderer);
+    const cellLayer = new CellLayer(container, gridSize);
+    const interactionManager = new InteractionManager(grid, ruleManager, renderer);
 
     const board = {
         initBoard,
-        getCellTopLeft,
-        getCellCorners,
-        getAllHandlers,
-        getPadding: () => rawPadding,
-        getCellSize: () => cellSize,
-        getCanvasContext: () => ctx,
-        registerHandler,
-        startHandler,
-        stopHandler,
-        getCurrentHandlerName: () => currentHandler?.name || null,
+        render: () => renderer.render(ruleManager.getAllHandlers(), ruleManager.getCurrentHandler()),
+        getCellTopLeft: (r, c) => renderer.getCellTopLeft(r, c),
+        getCellCorners: (r, c) => renderer.getCellCorners(r, c),
+        getPadding: () => renderer.getPadding(),
+        getCellSize: () => renderer.getCellSize(),
+        getCanvasContext: () => renderer.getContext(),
 
-        enableClickable,
-        disableClickable,
-        enableSelectable,
-        disableSelectable,
-        enableDraggable,
-        disableDraggable,
-        saveInteractionState,
-        restoreInteractionState,
+        registerHandler: ruleManager.registerHandler.bind(ruleManager),
+        startHandler: ruleManager.startHandler.bind(ruleManager),
+        stopHandler: ruleManager.stopHandler.bind(ruleManager),
+        getCurrentHandlerName: () => ruleManager.getCurrentHandler()?.name || null,
+        getAllHandlers: () => ruleManager.getAllHandlers(),
 
-        isClickableEnabled: () => clickableEnabled,
-        isSelectableEnabled: () => selectableEnabled,
-        isDraggableEnabled: () => draggableEnabled,
-        isDragging: () => isDragging,
-        getDraggingPath: () => [...dragPath],
+        setSelection: config => interactionManager.setSelection(config),
+        showSelectionBlue: show => interactionManager.showSelectionBlue(show),
 
-        showEdgeHints,
-        hideEdgeHints,
-        showCornerHints,
-        hideCornerHints,
-        render,
+        addRenderCall: (name, func) => renderer.addRenderCall(name, func),
+        removeRenderCall: name => renderer.removeRenderCall(name),
+        triggerRender: () => renderer.triggerRender(),
 
-        getRulesJSON,
-        loadRulesJSON,
-        getTags,
+        getRulesJSON: () => ruleManager.serializeRules(),
+        loadRulesJSON: json => ruleManager.deserializeRules(json),
+        getTags: () => ruleManager.getTags(),
+
+        cellLayer: cellLayer,
+        hintLayer: hintLayer, // Expose the unified hint layer
     };
 
     function initBoard() {
         grid.classList.add("board");
 
-        hintLayer = document.createElement("div");
-        hintLayer.style.position = "absolute";
-        hintLayer.style.top = "0";
-        hintLayer.style.left = "0";
-        hintLayer.style.width = "100%";
-        hintLayer.style.height = "100%";
-        hintLayer.style.zIndex = "2";
-        hintLayer.style.pointerEvents = "none";
-        container.appendChild(hintLayer);
+        // Wire board reference into systems that need it
+        hintLayer.init(board);
+        cellLayer.init(board);
+        interactionManager.setup(board);
+        ruleManager.registerDefaults(board);
 
-        const ruleHandlers = getDefaultRuleHandlers(board);
-        ruleHandlers.forEach(registerHandler);
+        function resizeAndRebuild() {
+            renderer.setup(container);
 
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-    }
+            const cellSize = renderer.getCellSize();
+            const usedSize = renderer.getUsedSize();
+            const offset = renderer.getGridOffset();
 
-    function generateCells() {
-        grid.innerHTML = "";
-
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-                const cell = document.createElement("div");
-                cell.className = "cell";
-                cell.dataset.r = r;
-                cell.dataset.c = c;
-                cell.style.width = `${cellSize}px`;
-                cell.style.height = `${cellSize}px`;
-                grid.appendChild(cell);
-            }
-        }
-        updateCellClass();
-
-        grid.addEventListener("click", (e) => {
-            const cell = e.target.closest(".cell.clickable");
-            if (!cell || !clickableEnabled) return;
-            const r = parseInt(cell.dataset.r);
-            const c = parseInt(cell.dataset.c);
-            currentHandler?.onCellClick?.({r, c});
-            render();
-        });
-
-        grid.addEventListener("mousedown", (e) => {
-            if (!draggableEnabled || !selectableEnabled) return;
-            const cell = e.target.closest(".cell");
-            if (!cell) return;
-            e.preventDefault();
-
-            isDragging = true;
-            dragPath = [];
-
-            const r = parseInt(cell.dataset.r);
-            const c = parseInt(cell.dataset.c);
-            lastDragCell = `${r},${c}`;
-            currentHandler?.onCellDragNewCell?.({r,c});
-            dragPath.push({ r, c });
-            render();
-        });
-
-        grid.addEventListener("mousemove", (e) => {
-            if (!isDragging || !draggableEnabled || !selectableEnabled) return;
-            const cell = e.target.closest(".cell");
-            if (!cell) return;
-
-            const r = parseInt(cell.dataset.r);
-            const c = parseInt(cell.dataset.c);
-            const key = `${r},${c}`;
-
-            if (key !== lastDragCell) {
-                lastDragCell = key;
-
-                const alreadyInPath = dragPath.some(pt => pt.r === r && pt.c === c);
-                if (!alreadyInPath) {
-                    const newCell = { r, c };
-                    dragPath.push(newCell);
-                    currentHandler?.onCellDragNewCell?.(newCell); // ✅ trigger here
-                    render();
-                }
-            }
-        });
-
-
-        window.addEventListener("mouseup", () => {
-            if (!isDragging || !draggableEnabled) return;
-
-            isDragging = false;
-            lastDragCell = null;
-
-            if (currentHandler?.onDragCreating && dragPath.length > 0) {
-                currentHandler.onCellDrag([...dragPath]);
-            }
-
-            dragPath = [];
-            render();
-        });
-    }
-
-    function resizeCanvas() {
-        const size = Math.floor(Math.min(container.clientWidth, container.clientHeight));
-        canvas.width = size;
-        canvas.height = size;
-
-        rawPadding = Math.round(size * paddingRatio);
-        const boardSize = size - 2 * rawPadding;
-
-        cellSize = Math.floor(boardSize / gridSize);
-        usedSize = cellSize * gridSize;
-        leftover = boardSize - usedSize;
-        gridOffset = rawPadding + Math.floor(leftover / 2);
-
-        grid.style.width = `${usedSize}px`;
-        grid.style.height = `${usedSize}px`;
-        grid.style.top = `${gridOffset}px`;
-        grid.style.left = `${gridOffset}px`;
-
-        generateCells();
-        updateHintDots();
-        render();
-    }
-
-    function render() {
-        if (!ctx) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
-
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 2;
-        for (let i = 0; i <= 9; i += 9) {
-            const pos = gridOffset + i * cellSize;
-            ctx.beginPath();
-            ctx.moveTo(gridOffset, pos);
-            ctx.lineTo(gridOffset + usedSize, pos);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(pos, gridOffset);
-            ctx.lineTo(pos, gridOffset + usedSize);
-            ctx.stroke();
+            cellLayer.generate(cellSize, usedSize, offset);
+            hintLayer.update(); // Automatically uses currentTarget from show()
+            board.render();
         }
 
-        ctx.strokeStyle = "#ccc";
-        ctx.lineWidth = 1;
-        for (let i = 1; i < 9; i++) {
-            const pos = gridOffset + i * cellSize;
-            ctx.beginPath();
-            ctx.moveTo(gridOffset, pos);
-            ctx.lineTo(gridOffset + usedSize, pos);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(pos, gridOffset);
-            ctx.lineTo(pos, gridOffset + usedSize);
-            ctx.stroke();
-        }
-
-        ctx.restore();
-
-        for (const handler of Object.values(handlers)) {
-            handler.renderAll?.(ctx);
-        }
-
-        currentHandler?.renderCreationOverlay?.(ctx);
+        window.addEventListener("resize", resizeAndRebuild);
+        resizeAndRebuild();
     }
-
-    function getCellTopLeft(r, c) {
-        return {
-            x: gridOffset + c * cellSize,
-            y: gridOffset + r * cellSize
-        };
-    }
-
-    function getCellCorners(r, c) {
-        const tl = getCellTopLeft(r, c);
-        return {
-            topLeft: { x: tl.x, y: tl.y },
-            topRight: { x: tl.x + cellSize, y: tl.y },
-            bottomLeft: { x: tl.x, y: tl.y + cellSize },
-            bottomRight: { x: tl.x + cellSize, y: tl.y + cellSize }
-        };
-    }
-
-    function registerHandler(handler) {
-        handlers[handler.name] = handler;
-        handler.onRegister?.();
-    }
-
-    function startHandler(name) {
-        stopHandler();
-        currentHandler = handlers[name];
-        currentHandler?.onStartCreating?.();
-        render();
-    }
-
-    function stopHandler() {
-        currentHandler?.onFinishedCreating?.();
-        currentHandler = null;
-        render();
-    }
-
-    function enableClickable() {
-        clickableEnabled = true;
-        updateCellClass();
-    }
-
-    function disableClickable() {
-        clickableEnabled = false;
-        updateCellClass();
-    }
-
-    function enableSelectable() {
-        selectableEnabled = true;
-        updateCellClass();
-    }
-
-    function disableSelectable() {
-        selectableEnabled = false;
-        updateCellClass();
-    }
-
-    function enableDraggable() {
-        draggableEnabled = true;
-    }
-
-    function disableDraggable() {
-        draggableEnabled = false;
-    }
-
-    function saveInteractionState() {
-        savedInteractionState = {
-            clickable: clickableEnabled,
-            selectable: selectableEnabled,
-            draggable: draggableEnabled,
-        };
-    }
-
-    function restoreInteractionState() {
-        if (!savedInteractionState) return;
-        clickableEnabled = savedInteractionState.clickable;
-        selectableEnabled = savedInteractionState.selectable;
-        draggableEnabled = savedInteractionState.draggable;
-        updateCellClass();
-    }
-
-    function updateCellClass() {
-        grid.querySelectorAll(".cell").forEach(cell => {
-            cell.classList.toggle("clickable", clickableEnabled);
-            cell.classList.toggle("selectable", selectableEnabled);
-        });
-    }
-
-    function showEdgeHints(pairs, onClick) {
-        edgeHints = pairs;
-        edgeHintClick = onClick;
-        updateHintDots();
-    }
-
-    function hideEdgeHints() {
-        edgeHints = [];
-        edgeHintClick = null;
-        updateHintDots();
-    }
-
-    function showCornerHints(list, onClick) {
-        cornerHints = list;
-        cornerHintClick = onClick;
-        updateHintDots();
-    }
-
-    function hideCornerHints() {
-        cornerHints = [];
-        cornerHintClick = null;
-        updateHintDots();
-    }
-
-    function updateHintDots() {
-        hintLayer.innerHTML = "";
-
-        for (const [a, b] of edgeHints) {
-            const ax = getCellTopLeft(a.r, a.c);
-            const bx = getCellTopLeft(b.r, b.c);
-            const cx = (ax.x + bx.x + cellSize) / 2;
-            const cy = (ax.y + bx.y + cellSize) / 2;
-
-            const dot = document.createElement("div");
-            dot.className = "hint-dot";
-            dot.style.left = `${cx}px`;
-            dot.style.top = `${cy}px`;
-            dot.onclick = () => edgeHintClick?.(a.r, a.c, b.r, b.c);
-            hintLayer.appendChild(dot);
-        }
-
-        for (const { r, c } of cornerHints) {
-            const tl = getCellTopLeft(r, c);
-            const cx = tl.x;
-            const cy = tl.y;
-
-            const dot = document.createElement("div");
-            dot.className = "hint-dot";
-            dot.style.left = `${cx}px`;
-            dot.style.top = `${cy}px`;
-            dot.onclick = () => cornerHintClick?.(r, c);
-            hintLayer.appendChild(dot);
-        }
-    }
-
-    function getAllHandlers() {
-        return Object.values(handlers);
-    }
-
-    function removeIds(obj) {
-        if (Array.isArray(obj)) {
-            return obj.map(removeIds);
-        } else if (obj !== null && typeof obj === 'object') {
-            const result = {};
-            for (const [key, value] of Object.entries(obj)) {
-                if (key === 'id') continue; // skip id
-                result[key] = removeIds(value);
-            }
-            return result;
-        } else {
-            return obj;
-        }
-    }
-
-    function getRulesJSON() {
-        const allRules = [];
-
-        for (const [name, handler] of Object.entries(handlers)) {
-            if (Array.isArray(handler.rules) && handler.rules.length > 0) {
-                allRules.push({
-                    type: name,
-                    rules: handler.rules.map(rule => removeIds(rule))
-                });
-            }
-        }
-
-        return JSON.stringify(allRules, null, 2);
-    }
-
-    function loadRulesJSON(json) {
-        const parsed = typeof json === "string" ? JSON.parse(json) : json;
-
-        for (const { type, rules } of parsed) {
-            const handler = handlers[type];
-            if (!handler || !Array.isArray(rules)) continue;
-
-            for (const rule of rules) {
-                handler.add(rule); // your universal .add() method
-            }
-        }
-
-        render(); // re-render to show the rules
-    }
-
-    function getTags() {
-        const tagSet = new Set();
-
-        for (const handler of Object.values(handlers)) {
-            if (!handler || !Array.isArray(handler.rules)) continue;
-
-            // add if there are rules
-            if (handler.rules.length > 0)
-                tagSet.add(handler.tag);
-        }
-
-        return Array.from(tagSet).map(tag => ({ name: tag }));
-    }
-
-
 
     return board;
 }

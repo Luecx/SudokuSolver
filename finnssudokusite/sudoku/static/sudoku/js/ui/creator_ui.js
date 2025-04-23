@@ -1,4 +1,4 @@
-import RuleType from './rule_types.js';
+import RuleType from './board_ruleTypes.js';
 
 export function setupCreatorUI(Board) {
     const handlers = Board.getAllHandlers();

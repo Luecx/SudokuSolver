@@ -1,5 +1,5 @@
-import {RuleTypeHandler} from "../rule.js";
-import {RuleType} from "../rule_types.js";
+import {RuleTypeHandler} from "../board_rule.js";
+import {RuleType} from "../board_ruleTypes.js";
 export function setupParityLine(board) {
     const handler = new RuleTypeHandler("parity", board);
     handler.label = "Parity Line";
@@ -10,10 +10,10 @@ export function setupParityLine(board) {
     handler.rule_type = RuleType.MULTI_CLICK_MANY;
 
     handler.onStartCreating = () => {
-        board.saveInteractionState();
-        board.enableClickable();
-        board.enableSelectable();
-        board.enableDraggable();
+        // board.saveInteractionState();
+        // board.enableClickable();
+        // board.enableSelectable();
+        // board.enableDraggable();
         currentLine = [];
     };
 

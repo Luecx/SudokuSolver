@@ -1,5 +1,5 @@
-import {RuleTypeHandler} from "../rule.js";
-import {RuleType} from "../rule_types.js";
+import {RuleTypeHandler} from "../board_rule.js";
+import {RuleType} from "../board_ruleTypes.js";
 export function setupBlackKropkiRule(board) {
     const handler = new RuleTypeHandler("kropki_black", board);
     handler.label = "Black Kropki";

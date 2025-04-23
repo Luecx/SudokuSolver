@@ -1,5 +1,5 @@
-import {RuleTypeHandler} from "../rule.js";
-import {RuleType} from "../rule_types.js";
+import {RuleTypeHandler} from "../board_rule.js";
+import {RuleType} from "../board_ruleTypes.js";
 
 export function setupArrowRule(board) {
     const handler = new RuleTypeHandler("arrow", board);
@@ -10,10 +10,10 @@ export function setupArrowRule(board) {
     let currentArrow = null;
 
     handler.onStartCreating = () => {
-        board.saveInteractionState();
-        board.enableClickable();
-        board.enableSelectable();
-        board.enableDraggable();
+        // board.saveInteractionState();
+        // board.enableClickable();
+        // board.enableSelectable();
+        // board.enableDraggable();
         currentArrow = { cells: [] };
     };
 

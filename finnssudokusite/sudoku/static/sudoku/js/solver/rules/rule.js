@@ -1,4 +1,4 @@
-// === rule.js ===
+// === board_rule.js ===
 
 /**
  * Base class for all Sudoku rules.
