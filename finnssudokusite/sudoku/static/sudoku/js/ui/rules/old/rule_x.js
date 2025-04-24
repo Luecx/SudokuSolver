@@ -1,9 +1,9 @@
-import {RuleTypeHandler} from "../board_rule.js";
-import {RuleType} from "../board_ruleTypes.js";
+import {RuleTypeHandler} from "../rule.js";
+import {RuleType} from "../rule_type.js";
 
-export function setupVRule(board) {
-    const handler = new RuleTypeHandler("v", board);
-    handler.label = "V Rule";
+export function setupXRule(board) {
+    const handler = new RuleTypeHandler("x", board);
+    handler.label = "X Rule";
     handler.tag  =  "XV";
 
     let possiblePairs = [];
@@ -11,7 +11,7 @@ export function setupVRule(board) {
 
     handler.ruleToText = (rule) => {
         const format = (c) => `(${c.r},${c.c})`;
-        return rule.cells?.length === 2 ? `${format(rule.cells[0])} V ${format(rule.cells[1])}` : JSON.stringify(rule);
+        return rule.cells?.length === 2 ? `${format(rule.cells[0])} X ${format(rule.cells[1])}` : JSON.stringify(rule);
     };
 
     function computeAvailablePairs() {
@@ -75,7 +75,7 @@ export function setupVRule(board) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = "black";
-        ctx.fillText("v", cx, cy);
+        ctx.fillText("x", cx, cy);
         ctx.restore();
     };
 

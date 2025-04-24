@@ -1,17 +1,16 @@
-import {RuleTypeHandler} from "../board_rule.js";
-import {RuleType} from "../board_ruleTypes.js";
-
-export function setupXRule(board) {
-    const handler = new RuleTypeHandler("x", board);
-    handler.label = "X Rule";
-    handler.tag  =  "XV";
+import {RuleTypeHandler} from "../rule.js";
+import {RuleType} from "../rule_type.js";
+export function setupWhiteKropkiRule(board) {
+    const handler = new RuleTypeHandler("kropki_white", board);
+    handler.label = "White Kropki";
+    handler.tag  =  "Kropki";
 
     let possiblePairs = [];
     handler.rule_type = RuleType.SINGLE_CLICK_MANY;
 
     handler.ruleToText = (rule) => {
         const format = (c) => `(${c.r},${c.c})`;
-        return rule.cells?.length === 2 ? `${format(rule.cells[0])} X ${format(rule.cells[1])}` : JSON.stringify(rule);
+        return rule.cells?.length === 2 ? `${format(rule.cells[0])} ○ ${format(rule.cells[1])}` : JSON.stringify(rule);
     };
 
     function computeAvailablePairs() {
@@ -34,11 +33,25 @@ export function setupXRule(board) {
         }
     }
 
+    handler.onRegister = () => {
+        const btn = document.getElementById("btnKropki_white");
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+            const isActive = board.getCurrentHandlerName() === handler.name;
+            if (isActive) board.stopHandler();
+            else board.startHandler(handler.name);
+        });
+    };
+
     handler.onStartCreating = () => {
+        const btn = document.getElementById("btnKropki_white");
+        if (btn) btn.innerHTML = '<i class="fa fa-times"></i>';
+
         board.saveInteractionState();
         board.disableClickable();
         board.disableSelectable();
         board.disableDraggable();
+
         computeAvailablePairs();
 
         const clickEdge = (r1, c1, r2, c2) => {
@@ -57,6 +70,9 @@ export function setupXRule(board) {
     };
 
     handler.onFinishedCreating = () => {
+        const btn = document.getElementById("btnKropki_white");
+        if (btn) btn.innerHTML = '<i class="fa fa-plus"></i>';
+
         board.restoreInteractionState();
         board.hideEdgeHints();
         possiblePairs = [];
@@ -71,11 +87,12 @@ export function setupXRule(board) {
         const cy = (ax.y + bx.y + s) / 2;
 
         ctx.save();
-        ctx.font = `${Math.floor(s * 0.3)}px arial`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "black";
-        ctx.fillText("x", cx, cy);
+        ctx.fillStyle = "white";
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        ctx.arc(cx, cy, s * 0.12, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
         ctx.restore();
     };
 
