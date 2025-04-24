@@ -3,8 +3,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/rulemanager.css' %}">
 <link rel="stylesheet" href="{% static 'sudoku/css/accordion.css' %}">
-
 {% endblock %}
 
 {% block content %}
@@ -12,158 +12,44 @@
 <div class="container-fluid mt-4">
 	<div class="row h-100">
 		<!-- LEFT COLUMN -->
-		<div class="col-12 col-xl-4 col-md-6 d-flex flex-column p-3">
-			<!-- Eingabetextfeld über der Box -->
-			<input type="text" id="inputField" class="form-control" placeholder="Wähle oder tippe..." autocomplete="off" />
-			<!-- Dropdown-Menü -->
-			<div id="dropdownMenu" class="rounded overflow-auto mb-2" style="display: none;">
-				<ul class="list-group" id="menuList" style="overflow-y: auto; margin: 0; padding: 0;">
-					<li class="list-group-item list-group-item-action">
-						<input class="form-check-input me-1" type="checkbox" value="" id="firstCheckboxStretched">
-						<label class="form-check-label stretched-link" for="firstCheckboxStretched">AB checkbox</label>
-					</li>
-					<li class="list-group-item list-group-item-action">Classic</li>
-					<li class="list-group-item list-group-item-action">Diagonal</li>
-					<li class="list-group-item list-group-item-action">Killer</li>
-					<li class="list-group-item list-group-item-action">Thermo</li>
-					<li class="list-group-item list-group-item-action">Arrow</li>
-					<li class="list-group-item list-group-item-action">Kropki</li>
-					<li class="list-group-item list-group-item-action">XV</li>
-					<li class="list-group-item list-group-item-action">Renban</li>
-					<li class="list-group-item list-group-item-action">Palindrome</li>
-					<li class="list-group-item list-group-item-action">Sandwich</li>
-					<li class="list-group-item list-group-item-action">Odd/Even</li>
-					<li class="list-group-item list-group-item-action">Consecutive</li>
-					<li class="list-group-item list-group-item-action">Nonconsecutive</li>
-					<li class="list-group-item list-group-item-action">Anti-Knight</li>
-					<li class="list-group-item list-group-item-action">Anti-King</li>
-					<li class="list-group-item list-group-item-action">Windoku</li>
-					<li class="list-group-item list-group-item-action">Extra Region</li>
-					<li class="list-group-item list-group-item-action">Fortress</li>
-					<li class="list-group-item list-group-item-action">German Whispers</li>
-					<li class="list-group-item list-group-item-action">Little Killer</li>
-					<li class="list-group-item list-group-item-action">Magic Square</li>
-					<li class="list-group-item list-group-item-action">Quadruple</li>
-					<li class="list-group-item list-group-item-action">Clone</li>
-					<li class="list-group-item list-group-item-action">Skyscraper</li>
-					<li class="list-group-item list-group-item-action">Between Lines</li>
-					<li class="list-group-item list-group-item-action">Fog of War</li>
-					<li class="list-group-item list-group-item-action">Region Sum Lines</li>
-					<li class="list-group-item list-group-item-action">Difference</li>
-					<li class="list-group-item list-group-item-action">Domino</li>
-					<li class="list-group-item list-group-item-action">Chess</li>
-					<li class="list-group-item list-group-item-action">Battenburg</li>
-					<li class="list-group-item list-group-item-action">Minimum</li>
-					<li class="list-group-item list-group-item-action">Maximum</li>
-					<li class="list-group-item list-group-item-action">Anti-Diagonal</li>
-					<li class="list-group-item list-group-item-action">Irregular (Jigsaw)</li>
-					<li class="list-group-item list-group-item-action">Disjoint Groups</li>
-					<li class="list-group-item list-group-item-action">Mirror</li>
-					<li class="list-group-item list-group-item-action">Odd/Even Count</li>
-				</ul>
+		<div class="col-12 col-xl-3 col-md-6 d-flex flex-column p-3">
+
+			<div class="position-relative">
+				<input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..." autocomplete="off">
+				<ul id="ruleDropdown" class="list-group position-absolute rounded overflow-auto w-100" style="z-index: 1000;"></ul>
 			</div>
-			<!-- Accordion -->
-			<div class="w-100 flex-fill overflow-auto mt-3 pt-3" style="max-height: 500px; overflow-y: scroll;">
-				<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-				<!-- Optional: Bootstrap Icons für die Mülltonne -->
-				<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-				
-				<div class="accordion" id="ruleAccordion">
-					<!-- Classic -->
-					<div class="accordion-item d-none rounded whitebox" id="accordion-Classic">
-						<h2 class="accordion-header" id="heading-Classic">
-							<div class="d-flex align-items-center">
-								<button class="accordion-button flex-grow-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-Classic" aria-expanded="false" aria-controls="collapse-Classic">
-									Classic
-								</button>
-								<button type="button" class="btn btn-danger btn-sm ms-2 delete-accordion-item" data-target="accordion-Classic" title="Entfernen">
-									<i class="bi bi-trash"></i>
-								</button>
-							</div>
-						</h2>
-						<div id="collapse-Classic" class="accordion-collapse collapse" aria-labelledby="heading-Classic">
-							<div class="accordion-body">
-								<ul>
-									<li>Classic Sub Item 1</li>
-									<li>Classic Sub Item 2</li>
-									<li>Classic Sub Item 3</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- Diagonal -->
-					<div class="accordion-item d-none rounded whitebox" id="accordion-Diagonal">
-						<h2 class="accordion-header" id="heading-Diagonal">
-							<div class="d-flex align-items-center">
-								<button class="accordion-button flex-grow-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-Diagonal" aria-expanded="false" aria-controls="collapse-Diagonal">
-									Diagonal
-								</button>
-								<button type="button" class="btn btn-danger btn-sm ms-2 delete-accordion-item" data-target="accordion-Diagonal" title="Entfernen">
-									<i class="bi bi-trash"></i>
-								</button>
-							</div>
-						</h2>
-						<div id="collapse-Diagonal" class="accordion-collapse collapse" aria-labelledby="heading-Diagonal">
-							<div class="accordion-body">
-								<ul>
-									<li>Diagonal Sub Item 1</li>
-									<li>Diagonal Sub Item 2</li>
-									<li>Diagonal Sub Item 3</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- Killer -->
-					<div class="accordion-item d-none rounded whitebox" id="accordion-Killer">
-						<h2 class="accordion-header" id="heading-Killer">
-							<div class="d-flex align-items-center">
-								<button class="accordion-button flex-grow-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-Killer" aria-expanded="false" aria-controls="collapse-Killer">
-									Killer
-								</button>
-								<button type="button" class="btn btn-danger btn-sm ms-2 delete-accordion-item" data-target="accordion-Killer" title="Entfernen">
-									<i class="bi bi-trash"></i>
-								</button>
-							</div>
-						</h2>
-						<div id="collapse-Killer" class="accordion-collapse collapse" aria-labelledby="heading-Killer">
-							<div class="accordion-body">
-								<ul>
-									<li>Killer Sub Item 1</li>
-									<li>Killer Sub Item 2</li>
-									<li>Killer Sub Item 3</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- Weitere Items analog hinzufügen -->
-				</div>
-			
+
+			<div class="mt-4 w-100 rounded whitebox flex-fill overflow-auto" style="max-height: 500px; overflow-y: scroll;">
+				<div id="accordionContainer" class="accordion w-100 flex-fill overflow-auto pt-3" style="max-height: 500px; overflow-y: scroll;"></div>
+
 			</div>
-		
-		
+
+			<!--			&lt;!&ndash; This box fills the column and scrolls internally &ndash;&gt;-->
+<!--			<div class="w-100 border rounded whitebox flex-fill overflow-auto pt-3" style="max-height: 500px; overflow-y: scroll;">-->
+<!--			</div>-->
 		</div>
-		
+
 		<!-- CENTER COLUMN (the height “driver”) -->
-		<div class="col-12 col-xl-6 col-md-6 d-flex flex-column p-3">
+		<div class="col-12 col-xl-6  d-flex flex-column p-3">
 			<div class="w-100 border rounded whitebox flex-fill">
 				{% include "sudoku/creator/board.html" %}
 			</div>
 		</div>
-		
+
 		<!-- RIGHT COLUMN -->
-		<div class="col-12 col-xl-2 col-md-12 d-flex flex-column p-3">
+		<div class="col-12 col-xl-3  d-flex flex-column p-3">
 			<div class="w-100 border rounded whitebox flex-fill pt-3">
 				{% include "sudoku/creator/creator_solutioncheck.html" %}
 			</div>
-			
+
 			<!-- Submit Sudoku Button -->
 			<div class="mt-3 border rounded whitebox flex-fill pt-3 text-center">
 				<button id="submit-sudoku-btn" class="btn btn-success">Submit Sudoku</button>
 			</div>
-			
+
 			<!-- Submit Modal -->
 			<div class="modal fade" id="submitSudokuModal" tabindex="-1" aria-labelledby="submitSudokuModalLabel"
-			     aria-hidden="true">
+				 aria-hidden="true">
 				<div class="modal-dialog modal-xl modal-dialog-centered">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -171,33 +57,33 @@
 							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
-							
+
 							<div class="mb-3">
 								<label for="sudoku-name" class="form-label">Sudoku Name</label>
 								<input type="text" class="form-control" id="sudoku-name"
-								       placeholder="Enter a name for your Sudoku">
+									   placeholder="Enter a name for your Sudoku">
 							</div>
-							
+
 							<div class="mb-3">
 								<label class="form-label">Tags</label>
 								<div id="sudoku-tags">
 									<!-- Tags will be inserted here dynamically -->
 								</div>
 							</div>
-							
+
 							<div class="d-flex justify-content-center align-items-center">
 								<div class="preview-board-container border rounded p-2">
 									<!-- Your board will be cloned and inserted here -->
 									<div id="sudoku-preview" class="position-relative">
 										<canvas id="preview-canvas"
-										        class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+												class="position-absolute top-0 start-0 w-100 h-100"></canvas>
 										<div id="preview-grid" class="grid-container">
 											<!-- Just a copy of the board grid -->
 										</div>
 									</div>
 								</div>
 							</div>
-						
+
 						</div>
 						<div class="modal-footer">
 							<button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -206,7 +92,7 @@
 					</div>
 				</div>
 			</div>
-		
+
 		</div>
 	</div>
 </div>
@@ -214,90 +100,7 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-    // grab the two boxes
-    const centerBox = document.querySelector('.col-xl-6 .whitebox');
-    const accordionEl = document.getElementById('ruleAccordion');
 
-    // a little helper that copies the center–box height into the accordion’s max-height
-    function syncAccordionHeight() {
-        const w = centerBox.getBoundingClientRect().width;
-        accordionEl.style.maxHeight = Math.floor(w - 30) + 'px';
-    }
-
-    // whenever the center box resizes (or on load), re-sync
-    new ResizeObserver(syncAccordionHeight).observe(centerBox);
-    window.addEventListener('load', syncAccordionHeight);
-    window.addEventListener('resize', syncAccordionHeight);
-</script>
-<script>
-    window.IS_CREATOR_MODE = true;
-</script>
-<script type="module">
-    import {createBoard} from "{% static 'sudoku/js/ui/board.js' %}";
-    import {SelectionTarget, SelectionMode} from "{% static 'sudoku/js/ui/board_selectionEnums.js' %}";
-    import {setupCreatorUI} from "{% static 'sudoku/js/ui/creator_ui.js' %}";
-
-    const container = document.querySelector(".board-container");
-    const canvas = document.getElementById("board-canvas");
-    const grid = document.getElementById("sudoku-board");
-
-    const board = createBoard(container, canvas, grid);
-    window.Board = board; // optional: make globally accessible
-
-    board.initBoard();
-    board.setSelection({
-        target: SelectionTarget.CELLS,
-        mode: SelectionMode.MULTIPLE,
-        onCellAdded: ({r, c}) => {
-            console.log("Cell selected:", r, c);
-        },
-        onCellsCleared: () => {
-            console.log("Selection cleared");
-        },
-        preserveOnModifier: "Shift", // hold Shift to preserve selection
-    });
-
-    async function getGzippedSize(str) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const cs = new CompressionStream('gzip');
-        const compressedStream = new Response(data).body.pipeThrough(cs);
-        const compressedBuffer = await new Response(compressedStream).arrayBuffer();
-        return compressedBuffer.byteLength;
-    }
-
-    setupCreatorUI(board);
-</script>
-
-
-<script>
-    document.getElementById("submit-sudoku-btn").addEventListener("click", () = > {
-        const modal = new bootstrap.Modal(document.getElementById('submitSudokuModal'));
-    modal.show();
-
-    // Fill the tags
-    const tagsContainer = document.getElementById("sudoku-tags");
-    tagsContainer.innerHTML = "";
-    const tags = window.Board.getTags() || [];
-
-    for (const tag of tags) {
-        const span = document.createElement("span");
-        span.className = "badge bg-secondary me-1";
-        span.textContent = tag.name || tag;
-        tagsContainer.appendChild(span);
-    }
-    console.log(tags)
-
-    // // Copy the board to preview (simplified)
-    // const previewGrid  = document.getElementById("preview-grid");
-    // const originalGrid = document.getElementById("sudoku-board");
-    // previewGrid.innerHTML = originalGrid.innerHTML;
-
-    // Optional: Copy solution overlay or canvas rendering if needed
-    })
-    ;
-</script>
-<script src="../../../static/sudoku/js/creator-dropdown-menue.js"></script>
+<script type="module" src="{% static 'sudoku/js/ui/creator/creator_ui.js' %}"></script>
 
 {% endblock %}

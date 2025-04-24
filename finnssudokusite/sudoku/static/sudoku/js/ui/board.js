@@ -13,10 +13,22 @@ import { CellLayer } from "./board_cellLayer.js";
  * @param {HTMLElement} grid - The container element for HTML grid cells.
  * @returns {Object} Board API with various interaction methods.
  */
-export function createBoard(container, canvas, grid) {
+export function createBoard(container) {
     const gridSize = 9;
     const paddingRatio = 0.04;
 
+    // --- Create DOM elements ---
+    const canvas = document.createElement("canvas");
+    canvas.id = "board-canvas";
+
+    const grid = document.createElement("div");
+    grid.className = "board-grid";
+    grid.id = "sudoku-board";
+
+    container.appendChild(canvas);
+    container.appendChild(grid);
+
+    // --- Continue with standard setup ---
     const ruleManager = new RuleManager();
     const renderer = new BoardRenderer(canvas, gridSize, paddingRatio);
     const hintLayer = new HintDotLayer(container, renderer);
@@ -50,27 +62,27 @@ export function createBoard(container, canvas, grid) {
         getTags: () => ruleManager.getTags(),
 
         cellLayer: cellLayer,
-        hintLayer: hintLayer, // Expose the unified hint layer
+        hintLayer: hintLayer,
     };
 
     function initBoard() {
         grid.classList.add("board");
 
-        // Wire board reference into systems that need it
         hintLayer.init(board);
         cellLayer.init(board);
         interactionManager.setup(board);
         ruleManager.registerDefaults(board);
 
+        console.log("init")
+
         function resizeAndRebuild() {
             renderer.setup(container);
-
             const cellSize = renderer.getCellSize();
             const usedSize = renderer.getUsedSize();
             const offset = renderer.getGridOffset();
 
             cellLayer.generate(cellSize, usedSize, offset);
-            hintLayer.update(); // Automatically uses currentTarget from show()
+            hintLayer.update();
             board.render();
         }
 

@@ -1,4 +1,4 @@
-import { getDefaultRuleHandlers } from "./board_rules.js";
+import { createAllRuleHandlers } from "./rules/rules.js";
 
 export class RuleManager {
     constructor() {
@@ -8,7 +8,7 @@ export class RuleManager {
 
     registerDefaults(board) {
         this.board = board;
-        const rules = getDefaultRuleHandlers(board);
+        const rules = createAllRuleHandlers(board);
         rules.forEach(handler => this.registerHandler(handler));
     }
 

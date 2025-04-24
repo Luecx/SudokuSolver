@@ -1,5 +1,5 @@
-import {RuleTypeHandler} from "../board_rule.js";
-import {RuleType} from "../board_ruleTypes.js";
+import {RuleTypeHandler} from "../rule.js";
+import {RuleType} from "../rule_type.js";
 
 export function setupArrowRule(board) {
     const handler = new RuleTypeHandler("arrow", board);

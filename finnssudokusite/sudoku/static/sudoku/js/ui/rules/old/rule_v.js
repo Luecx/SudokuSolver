@@ -1,17 +1,17 @@
-import {RuleTypeHandler} from "../board_rule.js";
-import {RuleType} from "../board_ruleTypes.js";
-export function setupBlackKropkiRule(board) {
-    const handler = new RuleTypeHandler("kropki_black", board);
-    handler.label = "Black Kropki";
-    handler.tag  =  "Kropki";
+import {RuleTypeHandler} from "../rule.js";
+import {RuleType} from "../rule_type.js";
+
+export function setupVRule(board) {
+    const handler = new RuleTypeHandler("v", board);
+    handler.label = "V Rule";
+    handler.tag  =  "XV";
 
     let possiblePairs = [];
-
     handler.rule_type = RuleType.SINGLE_CLICK_MANY;
 
     handler.ruleToText = (rule) => {
         const format = (c) => `(${c.r},${c.c})`;
-        return rule.cells?.length === 2 ? `${format(rule.cells[0])} ● ${format(rule.cells[1])}` : JSON.stringify(rule);
+        return rule.cells?.length === 2 ? `${format(rule.cells[0])} V ${format(rule.cells[1])}` : JSON.stringify(rule);
     };
 
     function computeAvailablePairs() {
@@ -34,25 +34,11 @@ export function setupBlackKropkiRule(board) {
         }
     }
 
-    handler.onRegister = () => {
-        const btn = document.getElementById("btnKropki_black");
-        if (!btn) return;
-        btn.addEventListener("click", () => {
-            const isActive = board.getCurrentHandlerName() === handler.name;
-            if (isActive) board.stopHandler();
-            else board.startHandler(handler.name);
-        });
-    };
-
     handler.onStartCreating = () => {
-        const btn = document.getElementById("btnKropki_black");
-        if (btn) btn.innerHTML = '<i class="fa fa-times"></i>';
-
         board.saveInteractionState();
         board.disableClickable();
         board.disableSelectable();
         board.disableDraggable();
-
         computeAvailablePairs();
 
         const clickEdge = (r1, c1, r2, c2) => {
@@ -71,9 +57,6 @@ export function setupBlackKropkiRule(board) {
     };
 
     handler.onFinishedCreating = () => {
-        const btn = document.getElementById("btnKropki_black");
-        if (btn) btn.innerHTML = '<i class="fa fa-plus"></i>';
-
         board.restoreInteractionState();
         board.hideEdgeHints();
         possiblePairs = [];
@@ -88,10 +71,11 @@ export function setupBlackKropkiRule(board) {
         const cy = (ax.y + bx.y + s) / 2;
 
         ctx.save();
+        ctx.font = `${Math.floor(s * 0.3)}px arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillStyle = "black";
-        ctx.beginPath();
-        ctx.arc(cx, cy, s * 0.12, 0, 2 * Math.PI);
-        ctx.fill();
+        ctx.fillText("v", cx, cy);
         ctx.restore();
     };
 
