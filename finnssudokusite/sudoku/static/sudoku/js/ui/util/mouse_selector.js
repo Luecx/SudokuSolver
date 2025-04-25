@@ -1,5 +1,5 @@
-import { SelectionMode } from "./board_selectionEnums.js";
-import { RegionType}     from "./region/RegionType.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
+import { RegionType}     from "../region/RegionType.js";
 
 export class MouseSelector {
     constructor({

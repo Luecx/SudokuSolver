@@ -1,6 +1,6 @@
-import { RegionType } from "./region/RegionType.js";
-import { Region, RegionClassMap } from "./region/Region.js";
-import { MouseSelector } from "./board_mouseSelector.js";
+import { RegionType } from "../region/RegionType.js";
+import { Region, RegionClassMap } from "../region/Region.js";
+import { MouseSelector } from "../util/mouse_selector.js";
 import { SelectionMode } from "./board_selectionEnums.js";
 
 export class HintDotLayer {
@@ -57,6 +57,12 @@ export class HintDotLayer {
         this.excluded_region = Region.fromList(type, config.exclude ?? []);
         this.selector.selectionMode = config.mode ?? SelectionMode.MULTIPLE;
 
+        if (config.initialSelected && Array.isArray(config.initialSelected)) {
+            for (const idx of config.initialSelected) {
+                this.select(idx);
+            }
+        }
+
         this.update();
     }
 
@@ -67,6 +73,9 @@ export class HintDotLayer {
         this.excluded_region = null;
 
         this.update();
+
+        // force rerender
+        this.board.triggerRender();
     }
 
     select(idx) {
@@ -78,8 +87,10 @@ export class HintDotLayer {
 
         if (!this.selected_region.has(idx)) {
             this.selected_region.add(idx);
-            this.config.onItemsAdded?.([idx]);
-            this.config.onItemsChanged?.(this.selected_region.values());
+            if (this.showing) {
+                this.board.emitEvent("ev_selected_region_changed", this.selected_region);
+                this.board.emitEvent("ev_selected_region_el_added", [this.selected_region, idx]);
+            }
             this.update();
         }
     }
@@ -89,8 +100,10 @@ export class HintDotLayer {
 
         if (this.selected_region.has(idx)) {
             this.selected_region.remove(idx);
-            this.config.onItemsRemoved?.([idx]);
-            this.config.onItemsChanged?.(this.selected_region.values());
+            if (this.showing) {
+                this.board.emitEvent("ev_selected_region_changed", this.selected_region);
+                this.board.emitEvent("ev_selected_region_el_removed", [this.selected_region, idx]);
+            }
             this.update();
         }
     }
@@ -100,9 +113,10 @@ export class HintDotLayer {
 
         const cleared = this.selected_region.values();
         this.selected_region.clear();
-        this.config.onItemsCleared?.();
-        this.config.onItemsRemoved?.(cleared);
-        this.config.onItemsChanged?.([]);
+        if (this.showing) {
+            this.board.emitEvent("ev_selected_region_changed", this.selected_region);
+            this.board.emitEvent("ev_selected_region_cleared", this.selected_region);
+        }
         this.update();
     }
 
@@ -111,7 +125,6 @@ export class HintDotLayer {
 
         this.hintLayer.innerHTML = "";
 
-        // If not showing or no config, skip rendering
         if (!this.showing || !this.config || this.config.target === RegionType.NONE) return;
 
         const target = this.config.target;
@@ -121,7 +134,6 @@ export class HintDotLayer {
             this._renderCorners();
         }
     }
-
 
     _renderEdges() {
         const size = this.gridSize;

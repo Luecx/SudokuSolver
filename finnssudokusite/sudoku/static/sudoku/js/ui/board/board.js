@@ -1,8 +1,9 @@
 import { RuleManager } from "./board_ruleManager.js";
 import { BoardRenderer } from "./board_renderer.js";
-import { InteractionManager } from "./board_selectionManager.js";
+import { SelectionManager } from "./board_selectionManager.js";
 import { HintDotLayer } from "./board_hintLayer.js";
 import { CellLayer } from "./board_cellLayer.js";
+import { EventManager } from "./board_eventManager.js";
 
 /**
  * Initializes and returns a Sudoku board instance.
@@ -30,10 +31,11 @@ export function createBoard(container) {
 
     // --- Continue with standard setup ---
     const ruleManager = new RuleManager();
+    const eventManager = new EventManager();
     const renderer = new BoardRenderer(canvas, gridSize, paddingRatio);
     const hintLayer = new HintDotLayer(container, renderer);
     const cellLayer = new CellLayer(container, gridSize);
-    const interactionManager = new InteractionManager(grid, ruleManager, renderer);
+    const interactionManager = new SelectionManager(grid, ruleManager, renderer);
 
     const board = {
         initBoard,
@@ -62,6 +64,11 @@ export function createBoard(container) {
         loadRulesJSON: json => ruleManager.deserializeRules(json),
         getTags: () => ruleManager.getTags(),
 
+        // event management
+        emitEvent: (eventName, data    ) => eventManager.emit(eventName, data),
+        onEvent  : (eventName, callback) => eventManager.on  (eventName, callback),
+        offEvent : (eventName, callback) => eventManager.off (eventName, callback),
+
         cellLayer: cellLayer,
         hintLayer: hintLayer,
     };
@@ -74,15 +81,13 @@ export function createBoard(container) {
         interactionManager.setup(board);
         ruleManager.registerDefaults(board);
 
-        console.log("init")
-
         function resizeAndRebuild() {
             renderer.setup(container);
             const cellSize = renderer.getCellSize();
             const usedSize = renderer.getUsedSize();
             const offset = renderer.getGridOffset();
 
-            cellLayer.generate(cellSize, usedSize, offset);
+            cellLayer._generate(cellSize, usedSize, offset);
             hintLayer.update();
             board.render();
         }

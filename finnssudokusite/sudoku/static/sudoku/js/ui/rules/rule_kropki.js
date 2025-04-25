@@ -1,79 +1,54 @@
-import { BooleanOption, RegionSelectorOption } from "../creator/rule_manager_options.js";
-import { SelectionMode } from "../board_selectionEnums.js";
-import { RegionType}     from "../region/RegionType.js";
-import { createSelectionConfig } from "../board_selectionConfig.js";
+import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
 
 export class KropkiHandler extends RuleTypeHandler {
     constructor(board) {
         super("Kropki", board);
         this.tag = "kropki";
-
-        this.instanceConfig = {
-            allowAddRemove: false,
-            fixedInstances: [
-                { label: "White Kropki Dots", color: "white" },
-                { label: "Black Kropki Dots", color: "black" }
-            ]
-        };
+        this.can_create_rules = false;
     }
 
-    ui_generalRuleFields() {
-        const checkbox = new BooleanOption({
-            label: "All dots given",
-            defaultValue: true,
-            onDone: ({ value }) => {
-                this.fields.allDotsGiven = value;
-            }
-        });
-
-        this.fields.allDotsGiven = checkbox.getData().value;
-        return [checkbox];
+    defaultRules() {
+        return [
+            { label: "White Kropki Dots", color: "white", fields: {} },
+            { label: "Black Kropki Dots", color: "black", fields: {} }
+        ];
     }
 
-    ui_specificRuleFields(rule) {
-        const config = createSelectionConfig({
-            target: RegionType.EDGES,
-            mode: SelectionMode.MULTIPLE,
-            onItemsChanged: (items) => {
-                console.log("Items changed:", items);
-                rule.location = items;
-                this.board.triggerRender();
+    getGeneralRuleScheme() {
+        return [
+            {
+                key: "allDotsGiven",
+                type: "boolean",
+                default: true,
+                label: "All dots given"
             }
-        });
+        ];
+    }
 
-        const selector = new RegionSelectorOption({
-            label: rule.label,
-            board: this.board,
-            config,
-            onDone: ({ value }) => {
-                console.log("Selector done:", value);
-                rule.location = value;
-                this.board.triggerRender();
+    getSpecificRuleScheme() {
+        return [
+            {
+                key: "region",
+                type: "region",
+                regionType: RegionType.EDGES,
+                selectionMode: "MULTIPLE",
+                label: "Kropki Dot Edges"
             }
-        });
-
-        // Set initial location if missing
-        if (!rule.location) rule.location = [];
-
-        return [selector];
+        ];
     }
 
     render(rule, ctx) {
-
-        console.log(rule)
-
-        if (!rule.location) return;
+        const region = rule.fields.region;
+        if (!Array.isArray(region)) return;
 
         const s = this.board.getCellSize();
         const radius = s * 0.12;
 
-        for (const edge of rule.location) {
+        for (const edge of region) {
             const { r1, c1, r2, c2 } = edge;
             const a = this.board.getCellTopLeft(r1, c1);
             const b = this.board.getCellTopLeft(r2, c2);
-
-            console.log(a,b)
 
             const cx = (a.x + b.x + s) / 2;
             const cy = (a.y + b.y + s) / 2;
