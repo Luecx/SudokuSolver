@@ -160,6 +160,8 @@ export class RegionSelectorOption extends BaseOption {
 
         const originalChanged = config.onItemsChanged ?? (() => {});
         config.onItemsChanged = (items) => {
+            console.log(items);
+            console.log("==============================")
             this.selected = [...items];
             this.currentCount = items.length;
             updateDisplay();
