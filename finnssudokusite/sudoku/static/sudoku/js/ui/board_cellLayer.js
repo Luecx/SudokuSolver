@@ -1,10 +1,9 @@
 import { MouseSelector } from "./board_mouseSelector.js";
-import { SelectionMode } from "./board_selectionEnums.js";
-import { RegionType}     from "./region/RegionType.js";
-import { CellIdx       } from "./region/CellIdx.js";
-import { EdgeIdx       } from "./region/EdgeIdx.js";
-import { CornerIdx     } from "./region/CornerIdx.js";
-import { Region, RegionClassMap } from "./region/Region.js";
+import { buildInsetPath } from "./board_insetPath.js";
+import { RegionType } from "./region/RegionType.js";
+import { CellIdx } from "./region/CellIdx.js";
+import { Region } from "./region/Region.js";
+import { SelectionMode } from "./board_selectionEnums.js"; // assumed MULTIPLE/SINGLE enum
 
 export class CellLayer {
     constructor(container, gridSize) {
@@ -29,6 +28,7 @@ export class CellLayer {
             pointerEvents: "auto",
         });
         this.container.appendChild(this.grid);
+
         this.board.addRenderCall("render_selection", this.renderSelection.bind(this));
 
         this.selector = new MouseSelector({
@@ -93,53 +93,57 @@ export class CellLayer {
     }
 
     select(cellIdx) {
-        if (!this.config || this.config.type !== RegionType.CELLS) return;
-
+        if (!this.config || this.config.target !== RegionType.CELLS) return;
         if (!this.selected_region.has(cellIdx)) {
             this.selected_region.add(cellIdx);
             this._toggleClass(cellIdx.r, cellIdx.c, true);
+
             if (this.showing) {
                 this.config.onItemsAdded?.([cellIdx]);
                 this.config.onItemsChanged?.(this.selected_region.values());
             }
+
             this.board.triggerRender();
         }
     }
 
     deselect(cellIdx) {
-        if (!this.config || this.config.type !== RegionType.CELLS) return;
-
+        if (!this.config || this.config.target !== RegionType.CELLS) return;
         if (this.selected_region.has(cellIdx)) {
             this.selected_region.remove(cellIdx);
             this._toggleClass(cellIdx.r, cellIdx.c, false);
+
             if (this.showing) {
                 this.config.onItemsRemoved?.([cellIdx]);
                 this.config.onItemsChanged?.(this.selected_region.values());
             }
+
             this.board.triggerRender();
         }
     }
 
     clearSelection() {
-        if (!this.config || this.config.type !== RegionType.CELLS) return;
+        if (!this.config || this.config.target !== RegionType.CELLS) return;
 
-        if (this.selected_region.size() > 0) {
-            const cleared = this.selected_region.values();
-            for (const cellIdx of cleared) {
-                this._toggleClass(cellIdx.r, cellIdx.c, false);
-            }
-            this.selected_region.clear();
-            if (this.showing) {
-                this.config.onItemsCleared?.();
-                this.config.onItemsRemoved?.(cleared);
-                this.config.onItemsChanged?.([]);
-            }
-            this.board.triggerRender();
+        const cleared = this.selected_region.values();
+        for (const cellIdx of cleared) {
+            this._toggleClass(cellIdx.r, cellIdx.c, false);
         }
+
+        this.selected_region.clear();
+
+        if (this.showing) {
+            this.config.onItemsCleared?.();
+            this.config.onItemsRemoved?.(cleared);
+            this.config.onItemsChanged?.([]);
+        }
+
+        this.board.triggerRender();
     }
 
     renderSelection(ctx) {
-        if (!this.config || this.config.type !== RegionType.CELLS) return;
+        console.log("rendering")
+        if (!this.config || this.config.target !== RegionType.CELLS) return;
 
         const cellSize = this.board.getCellSize();
         const offset = this.board.getPadding();
