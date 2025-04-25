@@ -1,7 +1,7 @@
 import { RuleManager } from "./board_ruleManager.js";
 import { BoardRenderer } from "./board_renderer.js";
 import { InteractionManager } from "./board_selectionManager.js";
-import { HintDotLayer } from "./board_hintDotLayer.js";
+import { HintDotLayer } from "./board_hintLayer.js";
 import { CellLayer } from "./board_cellLayer.js";
 
 /**
@@ -51,7 +51,8 @@ export function createBoard(container) {
         getAllHandlers: () => ruleManager.getAllHandlers(),
 
         setSelection: config => interactionManager.setSelection(config),
-        showSelectionBlue: show => interactionManager.showSelectionBlue(show),
+        revertSelection : () => interactionManager.revertSelection (),
+        resetSelectionToDefault : () => interactionManager.resetSelectionToDefault (),
 
         addRenderCall: (name, func) => renderer.addRenderCall(name, func),
         removeRenderCall: name => renderer.removeRenderCall(name),

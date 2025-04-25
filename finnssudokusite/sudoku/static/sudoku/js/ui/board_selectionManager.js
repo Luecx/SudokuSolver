@@ -1,4 +1,6 @@
-import { SelectionTarget, SelectionMode } from "./board_selectionEnums.js";
+import { SelectionMode } from "./board_selectionEnums.js";
+import { RegionType}     from "./region/RegionType.js";
+import { createSelectionConfig } from "./board_selectionConfig.js";
 
 export class InteractionManager {
     constructor(grid, ruleManager, renderer) {
@@ -7,8 +9,13 @@ export class InteractionManager {
         this.renderer = renderer;
         this.board = null;
 
-        this.visualEnabled = true;
         this.selectionConfig = null;
+        this.previousConfig = null;
+
+        this.defaultConfig = createSelectionConfig({
+            target: RegionType.CELLS,
+            mode: SelectionMode.MULTIPLE
+        });
     }
 
     setup(board) {
@@ -17,21 +24,26 @@ export class InteractionManager {
 
     /**
      * Applies a selection configuration, enabling appropriate interaction.
+     * Stores the current config as the previous one before switching.
      * @param {Object} config - Configuration created by `createSelectionConfig()`
      */
     setSelection(config) {
+        if (this.selectionConfig) {
+            this.previousConfig = this.selectionConfig;
+        }
+
         this.selectionConfig = config;
         this.deselectAll();
 
         const target = config.target;
 
-        const isHint = target === SelectionTarget.EDGES
-                            || target === SelectionTarget.CORNERS;
+        const isHint = target === RegionType.EDGES
+            || target === RegionType.CORNERS;
 
-        this.board.cellLayer.grid.style.pointerEvents = isHint ? "none" : "auto";
+        this.board.cellLayer.grid.style.pointerEvents      = isHint ? "none" : "auto";
         this.board.hintLayer.hintLayer.style.pointerEvents = isHint ? "auto" : "none";
 
-        if (target === SelectionTarget.CELLS) {
+        if (target === RegionType.CELLS) {
             this.board.cellLayer.show(config);
         } else {
             this.board.cellLayer.hide();
@@ -44,29 +56,37 @@ export class InteractionManager {
         }
     }
 
+    /**
+     * Reverts the selection config to the last one before the most recent set.
+     */
+    revertSelection() {
+        if (this.previousConfig) {
+            this.setSelection(this.previousConfig);
+        }
+    }
 
     /**
-     * Enables or disables blue cell selection highlighting.
-     * @param {boolean} show
+     * Applies the default selection config (cells, multiple).
      */
-    showSelectionBlue(show) {
-        this.visualEnabled = show;
+    resetSelectionToDefault() {
+        this.setSelection(this.defaultConfig);
     }
 
     /**
      * Deselects everything across all types.
      */
     deselectAll() {
-        if (this.selectionConfig?.target === SelectionTarget.CELLS) {
+        if (this.selectionConfig?.target === RegionType.CELLS) {
             this.board.cellLayer.clearSelection();
-            this.selectionConfig.onCellsCleared?.();
+            this.selectionConfig.onItemsCleared?.();
         }
 
         if (
-            this.selectionConfig?.target === SelectionTarget.EDGES ||
-            this.selectionConfig?.target === SelectionTarget.CORNERS
+            this.selectionConfig?.target === RegionType.EDGES ||
+            this.selectionConfig?.target === RegionType.CORNERS
         ) {
             this.board.hintLayer.clearSelection();
+            this.selectionConfig.onItemsCleared?.();
         }
     }
 }

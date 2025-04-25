@@ -1,4 +1,5 @@
-import { SelectionTarget, SelectionMode } from "./board_selectionEnums.js";
+import { SelectionMode } from "./board_selectionEnums.js";
+import { RegionType}     from "./region/RegionType.js";
 
 /**
  * Returns a structured selection config.
@@ -8,18 +9,19 @@ import { SelectionTarget, SelectionMode } from "./board_selectionEnums.js";
  */
 export function createSelectionConfig(opts = {}) {
     return {
-        target              : opts.target     ?? SelectionTarget.CELLS,
+        target              : opts.target     ?? RegionType.CELLS,
         mode                : opts.mode       ?? SelectionMode.SINGLE,
         showVisual          : opts.showVisual ?? true,
         preserveOnModifier  : opts.preserveOnModifier ?? null,
 
-        onCellAdded         : opts.onCellAdded ?? (() => {}),
-        onCellsCleared      : opts.onCellsCleared ?? (() => {}),
+        // General item listeners (used depending on current target)
+        onItemsChanged      : opts.onItemsChanged      ?? (() => {}),
+        onItemsAdded        : opts.onItemsAdded        ?? (() => {}),
+        onItemsRemoved      : opts.onItemsRemoved      ?? (() => {}),
+        onItemsCleared      : opts.onItemsCleared      ?? (() => {}),
 
-        onEdgeAdded         : opts.onEdgeAdded ?? (() => {}),
-        excludeEdges        : opts.excludeEdges ?? [],
-
-        onCornerAdded       : opts.onCornerAdded ?? (() => {}),
-        excludeCorners      : opts.excludeCorners ?? [],
+        // Optional exclusions for other targets
+        excludeEdges        : opts.excludeEdges        ?? [],
+        excludeCorners      : opts.excludeCorners      ?? [],
     };
 }

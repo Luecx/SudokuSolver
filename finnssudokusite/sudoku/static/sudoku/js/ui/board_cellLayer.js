@@ -1,25 +1,27 @@
-import { SelectionTarget, SelectionMode } from "./board_selectionEnums.js";
-import { buildInsetPath } from "./board_insetPath.js";
 import { MouseSelector } from "./board_mouseSelector.js";
+import { SelectionMode } from "./board_selectionEnums.js";
+import { RegionType}     from "./region/RegionType.js";
+import { CellIdx       } from "./region/CellIdx.js";
+import { EdgeIdx       } from "./region/EdgeIdx.js";
+import { CornerIdx     } from "./region/CornerIdx.js";
+import { Region, RegionClassMap } from "./region/Region.js";
 
 export class CellLayer {
     constructor(container, gridSize) {
         this.container = container;
         this.gridSize = gridSize;
         this.grid = null;
+        this.board = null;
 
-        this.selected = new Set();
-        this.currentTarget = SelectionTarget.NONE;
-
+        this.selected_region = new Region(RegionType.CELLS);
         this.selector = null;
-
-        this.onItemAdded = null;
-        this.onItemRemoved = null;
-        this.onSelectionCleared = null;
+        this.config = null;
+        this.showing = false;
     }
 
     init(board) {
         this.board = board;
+
         this.grid = document.createElement("div");
         this.grid.className = "cell-layer";
         Object.assign(this.grid.style, {
@@ -32,16 +34,16 @@ export class CellLayer {
         this.selector = new MouseSelector({
             getKeyFromEvent: (e) => {
                 const cell = e.target.closest(".cell");
-                return cell ? `${cell.dataset.r},${cell.dataset.c}` : null;
+                return cell ? new CellIdx(Number(cell.dataset.r), Number(cell.dataset.c)) : null;
             },
-            onSelect: (key) => this.select(key),
-            onDeselect: (key) => this.deselect(key),
+            onSelect: (cellIdx) => this.select(cellIdx),
+            onDeselect: (cellIdx) => this.deselect(cellIdx),
             onClear: () => this.clearSelection(),
-            onIsSelected: (key) => this.selected.has(key),
-            onStartSelection: () => this.currentTarget === SelectionTarget.CELLS
+            onIsSelected: (cellIdx) => this.selected_region.has(cellIdx),
+            onStartSelection: () => this.config?.type === RegionType.CELLS,
         });
 
-        this.selector._onlyOneSelected = () => this.selected.size === 1;
+        this.selector._onlyOneSelected = () => this.selected_region.size() === 1;
 
         this.grid.addEventListener("mousedown", (e) => this.selector.onMouseDown(e));
         this.grid.addEventListener("mousemove", (e) => this.selector.onMouseMove(e));
@@ -49,12 +51,9 @@ export class CellLayer {
     }
 
     show(config) {
-        this.currentTarget = config.target ?? SelectionTarget.CELLS;
-        this.onItemAdded = config.onItemAdded ?? null;
-        this.onItemRemoved = config.onItemRemoved ?? null;
-        this.onSelectionCleared = config.onSelectionCleared ?? null;
-
-        this.selector.mode = config.mode;
+        this.config = config;
+        this.selector.mode = config.mode ?? SelectionMode.MULTIPLE;
+        this.showing = true;
 
         this.grid.querySelectorAll(".cell").forEach(cell => {
             cell.classList.add("selectable");
@@ -62,8 +61,9 @@ export class CellLayer {
     }
 
     hide() {
-        this.currentTarget = SelectionTarget.NONE;
         this.clearSelection();
+        this.config = null;
+        this.showing = false;
 
         this.grid.querySelectorAll(".cell").forEach(cell => {
             cell.classList.remove("selectable", "selected");
@@ -92,48 +92,61 @@ export class CellLayer {
         }
     }
 
-    select(key) {
-        if (!this.selected.has(key)) {
-            this.selected.add(key);
-            const [r, c] = key.split(",").map(Number);
-            this._toggleClass(r, c, true);
-            this.onItemAdded?.(key, { r, c });
+    select(cellIdx) {
+        if (!this.config || this.config.type !== RegionType.CELLS) return;
+
+        if (!this.selected_region.has(cellIdx)) {
+            this.selected_region.add(cellIdx);
+            this._toggleClass(cellIdx.r, cellIdx.c, true);
+            if (this.showing) {
+                this.config.onItemsAdded?.([cellIdx]);
+                this.config.onItemsChanged?.(this.selected_region.values());
+            }
             this.board.triggerRender();
         }
     }
 
-    deselect(key) {
-        if (this.selected.delete(key)) {
-            const [r, c] = key.split(",").map(Number);
-            this._toggleClass(r, c, false);
-            this.onItemRemoved?.(key, { r, c });
+    deselect(cellIdx) {
+        if (!this.config || this.config.type !== RegionType.CELLS) return;
+
+        if (this.selected_region.has(cellIdx)) {
+            this.selected_region.remove(cellIdx);
+            this._toggleClass(cellIdx.r, cellIdx.c, false);
+            if (this.showing) {
+                this.config.onItemsRemoved?.([cellIdx]);
+                this.config.onItemsChanged?.(this.selected_region.values());
+            }
             this.board.triggerRender();
         }
     }
 
     clearSelection() {
-        if (this.selected.size > 0) {
-            this.selected.forEach((key) => {
-                const [r, c] = key.split(",").map(Number);
-                this._toggleClass(r, c, false);
-            });
-            this.selected.clear();
-            this.onSelectionCleared?.();
+        if (!this.config || this.config.type !== RegionType.CELLS) return;
+
+        if (this.selected_region.size() > 0) {
+            const cleared = this.selected_region.values();
+            for (const cellIdx of cleared) {
+                this._toggleClass(cellIdx.r, cellIdx.c, false);
+            }
+            this.selected_region.clear();
+            if (this.showing) {
+                this.config.onItemsCleared?.();
+                this.config.onItemsRemoved?.(cleared);
+                this.config.onItemsChanged?.([]);
+            }
             this.board.triggerRender();
         }
     }
 
     renderSelection(ctx) {
+        if (!this.config || this.config.type !== RegionType.CELLS) return;
+
         const cellSize = this.board.getCellSize();
         const offset = this.board.getPadding();
-
-        const cells = Array.from(this.selected).map(key => {
-            const [r, c] = key.split(",").map(Number);
-            return { x: r, y: c };
-        });
-
         const insetPx = 3;
         const inset = insetPx / cellSize;
+
+        const cells = this.selected_region.values().map(({ r, c }) => ({ x: r, y: c }));
         const loops = buildInsetPath(cells, inset);
 
         ctx.save();

@@ -72,10 +72,6 @@ export class CreatorRuleManager {
         wrapper.className = "accordion-item";
         wrapper.id = `rule-${id}`;
 
-        // UI block from handler
-        const ui = handler.ui_generalRuleFields?.();
-
-        // Create header
         const header = document.createElement("h2");
         header.className = "accordion-header d-flex justify-content-between align-items-center";
 
@@ -104,102 +100,83 @@ export class CreatorRuleManager {
         const body = document.createElement("div");
         body.className = "accordion-body";
 
-        // --- General rule options
-        if (ui?.elements) {
-            const generalOptions = document.createElement("div");
-            generalOptions.className = "mb-3";
-            ui.elements.forEach(el => generalOptions.appendChild(el));
-            body.appendChild(generalOptions);
+        // General rule options
+        const generalOptions = handler.ui_generalRuleFields?.();
+        if (generalOptions && generalOptions.length > 0) {
+            const generalBlock = document.createElement("div");
+            generalBlock.className = "mb-3";
+            generalOptions.forEach(opt => generalBlock.appendChild(opt.element));
+            body.appendChild(generalBlock);
         }
 
-        // --- Rule instance area
+        // Rule instance list
         const instanceList = document.createElement("div");
-        instanceList.className = "rule-instance-list d-flex flex-wrap gap-2";
+        instanceList.className = "rule-instance-list d-flex flex-column gap-2";
 
-        // --- Add button
-        const addCard = document.createElement("div");
-        addCard.className = "rule-instance-add border rounded d-flex align-items-center justify-content-center";
-        addCard.innerHTML = '<i class="fa fa-plus fs-4 text-muted"></i>';
-        addCard.style.width = "60px";
-        addCard.style.height = "60px";
-        addCard.style.cursor = "pointer";
-        addCard.addEventListener("click", () => {
-            const newRule = handler.createInstance?.();
-            if (newRule) {
-                handler.add(newRule);
-                this._addRuleInstance(handler, newRule, instanceList);
-            }
-        });
+        // Handle fixed instances
+        if (handler.instanceConfig?.fixedInstances?.length > 0) {
+            handler.instanceConfig.fixedInstances.forEach(template => {
+                const rule = {
+                    id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                    ...template,
+                    location: []
+                };
+                handler.add(rule);
+                const ui = handler.ui_specificRuleFields(rule);
+                this._createRuleCard(handler, rule, ui, instanceList, false);
+            });
+        }
 
-        instanceList.appendChild(addCard);
+        // Add new rule button (if allowed)
+        if (handler.instanceConfig?.allowAddRemove !== false) {
+            const addCard = document.createElement("button");
+            addCard.className = "btn btn-outline-primary w-100";
+            addCard.innerHTML = `<i class="fa fa-plus me-1"></i> Add Rule`;
+            addCard.addEventListener("click", () => {
+                const rule = {
+                    id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`
+                };
+                const ui = handler.ui_specificRuleFields(rule);
+                handler.add(rule);
+                this._createRuleCard(handler, rule, ui, instanceList, true);
+            });
+            body.appendChild(addCard);
+        }
+
         body.appendChild(instanceList);
-
         collapse.appendChild(body);
         wrapper.appendChild(header);
         wrapper.appendChild(collapse);
         this.accordionEl.appendChild(wrapper);
     }
 
+    _createRuleCard(handler, rule, fields, container, allowRemove = true) {
+        const card = document.createElement("div");
+        card.className = "rule-instance-card border rounded p-3 bg-light position-relative";
 
-    _addRuleInstance(handler, rule, container) {
-        const ruleId = rule.id || `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-        rule.id = ruleId;
+        const header = document.createElement("div");
+        header.className = "d-flex justify-content-between align-items-center mb-2";
 
-        const ruleCard = document.createElement("div");
-        ruleCard.className = "rule-instance-card border rounded p-2 position-relative d-flex align-items-center justify-content-between";
-        ruleCard.style.minWidth = "120px";
-        ruleCard.style.cursor = "pointer";
+        const label = document.createElement("strong");
+        label.textContent = rule.label || `Rule #${handler.rules.length}`;
 
-        // Left: rule label
-        const label = document.createElement("span");
-        label.className = "rule-instance-label fw-bold";
-        label.innerText = `#${handler.rules.length}`;
+        header.appendChild(label);
 
-        // Right: delete button
-        const removeBtn = document.createElement("button");
-        removeBtn.className = "btn btn-sm btn-outline-danger ms-2";
-        removeBtn.innerHTML = `<i class="fa fa-times"></i>`;
-        removeBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            ruleCard.remove();
-            handler.remove(ruleId);
-        });
-
-        // Expandable details container
-        const details = document.createElement("div");
-        details.className = "rule-instance-details mt-2";
-        details.style.display = "none";
-
-        // Specific fields
-        const ui = handler.ui_specificRuleFields?.(rule);
-        if (ui?.elements && ui.elements.length > 0) {
-            ui.elements.forEach(el => details.appendChild(el));
+        if (allowRemove) {
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "btn btn-sm btn-outline-danger";
+            removeBtn.innerHTML = `<i class="fa fa-times"></i>`;
+            removeBtn.addEventListener("click", () => {
+                handler.remove(rule.id);
+                card.remove();
+            });
+            header.appendChild(removeBtn);
         }
 
-        // Highlight + expand on click
-        ruleCard.addEventListener("click", () => {
-            const expanded = details.style.display === "block";
-
-            // Collapse all others
-            container.querySelectorAll(".rule-instance-card").forEach(card => {
-                card.classList.remove("bg-primary", "text-white");
-                card.querySelector(".rule-instance-details")?.style.setProperty("display", "none");
-            });
-
-            if (!expanded) {
-                ruleCard.classList.add("bg-primary", "text-white");
-                details.style.display = "block";
-            }
-        });
-
-        // Compose the rule card
-        ruleCard.appendChild(label);
-        ruleCard.appendChild(removeBtn);
-        ruleCard.appendChild(details);
-        container.appendChild(ruleCard);
+        card.appendChild(header);
+        fields.forEach(opt => card.appendChild(opt.element));
+        container.appendChild(card);
     }
-
-
 
     removeRule(ruleName) {
         this.addedRules.delete(ruleName);

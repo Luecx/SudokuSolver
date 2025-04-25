@@ -1,6 +1,7 @@
 import { createBoard } from "../board.js";
-import {CreatorRuleManager} from "./rule_manager.js";
-import {SelectionTarget, SelectionMode} from "../board_selectionEnums.js";
+import { CreatorRuleManager } from "./rule_manager.js";
+import { SelectionMode } from "../board_selectionEnums.js";
+import { RegionType}     from "../region/RegionType.js";
 
 class Creator {
     constructor() {
@@ -14,7 +15,7 @@ class Creator {
         this.board = createBoard(container);
         this.board.initBoard();
         this.board.setSelection({
-            target:    SelectionTarget.CELLS,
+            target:    RegionType.CELLS,
             mode:      SelectionMode.MULTIPLE,
             onCellAdded: ({r, c}) => {
                 console.log("Cell selected:", r, c);

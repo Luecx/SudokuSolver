@@ -1,24 +1,23 @@
-import { SelectionTarget, SelectionMode } from "./board_selectionEnums.js";
+import { RegionType}     from "./region/RegionType.js";
 import { MouseSelector } from "./board_mouseSelector.js";
+import { SelectionMode } from "./board_selectionEnums.js";
+import { CellIdx       } from "./region/CellIdx.js";
+import { EdgeIdx       } from "./region/EdgeIdx.js";
+import { CornerIdx     } from "./region/CornerIdx.js";
 
 export class HintDotLayer {
     constructor(container, renderer) {
         this.container = container;
         this.renderer = renderer;
 
+        this.showing = false;
         this.hintLayer = null;
         this.selectedItems = new Set();
         this.excludedItems = new Set();
 
         this.gridSize = 9;
-        this.currentTarget = SelectionTarget.NONE;
-        this.selectionMode = SelectionMode.MULTIPLE;
-
+        this.config = null;
         this.selector = null;
-
-        this.onItemAdded = null;
-        this.onItemRemoved = null;
-        this.onSelectionCleared = null;
     }
 
     init(board) {
@@ -37,7 +36,7 @@ export class HintDotLayer {
             onDeselect: (key) => this.deselect(key),
             onClear: () => this.clearSelection(),
             onIsSelected: (key) => this.selectedItems.has(key),
-            onStartSelection: () => this.currentTarget !== SelectionTarget.NONE
+            onStartSelection: () => this.config?.target !== RegionType.NONE,
         });
 
         this.selector._onlyOneSelected = () => this.selectedItems.size === 1;
@@ -48,68 +47,78 @@ export class HintDotLayer {
     }
 
     show(config) {
-        const {
-            target = SelectionTarget.EDGES,
-            exclude = [],
-            onItemAdded = null,
-            onItemRemoved = null,
-            onSelectionCleared = null,
-            mode = SelectionMode.MULTIPLE
-        } = config;
+        this.showing = true;
+        this.config = config;
+        this.selector.selectionMode = config.mode ?? SelectionMode.MULTIPLE;
 
-        this.currentTarget = target;
-        this.selectionMode = mode;
-        this.onItemAdded = onItemAdded;
-        this.onItemRemoved = onItemRemoved;
-        this.onSelectionCleared = onSelectionCleared;
-
-        this.selector.selectionMode = mode;
-
-        this.excludedItems = new Set(exclude.map(this._buildKey.bind(this)));
+        this.excludedItems = new Set((config.exclude ?? []).map(this._buildKey.bind(this)));
         this.update();
     }
 
     hide() {
-        this.currentTarget = SelectionTarget.NONE;
+        this.showing = false;
         this.excludedItems.clear();
         this.clearSelection();
+        this.config = null;
         this.update();
     }
 
     select(key) {
-        if (this.selectionMode === SelectionMode.SINGLE) {
+        if (!this.config || this.config.target === RegionType.NONE) return;
+
+        if (this.config.mode === SelectionMode.SINGLE) {
             this.clearSelection();
         }
+
         if (!this.selectedItems.has(key)) {
             this.selectedItems.add(key);
-            this.onItemAdded?.(key, this._parseKey(key));
+            if (this.showing) {
+                this.config.onItemsAdded?.([key]);
+                this.config.onItemsChanged?.([...this.selectedItems]);
+            }
             this.update();
         }
     }
 
     deselect(key) {
+        if (!this.config || this.config.target === RegionType.NONE) return;
+
         if (this.selectedItems.delete(key)) {
-            this.onItemRemoved?.(key, this._parseKey(key));
+            if (this.showing) {
+                this.config.onItemsRemoved?.([key]);
+                this.config.onItemsChanged?.([...this.selectedItems]);
+            }
             this.update();
         }
     }
 
     clearSelection() {
+        if (!this.config || this.config.target === RegionType.NONE) return;
+
         if (this.selectedItems.size > 0) {
+            const cleared = [...this.selectedItems];
             this.selectedItems.clear();
-            this.onSelectionCleared?.();
+            if (this.showing) {
+                this.config.onItemsCleared?.();
+                this.config.onItemsRemoved?.(cleared);
+                this.config.onItemsChanged?.([]);
+            }
             this.update();
         }
     }
 
     update() {
-        console.log(this.currentTarget);
-        if (!this.hintLayer || this.currentTarget === SelectionTarget.NONE) return;
+        if (!this.hintLayer) return;
+
+        // Always clear contents regardless of config
         this.hintLayer.innerHTML = "";
 
-        if (this.currentTarget === SelectionTarget.EDGES) {
+        // Stop here if config is not active
+        if (!this.config || this.config.target === RegionType.NONE) return;
+
+        if (this.config.target === RegionType.EDGES) {
             this._renderEdges();
-        } else if (this.currentTarget === SelectionTarget.CORNERS) {
+        } else if (this.config.target === RegionType.CORNERS) {
             this._renderCorners();
         }
     }
@@ -133,10 +142,6 @@ export class HintDotLayer {
                     const cy = (a.y + b.y + cellSize) / 2;
 
                     const dot = this._createDot(cx, cy, key);
-
-                    console.log(dot);
-                    console.log(this.hintLayer);
-
                     this.hintLayer.appendChild(dot);
                 }
             }
@@ -175,21 +180,23 @@ export class HintDotLayer {
     }
 
     _buildKey(obj) {
-        if (this.currentTarget === SelectionTarget.EDGES) {
+        const target = this.config?.target;
+        if (target === RegionType.EDGES) {
             return `${obj.r1},${obj.c1}-${obj.r2},${obj.c2}`;
-        } else if (this.currentTarget === SelectionTarget.CORNERS) {
+        } else if (target === RegionType.CORNERS) {
             return `${obj.r},${obj.c}`;
         }
         return "";
     }
 
     _parseKey(key) {
-        if (this.currentTarget === SelectionTarget.EDGES) {
+        const target = this.config?.target;
+        if (target === RegionType.EDGES) {
             const [a, b] = key.split("-");
             const [r1, c1] = a.split(",").map(Number);
             const [r2, c2] = b.split(",").map(Number);
             return { r1, c1, r2, c2 };
-        } else if (this.currentTarget === SelectionTarget.CORNERS) {
+        } else if (target === RegionType.CORNERS) {
             const [r, c] = key.split(",").map(Number);
             return { r, c };
         }

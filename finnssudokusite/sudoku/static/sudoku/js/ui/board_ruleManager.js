@@ -1,5 +1,6 @@
 import { createAllRuleHandlers } from "./rules/rules.js";
-
+import { SelectionMode } from "./board_selectionEnums.js";
+import { RegionType}     from "./region/RegionType.js";
 export class RuleManager {
     constructor() {
         this.handlers = {};

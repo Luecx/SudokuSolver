@@ -1,47 +1,46 @@
-import { booleanOption, numberOption, stringOption, regionSelector } from "../creator/rule_manager_options.js";
-
 export class RuleTypeHandler {
     constructor(name, board) {
-
-        // name and reference to the board to handle interactions
-        this.name  = name;
+        this.name = name;
         this.board = board;
-        // list of created instances of rules
         this.rules = [];
-
+        this.fields = {};
         this.tag = "";
-        this.selection_config = null;
+
+        // Optional instance behavior config
+        this.instanceConfig = {
+            allowAddRemove: true,
+            fixedInstances: [] // if set, creates predefined instances
+        };
+
+        this.board.addRenderCall(this.name, this.renderAll.bind(this));
     }
 
-    // --- UI related fields ---
-    // applicable to all rules of this type
-    ui_generalRuleFields() {}
-    ui_specificRuleFields() {}
-
-    // --- Optional lifecycle hooks ---
-    onStartCreating() {
-        if (this.selection_config) {
-            this.board.setSelection(this.selection_config);
-            this.board.showSelectionBlue(this.selection_config.showVisual ?? true);
-        }
+    ui_generalRuleFields() {
+        return [];
     }
-    onFinishedCreating() {}
 
-    // --- Optional rendering ---
-    renderAll(ctx) {
-        this.rules.forEach(rule => this.render(rule, ctx));
+    ui_specificRuleFields(rule = null) {
+        return [];
     }
-    render(rule, ctx) {}
-    renderCreationOverlay(ctx) {}
 
-    // --- Rule storage ---
     add(rule) {
-        rule.id = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+        rule.id = rule.id || `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
         this.rules.push(rule);
     }
+
     remove(id) {
-        this.rules = this.rules.filter(r => r.id !== id);
+        this.rules = this.rules.filter(rule => rule.id !== id);
     }
+
+    renderAll(ctx) {
+        console.log("renderAll", this.rules);
+        this.rules.forEach(rule => this.render(rule, ctx));
+    }
+
+    render(rule, ctx) {}
+
+    onFinishedCreating() {}
+
     ruleToText(rule) {
         return JSON.stringify(rule);
     }
