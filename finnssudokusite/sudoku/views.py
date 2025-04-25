@@ -35,6 +35,9 @@ def index(request):
         'user_stats': user_stats,
     })
 
+def playboard(request):
+    """Renders the interactive Sudoku playboard page."""
+    return render(request, "sudoku/playboard/playboard.html")
 
 def puzzles_view(request):
     """Displays all puzzles available to play."""

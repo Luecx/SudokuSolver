@@ -13,6 +13,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('creator/', views.creator, name='creator'),
+    path('playboard/', views.playboard, name='playboard'),
 
     # Activation
     path('activate/<uid>/<token>/', views.activate, name='activate'),
