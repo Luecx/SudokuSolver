@@ -1,16 +1,15 @@
 import { SelectionMode } from "./board_selectionEnums.js";
-import { RegionType}     from "./region/RegionType.js";
+import { RegionType}     from "../region/RegionType.js";
 import { createSelectionConfig } from "./board_selectionConfig.js";
 
-export class InteractionManager {
-    constructor(grid, ruleManager, renderer) {
-        this.grid = grid;
-        this.ruleManager = ruleManager;
-        this.renderer = renderer;
+export class SelectionManager {
+    constructor(grid) {
+        this.grid  = grid;
         this.board = null;
 
         this.selectionConfig = null;
-        this.previousConfig = null;
+        this.previousConfig  = null;
+        this.selecting       = false;
 
         this.defaultConfig = createSelectionConfig({
             target: RegionType.CELLS,
@@ -28,29 +27,47 @@ export class InteractionManager {
      * @param {Object} config - Configuration created by `createSelectionConfig()`
      */
     setSelection(config) {
-        if (this.selectionConfig) {
-            this.previousConfig = this.selectionConfig;
+        // close any open selector
+        if (this.selectionConfig && this.selectionConfig.target !== RegionType.NONE) {
+            // emit an event which stops the current selection
+            this.board.emitEvent("ev_selection_ended",
+                this.selectionConfig.target === RegionType.CELLS   ? this.board.cellLayer.selected_region :
+                this.selectionConfig.target === RegionType.EDGES   ? this.board.hintLayer.selected_region :
+                this.selectionConfig.target === RegionType.CORNERS ? this.board.hintLayer.selected_region : null);
+            // close the selector
+            this.board.cellLayer.hide();
+            this.board.hintLayer.hide();
         }
 
+        // save the current config if it exists to allow reverting.
+        if (this.selectionConfig) {
+            this.previousConfig = this.selectionConfig;
+        } else {
+            this.previousConfig = this.defaultConfig;
+        }
+
+        // set the new config
         this.selectionConfig = config;
         this.deselectAll();
 
         const target = config.target;
 
         const isHint = target === RegionType.EDGES
-            || target === RegionType.CORNERS;
+                    || target === RegionType.CORNERS;
 
         this.board.cellLayer.grid.style.pointerEvents      = isHint ? "none" : "auto";
         this.board.hintLayer.hintLayer.style.pointerEvents = isHint ? "auto" : "none";
 
         if (target === RegionType.CELLS) {
             this.board.cellLayer.show(config);
+            this.board.emitEvent("ev_selection_started", config);
         } else {
             this.board.cellLayer.hide();
         }
 
         if (isHint) {
             this.board.hintLayer.show(config);
+            this.board.emitEvent("ev_selection_started", config);
         } else {
             this.board.hintLayer.hide();
         }
@@ -77,8 +94,7 @@ export class InteractionManager {
      */
     deselectAll() {
         if (this.selectionConfig?.target === RegionType.CELLS) {
-            this.board.cellLayer.clearSelection();
-            this.selectionConfig.onItemsCleared?.();
+            this.board.cellLayer._clearSelection();
         }
 
         if (
@@ -86,7 +102,6 @@ export class InteractionManager {
             this.selectionConfig?.target === RegionType.CORNERS
         ) {
             this.board.hintLayer.clearSelection();
-            this.selectionConfig.onItemsCleared?.();
         }
     }
 }

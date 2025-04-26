@@ -5,43 +5,132 @@ export class RuleTypeHandler {
         this.rules = [];
         this.fields = {};
         this.tag = "";
+        this.enabled = false;
 
-        // Optional instance behavior config
-        this.instanceConfig = {
-            allowAddRemove: true,
-            fixedInstances: [] // if set, creates predefined instances
-        };
+        this.can_create_rules = true;
 
         this.board.addRenderCall(this.name, this.renderAll.bind(this));
+
+        this.board.onEvent("ev_rule_added"   , () => this.board.triggerRender());
+        this.board.onEvent("ev_rule_removed" , () => this.board.triggerRender());
+        this.board.onEvent("ev_rule_changed" , () => this.board.triggerRender());
+        this.board.onEvent("ev_rule_reset"   , () => this.board.triggerRender());
+
+        this.reset(); // initialize with default state
     }
 
-    ui_generalRuleFields() {
-        return [];
+    // ===== Declarative Schemes (override in subclass) =====
+    getGeneralRuleScheme() { return []; }
+    getSpecificRuleScheme() { return []; }
+    defaultRules() { return []; }
+
+    // ===== Initialization Helpers =====
+    initializeGlobalFields() {
+        this.fields = {};
+        for (const desc of this.getGeneralRuleScheme()) {
+            this.fields[desc.key] = desc.default ?? null;
+        }
     }
 
-    ui_specificRuleFields(rule = null) {
-        return [];
+    initializeRuleFields(rule) {
+        if (!rule.fields) rule.fields = {};
+        for (const desc of this.getSpecificRuleScheme()) {
+            if (!(desc.key in rule.fields)) {
+                rule.fields[desc.key] = desc.default ?? null;
+            }
+        }
     }
 
-    add(rule) {
-        rule.id = rule.id || `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-        this.rules.push(rule);
+    // ===== Reset (Entire Handler) =====
+    reset() {
+        this.initializeGlobalFields();
+        this.board.emitEvent("ev_rule_reset", this);
+        this.rules = this.defaultRules();
+        this.rules.forEach(rule => this.initializeRuleFields(rule));
+        this.rules.forEach(rule => this.board.emitEvent("ev_rule_added", [this, rule]))
+        this.board.triggerRender();
     }
 
-    remove(id) {
-        this.rules = this.rules.filter(rule => rule.id !== id);
+    // ===== Reset (Single Rule) =====
+    resetRule(rule) {
+        this.initializeRuleFields(rule);
+        this.board.emitEvent("ev_rule_reset", this, rule);
+        this.board.triggerRender();
     }
 
+    // ===== State =====
+    enable() {
+        if (!this.enabled) {
+            this.enabled = true;
+            this.board.emitEvent("ev_rule_handler_enabled", this);
+            this.reset(); // <-- now ensures fields and rules are ready
+            this.board.triggerRender();
+        }
+    }
+
+    disable() {
+        if (this.enabled) {
+            this.enabled = false;
+            this.rules = [];
+            this.fields = {};
+            this.board.emitEvent("ev_rule_handler_disabled", this);
+            this.board.triggerRender();
+        }
+    }
+
+    // ===== Permissions =====
+    canAddRule() {
+        return this.enabled && this.can_create_rules;
+    }
+
+    canDeleteRule(rule) {
+        return this.enabled && this.can_create_rules;
+    }
+
+    canInteract() {
+        return this.enabled;
+    }
+
+    // ===== Rendering =====
     renderAll(ctx) {
-        console.log("renderAll", this.rules);
-        this.rules.forEach(rule => this.render(rule, ctx));
+        if (!this.enabled) return;
+        for (const rule of this.rules) {
+            this.render(rule, ctx);
+        }
     }
 
-    render(rule, ctx) {}
+    render(rule, ctx) {
+        // override in subclass
+    }
 
-    onFinishedCreating() {}
+    // ===== Rule Access =====
+    getRules() {
+        return [...this.rules];
+    }
 
-    ruleToText(rule) {
-        return JSON.stringify(rule);
+    getRuleById(id) {
+        return this.rules.find(rule => rule.id === id);
+    }
+
+    // ===== Rule Modification =====
+    updateRuleField(ruleOrId, key, value) {
+        const rule = typeof ruleOrId === "string"
+            ? this.getRuleById(ruleOrId)
+            : ruleOrId;
+
+        if (!rule || !rule.fields || !(key in rule.fields)) return;
+
+        rule.fields[key] = value;
+        this.board.emitEvent("ev_rule_changed", [this, rule, key, value]);
+        this.board.triggerRender();
+    }
+
+    removeRuleById(id) {
+        const rule = this.getRuleById(id);
+        if (!rule) return;
+
+        this.rules = this.rules.filter(r => r !== rule);
+        this.board.emitEvent("ev_rule_removed", [this, rule]);
+        this.board.triggerRender();
     }
 }

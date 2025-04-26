@@ -222,7 +222,6 @@ excludeCorners      : opts.excludeCorners      ?? [],
 	import { createSelectionConfig } from "{% static 'sudoku/js/ui/board_selectionConfig.js' %}";
 
 	const div = document.querySelector('.board-container');
-	console.log(div);
 
 	let board = createBoard(div);
 	board.initBoard();
