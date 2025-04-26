@@ -1,6 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
-import { Region } from "../region/region.js";
+import { Region } from "../region/Region.js";
 
 export class KropkiHandler extends RuleTypeHandler {
     constructor(board) {
