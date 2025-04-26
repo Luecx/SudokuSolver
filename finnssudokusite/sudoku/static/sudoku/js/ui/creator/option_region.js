@@ -1,12 +1,14 @@
-import { Region } from "../region/Region.js"; // <- needed to construct Region if missing
+import { Region } from "../region/Region.js";
 
 export class RegionSelectorOption {
-    constructor({ label, id = null, board, config, onDone = null, initialRegion = null }) {
+    constructor({ label, id = null, board, config, onChange = null, onDone = null, onStart = null }) {
         this.labelText = label;
         this.id = id ?? `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-        this.onDone = onDone;
         this.board = board;
         this.config = config;
+        this.onChange = onChange;
+        this.onDone = onDone;
+        this.onStart = onStart;
 
         this.wrapper = document.createElement("div");
         this.wrapper.classList.add("mb-2");
@@ -27,23 +29,10 @@ export class RegionSelectorOption {
         this.currentCount = 0;
         this.selected = [];
 
-        // 🔥 Initialize from given initialRegion
-        if (initialRegion instanceof Region) {
-            this.selected = [...initialRegion.values()];
-            this.currentCount = this.selected.length;
-        } else {
-            this.selected = [];
-            this.currentCount = 0;
-        }
-
         this._boundHandlers = null;
 
         this.region.addEventListener("click", () => {
-            if (this.active) {
-                this.stop();
-            } else {
-                this.start();
-            }
+            this.active ? this.stop() : this.start();
         });
 
         this._updateDisplay();
@@ -52,11 +41,21 @@ export class RegionSelectorOption {
     start() {
         if (this.active) return;
         this.active = true;
+
         this.board.setSelection(this.config);
-        // this.board.setSelectedItems(this.selected);
+
+        console.log(this.board.hintLayer.selected_region);
+
+        if (this.onStart) {
+            this.onStart();
+        }
+
+        console.log(this.board.hintLayer.selected_region);
+
         this._attachBoardListeners();
         this._updateDisplay();
     }
+
 
     stop() {
         if (!this.active) return;
@@ -73,17 +72,18 @@ export class RegionSelectorOption {
         this._boundHandlers = {
             selectionStarted: (config) => {
                 if (config !== this.config) return;
-                // this.board.setSelectedItems(this.selected);
             },
             regionChanged: (region) => {
                 this.selected = [...region.values()];
                 this.currentCount = this.selected.length;
                 this._updateDisplay();
+                this._triggerChange();
             },
             selectionEnded: (config, region) => {
                 if (config !== this.config) return;
                 this.selected = [...region.values()];
                 this.currentCount = this.selected.length;
+                this._triggerChange();
                 this.stop();
             }
         };
@@ -113,20 +113,32 @@ export class RegionSelectorOption {
         }
     }
 
-    _triggerDone() {
-        this.onDone?.({
+    getData() {
+        const region = new Region(this.config.target);
+        for (const item of this.selected) {
+            region.add(item);
+        }
+        return { label: this.labelText, value: region };
+    }
+
+    get element() {
+        return this.wrapper;
+    }
+
+    _triggerChange() {
+        this.onChange?.({
             id: this.id,
             label: this.labelText,
             value: this.getData().value
         });
     }
 
-    getData() {
-        return { label: this.labelText, value: [...this.selected] };
-    }
-
-    get element() {
-        return this.wrapper;
+    _triggerDone() {
+        this.onDone?.({
+            id: this.id,
+            label: this.labelText,
+            value: this.getData().value
+        });
     }
 
     clear() {

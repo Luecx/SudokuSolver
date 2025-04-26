@@ -1,5 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import { Region } from "../region/region.js";
 
 export class KropkiHandler extends RuleTypeHandler {
     constructor(board) {
@@ -40,12 +41,13 @@ export class KropkiHandler extends RuleTypeHandler {
 
     render(rule, ctx) {
         const region = rule.fields.region;
-        if (!Array.isArray(region)) return;
+
+        if (region === null || region === undefined) return;
 
         const s = this.board.getCellSize();
         const radius = s * 0.12;
 
-        for (const edge of region) {
+        for (const edge of region.items) {
             const { r1, c1, r2, c2 } = edge;
             const a = this.board.getCellTopLeft(r1, c1);
             const b = this.board.getCellTopLeft(r2, c2);
@@ -63,4 +65,5 @@ export class KropkiHandler extends RuleTypeHandler {
             ctx.restore();
         }
     }
+
 }

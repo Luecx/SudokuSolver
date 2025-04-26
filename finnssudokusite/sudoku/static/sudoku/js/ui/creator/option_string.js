@@ -1,9 +1,8 @@
-
-// === File: StringOption.js ===
 export class StringOption {
-    constructor({ label, defaultValue = "", id = null, onDone = null }) {
+    constructor({ label, defaultValue = "", id = null, onChange = null, onDone = null }) {
         this.labelText = label;
         this.id = id ?? `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        this.onChange = onChange;
         this.onDone = onDone;
 
         this.wrapper = document.createElement("div");
@@ -23,8 +22,8 @@ export class StringOption {
         this.wrapper.appendChild(this.label);
         this.wrapper.appendChild(this.input);
 
+        this.input.addEventListener("input", () => this._triggerChange());
         this.input.addEventListener("blur", () => this._triggerDone());
-        this.input.addEventListener("change", () => this._triggerDone());
     }
 
     getData() {
@@ -33,6 +32,14 @@ export class StringOption {
 
     get element() {
         return this.wrapper;
+    }
+
+    _triggerChange() {
+        this.onChange?.({
+            id: this.id,
+            label: this.labelText,
+            value: this.getData().value
+        });
     }
 
     _triggerDone() {

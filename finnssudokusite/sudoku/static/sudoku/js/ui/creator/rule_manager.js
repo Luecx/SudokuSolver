@@ -5,6 +5,7 @@ import { StringOption } from "./option_string.js";
 import { RegionSelectorOption } from "./option_region.js";
 import { createSelectionConfig } from "../board/board_selectionConfig.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
+import { Region } from "../region/Region.js";
 
 export class CreatorRuleManager {
     constructor(board) {
@@ -62,6 +63,15 @@ export class CreatorRuleManager {
             const card = document.getElementById(`rule-${handler.name}-${rule.id}`);
             if (card) card.remove();
         });
+
+        this.board.onEvent("ev_rule_handler_disabled", handler => {
+            const id = `rule-${handler.name.replace(/\s+/g, "-")}`;
+            const wrapper = document.getElementById(id);
+            if (wrapper) {
+                wrapper.remove();
+            }
+            this.removeRule(handler.name); // <- remove from addedRules set + update dropdown
+        });
     }
 
     _updateDropdown(query) {
@@ -113,9 +123,9 @@ export class CreatorRuleManager {
         removeBtn.className = "btn btn-sm btn-danger ms-2";
         removeBtn.innerHTML = `<i class="fa fa-times"></i>`;
         removeBtn.addEventListener("click", () => {
-            wrapper.remove();
-            this.removeRule(ruleName);
+            handler.disable();
         });
+
 
         header.appendChild(toggleBtn);
         header.appendChild(removeBtn);
@@ -162,24 +172,37 @@ export class CreatorRuleManager {
         const id = `rule-${handler.name.replace(/\s+/g, "-")}`;
         return document.querySelector(`#${id} .rule-instance-list`);
     }
-
     _createFieldComponent(desc, handler, rule) {
         const shared = {
             label: desc.label,
             id: `${handler.name}-${rule?.id ?? "global"}-${desc.key}`,
             defaultValue: rule?.fields?.[desc.key] ?? handler.fields?.[desc.key],
-            onDone: ({ value }) => {
-                if (rule) handler.updateRuleField(rule, desc.key, value);
-                else handler.updateGlobalField(desc.key, value);
-            }
+            onChange: ({ value }) => {
+                // show value and its class / type
+                console.log(value);
+                console.log(value.constructor.name);
+
+                if (rule) {
+                    handler.updateRuleField(rule, desc.key, value);
+                } else {
+                    handler.updateGlobalField(desc.key, value);
+                }
+            },
+            onDone: null // <- intentionally empty for now
         };
 
-        console.log(desc);
         switch (desc.type) {
-
-            case "boolean": return new BooleanOption(shared);
-            case "number": return new NumberOption({ ...shared, min: desc.min ?? 0, max: desc.max ?? 100, step: desc.step ?? 1 });
-            case "string": return new StringOption(shared);
+            case "boolean":
+                return new BooleanOption(shared);
+            case "number":
+                return new NumberOption({
+                    ...shared,
+                    min: desc.min ?? 0,
+                    max: desc.max ?? 100,
+                    step: desc.step ?? 1
+                });
+            case "string":
+                return new StringOption(shared);
             case "region":
                 return new RegionSelectorOption({
                     ...shared,
@@ -187,19 +210,22 @@ export class CreatorRuleManager {
                     config: createSelectionConfig({
                         target: desc.regionType,
                         mode: desc.selectionMode,
-                        onItemsChanged: (items) => {
-                            if (rule) handler.updateRuleField(rule, desc.key, items);
-                            else handler.updateGlobalField(desc.key, items);
+                    }),
+                    onStart: () => {
+                        const region = rule?.fields?.[desc.key];
+                        console.log(region);
+                        if (region instanceof Region) {
+                            this.board.setSelectedRegion(region);
                         }
-                    })
+                    }
                 });
-
 
             default:
                 console.warn("Unknown option type:", desc);
                 return null;
         }
     }
+
 
     _createRuleCard(handler, rule, fields, container, allowRemove = true) {
         const card = document.createElement("div");

@@ -125,6 +125,15 @@ export class RuleTypeHandler {
         this.board.triggerRender();
     }
 
+    updateGlobalField(key, value) {
+        if (!(key in this.fields)) return;
+
+        this.fields[key] = value;
+        this.board.emitEvent("ev_rule_changed", [this, null, key, value]);
+        this.board.triggerRender();
+    }
+
+
     removeRuleById(id) {
         const rule = this.getRuleById(id);
         if (!rule) return;

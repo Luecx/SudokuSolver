@@ -1,11 +1,12 @@
 export class BooleanOption {
-    constructor({ label, defaultValue = false, id = null, onDone = null }) {
+    constructor({ label, defaultValue = false, id = null, onChange = null, onDone = null }) {
         this.labelText = label;
         this.id = id ?? `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        this.onChange = onChange;
         this.onDone = onDone;
 
         this.wrapper = document.createElement("div");
-        this.wrapper.className = "form-check mb-2";
+        this.wrapper.classList.add("form-check", "mb-2");
 
         this.input = document.createElement("input");
         this.input.className = "form-check-input";
@@ -21,7 +22,10 @@ export class BooleanOption {
         this.wrapper.appendChild(this.input);
         this.wrapper.appendChild(this.label);
 
-        this.input.addEventListener("change", () => this._triggerDone());
+        this.input.addEventListener("change", () => {
+            this._triggerChange();
+            this._triggerDone();
+        });
     }
 
     getData() {
@@ -30,6 +34,14 @@ export class BooleanOption {
 
     get element() {
         return this.wrapper;
+    }
+
+    _triggerChange() {
+        this.onChange?.({
+            id: this.id,
+            label: this.labelText,
+            value: this.getData().value
+        });
     }
 
     _triggerDone() {

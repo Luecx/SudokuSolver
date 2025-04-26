@@ -21,6 +21,22 @@ export class SelectionManager {
         this.board = board;
     }
 
+    setSelectedRegion(region) {
+        if (!this.selectionConfig) return;
+
+        const target = this.selectionConfig.target;
+
+        if (target === RegionType.CELLS && region.type === RegionType.CELLS) {
+            this.board.cellLayer.selected_region = region;
+        }
+        if (target === RegionType.EDGES && region.type === RegionType.EDGES) {
+            this.board.hintLayer.selected_region = region;
+        }
+        if (target === RegionType.CORNERS && region.type === RegionType.CORNERS) {
+            this.board.hintLayer.selected_region = region;
+        }
+    }
+
     /**
      * Applies a selection configuration, enabling appropriate interaction.
      * Stores the current config as the previous one before switching.

@@ -52,6 +52,7 @@ export function createBoard(container) {
         getCurrentHandlerName: () => ruleManager.getCurrentHandler()?.name || null,
         getAllHandlers: () => ruleManager.getAllHandlers(),
 
+        setSelectedRegion: region => interactionManager.setSelectedRegion(region),
         setSelection: config => interactionManager.setSelection(config),
         revertSelection : () => interactionManager.revertSelection (),
         resetSelectionToDefault : () => interactionManager.resetSelectionToDefault (),
