@@ -200,7 +200,7 @@ export class CreatorRuleManager {
         if (handler.canAddRule()) {
             const addCard = document.createElement("button");
             addCard.className = "btn btn-outline-primary w-100 my-2";
-            addCard.innerHTML = `<i class="fa fa-plus me-1"></i> Add Rule`;
+            addCard.innerHTML = `<i class="fa fa-plus me-1"></i> Add Instance`;
             addCard.addEventListener("click", () => {
                 const rule = {
                     id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`

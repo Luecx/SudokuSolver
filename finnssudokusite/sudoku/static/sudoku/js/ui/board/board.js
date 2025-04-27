@@ -5,14 +5,8 @@ import { HintDotLayer } from "./board_hintLayer.js";
 import { HintRCLayer } from "./board_hintRCLayer.js";
 import { CellLayer } from "./board_cellLayer.js";
 import { EventManager } from "./board_eventManager.js";
+import { BoardContentLayer } from "./board_contentLayer.js";
 
-/**
- * Initializes and returns a Sudoku board instance.
- * Wires together modular components for rendering, interaction, rule handling, and hint display.
- *
- * @param {HTMLElement} container - The HTML element that wraps the canvas and grid.
- * @returns {Object} Board API with various interaction methods.
- */
 export function createBoard(container) {
     const gridSize = 9;
     const paddingRatio = 0.06;
@@ -32,64 +26,58 @@ export function createBoard(container) {
     const ruleManager        = new RuleManager();
     const eventManager       = new EventManager();
     const renderer           = new BoardRenderer(canvas, gridSize, paddingRatio);
+    const contentLayer       = new BoardContentLayer(container, renderer); // <--- Creates its own container now
     const hintLayer          = new HintDotLayer(container, renderer);
-    const rcLayer            = new HintRCLayer(container, renderer);
+    const hintRCLayer        = new HintRCLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);
     const interactionManager = new SelectionManager(grid, ruleManager, renderer);
 
     const board = {
-        // Initialization and Rendering
         initBoard,
         render: () => renderer.render(ruleManager.getAllHandlers(), ruleManager.getCurrentHandler()),
         triggerRender: () => renderer.triggerRender(),
 
-        // Geometry / Layout
-        getCellTopLeft          : (r, c)    => renderer.getCellTopLeft(r, c),
-        getCellCorners          : (r, c)    => renderer.getCellCorners(r, c),
-        getPadding              : ()        => renderer.getPadding(),
-        getCellSize             : ()        => renderer.getCellSize(),
-        getCanvasContext        : ()        => renderer.getContext(),
+        getCellTopLeft          : (r, c) => renderer.getCellTopLeft(r, c),
+        getCellCorners          : (r, c) => renderer.getCellCorners(r, c),
+        getPadding              : () => renderer.getPadding(),
+        getCellSize             : () => renderer.getCellSize(),
+        getCanvasContext        : () => renderer.getContext(),
 
-        // Rule Management
         registerHandler         : ruleManager.registerHandler.bind(ruleManager),
         startHandler            : ruleManager.startHandler.bind(ruleManager),
         stopHandler             : ruleManager.stopHandler.bind(ruleManager),
-        getCurrentHandlerName   : ()        => ruleManager.getCurrentHandler()?.name || null,
-        getAllHandlers          : ()        => ruleManager.getAllHandlers(),
+        getCurrentHandlerName   : () => ruleManager.getCurrentHandler()?.name || null,
+        getAllHandlers          : () => ruleManager.getAllHandlers(),
 
-        // Selection Management
-        setSelectedRegion       : region    => interactionManager.setSelectedRegion(region),
-        setSelection            : config    => interactionManager.setSelection(config),
-        revertSelection         : ()        => interactionManager.revertSelection(),
-        resetSelectionToDefault : ()        => interactionManager.resetSelectionToDefault(),
+        setSelectedRegion       : region => interactionManager.setSelectedRegion(region),
+        setSelection            : config => interactionManager.setSelection(config),
+        revertSelection         : () => interactionManager.revertSelection(),
+        resetSelectionToDefault : () => interactionManager.resetSelectionToDefault(),
 
-        // Render Pipeline
-        addRenderCall           : (name, func)  => renderer.addRenderCall(name, func),
-        removeRenderCall        : name          => renderer.removeRenderCall(name),
+        addRenderCall           : (name, func) => renderer.addRenderCall(name, func),
+        removeRenderCall        : name => renderer.removeRenderCall(name),
 
-        // Serialization
-        getRulesJSON            : ()        => ruleManager.serializeRules(),
-        loadRulesJSON           : json      => ruleManager.deserializeRules(json),
-        getTags                 : ()        => ruleManager.getTags(),
+        getRulesJSON            : () => ruleManager.serializeRules(),
+        loadRulesJSON           : json => ruleManager.deserializeRules(json),
+        getTags                 : () => ruleManager.getTags(),
 
-        // Event Management
-        emitEvent               : (eventName, data)     => eventManager.emit(eventName, data),
+        emitEvent               : (eventName, data) => eventManager.emit(eventName, data),
         onEvent                 : (eventName, callback) => eventManager.on(eventName, callback),
         offEvent                : (eventName, callback) => eventManager.off(eventName, callback),
 
-        // Layers
-        cellLayer               : cellLayer,
-        hintLayer               : hintLayer,
-        hintRCLayer             : rcLayer,
+        cellLayer,
+        hintLayer,
+        hintRCLayer,
+        contentLayer,
     };
-
 
     function initBoard() {
         grid.classList.add("board");
 
         hintLayer.init(board);
-        rcLayer.init(board);
+        hintRCLayer.init(board);
         cellLayer.init(board);
+        contentLayer.init(board); // <--- Initialize it
         interactionManager.setup(board);
         ruleManager.registerDefaults(board);
 
@@ -101,8 +89,9 @@ export function createBoard(container) {
 
             cellLayer._generate(cellSize, usedSize, offset);
             hintLayer.update();
-            rcLayer.update();
+            hintRCLayer.update();
             board.render();
+            contentLayer._generate(cellSize, usedSize, offset);
         }
 
         window.addEventListener("resize", resizeAndRebuild);
