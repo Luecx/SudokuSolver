@@ -4,6 +4,7 @@ import {StandardRuleHandler} from "./rule_standard.js";
 import {DiagonalRuleHandler} from "./rule_diagonal.js";
 import {SandwichHandler} from "./rule_sandwich.js";
 import {ArrowHandler} from "./rule_arrow.js";
+import {ParityHandler} from "./rule_parity.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -13,7 +14,8 @@ export function createAllRuleHandlers(board) {
         new StandardRuleHandler(board),
         new DiagonalRuleHandler(board),
         new SandwichHandler(board),
-        new ArrowHandler(board)
+        new ArrowHandler(board),
+        new ParityHandler(board),
         // Add more as needed
     ];
 }
