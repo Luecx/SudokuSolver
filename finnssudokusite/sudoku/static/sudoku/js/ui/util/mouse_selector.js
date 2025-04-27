@@ -1,7 +1,6 @@
 import { SelectionMode } from "../board/board_selectionEnums.js";
 import { RegionType}     from "../region/RegionType.js";
 import { CellIdx }      from "../region/CellIdx.js";
-
 export class MouseSelector {
     constructor({
                     getKeyFromEvent,       // (MouseEvent e) => string | null
@@ -25,8 +24,6 @@ export class MouseSelector {
         this._isDragging = false;
         this._dragged = new Set();
         this._shouldClear = false;
-
-        this.lastCell = null;
     }
 
     onMouseDown(e) {
@@ -46,7 +43,7 @@ export class MouseSelector {
     }
 
     onMouseMove(e) {
-        if (!this._mouseDown || this.mode === SelectionMode.SINGLE) return;
+        if (!this._mouseDown) return;
 
         const distX = Math.abs(e.clientX - this._mouseDownPos.x);
         const distY = Math.abs(e.clientY - this._mouseDownPos.y);
@@ -55,30 +52,26 @@ export class MouseSelector {
         if (movedEnough) this._isDragging = true;
         if (!this._isDragging) return;
 
-        if (this._shouldClear) {
-            this._shouldClear = false;
-            this.onClear();
-        }
-
         const key = this.getKeyFromEvent(e);
         if (!key || this._dragged.has(key)) return;
         this._dragged.add(key);
-            
-        if (!this.onIsSelected(key)) {
-            // check if we move diagonally, if so don't select the cell
-            if (this.lastCell && Math.abs(key.r - this.lastCell.r) === 1 &&  Math.abs(key.c - this.lastCell.c) === 1) {
-                return;
-            }
 
+        if (this.mode === SelectionMode.SINGLE) {
+            this.onClear();
             this.onSelect(key);
-            this.lastCell = key;
+        } else {
+            if (this._shouldClear) {
+                this._shouldClear = false;
+                this.onClear();
+            }
+            if (!this.onIsSelected(key)) {
+                this.onSelect(key);
+            }
         }
     }
 
     onMouseUp(e) {
         if (!this._mouseDown) return;
-
-        this.lastCell = null;
 
         const key = this.getKeyFromEvent(e);
         const isClick = !this._isDragging;
@@ -86,9 +79,10 @@ export class MouseSelector {
 
         if (key && isClick) {
             const alreadySelected = this.onIsSelected(key);
-
             if (this.mode === SelectionMode.SINGLE) {
-                if (!alreadySelected || this._onlyOneSelected()) {
+                if (alreadySelected) {
+                    this.onDeselect(key);
+                } else {
                     this.onClear();
                     this.onSelect(key);
                 }
@@ -113,6 +107,5 @@ export class MouseSelector {
         this._dragged.clear();
     }
 
-    // Optional override for determining whether only one is selected
     _onlyOneSelected = () => false;
 }

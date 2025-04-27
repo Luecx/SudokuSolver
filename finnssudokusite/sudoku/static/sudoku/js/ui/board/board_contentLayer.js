@@ -50,7 +50,6 @@ export class BoardContentLayer {
         this.container.appendChild(this.grid);
 
         this.generateEmptyBoard();
-        this.fillRandom();
     }
 
     generateEmptyBoard() {

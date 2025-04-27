@@ -78,7 +78,7 @@ export function createBoard(container) {
         hintLayer.init(board);
         hintRCLayer.init(board);
         cellLayer.init(board);
-        contentLayer.init(board); // <--- Initialize it
+        contentLayer.init(board);
         interactionManager.setup(board);
         ruleManager.registerDefaults(board);
 
@@ -113,22 +113,25 @@ export function createBoard(container) {
     }
 
     function loadBoard(json) {
-        const data = typeof json === "string" ? JSON.parse(json) : json;
 
-        console.log("Loading board data:", data);
+        console.log(deserializeObject(json));
 
-        this.resetBoard();
-
-        if (data.board.fixedCells) {
-
-            contentLayer.loadFixedCells(data.board.fixedCells);
-        }
-
-        if (data.board.rules) {
-            ruleManager.loadRules(data.board.rules);
-        }
-
-        this.render();
+        // const data = typeof json === "string" ? JSON.parse(json) : json;
+        //
+        // console.log("Loading board data:", data);
+        //
+        // this.resetBoard();
+        //
+        // // if (data.board.fixedCells) {
+        // //
+        // //     contentLayer.loadFixedCells(data.board.fixedCells);
+        // // }
+        //
+        // if (data.board.rules) {
+        //     ruleManager.loadRules(data.board.rules);
+        // }
+        //
+        // this.render();
     }
 
     return board;

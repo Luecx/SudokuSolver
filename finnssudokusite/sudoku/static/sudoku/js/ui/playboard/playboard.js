@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const jsonData = window.puzzle_data;
     if (jsonData) {
-        board.loadBoard(jsonData);
+        board.loadBoard(jsonData.board);
     }
 
 
