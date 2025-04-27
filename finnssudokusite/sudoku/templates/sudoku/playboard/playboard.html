@@ -10,15 +10,15 @@
 <div class="row">
     <!-- Linke Spalte -->
     <div class="col-4">
-        <div class="block-bg w-100 border rounded my_white_box">
-            <div class="block-part block-top"></div>
-            <div class="block-part block-middle justify-content-start p-3">
+        <div class="block-bg w-100 border rounded my_white_box mb-3">
+            <div class="block-part" data-block="top"></div>
+            <div class="block-part justify-content-start p-3" data-block="middle">
                 <div class="button-grid">
                     <button id="btn-gear" class="btn btn-custom-white btn-square"><i class="bi bi-gear"></i></button>
                     <button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-counterclockwise"></i></button>
                     <button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-clockwise"></i></button>
                     <button id="btn-ban" class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
-
+                    
                     <button id="btn-one" class="btn btn-custom-white btn-square IsBtnNumber">1</button>
                     <button id="btn-two" class="btn btn-custom-white btn-square IsBtnNumber">2</button>
                     <button id="btn-three" class="btn btn-custom-white btn-square IsBtnNumber">3</button>
@@ -28,11 +28,11 @@
                     <button id="btn-seven" class="btn btn-custom-white btn-square IsBtnNumber">7</button>
                     <button id="btn-eight" class="btn btn-custom-white btn-square IsBtnNumber">8</button>
                     <button id="btn-nine" class="btn btn-custom-white btn-square IsBtnNumber">9</button>
-
+                    
                     <button id="btn-plus" class="btn btn-custom-white btn-square">+</button>
                     <button id="btn-minus" class="btn btn-custom-white btn-square">-</button>
                     <button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
-
+                    
                     <button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
                     <button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
                     <button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
@@ -42,11 +42,12 @@
                     <div id="zero"></div>
                 </div>
             </div>
-            <div class="block-part block-bottom"></div>
+            <div class="block-part" data-block="bottom"></div>
         </div>
+        
         <div class="block-bg w-100 border rounded my_white_box">
-            <div class="block-part block-top"></div>
-            <div class="block-part block-middle justify-content-start p-3">
+            <div class="block-part" data-block="top"></div>
+            <div class="block-part block-middle justify-content-start p-3" data-block="middle">
                 <div class="timer" id="timer">0:00:00</div>
                 <div class="mb-3">Beste Zeit:</div>
                 <div class="mb-2 fw-bold">RULES:</div>
@@ -78,15 +79,14 @@
                     </select>
                 </div>
             </div>
-            <div class="block-part block-bottom"></div>
+            <div class="block-part" data-block="bottom"></div>
         </div>
-    
     </div>
 
-    <!-- Mittlere Spalte -->
+    <!-- Rechte Spalte -->
     <div class="col-8 d-flex flex-column">
         <div class="w-100 border rounded my_white_box">
-            <div class="board-container w-100">
+            <div class="board-container w-100 justify-content-start">
             <!-- Sudoku Board kommt hier -->
             </div>
         </div>

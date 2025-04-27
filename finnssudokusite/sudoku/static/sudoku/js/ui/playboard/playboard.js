@@ -172,30 +172,33 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const themeSelect = document.getElementById('themeSelect');
-    if (themeSelect) {
-        themeSelect.addEventListener('change', function () {
-            const bg = backgrounds[this.value];
-            document.body.style.backgroundImage = bg || "none";
 
-            // Alle block-top, block-middle, block-bottom auf einmal ansprechen
-            document.querySelectorAll('.block-top').forEach(el => {
-                el.classList.toggle('block-top-bg', !!bg);
-            });
-            document.querySelectorAll('.block-middle').forEach(el => {
-                el.classList.toggle('block-middle-bg', !!bg);
-            });
-            document.querySelectorAll('.block-bottom').forEach(el => {
-                el.classList.toggle('block-bottom-bg', !!bg);
-            });
+    function updateTheme() {
+        const value = themeSelect.value;
+        const bg = backgrounds[value];
 
-            // block-bg Styling anpassen
-            document.querySelectorAll('.block-bg').forEach(blockBg => {
-                blockBg.classList.toggle('rounded', !bg);
-                blockBg.classList.toggle('my_white_box', !bg);
-                blockBg.classList.toggle('border', !bg);
-            });
+        document.body.style.backgroundImage = bg || "none";
+
+        // Alle block-bg anpassen
+        document.querySelectorAll('.block-bg').forEach(blockBg => {
+            blockBg.classList.toggle('rounded', value === 'classic');
+            blockBg.classList.toggle('my_white_box', value === 'classic');
+            blockBg.classList.toggle('border', value === 'classic');
+        });
+
+        // Alle block-parts anpassen
+        document.querySelectorAll('.block-part').forEach(part => {
+            const type = part.getAttribute('data-block');
+            part.classList.toggle('block-top', value !== 'classic' && type === 'top');
+            part.classList.toggle('block-middle', value !== 'classic' && type === 'middle');
+            part.classList.toggle('block-bottom', value !== 'classic' && type === 'bottom');
         });
     }
 
+    if (themeSelect) {
+        themeSelect.addEventListener('change', updateTheme);
+        // Initialisieren beim Laden der Seite
+        window.addEventListener('DOMContentLoaded', updateTheme);
+    }
 
 });
