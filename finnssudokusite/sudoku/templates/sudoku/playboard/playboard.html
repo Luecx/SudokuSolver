@@ -230,19 +230,10 @@ excludeCorners      : opts.excludeCorners      ?? [],
     board.initBoard();
     board.setSelection(
         createSelectionConfig({
-            target: 'edges',
-            mode: 'single',
+            target: 'cells',
+            mode: 'multiple',
             showVisual: true,
             preserveOnModifier: null,
-            onItemsChanged: (items) => {
-                console.log('Items changed:', items);
-            },
-            onItemsAdded: (items) => {
-                console.log('Items added:', items);
-            },
-            onItemsRemoved: (items) => {
-                console.log('Items removed:', items);
-            },
         })
     )
 </script>
