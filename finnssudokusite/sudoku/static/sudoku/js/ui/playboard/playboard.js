@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const h = Math.floor(sec / 3600);
         const m = Math.floor((sec % 3600) / 60);
         const s = sec % 60;
-        return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        return `0${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
     if (timerElement) {
@@ -43,19 +43,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Font size control functionality
     let currentFontSize = 1.8;
+    let currentSvgSize = 28;
     const gridButtons = document.querySelectorAll('.button-grid .btn-square');
     const btnPlus = document.getElementById('btn-plus');
     const btnMinus = document.getElementById('btn-minus');
+    const btnColorMode = document.getElementById('btn-colorMode');
+    const svgIcon = btnColorMode.querySelector('img');
 
     function updateFontSize() {
         gridButtons.forEach(btn => {
             btn.style.fontSize = currentFontSize + 'rem';
         });
+        if (svgIcon) {
+            svgIcon.style.width = currentSvgSize + 'px';
+            svgIcon.style.height = currentSvgSize + 'px';
+        }
     }
 
     if (btnPlus) {
         btnPlus.addEventListener('click', () => {
             currentFontSize += 0.2;
+            currentSvgSize += 3;
             updateFontSize();
         });
     }
@@ -63,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnMinus) {
         btnMinus.addEventListener('click', () => {
             currentFontSize = Math.max(0.3, currentFontSize - 0.2);
+            currentSvgSize = Math.max(1, currentSvgSize - 3);
             updateFontSize();
         });
     }
@@ -96,10 +105,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnNumberMode = document.getElementById('btn-numberMode');
     const btnTopMode = document.getElementById('btn-topMode');
     const btnCenterMode = document.getElementById('btn-centerMode');
-    const btnColorMode = document.getElementById('btn-colorMode');
 
     const theModeButtons = [btnNumberMode, btnTopMode, btnCenterMode, btnColorMode];
-    const TheColorBtns = Array.from(document.getElementsByClassName("IsBtnNumber"));
+    const TheNumberButtons = Array.from(document.getElementsByClassName("IsBtnNumber"));
     const btnOne = document.getElementById('btn-one');
     const btnTwo = document.getElementById('btn-two');
     const btnThree = document.getElementById('btn-three');
@@ -110,16 +118,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnEight = document.getElementById('btn-eight');
     const btnNine = document.getElementById('btn-nine');
 
-    const theBtnColors = [
-        'rgb(237,255,0)',
-        'rgb(0,215,255)',
-        'rgb(255,0,170)',
+    const theBGColors = [
+        'rgb(255,2,0)',
+        'rgb(0,216,2)',
+        'rgb(1,0,255)',
         'rgb(255,169,0)',
         'rgb(164,122,87)',
         'rgb(170,0,255)',
-        'rgb(255,2,0)',
-        'rgb(0,216,2)',
-        'rgb(1,0,255)'
+        'rgb(237,255,0)',
+        'rgb(0,215,255)',
+        'rgb(255,0,170)'
+    ];
+    const theTextColors = [
+        '#000000',
+        '#000000',
+        '#ffffff',
+        '#000000',
+        '#ffffff',
+        '#ffffff',
+        '#000000',
+        '#000000',
+        '#000000'
     ];
 
     function activateButton(activeBtn) {
@@ -129,13 +148,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateBtnColorBackground() {
+
         if (btnColorMode.classList.contains('btn-active')) {
-            TheColorBtns.forEach((btn, index) => {
-                btn.style.backgroundColor = theBtnColors[index];
+            TheNumberButtons.forEach((btn, index) => {
+                btn.style.backgroundColor = theBGColors[index];
+                btn.style.color = theTextColors[index];
             });
         } else {
-            TheColorBtns.forEach(btn => {
-                btn.style.backgroundColor = "white";
+            TheNumberButtons.forEach((btn, index) => {
+                btn.style.backgroundColor = 'white';
+                btn.style.color = 'black';
             });
         }
     }

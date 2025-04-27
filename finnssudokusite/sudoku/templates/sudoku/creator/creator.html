@@ -20,20 +20,19 @@
 				<ul id="ruleDropdown" class="list-group position-absolute rounded overflow-auto w-100" style="z-index: 1000;"></ul>
 			</div>
 
-			<div class="mt-4 w-100 rounded my_white_box flex-fill overflow-auto" style="max-height: 600px;">
+			<div class="mt-4 my_white_box flex-fill overflow-auto" style="max-height: 600px;">
 				<div id="accordionContainer" class="accordion w-100 flex-fill"></div>
+			</div>
+			<!-- Submit Button -->
+			<div class="text-center pt-3">
+				<button id="submit-sudoku-btn" class="btn btn-success mb-4">Save Sudoku (Console)</button>
 			</div>
 		</div>
 
 		<!-- CENTER COLUMN (Board) -->
 		<div class="col-8 flex-column p-2">
-			<div class="w-100 border rounded my_white_box flex-fill mb-3">
+			<div class="my_white_box flex-fill mb-3">
 				{% include "sudoku/creator/board.html" %}
-			</div>
-
-			<!-- Submit Button -->
-			<div class="text-center">
-				<button id="submit-sudoku-btn" class="btn btn-success mb-4">Save Sudoku (Console)</button>
 			</div>
 		</div>
 	</div>

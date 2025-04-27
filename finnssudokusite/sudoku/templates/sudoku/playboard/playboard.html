@@ -10,7 +10,7 @@
 <div class="row">
     <!-- Linke Spalte -->
     <div class="col-4">
-        <div class="block-bg w-100 border rounded my_white_box mb-3">
+        <div class="block-bg my_white_box mb-3">
             <div class="block-part" data-block="top"></div>
             <div class="block-part justify-content-start p-3" data-block="middle">
                 <div class="button-grid">
@@ -37,7 +37,7 @@
                     <button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
                     <button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
                     <button id="btn-colorMode" class="btn btn-custom-white btn-square">
-                        <img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="24" height="24"/>
+                        <img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28"/>
                     </button>
                     <div id="zero"></div>
                 </div>
@@ -45,7 +45,7 @@
             <div class="block-part" data-block="bottom"></div>
         </div>
         
-        <div class="block-bg w-100 border rounded my_white_box">
+        <div class="block-bg my_white_box">
             <div class="block-part" data-block="top"></div>
             <div class="block-part block-middle justify-content-start p-3" data-block="middle">
                 <div class="timer" id="timer">0:00:00</div>
@@ -85,7 +85,7 @@
 
     <!-- Rechte Spalte -->
     <div class="col-8 d-flex flex-column">
-        <div class="w-100 border rounded my_white_box">
+        <div class="w-100 my_white_box">
             <div class="board-container w-100 justify-content-start">
             <!-- Sudoku Board kommt hier -->
             </div>
