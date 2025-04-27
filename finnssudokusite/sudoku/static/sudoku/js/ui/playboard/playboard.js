@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const jsonData = window.puzzle_data;
     if (jsonData) {
-        board.loadBoard(jsonData.board);
+        board.loadBoard(jsonData);
     }
 
 
@@ -176,29 +176,26 @@ document.addEventListener("DOMContentLoaded", function () {
         themeSelect.addEventListener('change', function () {
             const bg = backgrounds[this.value];
             document.body.style.backgroundImage = bg || "none";
-            if (bg) {
-                document.getElementById("TopBlockL").classList.add("block-top");
-                document.getElementById("TopBlockR").classList.add("block-top");
-                document.getElementById("MiddleBlockL").classList.add("block-middle");
-                document.getElementById("MiddleBlockR").classList.add("block-middle");
-                document.getElementById("BottomBlockL").classList.add("block-bottom");
-                document.getElementById("BottomBlockR").classList.add("block-bottom");
-            } else {
-                document.getElementById("TopBlockL").classList.remove("block-top");
-                document.getElementById("TopBlockR").classList.remove("block-top");
-                document.getElementById("MiddleBlockL").classList.remove("block-middle");
-                document.getElementById("MiddleBlockR").classList.remove("block-middle");
-                document.getElementById("BottomBlockL").classList.remove("block-bottom");
-                document.getElementById("BottomBlockR").classList.remove("block-bottom");
-            }
 
+            // Alle block-top, block-middle, block-bottom auf einmal ansprechen
+            document.querySelectorAll('.block-top').forEach(el => {
+                el.classList.toggle('block-top-bg', !!bg);
+            });
+            document.querySelectorAll('.block-middle').forEach(el => {
+                el.classList.toggle('block-middle-bg', !!bg);
+            });
+            document.querySelectorAll('.block-bottom').forEach(el => {
+                el.classList.toggle('block-bottom-bg', !!bg);
+            });
+
+            // block-bg Styling anpassen
             document.querySelectorAll('.block-bg').forEach(blockBg => {
-                if (bg) {
-                    blockBg.classList.remove('rounded', 'whitebox', 'border');
-                } else {
-                    blockBg.classList.add('rounded', 'whitebox', 'border');
-                }
+                blockBg.classList.toggle('rounded', !bg);
+                blockBg.classList.toggle('my_white_box', !bg);
+                blockBg.classList.toggle('border', !bg);
             });
         });
     }
+
+
 });

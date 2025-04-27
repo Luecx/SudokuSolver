@@ -9,10 +9,10 @@
 {% block content %}
 <div class="row">
     <!-- Linke Spalte -->
-    <div class="col-3 py-3">
-        <div class="block-bg w-100 border rounded whitebox">
-            <div id="TopBlockL"></div>
-            <div id="MiddleBlockL" class="justify-content-start p-3">
+    <div class="col-4">
+        <div class="block-bg w-100 border rounded my_white_box">
+            <div class="block-part block-top"></div>
+            <div class="block-part block-middle justify-content-start p-3">
                 <div class="button-grid">
                     <button id="btn-gear" class="btn btn-custom-white btn-square"><i class="bi bi-gear"></i></button>
                     <button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-counterclockwise"></i></button>
@@ -42,22 +42,11 @@
                     <div id="zero"></div>
                 </div>
             </div>
-            <div id="BottomBlockL"></div>
+            <div class="block-part block-bottom"></div>
         </div>
-    </div>
-
-    <!-- Mittlere Spalte -->
-    <div class="col-9 col-xl-6 col-md-9 d-flex flex-column py-3">
-        <div class="board-container w-100">
-            <!-- Sudoku Board kommt hier -->
-        </div>
-    </div>
-
-    <!-- Rechte Spalte -->
-    <div class="col-12 col-xl-3 col-md-12 d-flex flex-column py-3">
-        <div class="block-bg w-100 border rounded whitebox">
-            <div id="TopBlockR"></div>
-            <div id="MiddleBlockR" class="block-content justify-content-start p-3">
+        <div class="block-bg w-100 border rounded my_white_box">
+            <div class="block-part block-top"></div>
+            <div class="block-part block-middle justify-content-start p-3">
                 <div class="timer" id="timer">0:00:00</div>
                 <div class="mb-3">Beste Zeit:</div>
                 <div class="mb-2 fw-bold">RULES:</div>
@@ -77,7 +66,7 @@
                     </div>
                     {% endfor %}
                 </div>
-
+                
                 <div class="mt-3 pb-3">
                     <label for="themeSelect" class="form-label">Theme wählen:</label>
                     <select id="themeSelect" class="form-select" style="width:100%">
@@ -89,7 +78,17 @@
                     </select>
                 </div>
             </div>
-            <div id="BottomBlockR"></div>
+            <div class="block-part block-bottom"></div>
+        </div>
+    
+    </div>
+
+    <!-- Mittlere Spalte -->
+    <div class="col-8 d-flex flex-column">
+        <div class="w-100 border rounded my_white_box">
+            <div class="board-container w-100">
+            <!-- Sudoku Board kommt hier -->
+            </div>
         </div>
     </div>
 </div>
