@@ -14,16 +14,75 @@
 		
 	}
 	
+	#btn-gear   {grid-area: gear;}
+	#btn-undo   {grid-area: undo;}
+	#btn-redo   {grid-area: redo;}
+	#btn-ban    {grid-area: ban;}
+	
+	#btn-one    {grid-area: one;}
+	#btn-two    {grid-area: two;}
+	#btn-three  {grid-area: three;}
+	#btn-four   {grid-area: four;}
+	#btn-five   {grid-area: five;}
+	#btn-six    {grid-area: six;}
+	#btn-seven  {grid-area: seven;}
+	#btn-eight  {grid-area: eight;}
+	#btn-nine   {grid-area: nine;}
+	
+	#btn-colorMode  {grid-area: color;}
+	#btn-numberMode {grid-area: number;}
+	#btn-topMode    {grid-area: top;}
+	#btn-centerMode {grid-area: center;}
+	#btn-minus      {grid-area: minus;}
+	#btn-plus       {grid-area: plus;}
+	#btn-toggleEye  {grid-area: eye;}
+	
 	.button-grid {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
-		grid-template-rows: repeat(5, minmax(0, 1fr));
+		grid-template-areas:
+             "gear undo redo ban"
+			  "seven eight nine minus"
+			  "four five six plus"
+			  "one two three eye"
+			  "number top center color";
 		gap: 1vw;
 		justify-content: stretch;
 		align-items: stretch;
 		width: 100%;
-		max-width: 350px; /* Optional, für maximale Breite */
+		max-width: 350px;
 		margin: 0 auto;
+	}
+	
+	@media (min-width: 769px) and (max-width: 992px) {
+		.button-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-areas:
+             "gear undo redo"
+             "ban minus plus"
+             "seven eight nine"
+             "four five six"
+             "one two three"
+             "number top center"
+             "color eye zero";
+		}
+	}
+	
+	@media (max-width: 768px) {
+		.button-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-template-areas:
+				"undo redo"
+				"gear one"
+                "ban two"
+                "minus three"
+                "plus four"
+                "eye five"
+                "number six"
+                "top seven"
+                "center eight"
+                "color nine";
+		}
 	}
 	
 	.btn-square {
@@ -64,22 +123,11 @@
 		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25) !important;
 	}
 	
-	
-	/* Responsive Anpassung für sehr kleine Bildschirme */
-	@media (max-width: 500px) {
-		.button-grid {
-			max-width: 100vw;
-			gap: 1vw;
-		}
-		
-		.btn-square, .btn-tall {
-			font-size: 1rem;
-			border-radius: 10px !important;
-		}
+	.whitebox {
+		background-color: white;
 	}
 	
 	.block-bg {
-		background: none !important;
 		padding: 0;
 	}
 	
@@ -91,17 +139,17 @@
 		width: 100%;
 	}
 	
+	.block-middle {
+		background: url("{% static 'sudoku/img/playboard/block-content.png' %}") top center repeat-y;
+		background-size: 100% auto;
+		width: 100%;
+	}
+	
 	.block-bottom {
 		background: url("{% static 'sudoku/img/playboard/block-bottom.png' %}") bottom center no-repeat;
 		background-size: 100% auto;
 		height: 20px;
 		min-height: 20px;
-		width: 100%;
-	}
-	
-	.block-content {
-		background: url("{% static 'sudoku/img/playboard/block-content.png' %}") top center repeat-y;
-		background-size: 100% auto;
 		width: 100%;
 	}
 	
@@ -120,88 +168,86 @@
 {% block content %}
 <div class="row">
 	<!-- Linke Spalte -->
-	<div class="col-3 block-bg pt-3">
-		<div class="block-top"></div>
-		<div class="block-content justify-content-start p-3">
-			<div class="button-grid">
-				<!-- 1. Zeile -->
-				<button class="btn btn-custom-white btn-square"><i class="bi bi-gear"></i></button>
-				<button class="btn btn-custom-white btn-square"><i class="bi bi-arrow-counterclockwise"></i></button>
-				<button class="btn btn-custom-white btn-square"><i class="bi bi-arrow-clockwise"></i></button>
-				<button class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
-				<!-- 2. Zeile -->
-				<button id="btn-seven" class="btn btn-custom-white btn-square IsBtnNumber">7</button>
-				<button id="btn-eight" class="btn btn-custom-white btn-square IsBtnNumber">8</button>
-				<button id="btn-nine" class="btn btn-custom-white btn-square IsBtnNumber">9</button>
-				<button id="btn-minus" class="btn btn-custom-white btn-square">-</button>
-				<!-- 3. Zeile -->
-				<button id="btn-four" class="btn btn-custom-white btn-square IsBtnNumber">4</button>
-				<button id="btn-five" class="btn btn-custom-white btn-square IsBtnNumber">5</button>
-				<button id="btn-six" class="btn btn-custom-white btn-square IsBtnNumber">6</button>
-				<button id="btn-plus" class="btn btn-custom-white btn-square">+</button>
-				<!-- 4. Zeile -->
-				<button id="btn-one" class="btn btn-custom-white btn-square IsBtnNumber">1</button>
-				<button id="btn-two" class="btn btn-custom-white btn-square IsBtnNumber">2</button>
-				<button id="btn-three" class="btn btn-custom-white btn-square IsBtnNumber">3</button>
-				<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
-				<!-- 5. Zeile -->
-				<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i>
-				</button>
-				<button id="btn-topMode" class="btn btn-custom-white btn-square">
-					<i class="bi bi-arrow-up-left-square"></i></button>
-				<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i>
-				</button>
-				<button id="btn-colorMode" class="btn btn-custom-white btn-square">
-					<img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="24" height="24" />
-				</button>
+	<div class="col-3 py-3">
+		<div class="block-bg w-100 border rounded whitebox">
+			<div id="TopBlockL"></div>
+			<div id="MiddleBlockL" class="justify-content-start p-3">
+				<div class="button-grid">
+					<button id="btn-gear" class="btn btn-custom-white btn-square"><i class="bi bi-gear"></i></button>
+					<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-counterclockwise"></i></button>
+					<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-clockwise"></i></button>
+					<button id="btn-ban" class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
+					
+					<button id="btn-one" class="btn btn-custom-white btn-square IsBtnNumber">1</button>
+					<button id="btn-two" class="btn btn-custom-white btn-square IsBtnNumber">2</button>
+					<button id="btn-three" class="btn btn-custom-white btn-square IsBtnNumber">3</button>
+					<button id="btn-four" class="btn btn-custom-white btn-square IsBtnNumber">4</button>
+					<button id="btn-five" class="btn btn-custom-white btn-square IsBtnNumber">5</button>
+					<button id="btn-six" class="btn btn-custom-white btn-square IsBtnNumber">6</button>
+					<button id="btn-seven" class="btn btn-custom-white btn-square IsBtnNumber">7</button>
+					<button id="btn-eight" class="btn btn-custom-white btn-square IsBtnNumber">8</button>
+					<button id="btn-nine" class="btn btn-custom-white btn-square IsBtnNumber">9</button>
+					
+					<button id="btn-plus" class="btn btn-custom-white btn-square">+</button>
+					<button id="btn-minus" class="btn btn-custom-white btn-square">-</button>
+					<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
+					<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
+					<button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
+					<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
+					<button id="btn-colorMode" class="btn btn-custom-white btn-square"><img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="24" height="24" /></button>
+					<div id="zero"></div>
+				</div>
 			</div>
+			<div id="BottomBlockL"></div>
 		</div>
-		<div class="block-bottom"></div>
 	</div>
 	
+	
 	<!-- Mittlere Spalte -->
-	<div class="col-6">
+	<div class="col-9 col-xl-6 col-md-9 d-flex flex-column py-3">
 		<div class="board-container w-100">
 			<!-- Hier kommt dein Sudoku-Board rein -->
 		</div>
 	</div>
 	
 	<!-- Rechte Spalte -->
-	<div class="col-3 block-bg d-flex flex-column pt-3">
-		<div class="block-top"></div>
-		<div class="block-content justify-content-start px-3">
-			<div class="timer" id="timer">0:00:00</div>
-			<div class="mb-3">Beste Zeit:</div>
-			<div class="mb-2 fw-bold">RULES:</div>
-			<div class="accordion" id="regelnAccordion">
-				{% for i in "123" %}
-				<div class="accordion-item">
-					<h2 class="accordion-header" id="heading{{ i }}">
-						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}">
-							{{ i }}
-						</button>
-					</h2>
-					<div id="collapse{{ i }}" class="accordion-collapse collapse" data-bs-parent="#regelnAccordion">
-						<div class="accordion-body">
-							Regel {{ i }} Text.
+	<div class="col-12 col-xl-3 col-md-12 d-flex flex-column py-3">
+		<div class="block-bg w-100 border rounded whitebox">
+			<div id="TopBlockR"></div>
+			<div id="MiddleBlockR" class="block-content justify-content-start p-3">
+				<div class="timer" id="timer">0:00:00</div>
+				<div class="mb-3">Beste Zeit:</div>
+				<div class="mb-2 fw-bold">RULES:</div>
+				<div class="accordion" id="regelnAccordion">
+					{% for i in "123" %}
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="heading{{ i }}">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}">
+								{{ i }}
+							</button>
+						</h2>
+						<div id="collapse{{ i }}" class="accordion-collapse collapse" data-bs-parent="#regelnAccordion">
+							<div class="accordion-body">
+								Regel {{ i }} Text.
+							</div>
 						</div>
 					</div>
+					{% endfor %}
 				</div>
-				{% endfor %}
+				<!-- Select-Menü für Theme-Auswahl -->
+				<div class="mt-3 pb-3">
+					<label for="themeSelect" class="form-label">Theme wählen:</label>
+					<select id="themeSelect" class="form-select" style="width:100%">
+						<option value="classic">Classic</option>
+						<option value="stone">Stone</option>
+						<option value="glow">Glow</option>
+						<option value="zement">Zement</option>
+						<option value="wood">Wood</option>
+					</select>
+				</div>
 			</div>
-			<!-- Select-Menü für Theme-Auswahl -->
-			<div class="mt-3 pb-3">
-				<label for="themeSelect" class="form-label">Theme wählen:</label>
-				<select id="themeSelect" class="form-select" style="width:100%">
-					<option value="classic">Classic</option>
-					<option value="stone">Stone</option>
-					<option value="glow">Glow</option>
-					<option value="zement">Zement</option>
-					<option value="wood">Wood</option>
-				</select>
-			</div>
+			<div id="BottomBlockR"></div>
 		</div>
-		<div class="block-bottom"></div>
 	</div>
 </div>
 {% endblock %}
@@ -406,8 +452,7 @@ excludeCorners      : opts.excludeCorners      ?? [],
             stone: "url('{% static 'sudoku/img/playboard/stone.jpg' %}')",
             glow: "url('{% static 'sudoku/img/playboard/glow.jpg' %}')",
             zement: "url('{% static 'sudoku/img/playboard/zement.jpg' %}')",
-            wood: "url('/static/sudoku/img/playboard/wood.jpg')",
-            classic: "none"
+            wood: "url('/static/sudoku/img/playboard/wood.jpg')"
         };
 
         const themeSelect = document.getElementById('themeSelect');
@@ -415,6 +460,29 @@ excludeCorners      : opts.excludeCorners      ?? [],
             themeSelect.addEventListener('change', function () {
                 const bg = backgrounds[this.value];
                 document.body.style.backgroundImage = bg || "none";
+                if (bg) {
+                    document.getElementById("TopBlockL").classList.add("block-top");
+                    document.getElementById("TopBlockR").classList.add("block-top");
+                    document.getElementById("MiddleBlockL").classList.add("block-middle");
+                    document.getElementById("MiddleBlockR").classList.add("block-middle");
+                    document.getElementById("BottomBlockL").classList.add("block-bottom");
+                    document.getElementById("BottomBlockR").classList.add("block-bottom");
+                } else {
+                    document.getElementById("TopBlockL").classList.remove("block-top");
+                    document.getElementById("TopBlockR").classList.remove("block-top");
+                    document.getElementById("MiddleBlockL").classList.remove("block-middle");
+                    document.getElementById("MiddleBlockR").classList.remove("block-middle");
+                    document.getElementById("BottomBlockL").classList.remove("block-bottom");
+                    document.getElementById("BottomBlockR").classList.remove("block-bottom");
+
+                }
+                document.querySelectorAll('.block-bg').forEach(blockBg => {
+                    if (bg) {
+                        blockBg.classList.remove('rounded', 'whitebox', 'border');
+                    } else {
+                        blockBg.classList.add('rounded', 'whitebox', 'border');
+                    }
+                });
             });
         }
 
