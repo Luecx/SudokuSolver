@@ -1,0 +1,153 @@
+body {
+    background-image: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    z-index: 1;
+    position: relative;
+}
+
+/* Button grid areas */
+#btn-gear { grid-area: gear; }
+#btn-undo { grid-area: undo; }
+#btn-redo { grid-area: redo; }
+#btn-ban { grid-area: ban; }
+#btn-one { grid-area: one; }
+#btn-two { grid-area: two; }
+#btn-three { grid-area: three; }
+#btn-four { grid-area: four; }
+#btn-five { grid-area: five; }
+#btn-six { grid-area: six; }
+#btn-seven { grid-area: seven; }
+#btn-eight { grid-area: eight; }
+#btn-nine { grid-area: nine; }
+#btn-colorMode { grid-area: color; }
+#btn-numberMode { grid-area: number; }
+#btn-topMode { grid-area: top; }
+#btn-centerMode { grid-area: center; }
+#btn-minus { grid-area: minus; }
+#btn-plus { grid-area: plus; }
+#btn-toggleEye { grid-area: eye; }
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+        "gear undo redo ban"
+        "seven eight nine minus"
+        "four five six plus"
+        "one two three eye"
+        "number top center color";
+    gap: 1vw;
+    justify-content: stretch;
+    align-items: stretch;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .button-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-areas:
+            "gear undo redo"
+            "ban minus plus"
+            "seven eight nine"
+            "four five six"
+            "one two three"
+            "number top center"
+            "color eye zero";
+    }
+}
+
+@media (max-width: 768px) {
+    .button-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+            "undo redo"
+            "gear one"
+            "ban two"
+            "minus three"
+            "plus four"
+            "eye five"
+            "number six"
+            "top seven"
+            "center eight"
+            "color nine";
+    }
+}
+
+.btn-square {
+    border-radius: 12px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: auto;
+}
+
+.btn-custom-white {
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: background-color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.btn-custom-white:hover,
+.btn-custom-white:focus {
+    color: #212529;
+    background-color: #e7f1ff;
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+}
+
+.btn-active {
+    background-color: #e7f1ff !important;
+    border-color: #86b7fe !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25) !important;
+}
+
+.whitebox {
+    background-color: white;
+}
+
+.block-bg {
+    padding: 0;
+}
+
+.block-top {
+    background: url("../img/playboard/block-top.png") top center no-repeat;
+    background-size: 100% auto;
+    height: 40px;
+    min-height: 30px;
+    width: 100%;
+}
+
+.block-middle {
+    background: url("../img/playboard/block-content.png") top center repeat-y;
+    background-size: 100% auto;
+    width: 100%;
+}
+
+.block-bottom {
+    background: url("../img/playboard/block-bottom.png") bottom center no-repeat;
+    background-size: 100% auto;
+    height: 20px;
+    min-height: 20px;
+    width: 100%;
+}
+
+.timer {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}

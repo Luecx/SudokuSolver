@@ -42,7 +42,9 @@
     data-attempts="{{ s.attempts }}"
     data-rating="{{ s.average_rating|default:0 }}"
     data-avgtime="{{ s.average_time|floatformat:0 }}">
-    <td>{{ s.title }}</td>
+    <td>
+      <a href="{% url 'play_sudoku' s.id %}">{{ s.title }}</a>
+    </td>
     <td>
       {% if s.created_by %}
       {% if s.created_by.username == request.user.username %}

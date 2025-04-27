@@ -1,7 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+
+
 class Tag(models.Model):
+    """
+    Tag model.
+    Each tag represents a category or feature of a Sudoku (e.g., 'Diagonal', 'Thermo', 'Killer').
+    Related to Sudoku via a Many-to-Many relationship.
+    """
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
@@ -9,53 +16,85 @@ class Tag(models.Model):
 
 
 class Sudoku(models.Model):
-    title = models.CharField(max_length=100)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="sudokus_created")
+    """
+    Sudoku puzzle model.
 
-    # Sudoku content
-    puzzle_string   = models.TextField(default='0'*81)
-    solution_string = models.TextField(default='0'*81)
-    difficulty      = models.CharField(max_length=50, blank=True)
+    - puzzle: Stores zipped JSON containing the puzzle definition.
+    - solution_string: Stores the solution as an 81-character string (row-wise).
+    - is_public: Whether the Sudoku is visible to everyone.
+    - tags: Types/features of this Sudoku (linked to Tag model).
+    - Stats: Auto-updated from user stats.
+    - created_by: Optional link to the creator (user).
+    """
+
+    # Metadata
+    title          = models.CharField(max_length=100)
+    created_by     = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="sudokus_created")
+    created_at     = models.DateTimeField(default=timezone.now)
+    last_attempted = models.DateTimeField(null=True, blank=True)
+
+    # Puzzle content
+    puzzle          = models.BinaryField(null=True, blank=True)
     is_public       = models.BooleanField(default=True)
 
-    # Tags (for filtering)
-    tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")
+    # Tags (types/features)
+    tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")  # related_name = access all sudokus of a tag
 
-    # Stats (aggregated from UserSudokuStats)
-    attempts        = models.PositiveIntegerField(default=0)
-    solves          = models.PositiveIntegerField(default=0)
-    total_time      = models.PositiveIntegerField(default=0)
-    average_time    = models.FloatField(default=0.0)
-    average_rating  = models.FloatField(default=0.0)
-    ratings_count   = models.PositiveIntegerField(default=0)
-
-    created_at      = models.DateTimeField(default=timezone.now)
-    last_attempted  = models.DateTimeField(null=True, blank=True)
+    # Aggregate stats
+    attempts       = models.PositiveIntegerField(default=0)
+    solves         = models.PositiveIntegerField(default=0)
+    total_time     = models.PositiveIntegerField(default=0)  # Sum of all solve times (in seconds)
+    average_time   = models.FloatField(default=0.0)          # Average time to solve (in seconds)
+    average_rating = models.FloatField(default=0.0)          # Average user rating (1-5 stars)
+    ratings_count  = models.PositiveIntegerField(default=0)  # Number of ratings
 
     def __str__(self):
         return self.title
 
+
 class UserSudokuStats(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sudoku_stats")
+    """
+    Tracks user-specific stats for each Sudoku puzzle.
+
+    - Attempts, best time, and last attempt.
+    - Rating and optional feedback.
+    - One UserSudokuStats per (user, sudoku) pair.
+    """
+
+    # Relationships
+    user   = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sudoku_stats")
     sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE, related_name="user_stats")
 
     # Performance
-    attempts = models.PositiveIntegerField(default=0)
-    best_time = models.PositiveIntegerField(default=0)  # in seconds; 0 = not solved
-    last_time = models.PositiveIntegerField(default=0)  # time for most recent solve/attempt
+    attempts  = models.PositiveIntegerField(default=0)
+    best_time = models.PositiveIntegerField(default=0)  # Best solving time (seconds); 0 means not yet solved
+    last_time = models.PositiveIntegerField(default=0)  # Time taken in the most recent attempt
 
     # Timestamps
     first_attempt = models.DateTimeField(null=True, blank=True)
-    last_attempt = models.DateTimeField(null=True, blank=True)
-    date_solved = models.DateTimeField(null=True, blank=True)
+    last_attempt  = models.DateTimeField(null=True, blank=True)
+    date_solved   = models.DateTimeField(null=True, blank=True)
 
     # Feedback
-    rating = models.PositiveSmallIntegerField(null=True, blank=True)  # 1–5 stars
+    rating  = models.PositiveSmallIntegerField(null=True, blank=True)  # Rating (1–5 stars)
     comment = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('user', 'sudoku')
+        unique_together = ('user', 'sudoku')  # One stats record per user-sudoku pair
 
     @property
     def solved(self):
+        """Returns True if the user has successfully solved the Sudoku."""
         return self.best_time > 0
+
+
+"""
+NOTES:
+- related_name="..." allows you to do things like:
+    tag_instance.sudokus.all()          # All sudokus with a specific tag
+    user_instance.sudoku_stats.all()    # All sudoku stats for a user
+    sudoku_instance.user_stats.all()    # All user stats for a sudoku
+
+- puzzle field is now a BinaryField to store zipped JSON (use Python's zlib + json libs).
+- difficulty can be derived later (e.g., via attempts/solves).
+"""

@@ -67,17 +67,15 @@ export class RuleManager {
     }
 
     saveRules() {
-        const clean = obj =>
-            Array.isArray(obj) ? obj.map(clean) :
-                (obj && typeof obj === 'object') ? Object.fromEntries(Object.entries(obj).filter(([k]) => k !== 'id').map(([k,v]) => [k, clean(v)])) :
-                    obj;
-
         return this.getAllHandlers()
             .filter(h => h.enabled && h.rules?.length)
             .map(h => ({
                 type: h.name,
-                rules: h.rules.map(clean),
-                fields: {...h.fields},
+                rules: h.rules.map(rule => ({
+                    id: rule.id,          // keep id
+                    fields: { ...rule.fields } // keep fields fully
+                })),
+                fields: { ...h.fields }   // global fields
             }));
     }
 

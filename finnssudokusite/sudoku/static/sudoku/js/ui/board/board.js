@@ -6,6 +6,7 @@ import { HintRCLayer } from "./board_hintRCLayer.js";
 import { CellLayer } from "./board_cellLayer.js";
 import { EventManager } from "./board_eventManager.js";
 import { BoardContentLayer } from "./board_contentLayer.js";
+import { serializeObject, deserializeObject } from "../util/jsonify.js";
 
 export function createBoard(container) {
     const gridSize = 9;
@@ -105,8 +106,8 @@ export function createBoard(container) {
     }
 
     function saveBoard() {
-        return JSON.stringify({
-            fixedCells: contentLayer.saveFixedCells(),
+        return serializeObject({
+            // fixedCells: contentLayer.saveFixedCells(),
             rules: ruleManager.saveRules()
         });
     }
@@ -114,17 +115,20 @@ export function createBoard(container) {
     function loadBoard(json) {
         const data = typeof json === "string" ? JSON.parse(json) : json;
 
+        console.log("Loading board data:", data);
+
         this.resetBoard();
 
-        if (data.fixedCells) {
-            contentLayer.loadFixedCells(data.fixedCells);
+        if (data.board.fixedCells) {
+
+            contentLayer.loadFixedCells(data.board.fixedCells);
         }
 
-        if (data.rules) {
-            ruleManager.loadRules(data.rules);
+        if (data.board.rules) {
+            ruleManager.loadRules(data.board.rules);
         }
 
-        board.render();
+        this.render();
     }
 
     return board;

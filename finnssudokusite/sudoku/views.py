@@ -1,24 +1,26 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, update_session_auth_hash, get_user_model
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.timezone import make_aware, is_naive
 from django.core.mail import send_mail
 from django.db.models import Count
-from django.utils.timezone import make_aware, is_naive
-from django.http import Http404
+from django.http import JsonResponse, Http404
+from django.views.decorators.http import require_POST
 from datetime import datetime, timezone
-
 from .models import Sudoku, UserSudokuStats, Tag
 from .forms import UserRegisterForm
 from .util.leaderboard import compute_leaderboard_scores
-
+import json
+import zlib
 
 # === General Views === #
+
 def index(request):
     """Main landing page showing all Sudoku puzzles and user stats if logged in."""
     sudokus = Sudoku.objects.annotate(
@@ -36,32 +38,78 @@ def index(request):
     })
 
 def playboard(request):
-    """Renders the interactive Sudoku playboard page."""
+    """Renders the general Sudoku playboard page."""
     return render(request, "sudoku/playboard/playboard.html")
 
 def puzzles_view(request):
-    """Displays all puzzles available to play."""
+    """Lists all available Sudoku puzzles."""
     sudokus = Sudoku.objects.all().select_related("created_by")
     return render(request, 'sudoku/puzzles.html', {'sudokus': sudokus})
 
-
 def leaderboard(request):
-    """Renders the leaderboard using the computed Sudoku Power Index (SPI)."""
+    """Displays the leaderboard."""
     leaderboard_data = compute_leaderboard_scores()
     return render(request, "sudoku/leaderboard.html", {
         "leaderboard": leaderboard_data
     })
 
-
 def creator(request):
-    """View to access the puzzle creator interface."""
+    """Sudoku puzzle creator view."""
     return render(request, "sudoku/creator/creator.html")
 
+@login_required
+@require_POST
+def save_sudoku(request):
+    """Handles saving a new Sudoku puzzle."""
+    try:
+        data = json.loads(request.body)
+        title = data.get("title", "Untitled Sudoku")
+        board_object = data.get("board", {})  # Full board object
+
+        if not board_object:
+            return JsonResponse({"status": "error", "message": "No board data provided."}, status=400)
+
+        # Compress board data into binary
+        board_json = json.dumps(board_object)
+        board_zip = zlib.compress(board_json.encode('utf-8'))
+
+        sudoku = Sudoku.objects.create(
+            title=title,
+            puzzle=board_zip,
+            created_by=request.user,
+            is_public=True,
+        )
+
+        return JsonResponse({"status": "success", "sudoku_id": sudoku.id})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+def play_sudoku(request, sudoku_id):
+    """Play a specific Sudoku puzzle."""
+    try:
+        sudoku = Sudoku.objects.get(pk=sudoku_id)
+    except Sudoku.DoesNotExist:
+        raise Http404("Sudoku not found.")
+
+    try:
+        # Decompress the puzzle JSON
+        puzzle_data = json.loads(zlib.decompress(sudoku.puzzle).decode('utf-8'))
+    except Exception:
+        raise Http404("Invalid puzzle data.")
+
+    return render(request, "sudoku/playboard/playboard.html", {
+        "puzzle_data_json": json.dumps({
+            "id": sudoku.id,
+            "title": sudoku.title,
+            "board": puzzle_data,
+        }),
+    })
 
 # === Profile Views === #
+
 @login_required
 def profile(request):
-    """Authenticated user's own profile page."""
+    """Authenticated user's profile page."""
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
@@ -83,7 +131,6 @@ def profile(request):
         'created_puzzles': created_puzzles.order_by("-id"),
         'all_tags': all_tags,
     })
-
 
 def user_profile(request, username):
     """Public profile view for another user."""
@@ -122,8 +169,8 @@ def user_profile(request, username):
         'last_login': target_user.last_login,
     })
 
-
 # === Auth Views === #
+
 def register(request):
     """Handles user registration and sends activation email."""
     if request.method == 'POST':
@@ -148,9 +195,8 @@ def register(request):
 
     return render(request, 'sudoku/login/register.html', {'form': form})
 
-
 def activate(request, uid, token):
-    """Verifies email activation token and activates user."""
+    """Verifies activation email and activates the user."""
     try:
         uid = force_str(urlsafe_base64_decode(uid))
         user = get_user_model().objects.get(pk=uid)
