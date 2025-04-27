@@ -9,7 +9,8 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		min-height: 100vh;
-		z-index: 1;position: relative;
+		z-index: 1;
+		position: relative;
 		
 	}
 	
@@ -129,25 +130,30 @@
 				<button class="btn btn-custom-white btn-square"><i class="bi bi-arrow-clockwise"></i></button>
 				<button class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
 				<!-- 2. Zeile -->
-				<button class="btn btn-custom-white btn-square">7</button>
-				<button class="btn btn-custom-white btn-square">8</button>
-				<button class="btn btn-custom-white btn-square">9</button>
-				<button id="minusBtn" class="btn btn-custom-white btn-square">-</button>
+				<button id="btn-seven" class="btn btn-custom-white btn-square IsBtnNumber">7</button>
+				<button id="btn-eight" class="btn btn-custom-white btn-square IsBtnNumber">8</button>
+				<button id="btn-nine" class="btn btn-custom-white btn-square IsBtnNumber">9</button>
+				<button id="btn-minus" class="btn btn-custom-white btn-square">-</button>
 				<!-- 3. Zeile -->
-				<button class="btn btn-custom-white btn-square">4</button>
-				<button class="btn btn-custom-white btn-square">5</button>
-				<button class="btn btn-custom-white btn-square">6</button>
-				<button id="plusBtn" class="btn btn-custom-white btn-square">+</button>
+				<button id="btn-four" class="btn btn-custom-white btn-square IsBtnNumber">4</button>
+				<button id="btn-five" class="btn btn-custom-white btn-square IsBtnNumber">5</button>
+				<button id="btn-six" class="btn btn-custom-white btn-square IsBtnNumber">6</button>
+				<button id="btn-plus" class="btn btn-custom-white btn-square">+</button>
 				<!-- 4. Zeile -->
-				<button class="btn btn-custom-white btn-square">1</button>
-				<button class="btn btn-custom-white btn-square">2</button>
-				<button class="btn btn-custom-white btn-square">3</button>
-				<button id="toggleEyeBtn" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
+				<button id="btn-one" class="btn btn-custom-white btn-square IsBtnNumber">1</button>
+				<button id="btn-two" class="btn btn-custom-white btn-square IsBtnNumber">2</button>
+				<button id="btn-three" class="btn btn-custom-white btn-square IsBtnNumber">3</button>
+				<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
 				<!-- 5. Zeile -->
-				<button id="eingabemodus-zahl" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
-				<button id="eingabemodus-oben" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
-				<button id="eingabemodus-mitte" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
-				<button id="eingabemodus-farbe" class="btn btn-custom-white btn-square"> <img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="24" height="24" /></button>
+				<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i>
+				</button>
+				<button id="btn-topMode" class="btn btn-custom-white btn-square">
+					<i class="bi bi-arrow-up-left-square"></i></button>
+				<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i>
+				</button>
+				<button id="btn-colorMode" class="btn btn-custom-white btn-square">
+					<img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="24" height="24" />
+				</button>
 			</div>
 		</div>
 		<div class="block-bottom"></div>
@@ -253,121 +259,148 @@ excludeCorners      : opts.excludeCorners      ?? [],
         }
 
         if (timerElement) {
-            setInterval(()=>{
-                seconds++;
-            timerElement.textContent = formatTime(seconds);
-        },
-            1000
-        )
+            setInterval(() => {
+                    seconds++;
+                    timerElement.textContent = formatTime(seconds);
+                },
+                1000
+            )
             ;
         }
 
         // Font size control functionality
         let currentFontSize = 1.8;
         const gridButtons = document.querySelectorAll('.button-grid .btn-square');
-        const plusBtn = Array.from(gridButtons).find(btn => btn.textContent.trim() === '+'
-    )
-        ;
-        const minusBtn = Array.from(gridButtons).find(btn => btn.textContent.trim() === '-'
-    )
-        ;
+        const btnPlus = document.getElementById('btn-plus');
+        const btnMinus = document.getElementById('btn-minus');
 
         function updateFontSize() {
             gridButtons.forEach(btn => {
                 btn.style.fontSize = currentFontSize + 'rem';
-        })
+            })
             ;
         }
 
-        if (plusBtn) {
-            plusBtn.addEventListener('click', () => {
+        if (btnPlus) {
+            btnPlus.addEventListener('click', () => {
                 currentFontSize += 0.2;
-            updateFontSize();
-        })
-            ;
+                updateFontSize();
+            });
         }
 
-        if (minusBtn) {
-            minusBtn.addEventListener('click', () => {
+        if (btnMinus) {
+            btnMinus.addEventListener('click', () => {
                 currentFontSize = Math.max(0.3, currentFontSize - 0.2);
-            updateFontSize();
-        })
+                updateFontSize();
+            })
             ;
         }
 
         document.addEventListener('keydown', function (event) {
             if (event.key === '+' || event.key === 'Add') {
-                plusBtn
-            ?.
-                click();
+                btnPlus.click();
                 event.preventDefault();
             }
             if (event.key === '-' || event.key === 'Subtract') {
-                minusBtn
-            ?.
-                click();
+                btnMinus.click();
                 event.preventDefault();
             }
         });
 
         // Eye icon toggle functionality
-        const icons = ['bi-eye', 'bi-eye-fill', 'bi-eye-slash-fill'];
-        const btn = document.getElementById('toggleEyeBtn');
-        if (btn) {
-            const iconElem = btn.querySelector('i');
+        const eyeIcons = ['bi-eye', 'bi-eye-fill', 'bi-eye-slash-fill'];
+        const btnEye = document.getElementById('btn-toggleEye');
+        if (btnEye) {
+            const iconElem = btnEye.querySelector('i');
             let iconIndex = 0; // Start with bi-eye-fill
 
-            btn.addEventListener('click', function () {
-                icons.forEach(cls => iconElem.classList.remove(cls)
-            )
-                ;
-                iconIndex = (iconIndex + 1) % icons.length;
-                iconElem.classList.add(icons[iconIndex]);
+            btnEye.addEventListener('click', function () {
+                eyeIcons.forEach(cls => iconElem.classList.remove(cls)
+                );
+                iconIndex = (iconIndex + 1) % eyeIcons.length;
+                iconElem.classList.add(eyeIcons[iconIndex]);
             });
         }
 
-        
-        // EINGABE_MODUS
-        const btnZahl = document.getElementById('eingabemodus-zahl');
-        const btnOben = document.getElementById('eingabemodus-oben');
-        const btnMitte = document.getElementById('eingabemodus-mitte');
-        const btnFarbe = document.getElementById('eingabemodus-farbe');
 
-        const buttons = [btnZahl, btnOben, btnMitte, btnFarbe];
+        // EINGABE_MODUS
+        const btnNumberMode = document.getElementById('btn-numberMode');
+        const btnTopMode = document.getElementById('btn-topMode');
+        const btnCenterMode = document.getElementById('btn-centerMode');
+        const btnColorMode = document.getElementById('btn-colorMode');
+
+        const theModeButtons = [btnNumberMode, btnTopMode, btnCenterMode, btnColorMode];
+        const TheColorBtns = Array.from(document.getElementsByClassName("IsBtnNumber"));
+        const btnOne = document.getElementById('btn-one');
+        const btnTwo = document.getElementById('btn-two');
+        const btnThree = document.getElementById('btn-three');
+        const btnFour = document.getElementById('btn-four');
+        const btnFive = document.getElementById('btn-five');
+        const btnSix = document.getElementById('btn-six');
+        const btnSeven = document.getElementById('btn-seven');
+        const btnEight = document.getElementById('btn-eight');
+        const btnNine = document.getElementById('btn-nine');
+        const theBtnColors = [
+            'rgb(237,255,0)',
+            'rgb(0,215,255)',
+            'rgb(255,0,170)',
+            'rgb(255,169,0)',
+            'rgb(164,122,87)',
+            'rgb(170,0,255)',
+            'rgb(255,2,0)',
+            'rgb(0,216,2)',
+            'rgb(1,0,255)'
+        ];
+
 
         function activateButton(activeBtn) {
-            buttons.forEach(btn => btn.classList.remove('btn-active'));
+            theModeButtons.forEach(btn => btn.classList.remove('btn-active'));
             activeBtn.classList.add('btn-active');
+            updateBtnColorBackground();
         }
 
+        function updateBtnColorBackground() {
+            // Alle Buttons mit der Klasse "IsBtnNumber" auswählen (HTMLCollection in ein Array umwandeln)
+
+            if (btnColorMode.classList.contains('btn-active')) {
+                TheColorBtns.forEach((btn, index) => {
+                    btn.style.backgroundColor = theBtnColors[index];
+                });
+            } else {
+                TheColorBtns.forEach(btn => {
+                    btn.style.backgroundColor = "white";
+                });
+            }
+        }
+
+
 // Initial: Zahl ist aktiv
-        activateButton(btnZahl);
+        activateButton(btnNumberMode);
 
 // Klick-Events
-        btnZahl.addEventListener('click', () => activateButton(btnZahl));
-        btnOben.addEventListener('click', () => activateButton(btnOben));
-        btnMitte.addEventListener('click', () => activateButton(btnMitte));
-        btnFarbe.addEventListener('click', () => activateButton(btnFarbe));
-	    
+        btnNumberMode.addEventListener('click', () => activateButton(btnNumberMode));
+        btnTopMode.addEventListener('click', () => activateButton(btnTopMode));
+        btnCenterMode.addEventListener('click', () => activateButton(btnCenterMode));
+        btnColorMode.addEventListener('click', () => activateButton(btnColorMode));
+
 // Hilfsfunktion: Aktuell aktiven Button finden
         function getActiveIndex() {
-            return buttons.findIndex(btn => btn.classList.contains('btn-active'));
+            return theModeButtons.findIndex(btn => btn.classList.contains('btn-active'));
         }
 
 // Event-Listener für die Space-Taste
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             // Prüfe, ob die Space-Taste gedrückt wurde (event.code ist moderner und sicherer)
             if (event.code === 'Space') {
                 event.preventDefault(); // Verhindert z.B. Scrollen auf der Seite
                 let currentIndex = getActiveIndex();
                 // Nächsten Index berechnen (rücksetzen auf 0, falls am Ende)
-                let nextIndex = (currentIndex + 1) % buttons.length;
-                activateButton(buttons[nextIndex]);
+                let nextIndex = (currentIndex + 1) % theModeButtons.length;
+                activateButton(theModeButtons[nextIndex]);
             }
         });
 
 
-        
         // Theme select functionality
         const backgrounds = {
             stone: "url('{% static 'sudoku/img/playboard/stone.jpg' %}')",
