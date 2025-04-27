@@ -1,5 +1,6 @@
 import { SelectionMode } from "../board/board_selectionEnums.js";
 import { RegionType}     from "../region/RegionType.js";
+import { CellIdx }      from "../region/CellIdx.js";
 
 export class MouseSelector {
     constructor({
@@ -24,6 +25,8 @@ export class MouseSelector {
         this._isDragging = false;
         this._dragged = new Set();
         this._shouldClear = false;
+
+        this.lastCell = null;
     }
 
     onMouseDown(e) {
@@ -60,14 +63,22 @@ export class MouseSelector {
         const key = this.getKeyFromEvent(e);
         if (!key || this._dragged.has(key)) return;
         this._dragged.add(key);
-
+            
         if (!this.onIsSelected(key)) {
+            // check if we move diagonally, if so don't select the cell
+            if (this.lastCell && Math.abs(key.r - this.lastCell.r) === 1 &&  Math.abs(key.c - this.lastCell.c) === 1) {
+                return;
+            }
+
             this.onSelect(key);
+            this.lastCell = key;
         }
     }
 
     onMouseUp(e) {
         if (!this._mouseDown) return;
+
+        this.lastCell = null;
 
         const key = this.getKeyFromEvent(e);
         const isClick = !this._isDragging;
