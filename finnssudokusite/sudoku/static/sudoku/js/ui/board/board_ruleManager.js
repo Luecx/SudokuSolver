@@ -68,40 +68,47 @@ export class RuleManager {
 
     saveRules() {
         return this.getAllHandlers()
-            .filter(h => h.enabled && h.rules?.length)
-            .map(h => ({
-                type: h.name,
-                rules: h.rules.map(rule => ({
-                    id: rule.id,          // keep id
-                    fields: { ...rule.fields } // keep fields fully
-                })),
-                fields: { ...h.fields }   // global fields
+            .filter(h => h.enabled)
+            .map(handler => ({
+                type: handler.name,
+                fields: { ...handler.fields }, // copy global fields
+                rules: handler.rules.map(rule => ({
+                    id: rule.id,
+                    fields: { ...rule.fields } // copy rule fields
+                }))
             }));
     }
 
     loadRules(data) {
+        const parsed = typeof data === "string" ? JSON.parse(data) : data;
 
-        console.log("loading rules");
-        console.log(data);
-
-        for (const { type, rules, fields } of data) {
-
-            console.log(type, rules, fields);
-
+        for (const { type, fields, rules } of parsed) {
             const handler = this.handlers[type];
             if (!handler) continue;
+
             handler.enable();
+
+            // Restore global fields
             if (fields) {
-                for (const [k, v] of Object.entries(fields)) {
-                    handler.updateGlobalField(k, v);
+                for (const [key, value] of Object.entries(fields)) {
+                    handler.updateGlobalField(key, value);
                 }
             }
+
+            // Restore individual rules
             if (rules) {
+                handler.rules = []; // Clear existing rules
                 for (const rule of rules) {
-                    handler.rules.push(rule);
+                    const restoredRule = {
+                        id: rule.id,
+                        fields: { ...rule.fields }
+                    };
+                    handler.initializeRuleFields(restoredRule); // make sure all fields exist
+                    handler.rules.push(restoredRule);
                 }
             }
         }
     }
+
 
 }
