@@ -27,7 +27,7 @@ export class CageHandler extends RuleTypeHandler {
                 default: false
             },
             {
-                key: "path",
+                key: "region",
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: "MULTIPLE",
@@ -51,14 +51,15 @@ export class CageHandler extends RuleTypeHandler {
     }
 
     render(rule, ctx) {    
-        const path = rule.fields.path;
-        if (!path) return;
+        const region = rule.fields.region;
+
+        if (!region) return;
         
         const s = this.board.getCellSize();
         const insetPx = 3;
         const inset = insetPx / s;
     
-        const cells = path.items.map(({ r, c }) => ({ x: c, y: r }));
+        const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
         const loops = buildInsetPath(cells, inset);
     
         ctx.save();
@@ -86,10 +87,11 @@ export class CageHandler extends RuleTypeHandler {
         // Draw the index inside the cage
 
         // Position top left
-        const firstPoint = loops[0][0];
-        const topLeft = this.board.getCellTopLeft(firstPoint.x, firstPoint.y);
-        const x = topLeft.x + s * 0.05;  // s * 0.05 padding
-        const y = topLeft.y + s * 0.2;  // s * 0.2 padding
+
+        const firstPoint = region.values()[0];
+        const topLeft = this.board.getCellTopLeft(firstPoint.r, firstPoint.c);
+        const x = topLeft.x + s * 0.09;  // s * 0.09 padding
+        const y = topLeft.y + s * 0.23;  // s * 0.23 padding
 
         // Draw index
         const index = rule.fields.index;
@@ -98,5 +100,4 @@ export class CageHandler extends RuleTypeHandler {
 
         ctx.restore();
     }
-    
 }
