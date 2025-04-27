@@ -8,25 +8,26 @@
 {% endblock %}
 
 {% block content %}
-<h2 class="text-center mt-4">Create Your Sudoku</h2>
 
 <div class="container-fluid mt-4">
 	<div class="row h-100">
 		<!-- LEFT COLUMN -->
-		<div class="col-12 col-md-4 d-flex flex-column p-2">
+		<div class="col-4 d-flex flex-column p-2">
+			<h2 class="text-center mt-4">Create Your Sudoku</h2>
+			
 			<div class="position-relative">
 				<input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..." autocomplete="off">
 				<ul id="ruleDropdown" class="list-group position-absolute rounded overflow-auto w-100" style="z-index: 1000;"></ul>
 			</div>
 
-			<div class="mt-4 w-100 rounded whitebox flex-fill overflow-auto" style="max-height: 600px;">
+			<div class="mt-4 w-100 rounded my_white_box flex-fill overflow-auto" style="max-height: 600px;">
 				<div id="accordionContainer" class="accordion w-100 flex-fill"></div>
 			</div>
 		</div>
 
 		<!-- CENTER COLUMN (Board) -->
-		<div class="col-12 col-md-8 flex-column p-2">
-			<div class="w-100 border rounded whitebox flex-fill mb-3">
+		<div class="col-8 flex-column p-2">
+			<div class="w-100 border rounded my_white_box flex-fill mb-3">
 				{% include "sudoku/creator/board.html" %}
 			</div>
 
