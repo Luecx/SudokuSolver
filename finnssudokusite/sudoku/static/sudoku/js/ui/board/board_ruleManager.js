@@ -80,7 +80,14 @@ export class RuleManager {
     }
 
     loadRules(data) {
+
+        console.log("loading rules");
+        console.log(data);
+
         for (const { type, rules, fields } of data) {
+
+            console.log(type, rules, fields);
+
             const handler = this.handlers[type];
             if (!handler) continue;
             handler.enable();

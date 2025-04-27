@@ -114,24 +114,23 @@ export function createBoard(container) {
 
     function loadBoard(json) {
 
-        console.log(deserializeObject(json));
+        console.log("data");
 
-        // const data = typeof json === "string" ? JSON.parse(json) : json;
+        let dat = deserializeObject(json);
+
+        console.log(dat);
+        this.resetBoard();
+
+        // if (data.board.fixedCells) {
         //
-        // console.log("Loading board data:", data);
-        //
-        // this.resetBoard();
-        //
-        // // if (data.board.fixedCells) {
-        // //
-        // //     contentLayer.loadFixedCells(data.board.fixedCells);
-        // // }
-        //
-        // if (data.board.rules) {
-        //     ruleManager.loadRules(data.board.rules);
+        //     contentLayer.loadFixedCells(data.board.fixedCells);
         // }
-        //
-        // this.render();
+
+        if (dat.rules) {
+            ruleManager.loadRules(dat.rules);
+        }
+
+        this.render();
     }
 
     return board;
