@@ -1,5 +1,5 @@
 import { createBoard } from "../board/board.js";
-import { CreatorRuleManager } from "./rule_manager.js";
+import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 import { RegionType}     from "../region/RegionType.js";
 

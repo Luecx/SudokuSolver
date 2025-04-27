@@ -5,6 +5,10 @@ import {DiagonalRuleHandler} from "./rule_diagonal.js";
 import {SandwichHandler} from "./rule_sandwich.js";
 import {ArrowHandler} from "./rule_arrow.js";
 import {ParityHandler} from "./rule_parity.js";
+import {PalindromeHandler} from "./rule_palindrome.js";
+import {ThermometerHandler} from "./rule_thermo.js";
+import {RenbanHandler} from "./rule_renban.js";
+import { WhisperHandler} from "./rule_whisper.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -16,6 +20,9 @@ export function createAllRuleHandlers(board) {
         new SandwichHandler(board),
         new ArrowHandler(board),
         new ParityHandler(board),
-        // Add more as needed
+        new PalindromeHandler(board),
+        new ThermometerHandler(board),
+        new RenbanHandler(board),
+        new WhisperHandler(board),
     ];
 }

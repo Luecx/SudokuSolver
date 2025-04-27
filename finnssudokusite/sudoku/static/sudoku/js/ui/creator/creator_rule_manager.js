@@ -76,9 +76,11 @@ export class CreatorRuleManager {
 
     _updateDropdown(query) {
         this.dropdownEl.innerHTML = "";
-        const matches = Object.values(this.ruleHandlers).filter(handler =>
-            handler.name.toLowerCase().includes(query.toLowerCase())
-        );
+        const matches = Object.values(this.ruleHandlers)
+            .filter(handler =>
+                handler.name.toLowerCase().includes(query.toLowerCase())
+            )
+            .sort((a, b) => a.name.localeCompare(b.name)); // <<< sort alphabetically here
 
         for (const handler of matches) {
             const ruleName = handler.name;
