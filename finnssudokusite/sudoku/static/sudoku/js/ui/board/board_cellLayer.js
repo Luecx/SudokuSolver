@@ -149,23 +149,23 @@ export class CellLayer {
         if (!this.config || this.config.target !== RegionType.CELLS) return;
 
         const cellSize = this.board.getCellSize();
-        const offset = this.board.getPadding();
-        const insetPx = 3;
-        const inset = insetPx / cellSize;
+        const insetPx  = 3;
+        const inset    = insetPx / cellSize;
 
-        const cells = this.selected_region.values().map(({ r, c }) => ({ x: r, y: c }));
+        const cells = this.selected_region.values().map(({ r, c }) => ({ x: c, y: r }));
         const loops = buildInsetPath(cells, inset);
 
         ctx.save();
         ctx.strokeStyle = "rgba(0, 120, 255, 0.6)";
-        ctx.lineWidth = insetPx * 2;
+        ctx.lineWidth = 6;
         ctx.lineJoin = "round";
 
         for (const loop of loops) {
             ctx.beginPath();
             loop.forEach((pt, i) => {
-                const x = offset + pt.x * cellSize;
-                const y = offset + pt.y * cellSize;
+                const topLeft = this.board.getCellTopLeft(pt.x, pt.y);
+                const x = topLeft.x;
+                const y = topLeft.y;
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             });
@@ -175,6 +175,7 @@ export class CellLayer {
 
         ctx.restore();
     }
+
 
     _toggleClass(r, c, on) {
         const cell = this.grid.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);

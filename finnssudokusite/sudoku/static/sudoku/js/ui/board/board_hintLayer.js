@@ -54,7 +54,7 @@ export class HintDotLayer {
 
         const type = config.target;
         this.selected_region = new Region(type);
-        this.excluded_region = Region.fromList(type, config.exclude ?? []);
+        this.excluded_region = config.excluded_region?? new Region(type);
         this.selector.selectionMode = config.mode ?? SelectionMode.MULTIPLE;
 
         if (config.initialSelected && Array.isArray(config.initialSelected)) {

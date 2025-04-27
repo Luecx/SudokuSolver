@@ -3,4 +3,5 @@ export const RegionType = {
     CELLS: 'cells',
     EDGES: 'edges',
     CORNERS: 'corners',
+    ROWCOL: "rowcol",
 };

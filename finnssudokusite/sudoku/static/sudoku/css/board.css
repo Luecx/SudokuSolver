@@ -119,3 +119,46 @@
     box-shadow: 0 0 5px #3399ff;
 }
 
+
+.rc-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5; /* same as hint-layer */
+    pointer-events: auto;
+}
+
+.hint-rc-label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    font-size: 2vmin;
+    font-weight: bold;
+    color: #333;
+    user-select: none;
+    cursor: pointer;
+    pointer-events: auto;
+    white-space: nowrap;
+    z-index: 11; /* above hint dots */
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+
+.hint-rc-label:hover {
+    background-color: #eef6ff;
+    border-color: #3399ff;
+}
+
+.hint-rc-label.selected {
+    background-color: #cce6ff;
+    border-color: #3399ff;
+    color: #000;
+}
+

@@ -1,0 +1,79 @@
+import { RuleTypeHandler } from "./rule.js";
+
+export class DiagonalRuleHandler extends RuleTypeHandler {
+    constructor(board) {
+        super("Diagonal Sudoku", board);
+        this.tag = "diagonal";
+        this.can_create_rules = false;
+    }
+
+    defaultRules() {
+        return []; // no instances
+    }
+
+    getGeneralRuleScheme() {
+        return [
+            {
+                key: "diagonal",
+                type: "boolean",
+                label: "Main Diagonal (↘)",
+                default: true
+            },
+            {
+                key: "antiDiagonal",
+                type: "boolean",
+                label: "Anti-Diagonal (↙)",
+                default: true
+            }
+        ];
+    }
+
+    getSpecificRuleScheme() {
+        return []; // no per-rule options
+    }
+
+    getDescriptionHTML() {
+        return `
+            In <b>Diagonal Sudoku</b>, digits 1 to 9 must also appear exactly once on one or both diagonals.
+            <ul>
+                <li><b>Main Diagonal (↘)</b>: From top-left to bottom-right.</li>
+                <li><b>Anti-Diagonal (↙)</b>: From top-right to bottom-left.</li>
+            </ul>
+            You can enable or disable each diagonal individually.
+        `;
+    }
+
+    renderAll(ctx) {
+        if (!this.enabled) return;
+        this.render(ctx);
+    }
+
+    render(ctx) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(0, 0, 255, 0.5)"; // semi-transparent blue
+        ctx.lineWidth = 2;
+
+        const gridSize = 9;
+        const s = this.board.getCellSize();
+
+        if (this.fields.diagonal) {
+            const { x: xStart, y: yStart } = this.board.getCellTopLeft(0, 0);
+            const { x: xEnd, y: yEnd } = this.board.getCellTopLeft(gridSize, gridSize);
+            ctx.beginPath();
+            ctx.moveTo(xStart, yStart);
+            ctx.lineTo(xEnd, yEnd);
+            ctx.stroke();
+        }
+
+        if (this.fields.antiDiagonal) {
+            const { x: xStart, y: yStart } = this.board.getCellTopLeft(0, gridSize);
+            const { x: xEnd, y: yEnd } = this.board.getCellTopLeft(gridSize, 0);
+            ctx.beginPath();
+            ctx.moveTo(xStart, yStart);
+            ctx.lineTo(xEnd, yEnd);
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+}
