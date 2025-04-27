@@ -43,10 +43,6 @@ export function createBoard(container) {
         getCellSize             : () => renderer.getCellSize(),
         getCanvasContext        : () => renderer.getContext(),
 
-        registerHandler         : ruleManager.registerHandler.bind(ruleManager),
-        startHandler            : ruleManager.startHandler.bind(ruleManager),
-        stopHandler             : ruleManager.stopHandler.bind(ruleManager),
-        getCurrentHandlerName   : () => ruleManager.getCurrentHandler()?.name || null,
         getAllHandlers          : () => ruleManager.getAllHandlers(),
 
         setSelectedRegion       : region => interactionManager.setSelectedRegion(region),
@@ -64,6 +60,10 @@ export function createBoard(container) {
         emitEvent               : (eventName, data) => eventManager.emit(eventName, data),
         onEvent                 : (eventName, callback) => eventManager.on(eventName, callback),
         offEvent                : (eventName, callback) => eventManager.off(eventName, callback),
+
+        resetBoard,
+        saveBoard,
+        loadBoard,
 
         cellLayer,
         hintLayer,
@@ -96,6 +96,35 @@ export function createBoard(container) {
 
         window.addEventListener("resize", resizeAndRebuild);
         resizeAndRebuild();
+    }
+
+    function resetBoard() {
+        ruleManager.resetRules();
+        contentLayer.resetContent();
+        board.render();
+    }
+
+    function saveBoard() {
+        return JSON.stringify({
+            fixedCells: contentLayer.saveFixedCells(),
+            rules: ruleManager.saveRules()
+        });
+    }
+
+    function loadBoard(json) {
+        const data = typeof json === "string" ? JSON.parse(json) : json;
+
+        this.resetBoard();
+
+        if (data.fixedCells) {
+            contentLayer.loadFixedCells(data.fixedCells);
+        }
+
+        if (data.rules) {
+            ruleManager.loadRules(data.rules);
+        }
+
+        board.render();
     }
 
     return board;

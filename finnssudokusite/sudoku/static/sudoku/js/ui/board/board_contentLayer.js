@@ -235,4 +235,29 @@ export class BoardContentLayer {
     getCell(cellIdx) {
         return this.cells.find(cell => cell.idx.equals(cellIdx));
     }
+
+    resetContent() {
+        for (const cell of this.cells) {
+            cell.clear();
+            this.updateCell(cell);
+        }
+    }
+
+    saveFixedCells() {
+        return this.cells
+            .filter(cell => cell.hasValue() && cell.fixed)
+            .map(cell => ({
+                r: cell.idx.r,
+                c: cell.idx.c,
+                value: cell.value
+            }));
+    }
+
+    loadFixedCells(data) {
+        for (const { r, c, value } of data) {
+            this.setValue(r, c, value, true);
+        }
+    }
+
+
 }

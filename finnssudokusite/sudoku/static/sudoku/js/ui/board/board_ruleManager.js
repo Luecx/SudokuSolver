@@ -18,31 +18,6 @@ export class RuleManager {
         handler.onRegister?.();
     }
 
-    startHandler(name) {
-        this.stopHandler();
-        this.currentHandler = this.handlers[name];
-
-        this.currentHandler?.onStartCreating?.();
-
-        // 👇 NEW: tell the board what this handler wants to select
-        if (this.board && this.currentHandler?.selection) {
-            this.board.setSelection(this.currentHandler.selection);
-            this.board.showSelectionBlue(true); // or false, depending on handler
-        }
-    }
-
-
-    stopHandler() {
-        this.currentHandler?.onFinishedCreating?.();
-        this.currentHandler = null;
-
-        if (this.board) {
-            this.board.setSelection({ target: 'none', mode: 'single' }); // disable everything
-            this.board.showSelectionBlue(false);
-        }
-    }
-
-
     getAllHandlers() {
         return Object.values(this.handlers);
     }
@@ -84,4 +59,44 @@ export class RuleManager {
     getCornerHints() {
         return this.currentHandler?.getCornerHints?.() || [];
     }
+
+    resetRules() {
+        for (const handler of this.getAllHandlers()) {
+            handler.disable();
+        }
+    }
+
+    saveRules() {
+        const clean = obj =>
+            Array.isArray(obj) ? obj.map(clean) :
+                (obj && typeof obj === 'object') ? Object.fromEntries(Object.entries(obj).filter(([k]) => k !== 'id').map(([k,v]) => [k, clean(v)])) :
+                    obj;
+
+        return this.getAllHandlers()
+            .filter(h => h.enabled && h.rules?.length)
+            .map(h => ({
+                type: h.name,
+                rules: h.rules.map(clean),
+                fields: {...h.fields},
+            }));
+    }
+
+    loadRules(data) {
+        for (const { type, rules, fields } of data) {
+            const handler = this.handlers[type];
+            if (!handler) continue;
+            handler.enable();
+            if (fields) {
+                for (const [k, v] of Object.entries(fields)) {
+                    handler.updateGlobalField(k, v);
+                }
+            }
+            if (rules) {
+                for (const rule of rules) {
+                    handler.rules.push(rule);
+                }
+            }
+        }
+    }
+
 }

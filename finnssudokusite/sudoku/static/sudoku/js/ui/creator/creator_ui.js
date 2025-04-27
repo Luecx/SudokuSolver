@@ -26,6 +26,11 @@ class Creator {
             preserveOnModifier: "Shift", // hold Shift to preserve selection
         });
 
+        document.getElementById("submit-sudoku-btn").addEventListener("click", () => {
+            const json = this.board.saveBoard();
+            console.log("Saved Sudoku:", json);
+        });
+
         // create the rule manager and hook it up to the board and the ui
         this.rule_manager = new CreatorRuleManager(this.board);
 
