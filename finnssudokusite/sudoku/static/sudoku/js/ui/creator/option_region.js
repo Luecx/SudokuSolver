@@ -43,15 +43,9 @@ export class RegionSelectorOption {
         this.active = true;
 
         this.board.setSelection(this.config);
-
-        console.log(this.board.hintLayer.selected_region);
-
         if (this.onStart) {
             this.onStart();
         }
-
-        console.log(this.board.hintLayer.selected_region);
-
         this._attachBoardListeners();
         this._updateDisplay();
     }

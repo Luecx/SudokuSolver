@@ -236,13 +236,20 @@ export class CreatorRuleManager {
             id: `${handler.name}-${rule?.id ?? "global"}-${desc.key}`,
             defaultValue: rule?.fields?.[desc.key] ?? handler.fields?.[desc.key],
             onChange: ({ value }) => {
+                console.log("changed values");
                 if (rule) {
                     handler.updateRuleField(rule, desc.key, value);
                 } else {
                     handler.updateGlobalField(desc.key, value);
                 }
             },
-            onDone: null // <- intentionally empty for now
+            onDone: ({ value })  => {
+                if (rule) {
+                    handler.updateRuleField(rule, desc.key, value);
+                } else {
+                    handler.updateGlobalField(desc.key, value);
+                }
+            }
         };
 
         switch (desc.type) {

@@ -18,7 +18,7 @@ export class Region {
         }
         this.type = type;
         this.itemClass = RegionClassMap[type];
-        this.items = [];  // echtes Objekt-Array
+        this.items = [];
     }
 
     _findIndex(idx) {
