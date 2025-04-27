@@ -15,14 +15,14 @@ export class RegionSelectorOption {
 
         this.label = document.createElement("label");
         this.label.className = "form-label";
-        this.label.textContent = this.labelText;
+        this.label.innerHTML = this.labelText;
         if (id) this.label.htmlFor = id;
         this.wrapper.appendChild(this.label);
 
         this.region = document.createElement("div");
         this.region.className = "form-control bg-light text-muted text-center py-2";
         this.region.style.cursor = "pointer";
-        this.region.textContent = "Edit";
+        this.region.innerHTML = "Edit";
         this.wrapper.appendChild(this.region);
 
         this.active = false;
@@ -43,15 +43,9 @@ export class RegionSelectorOption {
         this.active = true;
 
         this.board.setSelection(this.config);
-
-        console.log(this.board.hintLayer.selected_region);
-
         if (this.onStart) {
             this.onStart();
         }
-
-        console.log(this.board.hintLayer.selected_region);
-
         this._attachBoardListeners();
         this._updateDisplay();
     }
@@ -106,10 +100,10 @@ export class RegionSelectorOption {
     _updateDisplay() {
         if (this.active) {
             this.region.classList.add("bg-primary", "text-white");
-            this.region.textContent = `Stop selecting (${this.currentCount})`;
+            this.region.innerHTML = `Stop selecting (${this.currentCount})`;
         } else {
             this.region.classList.remove("bg-primary", "text-white");
-            this.region.textContent = this.currentCount > 0 ? `Edit (${this.currentCount} selected)` : "Edit";
+            this.region.innerHTML = this.currentCount > 0 ? `Edit (${this.currentCount} selected)` : "Edit";
         }
     }
 

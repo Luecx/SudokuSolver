@@ -1,0 +1,238 @@
+import { CellIdx } from "../region/CellIdx.js";
+
+export class Cell {
+    constructor(r, c) {
+        this.idx = new CellIdx(r, c);
+        this.value = null;
+        this.fixed = false;
+        this.ordinaryCandidates = [];   // NEW: for 3x3 grid
+        this.centeredCandidates = [];   // NEW: for center text
+        this.colors = [];
+        this.element = null;
+        this.valueLayer = null;
+        this.candidateLayer = null;
+        this.centeredCandidateLayer = null;
+    }
+
+    hasValue() {
+        return this.value !== null;
+    }
+
+    clear() {
+        this.value = null;
+        this.fixed = false;
+        this.ordinaryCandidates = [];
+        this.centeredCandidates = [];
+        this.colors = [];
+    }
+}
+
+export class BoardContentLayer {
+    constructor(container, renderer, gridSize = 9) {
+        this.container = container;
+        this.renderer = renderer;
+        this.gridSize = gridSize;
+        this.board = null;
+
+        this.cells = [];
+        this.grid = null;
+    }
+
+    init(board) {
+        this.board = board;
+
+        this.grid = document.createElement("div");
+        this.grid.className = "content-layer";
+        Object.assign(this.grid.style, {
+            position: "absolute",
+            pointerEvents: "none",
+        });
+        this.container.appendChild(this.grid);
+
+        this.generateEmptyBoard();
+        this.fillRandom();
+    }
+
+    generateEmptyBoard() {
+        this.cells = [];
+        for (let r = 0; r < this.gridSize; r++) {
+            for (let c = 0; c < this.gridSize; c++) {
+                const cell = new Cell(r, c);
+                this.cells.push(cell);
+            }
+        }
+    }
+
+    _generate(cellSize, usedSize, gridOffset) {
+        this.grid.innerHTML = "";
+        Object.assign(this.grid.style, {
+            width: `${usedSize}px`,
+            height: `${usedSize}px`,
+            top: `${gridOffset}px`,
+            left: `${gridOffset}px`,
+        });
+
+        for (const cell of this.cells) {
+            const div = document.createElement("div");
+            div.className = "cell-content";
+            div.dataset.r = cell.idx.r;
+            div.dataset.c = cell.idx.c;
+            div.style.width = `${cellSize}px`;
+            div.style.height = `${cellSize}px`;
+            div.style.position = "absolute";
+            div.style.left = `${cell.idx.c * cellSize}px`;
+            div.style.top = `${cell.idx.r * cellSize}px`;
+
+            const valueLayer = document.createElement("div");
+            valueLayer.className = "value-layer";
+            div.appendChild(valueLayer);
+
+            const candidateLayer = document.createElement("div");
+            candidateLayer.className = "candidate-layer";
+            div.appendChild(candidateLayer);
+
+            const centeredCandidateLayer = document.createElement("div");
+            centeredCandidateLayer.className = "centered-candidate-layer";
+            div.appendChild(centeredCandidateLayer);
+
+            cell.element = div;
+            cell.valueLayer = valueLayer;
+            cell.candidateLayer = candidateLayer;
+            cell.centeredCandidateLayer = centeredCandidateLayer;
+
+            this.grid.appendChild(div);
+
+            this.updateCell(cell);
+        }
+    }
+
+    updateCell(cell) {
+        if (!cell.element) return;
+
+        const valueLayer = cell.valueLayer;
+        const candidateLayer = cell.candidateLayer;
+        const centeredCandidateLayer = cell.centeredCandidateLayer;
+
+        cell.element.style.background = this.computeBackground(cell.colors);
+
+        valueLayer.textContent = "";
+        valueLayer.classList.remove("fixed", "editable");
+        candidateLayer.innerHTML = "";
+        centeredCandidateLayer.textContent = "";
+
+        const cellSize = this.board.getCellSize();
+
+        if (cell.hasValue()) {
+            valueLayer.textContent = cell.value;
+            valueLayer.style.width = `${cellSize}px`;
+            valueLayer.style.height = `${cellSize}px`;
+            valueLayer.style.fontSize = `${cellSize * 0.8}px`;
+            valueLayer.classList.add(cell.fixed ? "fixed" : "editable");
+        }
+
+        // Fill 3x3 grid with ordinary candidates
+        const candidateOrder = [1,2,3,4,5,6,7,8,9];
+        for (let n of candidateOrder) {
+            const candidate = document.createElement("div");
+            candidate.className = "candidate-cell";
+            candidate.style.fontSize = `${cellSize * 0.2}px`;
+            candidate.style.width = `${cellSize / 3}px`;
+            candidate.style.height = `${cellSize / 3}px`;
+            if (cell.ordinaryCandidates.includes(n)) {
+                candidate.textContent = n;
+            }
+            candidateLayer.appendChild(candidate);
+        }
+        candidateLayer.style.display = "grid";
+
+        // Fill centered candidates text
+        if (cell.centeredCandidates.length > 0) {
+            centeredCandidateLayer.textContent = cell.centeredCandidates.sort().join("");
+            centeredCandidateLayer.style.fontSize = `${cellSize * 0.2}px`;
+            centeredCandidateLayer.style.width = `${cellSize}px`;
+            centeredCandidateLayer.style.height = `${cellSize}px`;
+            centeredCandidateLayer.style.display = "flex";
+        } else {
+            centeredCandidateLayer.style.display = "none";
+        }
+    }
+
+    computeBackground(colors) {
+        if (!colors || colors.length === 0) return "transparent";
+        if (colors.length === 1) return colors[0];
+
+        const slice = 360 / colors.length;
+        return `conic-gradient(${colors.map((c, i) => `${c} ${slice * i}deg ${slice * (i + 1)}deg`).join(", ")})`;
+    }
+
+    fillRandom() {
+        for (const cell of this.cells) {
+            const rand = Math.random();
+            if (rand < 0.2) {
+                cell.value = this.randomValue();
+                cell.fixed = true;
+            } else if (rand < 0.4) {
+                cell.value = this.randomValue();
+                cell.fixed = false;
+            } else if (rand < 0.7) {
+
+                if (Math.random() < 0.5) {
+                    for (let n = 1; n <= 9; n++) {
+                        if (Math.random() < 0.4) {
+                            cell.ordinaryCandidates.push(n);
+                        }
+                    }
+                }else {
+                    for (let n = 1; n <= 9; n++) {
+                        if (Math.random() < 0.2) {
+                            cell.centeredCandidates.push(n);
+                        }
+                    }
+                }
+
+            } else {
+                cell.clear();
+            }
+        }
+    }
+
+    randomValue() {
+        return Math.floor(Math.random() * 9) + 1;
+    }
+
+    setValue(r, c, value, fixed = false) {
+        const cell = this.getCell(new CellIdx(r, c));
+        if (!cell) return;
+        cell.value = value;
+        cell.fixed = fixed;
+        cell.ordinaryCandidates = [];
+        cell.centeredCandidates = [];
+        this.updateCell(cell);
+    }
+
+    setOrdinaryCandidates(r, c, candidates) {
+        const cell = this.getCell(new CellIdx(r, c));
+        if (!cell) return;
+        cell.value = null;
+        cell.ordinaryCandidates = candidates;
+        this.updateCell(cell);
+    }
+
+    setCenteredCandidates(r, c, candidates) {
+        const cell = this.getCell(new CellIdx(r, c));
+        if (!cell) return;
+        cell.centeredCandidates = candidates;
+        this.updateCell(cell);
+    }
+
+    setColors(r, c, colors) {
+        const cell = this.getCell(new CellIdx(r, c));
+        if (!cell) return;
+        cell.colors = colors;
+        this.updateCell(cell);
+    }
+
+    getCell(cellIdx) {
+        return this.cells.find(cell => cell.idx.equals(cellIdx));
+    }
+}

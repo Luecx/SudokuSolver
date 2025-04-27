@@ -39,6 +39,19 @@ export class KropkiHandler extends RuleTypeHandler {
         ];
     }
 
+    getDescriptionHTML() {
+        return `
+        <ul>
+            <li>A <b>white dot</b> between two cells means the numbers are consecutive (for example, 3 and 4).</li>
+            <li>A <b>black dot</b> means one number is exactly double the other (for example, 2 and 4).</li>
+        </ul>
+        If the option <b>All Dots Given</b> is enabled, then every adjacent pair of cells that satisfies one of these conditions will have a dot. 
+        This means that if there is no dot between two adjacent cells, then neither condition (consecutive nor double) applies.
+        If <b>All Dots Given</b> is not enabled, dots may only be placed selectively, and missing dots do not imply anything.
+    `;
+    }
+
+
     render(rule, ctx) {
         const region = rule.fields.region;
 

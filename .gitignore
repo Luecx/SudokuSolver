@@ -1,5 +1,50 @@
-/cmake-build-debug/
-/cmake-build-release/
-/.idea/
+# Build folders (CMake)
+cmake-build-*/
+
+# IDE files (CLion, PyCharm, etc.)
+**/.idea/
+*.iml
+
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+install_manifest.txt
+
+# General backup and temp files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# OS-specific junk
+.DS_Store
+Thumbs.db
+
+# Git-specific
+*.orig
+
+# VSCode settings (optional)
+.vscode/
+
+# Python virtual environments (optional)
+.venv/
+env/
+venv/
+ENV/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm

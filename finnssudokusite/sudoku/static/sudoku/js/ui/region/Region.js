@@ -2,11 +2,13 @@ import { RegionType } from "./RegionType.js";
 import { CellIdx } from "./CellIdx.js";
 import { EdgeIdx } from "./EdgeIdx.js";
 import { CornerIdx } from "./CornerIdx.js";
+import {RCIdx} from "./RCIdx.js";
 
 export const RegionClassMap = {
     [RegionType.CELLS]: CellIdx,
     [RegionType.EDGES]: EdgeIdx,
     [RegionType.CORNERS]: CornerIdx,
+    [RegionType.ROWCOL]: RCIdx,
 };
 
 export class Region {
@@ -16,7 +18,7 @@ export class Region {
         }
         this.type = type;
         this.itemClass = RegionClassMap[type];
-        this.items = [];  // echtes Objekt-Array
+        this.items = [];
     }
 
     _findIndex(idx) {

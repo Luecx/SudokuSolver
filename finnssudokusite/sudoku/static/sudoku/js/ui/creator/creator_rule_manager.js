@@ -76,17 +76,30 @@ export class CreatorRuleManager {
 
     _updateDropdown(query) {
         this.dropdownEl.innerHTML = "";
-        const matches = Object.values(this.ruleHandlers).filter(handler => handler.name.toLowerCase().includes(query.toLowerCase()));
+        const matches = Object.values(this.ruleHandlers)
+            .filter(handler =>
+                handler.name.toLowerCase().includes(query.toLowerCase())
+            )
+            .sort((a, b) => a.name.localeCompare(b.name)); // <<< sort alphabetically here
 
         for (const handler of matches) {
             const ruleName = handler.name;
             const li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
-            li.textContent = ruleName;
+
+            const label = document.createElement("span");
+            label.textContent = ruleName;
+            li.appendChild(label);
 
             if (this.addedRules.has(ruleName)) {
+                const checkIcon = document.createElement("i");
+                checkIcon.className = "fas fa-check"; // or "fa-solid fa-check" if you're using FA6
+                checkIcon.style.color = "green";
+                checkIcon.style.fontSize = "1rem"; // small checkmark
+                checkIcon.style.marginLeft = "0.5rem"; // small space from label
+                li.appendChild(checkIcon);
+
                 li.classList.add("text-muted");
-                li.innerHTML += '<span class="badge bg-success rounded-pill">✔</span>';
                 li.style.pointerEvents = "none";
             } else {
                 li.addEventListener("click", () => handler.enable());
@@ -97,6 +110,7 @@ export class CreatorRuleManager {
 
         this.dropdownEl.style.display = matches.length ? "block" : "none";
     }
+
 
     _addRuleToAccordion(handler) {
         const ruleName = handler.name;
@@ -109,19 +123,56 @@ export class CreatorRuleManager {
         wrapper.className = "accordion-item";
         wrapper.id = `rule-${id}`;
 
+        // === Accordion Header ===
         const header = document.createElement("h2");
         header.className = "accordion-header d-flex justify-content-between align-items-center";
 
+        // Left side (inside blue toggle button)
         const toggleBtn = document.createElement("button");
-        toggleBtn.className = "accordion-button collapsed py-2 flex-grow-1";
+        toggleBtn.className = "accordion-button collapsed py-2 d-flex align-items-center gap-2 flex-grow-1";
         toggleBtn.type = "button";
         toggleBtn.dataset.bsToggle = "collapse";
         toggleBtn.dataset.bsTarget = `#collapse-${id}`;
-        toggleBtn.innerText = ruleName;
 
+        const labelWrapper = document.createElement("div");
+        labelWrapper.className = "d-flex align-items-center gap-2"; // group label + info tightly
+
+        const label = document.createElement("span");
+        label.className = "fw-bold";
+        label.innerText = ruleName;
+        labelWrapper.appendChild(label);
+
+        const descriptionHTML = handler.getDescriptionHTML?.();
+        if (descriptionHTML) {
+            const infoIcon = document.createElement("i");
+            infoIcon.className = "fa fa-info-circle text-muted";
+            infoIcon.style.fontSize = "0.9rem";
+            infoIcon.style.cursor = "pointer";
+            infoIcon.setAttribute("data-bs-toggle", "tooltip");
+            infoIcon.setAttribute("data-bs-html", "true");
+            infoIcon.setAttribute("title", descriptionHTML);
+            labelWrapper.appendChild(infoIcon);
+        }
+
+        toggleBtn.appendChild(labelWrapper); // attach wrapper into toggleBtn
+
+
+        // Right side (outside blue button)
         const removeBtn = document.createElement("button");
-        removeBtn.className = "btn btn-sm btn-danger ms-2";
-        removeBtn.innerHTML = `<i class="fa fa-times"></i>`;
+        removeBtn.type = "button";
+        removeBtn.className = "border-0 bg-transparent ms-2 d-flex align-items-center justify-content-center";
+        removeBtn.style.width = "2rem";    // fixed width
+        removeBtn.style.height = "2rem";   // fixed height
+        removeBtn.style.padding = "0";
+        removeBtn.style.margin = "0";
+        removeBtn.style.alignSelf = "center"; // important for flex
+        removeBtn.style.fontSize = "1.2rem";  // smaller icon size
+        removeBtn.style.color = "red";        // icon color via button
+        const icon = document.createElement("i");
+        icon.className = "fas fa-times"; // or "fa-solid fa-xmark" if you use newer FA 6
+        icon.style.pointerEvents = "none"; // so clicking is on button, not icon
+
+        removeBtn.appendChild(icon);
         removeBtn.addEventListener("click", () => {
             handler.disable();
         });
@@ -130,30 +181,33 @@ export class CreatorRuleManager {
         header.appendChild(toggleBtn);
         header.appendChild(removeBtn);
 
+        // === Accordion Collapse ===
         const collapse = document.createElement("div");
         collapse.className = "accordion-collapse collapse";
         collapse.id = `collapse-${id}`;
 
         const body = document.createElement("div");
-        body.className = "accordion-body";
+        body.className = "accordion-body d-flex flex-column gap-2";
 
+        // General options
         const generalOptions = handler.getGeneralRuleScheme().map(desc =>
             this._createFieldComponent(desc, handler, null)
         );
         generalOptions.forEach(opt => body.appendChild(opt.element));
 
+        // Instance list
         const instanceList = document.createElement("div");
         instanceList.className = "rule-instance-list d-flex flex-column gap-2";
 
         if (handler.canAddRule()) {
             const addCard = document.createElement("button");
             addCard.className = "btn btn-outline-primary w-100 my-2";
-            addCard.innerHTML = `<i class="fa fa-plus me-1"></i> Add Rule`;
+            addCard.innerHTML = `<i class="fa fa-plus me-1"></i> Add Instance`;
             addCard.addEventListener("click", () => {
                 const rule = {
                     id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`
                 };
-                handler.rules.push(rule); // proper way: manually add to rules
+                handler.rules.push(rule);
                 handler.initializeRuleFields(rule);
                 handler.board.emitEvent("ev_rule_added", [handler, rule]);
                 handler.board.triggerRender();
@@ -166,7 +220,13 @@ export class CreatorRuleManager {
         wrapper.appendChild(header);
         wrapper.appendChild(collapse);
         this.accordionEl.appendChild(wrapper);
+
+        // === Initialize Bootstrap Tooltip for info icon
+        if (descriptionHTML) {
+            new bootstrap.Tooltip(toggleBtn.querySelector("i"));
+        }
     }
+
 
     _getInstanceList(handler) {
         const id = `rule-${handler.name.replace(/\s+/g, "-")}`;
@@ -178,17 +238,20 @@ export class CreatorRuleManager {
             id: `${handler.name}-${rule?.id ?? "global"}-${desc.key}`,
             defaultValue: rule?.fields?.[desc.key] ?? handler.fields?.[desc.key],
             onChange: ({ value }) => {
-                // show value and its class / type
-                console.log(value);
-                console.log(value.constructor.name);
-
+                console.log("changed values");
                 if (rule) {
                     handler.updateRuleField(rule, desc.key, value);
                 } else {
                     handler.updateGlobalField(desc.key, value);
                 }
             },
-            onDone: null // <- intentionally empty for now
+            onDone: ({ value })  => {
+                if (rule) {
+                    handler.updateRuleField(rule, desc.key, value);
+                } else {
+                    handler.updateGlobalField(desc.key, value);
+                }
+            }
         };
 
         switch (desc.type) {

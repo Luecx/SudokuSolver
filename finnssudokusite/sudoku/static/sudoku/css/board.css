@@ -58,7 +58,8 @@
 
 /* Individual cells */
 .cell {
-    background-color: #fff;
+    /*background-color: #fff;*/
+    background-color: transparent;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -119,3 +120,169 @@
     box-shadow: 0 0 5px #3399ff;
 }
 
+
+.rc-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5; /* same as hint-layer */
+    pointer-events: auto;
+}
+
+.hint-rc-label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    font-size: 2vmin;
+    font-weight: bold;
+    color: #333;
+    user-select: none;
+    cursor: pointer;
+    pointer-events: auto;
+    white-space: nowrap;
+    z-index: 11; /* above hint dots */
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+
+.hint-rc-label:hover {
+    background-color: #eef6ff;
+    border-color: #3399ff;
+}
+
+.hint-rc-label.selected {
+    background-color: #cce6ff;
+    border-color: #3399ff;
+    color: #000;
+}
+
+
+.cell-content {
+    box-sizing: border-box;
+}
+.cell-content div {
+    font-size: 0.7em;
+}
+
+.board-content-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.cell-content {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    user-select: none;
+}
+
+.cell-content.fixed {
+    color: black;
+    font-size: 2em;
+}
+
+.cell-content.editable {
+    color: blue;
+    font-size: 2em;
+}
+
+.candidate-grid {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    align-items: center;
+    justify-items: center;
+}
+
+.candidate-cell {
+    font-size: 0.5em;
+}
+
+.content-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.cell-content {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+}
+
+.value-layer {
+    font-weight: 200;
+    font-size: 2em;
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.value-layer.fixed {
+    color: black;
+}
+
+.value-layer.editable {
+    color: blue;
+}
+
+.candidate-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    align-items: center;
+    justify-items: center;
+    font-weight: 200;
+    color: gray;
+    /*font-size: 0.5em;*/
+    pointer-events: none;
+}
+
+.candidate-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.centered-candidate-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 200;
+    color: gray;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -24,6 +24,11 @@ export class RuleTypeHandler {
     getSpecificRuleScheme() { return []; }
     defaultRules() { return []; }
 
+    // ===== Description (override in subclass) =====
+    getDescriptionHTML() {
+        return "";
+    }
+
     // ===== Initialization Helpers =====
     initializeGlobalFields() {
         this.fields = {};
@@ -63,7 +68,7 @@ export class RuleTypeHandler {
         if (!this.enabled) {
             this.enabled = true;
             this.board.emitEvent("ev_rule_handler_enabled", this);
-            this.reset(); // <-- now ensures fields and rules are ready
+            this.reset();
             this.board.triggerRender();
         }
     }

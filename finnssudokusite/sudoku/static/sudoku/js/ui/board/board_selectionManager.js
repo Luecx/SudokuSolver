@@ -1,15 +1,14 @@
 import { SelectionMode } from "./board_selectionEnums.js";
-import { RegionType}     from "../region/RegionType.js";
+import { RegionType } from "../region/RegionType.js";
 import { createSelectionConfig } from "./board_selectionConfig.js";
 
 export class SelectionManager {
     constructor(grid) {
-        this.grid  = grid;
+        this.grid = grid;
         this.board = null;
 
         this.selectionConfig = null;
         this.previousConfig  = null;
-        this.selecting       = false;
 
         this.defaultConfig = createSelectionConfig({
             target: RegionType.CELLS,
@@ -29,11 +28,12 @@ export class SelectionManager {
         if (target === RegionType.CELLS && region.type === RegionType.CELLS) {
             this.board.cellLayer.selected_region = region;
         }
-        if (target === RegionType.EDGES && region.type === RegionType.EDGES) {
+        if ((target === RegionType.EDGES || target === RegionType.CORNERS) &&
+            (region.type === RegionType.EDGES || region.type === RegionType.CORNERS)) {
             this.board.hintLayer.selected_region = region;
         }
-        if (target === RegionType.CORNERS && region.type === RegionType.CORNERS) {
-            this.board.hintLayer.selected_region = region;
+        if (target === RegionType.ROWCOL && region.type === RegionType.ROWCOL) {
+            this.board.hintRCLayer.selected_region = region;
         }
     }
 
@@ -49,10 +49,14 @@ export class SelectionManager {
             this.board.emitEvent("ev_selection_ended",
                 this.selectionConfig.target === RegionType.CELLS   ? this.board.cellLayer.selected_region :
                 this.selectionConfig.target === RegionType.EDGES   ? this.board.hintLayer.selected_region :
-                this.selectionConfig.target === RegionType.CORNERS ? this.board.hintLayer.selected_region : null);
+                this.selectionConfig.target === RegionType.CORNERS ? this.board.hintLayer.selected_region :
+                this.selectionConfig.target === RegionType.ROWCOL  ? this.board.hintRCLayer.selected_region : null
+            );
+
             // close the selector
             this.board.cellLayer.hide();
             this.board.hintLayer.hide();
+            this.board.hintRCLayer.hide();
         }
 
         // save the current config if it exists to allow reverting.
@@ -69,10 +73,13 @@ export class SelectionManager {
         const target = config.target;
 
         const isHint = target === RegionType.EDGES
-                    || target === RegionType.CORNERS;
+            || target === RegionType.CORNERS;
 
-        this.board.cellLayer.grid.style.pointerEvents      = isHint ? "none" : "auto";
+        const isRC = target === RegionType.ROWCOL;
+
+        this.board.cellLayer.grid.style.pointerEvents = (!isHint && !isRC) ? "auto" : "none";
         this.board.hintLayer.hintLayer.style.pointerEvents = isHint ? "auto" : "none";
+        this.board.hintRCLayer.rcLayer.style.pointerEvents = isRC ? "auto" : "none";
 
         if (target === RegionType.CELLS) {
             this.board.cellLayer.show(config);
@@ -86,6 +93,13 @@ export class SelectionManager {
             this.board.emitEvent("ev_selection_started", config);
         } else {
             this.board.hintLayer.hide();
+        }
+
+        if (isRC) {
+            this.board.hintRCLayer.show(config);
+            this.board.emitEvent("ev_selection_started", config);
+        } else {
+            this.board.hintRCLayer.hide();
         }
     }
 
@@ -118,6 +132,10 @@ export class SelectionManager {
             this.selectionConfig?.target === RegionType.CORNERS
         ) {
             this.board.hintLayer.clearSelection();
+        }
+
+        if (this.selectionConfig?.target === RegionType.ROWCOL) {
+            this.board.hintRCLayer.clearSelection();
         }
     }
 }
