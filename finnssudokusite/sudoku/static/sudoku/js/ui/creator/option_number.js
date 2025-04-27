@@ -10,7 +10,7 @@ export class NumberOption {
 
         this.label = document.createElement("label");
         this.label.className = "form-label";
-        this.label.textContent = label;
+        this.label.innerHTML = label;
         if (id) this.label.htmlFor = id;
 
         this.input = document.createElement("input");

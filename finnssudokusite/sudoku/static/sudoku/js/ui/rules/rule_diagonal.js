@@ -16,13 +16,13 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
             {
                 key: "diagonal",
                 type: "boolean",
-                label: "Main Diagonal (↘)",
+                label: `Main Diagonal (<i class="bi bi-arrow-up-left"></i>)`,
                 default: true
             },
             {
                 key: "antiDiagonal",
                 type: "boolean",
-                label: "Anti-Diagonal (↙)",
+                label: `Anti-Diagonal (<i class="bi bi-arrow-up-right"></i>)`,
                 default: true
             }
         ];
@@ -36,8 +36,8 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
         return `
             In <b>Diagonal Sudoku</b>, digits 1 to 9 must also appear exactly once on one or both diagonals.
             <ul>
-                <li><b>Main Diagonal (↘)</b>: From top-left to bottom-right.</li>
-                <li><b>Anti-Diagonal (↙)</b>: From top-right to bottom-left.</li>
+                <li><b>Main Diagonal (<i class="bi bi-arrow-up-left"></i>)</b>: From top-left to bottom-right.</li>
+                <li><b>Anti-Diagonal (<i class="bi bi-arrow-up-right"></i>)</b>: From top-right to bottom-left.</li>
             </ul>
             You can enable or disable each diagonal individually.
         `;

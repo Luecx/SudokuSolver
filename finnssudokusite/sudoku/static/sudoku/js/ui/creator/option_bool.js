@@ -16,7 +16,7 @@ export class BooleanOption {
 
         this.label = document.createElement("label");
         this.label.className = "form-check-label";
-        this.label.textContent = label;
+        this.label.innerHTML = label;
         if (id) this.label.htmlFor = id;
 
         this.wrapper.appendChild(this.input);
