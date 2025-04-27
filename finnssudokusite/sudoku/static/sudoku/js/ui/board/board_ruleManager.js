@@ -65,17 +65,13 @@ export class RuleManager {
             handler.disable();
         }
     }
-
     saveRules() {
         return this.getAllHandlers()
             .filter(h => h.enabled)
             .map(handler => ({
                 type: handler.name,
-                fields: { ...handler.fields }, // copy global fields
-                rules: handler.rules.map(rule => ({
-                    id: rule.id,
-                    fields: { ...rule.fields } // copy rule fields
-                }))
+                fields: { ...handler.fields }, // copy all global fields
+                rules: handler.rules.map(rule => ({ ...rule })) // copy full rule object
             }));
     }
 
@@ -84,7 +80,10 @@ export class RuleManager {
 
         for (const { type, fields, rules } of parsed) {
             const handler = this.handlers[type];
-            if (!handler) continue;
+            if (!handler) {
+                console.warn(`Unknown handler type: ${type}`);
+                continue;
+            }
 
             handler.enable();
 
@@ -95,15 +94,12 @@ export class RuleManager {
                 }
             }
 
-            // Restore individual rules
+            // Restore full rules
             if (rules) {
                 handler.rules = []; // Clear existing rules
                 for (const rule of rules) {
-                    const restoredRule = {
-                        id: rule.id,
-                        fields: { ...rule.fields }
-                    };
-                    handler.initializeRuleFields(restoredRule); // make sure all fields exist
+                    const restoredRule = { ...rule };
+                    handler.initializeRuleFields(restoredRule); // ensure all needed fields exist
                     handler.rules.push(restoredRule);
                 }
             }
