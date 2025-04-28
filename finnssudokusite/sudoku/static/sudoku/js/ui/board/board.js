@@ -62,6 +62,31 @@ export function createBoard(container) {
         onEvent                 : (eventName, callback) => eventManager.on(eventName, callback),
         offEvent                : (eventName, callback) => eventManager.off(eventName, callback),
 
+        // ───  CONTENT-LAYER APIs ────────────────────────────────────────
+        // single-cell
+        setValue:       (idx,value,fixed=false) => contentLayer.setValue(idx,value,fixed),
+        setCandidate:   (idx,c,centered=false)   => contentLayer.setCandidate(idx,c,centered),
+        unsetCandidate: (idx,c,centered=false)   => contentLayer.unsetCandidate(idx,c,centered),
+        toggleCandidate:(idx,c,centered=false)   => contentLayer.toggleCandidate(idx,c,centered),
+        setColor:       (idx,col)                => contentLayer.setColor(idx,col),
+        unsetColor:     (idx,col)                => contentLayer.unsetColor(idx,col),
+        toggleColor:    (idx,col,force=false)    => contentLayer.toggleColor(idx,col,force),
+
+        // region‐wide
+        setValues:       (region,val,fixed=false) => contentLayer.setValues(region,val,fixed),
+        unsetValues:     (region,               ) => contentLayer.unsetValues(region),
+        toggleValues:    (region,val,fixed=false) => contentLayer.toggleValues(region,val,fixed),
+
+        setCandidates:   (region,c,centered=false) => contentLayer.setCandidates(region,c,centered),
+        unsetCandidates: (region,c,centered=false) => contentLayer.unsetCandidates(region,c,centered),
+        toggleCandidates:(region,c,centered=false) => contentLayer.toggleCandidates(region,c,centered),
+
+        setColors:       (region,col)             => contentLayer.setColors(region,col),
+        unsetColors:     (region,col)             => contentLayer.unsetColors(region,col),
+        toggleColors:    (region,col,force=false) => contentLayer.toggleColors(region,col,force),
+        // ----─  CONTENT-LAYER APIs END ────────────────────────────────────────
+
+
         resetBoard,
         saveBoard,
         loadBoard,
@@ -70,6 +95,7 @@ export function createBoard(container) {
         hintLayer,
         hintRCLayer,
         contentLayer,
+
     };
 
     function initBoard() {

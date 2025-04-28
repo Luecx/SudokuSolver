@@ -5,8 +5,8 @@ export class Cell {
         this.idx = new CellIdx(r, c);
         this.value = null;
         this.fixed = false;
-        this.ordinaryCandidates = [];   // NEW: for 3x3 grid
-        this.centeredCandidates = [];   // NEW: for center text
+        this.ordinaryCandidates = [];
+        this.centeredCandidates = [];
         this.colors = [];
         this.element = null;
         this.valueLayer = null;
@@ -30,7 +30,6 @@ export class Cell {
 export class BoardContentLayer {
     constructor(container, renderer, gridSize = 9) {
         this.container = container;
-        this.renderer = renderer;
         this.gridSize = gridSize;
         this.board = null;
 
@@ -199,8 +198,9 @@ export class BoardContentLayer {
         return Math.floor(Math.random() * 9) + 1;
     }
 
-    setValue(r, c, value, fixed = false) {
-        const cell = this.getCell(new CellIdx(r, c));
+    // --- Single cell operations ---
+    setValue(idx, value, fixed = false) {
+        const cell = this.getCell(idx);
         if (!cell) return;
         cell.value = value;
         cell.fixed = fixed;
@@ -209,27 +209,195 @@ export class BoardContentLayer {
         this.updateCell(cell);
     }
 
-    setOrdinaryCandidates(r, c, candidates) {
-        const cell = this.getCell(new CellIdx(r, c));
+    setCandidate(idx, candidate, centered = false) {
+        const cell = this.getCell(idx);
         if (!cell) return;
-        cell.value = null;
-        cell.ordinaryCandidates = candidates;
+
+        const list = centered ? cell.centeredCandidates : cell.ordinaryCandidates;
+        if (!list.includes(candidate)) {
+            list.push(candidate);
+            list.sort((a, b) => a - b);
+        }
+        if (!centered) {
+            cell.value = null;
+        }
         this.updateCell(cell);
     }
 
-    setCenteredCandidates(r, c, candidates) {
-        const cell = this.getCell(new CellIdx(r, c));
+    unsetCandidate(idx, candidate, centered = false) {
+        const cell = this.getCell(idx);
         if (!cell) return;
-        cell.centeredCandidates = candidates;
+
+        const list = centered ? cell.centeredCandidates : cell.ordinaryCandidates;
+        const i = list.indexOf(candidate);
+        if (i !== -1) {
+            list.splice(i, 1);
+            list.sort((a, b) => a - b);
+        }
         this.updateCell(cell);
     }
 
-    setColors(r, c, colors) {
-        const cell = this.getCell(new CellIdx(r, c));
+    toggleCandidate(idx, candidate, centered = false) {
+        const cell = this.getCell(idx);
         if (!cell) return;
-        cell.colors = colors;
+
+        const list = centered ? cell.centeredCandidates : cell.ordinaryCandidates;
+        const i = list.indexOf(candidate);
+
+        if (i !== -1) {
+            list.splice(i, 1);
+        } else {
+            list.push(candidate);
+        }
+        list.sort((a, b) => a - b);
+
+        if (!centered) {
+            cell.value = null;
+        }
         this.updateCell(cell);
     }
+
+    setColor(idx, color) {
+        const cell = this.getCell(idx);
+        if (!cell) return;
+
+        if (!cell.colors.includes(color)) {
+            cell.colors.push(color);
+            cell.colors.sort();
+        }
+        this.updateCell(cell);
+    }
+
+    unsetColor(idx, color) {
+        const cell = this.getCell(idx);
+        if (!cell) return;
+
+        const i = cell.colors.indexOf(color);
+        if (i !== -1) {
+            cell.colors.splice(i, 1);
+            cell.colors.sort();
+        }
+        this.updateCell(cell);
+    }
+
+    toggleColor(idx, color, forceSet = false) {
+        const cell = this.getCell(idx);
+        if (!cell) return;
+
+        const i = cell.colors.indexOf(color);
+        if (i !== -1) {
+            if (!forceSet) {
+                cell.colors.splice(i, 1);
+            }
+        } else {
+            cell.colors.push(color);
+        }
+        cell.colors.sort();
+        this.updateCell(cell);
+    }
+
+    // --- Region-wide operations ---
+
+    setValues(region, value, fixed = false) {
+        region.forEach(idx => {
+            if (idx instanceof CellIdx) {
+                this.setValue(idx, value, fixed);
+            }
+        });
+    }
+
+    unsetValues(region) {
+        region.forEach(idx => {
+            if (idx instanceof CellIdx) {
+                this.setValue(idx, null, false);
+            }
+        });
+    }
+
+    toggleValues(region, value, fixed = false) {
+        // smart‐toggle: if every cell already === value, clear all; else set all
+        const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
+        const allHave = cells.every(c => c.value === value && (value === null || c.fixed === fixed));
+
+        cells.forEach(cell => {
+            const idx = cell.idx;
+            if (allHave) {
+                this.setValue(idx, null, false);
+            } else {
+                this.setValue(idx, value, fixed);
+            }
+        });
+    }
+
+    setCandidates(region, candidate, centered = false) {
+        region.forEach(idx => {
+            if (idx instanceof CellIdx) {
+                this.setCandidate(idx, candidate, centered);
+            }
+        });
+    }
+
+    unsetCandidates(region, candidate, centered = false) {
+        region.forEach(idx => {
+            if (idx instanceof CellIdx) {
+                this.unsetCandidate(idx, candidate, centered);
+            }
+        });
+    }
+
+    toggleCandidates(region, candidate, centered = false) {
+        // smart‐toggle across region
+        const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
+        const allHave = cells.every(c => {
+            const list = centered ? c.centeredCandidates : c.ordinaryCandidates;
+            return list.includes(candidate);
+        });
+
+        cells.forEach(cell => {
+            const idx = cell.idx;
+            if (allHave) {
+                this.unsetCandidate(idx, candidate, centered);
+            } else {
+                this.setCandidate(idx, candidate, centered);
+            }
+        });
+    }
+
+    setColors(region, color) {
+        region.forEach(idx => {
+            if (idx instanceof CellIdx) {
+                this.setColor(idx, color);
+            }
+        });
+    }
+
+    unsetColors(region, color) {
+        region.forEach(idx => {
+            if (idx instanceof CellIdx) {
+                this.unsetColor(idx, color);
+            }
+        });
+    }
+
+    toggleColors(region, color, forceSet = false) {
+        if (forceSet) {
+            this.setColors(region, color);
+            return;
+        }
+
+        const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
+        const allHave = cells.every(c => c.colors.includes(color));
+
+        cells.forEach(cell => {
+            const idx = cell.idx;
+            if (allHave) {
+                this.unsetColor(idx, color);
+            } else {
+                this.setColor(idx, color);
+            }
+        });
+    }
+
 
     getCell(cellIdx) {
         return this.cells.find(cell => cell.idx.equals(cellIdx));
