@@ -1,4 +1,3 @@
-// === File: CreatorRuleManager.js ===
 import { BooleanOption } from "./option_bool.js";
 import { NumberOption } from "./option_number.js";
 import { StringOption } from "./option_string.js";
@@ -20,6 +19,7 @@ export class CreatorRuleManager {
 
         this.ruleHandlers = this.board.getAllHandlers();
         this.addedRules = new Set();
+        this.activeRegionSelector = null; // <-- NEW: track the currently active region selector
 
         this._setupInputFiltering();
         this._attachGlobalListeners();
@@ -47,8 +47,8 @@ export class CreatorRuleManager {
         });
 
         this.board.onEvent("ev_rule_added", ([handler, rule]) => {
-            const container = this._getInstanceList(handler); // <- must get the instance list div
-            if (!container) return; // Safety check
+            const container = this._getInstanceList(handler);
+            if (!container) return;
             const ui = handler.getSpecificRuleScheme().map(desc => this._createFieldComponent(desc, handler, rule));
             this._createRuleCard(handler, rule, ui, container, handler.can_create_rules);
         });
@@ -70,7 +70,7 @@ export class CreatorRuleManager {
             if (wrapper) {
                 wrapper.remove();
             }
-            this.removeRule(handler.name); // <- remove from addedRules set + update dropdown
+            this.removeRule(handler.name);
         });
     }
 
@@ -80,7 +80,7 @@ export class CreatorRuleManager {
             .filter(handler =>
                 handler.name.toLowerCase().includes(query.toLowerCase())
             )
-            .sort((a, b) => a.name.localeCompare(b.name)); // <<< sort alphabetically here
+            .sort((a, b) => a.name.localeCompare(b.name));
 
         for (const handler of matches) {
             const ruleName = handler.name;
@@ -93,10 +93,10 @@ export class CreatorRuleManager {
 
             if (this.addedRules.has(ruleName)) {
                 const checkIcon = document.createElement("i");
-                checkIcon.className = "fas fa-check"; // or "fa-solid fa-check" if you're using FA6
+                checkIcon.className = "fas fa-check";
                 checkIcon.style.color = "green";
-                checkIcon.style.fontSize = "1rem"; // small checkmark
-                checkIcon.style.marginLeft = "0.5rem"; // small space from label
+                checkIcon.style.fontSize = "1rem";
+                checkIcon.style.marginLeft = "0.5rem";
                 li.appendChild(checkIcon);
 
                 li.classList.add("text-muted");
@@ -111,7 +111,6 @@ export class CreatorRuleManager {
         this.dropdownEl.style.display = matches.length ? "block" : "none";
     }
 
-
     _addRuleToAccordion(handler) {
         const ruleName = handler.name;
         const id = ruleName.replace(/\s+/g, "-");
@@ -123,11 +122,9 @@ export class CreatorRuleManager {
         wrapper.className = "accordion-item";
         wrapper.id = `rule-${id}`;
 
-        // === Accordion Header ===
         const header = document.createElement("h2");
         header.className = "accordion-header d-flex justify-content-between align-items-center";
 
-        // Left side (inside blue toggle button)
         const toggleBtn = document.createElement("button");
         toggleBtn.className = "accordion-button collapsed py-2 d-flex align-items-center gap-2 flex-grow-1";
         toggleBtn.type = "button";
@@ -135,7 +132,7 @@ export class CreatorRuleManager {
         toggleBtn.dataset.bsTarget = `#collapse-${id}`;
 
         const labelWrapper = document.createElement("div");
-        labelWrapper.className = "d-flex align-items-center gap-2"; // group label + info tightly
+        labelWrapper.className = "d-flex align-items-center gap-2";
 
         const label = document.createElement("span");
         label.className = "fw-bold";
@@ -154,34 +151,30 @@ export class CreatorRuleManager {
             labelWrapper.appendChild(infoIcon);
         }
 
-        toggleBtn.appendChild(labelWrapper); // attach wrapper into toggleBtn
+        toggleBtn.appendChild(labelWrapper);
 
-
-        // Right side (outside blue button)
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "border-0 bg-transparent ms-2 d-flex align-items-center justify-content-center";
-        removeBtn.style.width = "2rem";    // fixed width
-        removeBtn.style.height = "2rem";   // fixed height
+        removeBtn.style.width = "2rem";
+        removeBtn.style.height = "2rem";
         removeBtn.style.padding = "0";
         removeBtn.style.margin = "0";
-        removeBtn.style.alignSelf = "center"; // important for flex
-        removeBtn.style.fontSize = "1.2rem";  // smaller icon size
-        removeBtn.style.color = "red";        // icon color via button
+        removeBtn.style.alignSelf = "center";
+        removeBtn.style.fontSize = "1.2rem";
+        removeBtn.style.color = "red";
         const icon = document.createElement("i");
-        icon.className = "fas fa-times"; // or "fa-solid fa-xmark" if you use newer FA 6
-        icon.style.pointerEvents = "none"; // so clicking is on button, not icon
+        icon.className = "fas fa-times";
+        icon.style.pointerEvents = "none";
 
         removeBtn.appendChild(icon);
         removeBtn.addEventListener("click", () => {
             handler.disable();
         });
 
-
         header.appendChild(toggleBtn);
         header.appendChild(removeBtn);
 
-        // === Accordion Collapse ===
         const collapse = document.createElement("div");
         collapse.className = "accordion-collapse collapse";
         collapse.id = `collapse-${id}`;
@@ -189,13 +182,11 @@ export class CreatorRuleManager {
         const body = document.createElement("div");
         body.className = "accordion-body d-flex flex-column gap-2";
 
-        // General options
         const generalOptions = handler.getGeneralRuleScheme().map(desc =>
             this._createFieldComponent(desc, handler, null)
         );
         generalOptions.forEach(opt => body.appendChild(opt.element));
 
-        // Instance list
         const instanceList = document.createElement("div");
         instanceList.className = "rule-instance-list d-flex flex-column gap-2";
 
@@ -221,24 +212,22 @@ export class CreatorRuleManager {
         wrapper.appendChild(collapse);
         this.accordionEl.appendChild(wrapper);
 
-        // === Initialize Bootstrap Tooltip for info icon
         if (descriptionHTML) {
             new bootstrap.Tooltip(toggleBtn.querySelector("i"));
         }
     }
 
-
     _getInstanceList(handler) {
         const id = `rule-${handler.name.replace(/\s+/g, "-")}`;
         return document.querySelector(`#${id} .rule-instance-list`);
     }
+
     _createFieldComponent(desc, handler, rule) {
         const shared = {
             label: desc.label,
             id: `${handler.name}-${rule?.id ?? "global"}-${desc.key}`,
             defaultValue: rule?.fields?.[desc.key] ?? handler.fields?.[desc.key],
             onChange: ({ value }) => {
-                console.log("changed values");
                 if (rule) {
                     handler.updateRuleField(rule, desc.key, value);
                 } else {
@@ -266,8 +255,8 @@ export class CreatorRuleManager {
                 });
             case "string":
                 return new StringOption(shared);
-            case "region":
-                return new RegionSelectorOption({
+            case "region": {
+                const selector = new RegionSelectorOption({
                     ...shared,
                     board: this.board,
                     config: createSelectionConfig({
@@ -275,20 +264,25 @@ export class CreatorRuleManager {
                         mode: desc.selectionMode,
                     }),
                     onStart: () => {
+                        // === NEW: cancel any currently running region selection
+                        if (this.activeRegionSelector && this.activeRegionSelector.stop) {
+                            this.activeRegionSelector.stop();
+                        }
+                        this.activeRegionSelector = selector;
+
                         const region = rule?.fields?.[desc.key];
-                        console.log(region);
                         if (region instanceof Region) {
                             this.board.setSelectedRegion(region);
                         }
                     }
                 });
-
+                return selector;
+            }
             default:
                 console.warn("Unknown option type:", desc);
                 return null;
         }
     }
-
 
     _createRuleCard(handler, rule, fields, container, allowRemove = true) {
         const card = document.createElement("div");
