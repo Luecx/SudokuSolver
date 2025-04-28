@@ -15,23 +15,24 @@ export class CageHandler extends RuleTypeHandler {
     }
 
     getGeneralRuleScheme() {
-        return [];
+        return [
+            {
+                key: "NumberCanRepeat",
+                type: "boolean",
+                label: `Numbers can repeat within a cage`,
+                default: false
+            },
+        ];
     }
 
     getSpecificRuleScheme() {
         return [
             {
-                key: "NumberCanRepeat",
-                type: "boolean",
-                label: `Number scan repeat within a cage`,
-                default: false
-            },
-            {
                 key: "region",
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: "MULTIPLE",
-                label: "Cage Path"
+                label: "Cage Region"
             },
             {
                 key: "index",
@@ -39,7 +40,7 @@ export class CageHandler extends RuleTypeHandler {
                 min: 1,
                 max: 999,
                 default: 10,
-                label: "Cage Index"
+                label: "Cage Sum"
             }
         ];
     }
@@ -64,12 +65,12 @@ export class CageHandler extends RuleTypeHandler {
     
         ctx.save();
         ctx.strokeStyle = "rgb(136,136,136)";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2;
         ctx.lineJoin = "round";  // Ensures smooth connection of line segments
         ctx.lineCap = "round";   // Ensures smooth caps at the ends
     
         // Dash pattern: [1px line, 5px space]
-        ctx.setLineDash([1, 5]);  
+        ctx.setLineDash([5, 5]);
     
         for (const loop of loops) {
             ctx.beginPath();
@@ -87,15 +88,14 @@ export class CageHandler extends RuleTypeHandler {
         // Draw the index inside the cage
 
         // Position top left
-
-        const firstPoint = region.values()[0];
+        const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
         const topLeft = this.board.getCellTopLeft(firstPoint.r, firstPoint.c);
         const x = topLeft.x + s * 0.09;  // s * 0.09 padding
-        const y = topLeft.y + s * 0.23;  // s * 0.23 padding
+        const y = topLeft.y + s * 0.17;  // s * 0.17 padding
 
         // Draw index
         const index = rule.fields.index;
-        ctx.fillStyle = "black"; 
+        ctx.fillStyle = "black";
         ctx.fillText(index.toString(), x, y);
 
         ctx.restore();
