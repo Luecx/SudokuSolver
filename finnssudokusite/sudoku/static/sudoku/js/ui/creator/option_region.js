@@ -1,14 +1,16 @@
 import { Region } from "../region/Region.js";
 
 export class RegionSelectorOption {
-    constructor({ label, id = null, board, config, onChange = null, onDone = null, onStart = null }) {
+    constructor({ label, id = null, board, config, onChange = null, onDone = null, onStartPreSelecting = null,
+                    onStartPostSelecting = null }) {
         this.labelText = label;
         this.id = id ?? `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
         this.board = board;
         this.config = config;
         this.onChange = onChange;
         this.onDone = onDone;
-        this.onStart = onStart;
+        this.onStartPreSelecting = onStartPreSelecting;
+        this.onStartPostSelecting = onStartPostSelecting;
 
         this.wrapper = document.createElement("div");
         this.wrapper.classList.add("mb-2");
@@ -42,9 +44,12 @@ export class RegionSelectorOption {
         if (this.active) return;
         this.active = true;
 
+        if (this.onStartPreSelecting) {
+            this.onStartPreSelecting();
+        }
         this.board.setSelection(this.config);
-        if (this.onStart) {
-            this.onStart();
+        if (this.onStartPostSelecting) {
+            this.onStartPostSelecting();
         }
         this._attachBoardListeners();
         this._updateDisplay();

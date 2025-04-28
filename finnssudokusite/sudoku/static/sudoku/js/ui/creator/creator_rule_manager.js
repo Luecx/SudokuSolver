@@ -222,6 +222,15 @@ export class CreatorRuleManager {
         return document.querySelector(`#${id} .rule-instance-list`);
     }
 
+    _clearActiveRegionSelector(selector) {
+        if (this.activeRegionSelector === selector) {
+            if (this.activeRegionSelector.stop) {
+                this.activeRegionSelector.stop();
+            }
+            this.activeRegionSelector = null;
+        }
+    }
+
     _createFieldComponent(desc, handler, rule) {
         const shared = {
             label: desc.label,
@@ -263,21 +272,41 @@ export class CreatorRuleManager {
                         target: desc.regionType,
                         mode: desc.selectionMode,
                     }),
-                    onStart: () => {
-                        // === NEW: cancel any currently running region selection
+                    onStartPreSelecting: () => {
                         if (this.activeRegionSelector && this.activeRegionSelector.stop) {
                             this.activeRegionSelector.stop();
                         }
                         this.activeRegionSelector = selector;
-
+                    },
+                    onStartPostSelecting: () => {
                         const region = rule?.fields?.[desc.key];
                         if (region instanceof Region) {
                             this.board.setSelectedRegion(region);
                         }
+                    },
+                    onDone: () => {
+                        this._clearActiveRegionSelector(selector);
                     }
                 });
+
+                const observer = new MutationObserver((mutations, observerInstance) => {
+                    for (const mutation of mutations) {
+                        for (const node of mutation.removedNodes) {
+                            if (node.contains(selector.element)) {
+                                if (this.activeRegionSelector === selector) {
+                                    selector.stop();
+                                    this.activeRegionSelector = null;
+                                }
+                                observerInstance.disconnect(); // <<<<< disconnect after cleaning
+                            }
+                        }
+                    }
+                });
+                observer.observe(this.accordionEl, { childList: true, subtree: true });
+
                 return selector;
             }
+
             default:
                 console.warn("Unknown option type:", desc);
                 return null;
