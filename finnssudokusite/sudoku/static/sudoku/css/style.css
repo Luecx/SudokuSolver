@@ -3,6 +3,19 @@ body {
 }
 h1, h2, h3 { margin-bottom: 1rem; }
 
+.my_board_box {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    
+    width: calc(100vh - 100px);  /* Höhe des Viewports minus etwas Abstand */
+    max-width: 100%;            /* Niemals breiter als der Container */
+    aspect-ratio: 1 / 1;        /* Quadrat */
+    
+    /* Optional für Scrollbar vermeiden */
+    box-sizing: border-box;
+}
+
 .my_white_box {
     background-color: white;
     border: 1px solid #dee2e6;   /* Bootstrap border color */

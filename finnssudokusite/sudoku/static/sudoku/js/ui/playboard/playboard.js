@@ -23,9 +23,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // Timer functionality
+    // Timer functionality with pause on page hide and localStorage save
     let seconds = 0;
     const timerElement = document.getElementById('timer');
+    let timerInterval = null;
+
+// Lade gespeicherte Zeit, wenn vorhanden
+    if (localStorage.getItem('sudoku_timer_seconds')) {
+        seconds = parseInt(localStorage.getItem('sudoku_timer_seconds'), 10);
+    }
 
     function formatTime(sec) {
         const h = Math.floor(sec / 3600);
@@ -34,12 +40,50 @@ document.addEventListener("DOMContentLoaded", function () {
         return `0${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
-    if (timerElement) {
-        setInterval(() => {
-            seconds++;
-            timerElement.textContent = formatTime(seconds);
-        }, 1000);
+    function startTimer() {
+        if (!timerInterval) {
+            timerInterval = setInterval(() => {
+                seconds++;
+                if (timerElement) {
+                    timerElement.textContent = formatTime(seconds);
+                }
+                localStorage.setItem('sudoku_timer_seconds', seconds.toString());
+            }, 1000);
+        }
     }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    if (timerElement) {
+        timerElement.textContent = formatTime(seconds);
+        startTimer();
+    }
+
+// Seite versteckt -> Timer pausieren
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopTimer();
+        } else {
+            startTimer();
+        }
+    });
+
+// Optional: Timer auf 0 zurücksetzen, z.B. bei Neustart
+    function resetTimer() {
+        seconds = 0;
+        localStorage.removeItem('sudoku_timer_seconds');
+        if (timerElement) {
+            timerElement.textContent = formatTime(seconds);
+        }
+    }
+
+
+
 
     // Font size control functionality
     let currentFontSize = 1.8;
@@ -189,26 +233,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const backgrounds = {
         stone: "url('/static/sudoku/img/playboard/stone.jpg')",
         glow: "url('/static/sudoku/img/playboard/glow.jpg')",
-        zement: "url('/static/sudoku/img/playboard/zement.jpg')",
-        wood: "url('/static/sudoku/img/playboard/wood.jpg')"
+        cement: "url('/static/sudoku/img/playboard/zement.jpg')",
+        wood: "url('/static/sudoku/img/playboard/wood.jpg')",
+        classic: "none"
     };
+    document.getElementById('theme-menu').addEventListener('click', function(event) {
+        const id = event.target.id;
+        if (backgrounds.hasOwnProperty(id)) {
+            event.preventDefault();
+            updateTheme(id);
+        }
+    });
 
-    const themeSelect = document.getElementById('themeSelect');
+    function updateTheme(value) {
+        document.body.style.backgroundImage = backgrounds[value];
 
-    function updateTheme() {
-        const value = themeSelect.value;
-        const bg = backgrounds[value];
-
-        document.body.style.backgroundImage = bg || "none";
-
-        // Alle block-bg anpassen
         document.querySelectorAll('.block-bg').forEach(blockBg => {
-            blockBg.classList.toggle('rounded', value === 'classic');
             blockBg.classList.toggle('my_white_box', value === 'classic');
-            blockBg.classList.toggle('border', value === 'classic');
         });
 
-        // Alle block-parts anpassen
         document.querySelectorAll('.block-part').forEach(part => {
             const type = part.getAttribute('data-block');
             part.classList.toggle('block-top', value !== 'classic' && type === 'top');
@@ -217,10 +260,48 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    if (themeSelect) {
-        themeSelect.addEventListener('change', updateTheme);
-        // Initialisieren beim Laden der Seite
-        window.addEventListener('DOMContentLoaded', updateTheme);
-    }
+    // Keypress highlighting for number buttons (1-9 and Numpad 1-9)
+    const keyToButtonId = {
+        '1': 'btn-one',
+        '2': 'btn-two',
+        '3': 'btn-three',
+        '4': 'btn-four',
+        '5': 'btn-five',
+        '6': 'btn-six',
+        '7': 'btn-seven',
+        '8': 'btn-eight',
+        '9': 'btn-nine',
+        'Numpad1': 'btn-one',
+        'Numpad2': 'btn-two',
+        'Numpad3': 'btn-three',
+        'Numpad4': 'btn-four',
+        'Numpad5': 'btn-five',
+        'Numpad6': 'btn-six',
+        'Numpad7': 'btn-seven',
+        'Numpad8': 'btn-eight',
+        'Numpad9': 'btn-nine',
+    };
+
+    document.addEventListener('keydown', function(event) {
+        const buttonId = keyToButtonId[event.key] || keyToButtonId[event.code];
+        if (buttonId) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.classList.add('btn-hovered');
+            }
+        }
+    });
+
+    document.addEventListener('keyup', function(event) {
+        const buttonId = keyToButtonId[event.key] || keyToButtonId[event.code];
+        if (buttonId) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.classList.remove('btn-hovered');
+            }
+        }
+    });
+
+
 
 });

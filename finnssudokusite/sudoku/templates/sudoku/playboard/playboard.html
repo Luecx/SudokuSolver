@@ -8,95 +8,89 @@
 
 {% block content %}
 <div class="row">
-    <!-- Linke Spalte -->
-    <div class="col-4">
-        <div class="block-bg my_white_box mb-3">
-            <div class="block-part" data-block="top"></div>
-            <div class="block-part justify-content-start p-3" data-block="middle">
-                <div class="button-grid">
-                    <button id="btn-gear" class="btn btn-custom-white btn-square"><i class="bi bi-gear"></i></button>
-                    <button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-counterclockwise"></i></button>
-                    <button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-clockwise"></i></button>
-                    <button id="btn-ban" class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
-                    
-                    <button id="btn-one" class="btn btn-custom-white btn-square IsBtnNumber">1</button>
-                    <button id="btn-two" class="btn btn-custom-white btn-square IsBtnNumber">2</button>
-                    <button id="btn-three" class="btn btn-custom-white btn-square IsBtnNumber">3</button>
-                    <button id="btn-four" class="btn btn-custom-white btn-square IsBtnNumber">4</button>
-                    <button id="btn-five" class="btn btn-custom-white btn-square IsBtnNumber">5</button>
-                    <button id="btn-six" class="btn btn-custom-white btn-square IsBtnNumber">6</button>
-                    <button id="btn-seven" class="btn btn-custom-white btn-square IsBtnNumber">7</button>
-                    <button id="btn-eight" class="btn btn-custom-white btn-square IsBtnNumber">8</button>
-                    <button id="btn-nine" class="btn btn-custom-white btn-square IsBtnNumber">9</button>
-                    
-                    <button id="btn-plus" class="btn btn-custom-white btn-square">+</button>
-                    <button id="btn-minus" class="btn btn-custom-white btn-square">-</button>
-                    <button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
-                    
-                    <button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
-                    <button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
-                    <button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
-                    <button id="btn-colorMode" class="btn btn-custom-white btn-square">
-                        <img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28"/>
-                    </button>
-                    <div id="zero"></div>
-                </div>
-            </div>
-            <div class="block-part" data-block="bottom"></div>
-        </div>
-        
-        <div class="block-bg my_white_box">
-            <div class="block-part" data-block="top"></div>
-            <div class="block-part block-middle justify-content-start p-3" data-block="middle">
-                <div class="timer" id="timer">0:00:00</div>
-                <div class="mb-3">Beste Zeit:</div>
-                <div class="mb-2 fw-bold">RULES:</div>
-                <div class="accordion" id="regelnAccordion">
-                    {% for i in "123" %}
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading{{ i }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}">
-                                {{ i }}
-                            </button>
-                        </h2>
-                        <div id="collapse{{ i }}" class="accordion-collapse collapse" data-bs-parent="#regelnAccordion">
-                            <div class="accordion-body">
-                                Regel {{ i }} Text.
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                
-                <div class="mt-3 pb-3">
-                    <label for="themeSelect" class="form-label">Theme wählen:</label>
-                    <select id="themeSelect" class="form-select" style="width:100%">
-                        <option value="classic">Classic</option>
-                        <option value="stone">Stone</option>
-                        <option value="glow">Glow</option>
-                        <option value="zement">Zement</option>
-                        <option value="wood">Wood</option>
-                    </select>
-                </div>
-            </div>
-            <div class="block-part" data-block="bottom"></div>
-        </div>
-    </div>
-
-    <!-- Rechte Spalte -->
-    <div class="col-8 d-flex flex-column">
-        <div class="w-100 my_white_box">
-            <div class="board-container w-100 justify-content-start">
-            <!-- Sudoku Board kommt hier -->
-            </div>
-        </div>
-    </div>
+	<!-- Linke Spalte -->
+	<div class="col-4">
+		<div class="block-bg my_white_box mb-3">
+			<div class="block-part" data-block="top"></div>
+			<div class="block-part justify-content-start p-3" data-block="middle">
+				<div class="timer" id="timer">0:00:00</div>
+				<div class="mb-3">Beste Zeit:</div>
+				<div class="button-grid">
+					<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-fill"></i></button>
+					<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-reverse"></i></button>
+					<button id="btn-ban" class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
+					<button id="btn-zero" class="btn btn-custom-white btn-square"></button>
+					
+					<button id="btn-one" class="btn btn-custom-white btn-square IsBtnNumber">1</button>
+					<button id="btn-two" class="btn btn-custom-white btn-square IsBtnNumber">2</button>
+					<button id="btn-three" class="btn btn-custom-white btn-square IsBtnNumber">3</button>
+					<button id="btn-four" class="btn btn-custom-white btn-square IsBtnNumber">4</button>
+					<button id="btn-five" class="btn btn-custom-white btn-square IsBtnNumber">5</button>
+					<button id="btn-six" class="btn btn-custom-white btn-square IsBtnNumber">6</button>
+					<button id="btn-seven" class="btn btn-custom-white btn-square IsBtnNumber">7</button>
+					<button id="btn-eight" class="btn btn-custom-white btn-square IsBtnNumber">8</button>
+					<button id="btn-nine" class="btn btn-custom-white btn-square IsBtnNumber">9</button>
+					
+					<button id="btn-plus" class="btn btn-custom-white btn-square">+</button>
+					<button id="btn-minus" class="btn btn-custom-white btn-square">-</button>
+					<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i>
+					</button>
+					
+					<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
+					<button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
+					<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
+					<button id="btn-colorMode" class="btn btn-custom-white btn-square"><img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28" /></button>
+					<div class="dropdown" id="btn-gear" >
+						<button class="btn btn-secondary btn-square "
+						        data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="bi bi-gear"></i>
+						</button>
+						<ul id="theme-menu" class="dropdown-menu dropdown-menu-dark" aria-labelledby="btn-gear">
+							<li><a id="classic" class="dropdown-item" href="#">Classic</a></li>
+							<li><a id="cement" class="dropdown-item" href="#">Cement</a></li>
+							<li><a id="glow" class="dropdown-item" href="#">Glow</a></li>
+							<li><a id="stone" class="dropdown-item" href="#">Stone</a></li>
+							<li><a id="wood" class="dropdown-item" href="#">Wood</a></li>
+						</ul>
+					</div>
+					<button id="btn-rules" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-info-lg"></i></button>
+					
+					<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+						<div class="offcanvas-header">
+							<h5 class="offcanvas-title" id="offcanvasExampleLabel">Rules</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+						</div>
+						<div class="offcanvas-body">
+							<div>
+								Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="block-part" data-block="bottom"></div>
+		</div>
+	</div>
+	
+	<!-- Rechte Spalte -->
+	<div class="col-8 d-flex flex-column">
+		<div class="my_board_box">
+			<div class="board-container w-100 justify-content-start">
+				<!-- Sudoku Board kommt hier -->
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-    window.puzzle_data = {{ puzzle_data_json|safe }};
+    window.puzzle_data = {
+    {
+        puzzle_data_json | safe
+    }
+    }
+    ;
 </script>
 <script type="module" src="{% static 'sudoku/js/ui/playboard/playboard.js' %}"></script>
 {% endblock %}
