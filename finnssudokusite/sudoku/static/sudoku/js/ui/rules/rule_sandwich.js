@@ -61,12 +61,14 @@ export class SandwichHandler extends RuleTypeHandler {
 
             let x, y;
 
-            if (!isNaN(item.row)) {
+            console.log(item.row, item.col);
+
+            if (!isNaN(item.row) && item.row != null) {
                 // Row sandwich
                 const cell = this.board.getCellTopLeft(item.row, 0);
                 x = cell.x - offsetDist;
                 y = cell.y + s / 2;
-            } else if (!isNaN(item.col)) {
+            } else if (!isNaN(item.col) && item.col != null) {
                 // Column sandwich
                 const cell = this.board.getCellTopLeft(0, item.col);
                 x = cell.x + s / 2;
