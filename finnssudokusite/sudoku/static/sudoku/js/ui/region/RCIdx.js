@@ -14,6 +14,10 @@ export class RCIdx {
             ((isNaN(this.col) && isNaN(other.col)) || this.col === other.col);
     }
 
+    copy() {
+        return new RCIdx(this.row, this.col);
+    }
+
     static fromString(key) {
         const [rStr, cStr] = key.split(',');
         const r = rStr === 'x' ? NaN : Number(rStr);

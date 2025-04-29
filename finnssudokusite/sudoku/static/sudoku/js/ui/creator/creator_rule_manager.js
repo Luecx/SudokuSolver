@@ -281,7 +281,7 @@ export class CreatorRuleManager {
                     onStartPostSelecting: () => {
                         const region = rule?.fields?.[desc.key];
                         if (region instanceof Region) {
-                            this.board.setSelectedRegion(region);
+                            this.board.setSelectedRegion(region.copy());
                         }
                     },
                     onDone: () => {
@@ -297,7 +297,7 @@ export class CreatorRuleManager {
                                     selector.stop();
                                     this.activeRegionSelector = null;
                                 }
-                                observerInstance.disconnect(); // <<<<< disconnect after cleaning
+                                observerInstance.disconnect();
                             }
                         }
                     }

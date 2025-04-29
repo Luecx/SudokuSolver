@@ -174,7 +174,7 @@
     window.addEventListener("resize", resizeLayout);
     window.addEventListener("load", resizeLayout);
     document.addEventListener("orientationchange", resizeLayout);
-    document.addEventListener("DOMContentLoaded", resizeLayout);
+	document.addEventListener("DOMContentLoaded", setTimeout(resizeLayout, 1));
     
 </script>
 

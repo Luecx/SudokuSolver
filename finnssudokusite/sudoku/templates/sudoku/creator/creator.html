@@ -103,8 +103,7 @@
 
     window.addEventListener("resize", resizeLayout);
     window.addEventListener("load", resizeLayout);
-
+	document.addEventListener("DOMContentLoaded", setTimeout(resizeLayout, 1));
     document.addEventListener("orientationchange", resizeLayout);
-    document.addEventListener("DOMContentLoaded", resizeLayout);
 </script>
 {% endblock %}

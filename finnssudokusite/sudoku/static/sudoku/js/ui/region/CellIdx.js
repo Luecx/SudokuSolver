@@ -12,6 +12,10 @@ export class CellIdx {
         return other instanceof CellIdx && this.r === other.r && this.c === other.c;
     }
 
+    copy() {
+        return new CellIdx(this.r, this.c);
+    }
+
     static fromString(key) {
         const [r, c] = key.split(',').map(Number);
         return new CellIdx(r, c);

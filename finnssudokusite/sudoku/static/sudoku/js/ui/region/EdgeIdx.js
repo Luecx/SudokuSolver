@@ -22,6 +22,10 @@ export class EdgeIdx {
         );
     }
 
+    copy() {
+        return new EdgeIdx(this.r1, this.c1, this.r2, this.c2);
+    }
+
     static fromString(key) {
         const [a, b] = key.split('-');
         const [r1, c1] = a.split(',').map(Number);

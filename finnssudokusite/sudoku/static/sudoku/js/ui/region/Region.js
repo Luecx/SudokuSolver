@@ -30,7 +30,7 @@ export class Region {
             throw new Error(`Expected ${this.itemClass.name}, got ${idx?.constructor?.name}`);
         }
         if (!this.has(idx)) {
-            this.items.push(idx);
+            this.items.push(idx.copy());
         }
     }
 
@@ -63,6 +63,12 @@ export class Region {
 
     toStrings() {
         return this.items.map(i => i.toString());
+    }
+
+    copy() {
+        const region = new Region(this.type);
+        this.items.forEach(item => region.add(item.copy()));
+        return region;
     }
 
     static fromList(type, list) {

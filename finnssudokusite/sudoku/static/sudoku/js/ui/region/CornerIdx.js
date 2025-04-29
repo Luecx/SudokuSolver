@@ -12,6 +12,10 @@ export class CornerIdx {
         return other instanceof CornerIdx && this.r === other.r && this.c === other.c;
     }
 
+    copy() {
+        return new CornerIdx(this.r, this.c);
+    }
+
     static fromString(key) {
         const [r, c] = key.split(',').map(Number);
         return new CornerIdx(r, c);
