@@ -60,6 +60,7 @@ export class RegionSelectorOption {
         if (!this.active) return;
         this.active = false;
         this.board.resetSelectionToDefault();
+        console.log("stop");
         this._detachBoardListeners();
         this._triggerDone();
         this._updateDisplay();
@@ -117,7 +118,7 @@ export class RegionSelectorOption {
         for (const item of this.selected) {
             region.add(item);
         }
-        return { label: this.labelText, value: region };
+        return { label: this.labelText, value: region.copy() };
     }
 
     get element() {
