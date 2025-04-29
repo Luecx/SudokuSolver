@@ -85,12 +85,7 @@
 
 {% block extra_scripts %}
 <script>
-    window.puzzle_data = {
-    {
-        puzzle_data_json | safe
-    }
-    }
-    ;
+    window.puzzle_data = {{puzzle_data_json | safe}};
 </script>
 <script type="module" src="{% static 'sudoku/js/ui/playboard/playboard.js' %}"></script>
 {% endblock %}
