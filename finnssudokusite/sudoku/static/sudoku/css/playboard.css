@@ -17,7 +17,7 @@ body {
 #btn-rules { grid-area: rules; }
 #btn-undo { grid-area: undo; }
 #btn-redo { grid-area: redo; }
-#btn-ban { grid-area: ban; }
+#btn-clear { grid-area: clear; }
 #btn-one { grid-area: one; }
 #btn-two { grid-area: two; }
 #btn-three { grid-area: three; }
@@ -50,7 +50,7 @@ body {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	grid-template-areas:
 		"gear rules . ."
-		"undo redo ban zero"
+		"undo redo clear zero"
 		"seven eight nine minus"
 		"four five six plus"
 		"one two three eye"
@@ -61,7 +61,7 @@ body {
 	grid-template-columns: repeat(9, minmax(0, 1fr));
 	grid-template-areas:
 		"seven eight nine . zero . . gear rules"
-		"four five six . undo redo ban plus minus"
+		"four five six . undo redo clear plus minus"
 		"one two three . number top center color eye";
 }
 

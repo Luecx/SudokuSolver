@@ -1,4 +1,4 @@
-import { InputMode, InputColor } from './input_constants.js';
+import { InputMode } from './input_constants.js';
 
 export class InputKeyboard {
     constructor(board, options = {}) {

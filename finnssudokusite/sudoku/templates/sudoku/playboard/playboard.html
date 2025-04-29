@@ -23,7 +23,7 @@
 					<div class="button-grid">
 						<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-fill"></i></button>
 						<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-reverse"></i></button>
-						<button id="btn-ban" class="btn btn-custom-white btn-square"><i class="bi bi-ban"></i></button>
+						<button id="btn-clear" class="btn btn-custom-white btn-square"><i class="bi bi-trash"></i></button>
 						<button id="btn-zero" class="btn btn-custom-white btn-square"></button>
 						
 						<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
@@ -173,6 +173,9 @@
 
     window.addEventListener("resize", resizeLayout);
     window.addEventListener("load", resizeLayout);
+    document.addEventListener("orientationchange", resizeLayout);
+    document.addEventListener("DOMContentLoaded", resizeLayout);
+    
 </script>
 
 {% endblock %}
