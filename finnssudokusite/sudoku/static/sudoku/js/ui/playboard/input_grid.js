@@ -5,6 +5,7 @@ export class InputGrid {
         this.keyboard = keyboard;
         this.modeButtons = {};
         this.numberButtons = [];
+        this.currentMode = this.keyboard.getMode();
 
         this.init();
     }
@@ -40,13 +41,16 @@ export class InputGrid {
             }
         }
 
-        this.keyboard.on('modechange', e => this.updateModeButtons(e.detail.mode));
+        this.keyboard.on('modechange', e => {
+            this.currentMode = e.detail.mode;
+            this.updateModeButtons(e.detail.mode);
+        });
     }
 
     initNumberButtons() {
         this.numberButtons = Array.from(document.getElementsByClassName("btn-number"));
         this.numberButtons.forEach((btn, i) => {
-            btn.classList.add("btn-square"); // ensure same base styling
+            // btn.classList.add("btn-square"); // ensure same base styling
 
             btn.addEventListener("click", () => {
                 this.keyboard.handleInput(i + 1);
@@ -100,29 +104,48 @@ export class InputGrid {
 
     updateNumberButtonColors(activeMode) {
         const isColor = activeMode === InputMode.Color;
-        const textColors = ["#000", "#000", "#fff", "#000", "#fff", "#fff", "#000", "#000", "#000"];
-
         this.numberButtons.forEach((btn, i) => {
-            btn.style.backgroundColor = isColor ? InputColor[i + 1] : "white";
-            btn.style.color = isColor ? textColors[i] : "black";
+            // Entferne alle möglichen Farbklassen
+            for (let j = 1; j <= 9; j++) {
+                btn.classList.remove(`btn-color-${j}`);
+            }
+            if (isColor) {
+                btn.classList.add(`btn-color-${i + 1}`);
+            }
+            // Keine Änderung der Textfarbe mehr!
         });
     }
+
 
     flashNumberButton(val) {
         const map = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
         const id = `btn-${map[val]}`;
         const btn = document.getElementById(id);
         if (!btn) return;
-        btn.classList.add("btn-hovered");
-        setTimeout(() => btn.classList.remove("btn-hovered"), 150);
+
+        const isColor = this.currentMode === InputMode.Color;
+
+        if (isColor) {
+            // Im Farbmodus: Permanent selektierte Darstellung
+            btn.classList.add("btn-selected");
+            btn.classList.add(`btn-selected-${val}`);
+            setTimeout(() => {
+                btn.classList.remove("btn-selected", `btn-selected-${val}`);
+            }, 150);
+        } else {
+            // Im Normalmodus: Kurzer Hover-Effekt
+            btn.classList.add("btn-hovered");
+            setTimeout(() => btn.classList.remove("btn-hovered"), 250);
+        }
     }
+
 
     addClickEffect(btn) {
         if (!btn) return;
         btn.addEventListener("click", () => {
             btn.blur();
-            btn.classList.add("btn-clicked");
-            setTimeout(() => btn.classList.remove("btn-clicked"), 150);
+            btn.classList.add("btn-hovered");
+            setTimeout(() => btn.classList.remove("btn-hovered"), 150);
         });
     }
 }

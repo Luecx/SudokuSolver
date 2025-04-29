@@ -49,42 +49,87 @@ body {
 .button-grid.landscape {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	grid-template-areas:
-		"gear rules . ."
-		"undo redo clear zero"
-		"seven eight nine minus"
-		"four five six plus"
-		"one two three eye"
+		"gear rules plus minus"
+		"undo redo clear eye"
+		"seven eight nine ."
+		"four five six ."
+		"one two three ."
 		"number top center color";
 }
 
 .button-grid.portrait {
-	grid-template-columns: repeat(9, minmax(0, 1fr));
+	grid-template-columns: repeat(8, minmax(0, 1fr));
 	grid-template-areas:
-		"seven eight nine . zero . . gear rules"
-		"four five six . undo redo clear plus minus"
-		"one two three . number top center color eye";
+		"seven eight nine . plus minus gear rules"
+		"four five six . zero undo redo clear"
+		"one two three number top center color eye";
 }
 
 /* === Button Base === */
+
+/* Erzeugt weiße button */
+.btn-custom-white {
+	color: #212529;
+	background-color: #fff;
+	border: 1px solid #dee2e6;
+	transition: background-color 0.15s, box-shadow 0.15s;
+	box-shadow: none;
+}
+
+.btn-custom-white:hover,
+.btn-custom-white:focus {
+	color: #212529;
+	background-color: #e7f1ff;
+	border-color: #86b7fe;
+	outline: 0;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+}
+
+/* macht die Buttons Quadratisch */
 .btn-square {
-	border-radius: 12px !important;
+	border-radius: 1rem !important;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 1.8rem;
 	min-width: 0;
 	min-height: 0;
 	aspect-ratio: 1 / 1;
 	width: 100%;
 	height: auto;
-	cursor: pointer;
-	user-select: none;
-
-	color: #212529;
-	background-color: #fff;
-	border: 1px solid #dee2e6;
-	transition: background-color 0.15s ease, box-shadow 0.15s ease;
+	font-size: 1.8rem;
 }
+
+/* Standardfarben mit 0.5 Alpha */
+.btn-color-1 { background-color: rgba(230, 25, 75,  0.5);}
+.btn-color-2 { background-color: rgba(60, 180, 75,  0.5); }
+.btn-color-3 { background-color: rgba(255, 225, 25, 0.5); }
+.btn-color-4 { background-color: rgba(67, 99, 216,  0.5); }
+.btn-color-5 { background-color: rgba(245, 130, 49, 0.5); }
+.btn-color-6 { background-color: rgba(145, 30, 180, 0.5); }
+.btn-color-7 { background-color: rgba(70, 240, 240, 0.5); }
+.btn-color-8 { background-color: rgba(240, 50, 230, 0.5); }
+.btn-color-9 { background-color: rgba(188, 246, 12, 0.5); }
+
+/* Hover: Alpha auf 1 */
+.btn-color-1:hover,
+.btn-selected-1		{ background-color: rgba(230, 25, 75, 1);}
+.btn-color-2:hover,
+.btn-selected-2		 { background-color: rgba(60, 180, 75, 1); }
+.btn-color-3:hover,
+.btn-selected-3		 { background-color: rgba(255, 225, 25, 1); }
+.btn-color-4:hover,
+.btn-selected-4		 { background-color: rgba(67, 99, 216, 1); }
+.btn-color-5:hover,
+.btn-selected-5		 { background-color: rgba(245, 130, 49, 1); }
+.btn-color-6:hover,
+.btn-selected-6		 { background-color: rgba(145, 30, 180, 1); }
+.btn-color-7:hover,
+.btn-selected-7		 { background-color: rgba(70, 240, 240, 1); }
+.btn-color-8:hover,
+.btn-selected-8		 { background-color: rgba(240, 50, 230, 1); }
+.btn-color-9:hover,
+.btn-selected-9		 { background-color: rgba(188, 246, 12, 1); }
+
 
 /* === Bootstrap-like Hover / Focus for All Buttons === */
 .btn-square:hover,
@@ -93,22 +138,15 @@ body {
 	border-color: #86b7fe;
 }
 
-/* === Special Hover for .btn-statebtn === */
-.btn-statebtn:hover {
-	background-color: #e7f1ff;
-}
-
-/* === Persistent Selected State === */
-.btn-selected {
+.btn-hovered {
 	background-color: #e7f1ff !important;
 	border-color: #86b7fe !important;
-	box-shadow: none !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-/* === Optional visual flash from keyboard input === */
-.btn-hovered {
-	background-color: #e7f1ff;
-	border-color: #86b7fe;
+.btn-selected {
+	border-color: #86b7fe !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 /* === Suppress persistent outline glow after focus === */
@@ -116,6 +154,7 @@ body {
 	outline: none;
 	box-shadow: none;
 }
+
 
 /* === Layout Details === */
 .block-bg { padding: 0; }
