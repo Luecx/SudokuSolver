@@ -6,6 +6,9 @@ body {
 	min-height: 100vh;
 }
 
+.container {max-width: none!important;
+padding-left: 2rem;
+padding-right: 2rem;}
 /* Button grid areas */
 #btn-gear {grid-area: gear;}
 #btn-rules {grid-area: rules;}
@@ -32,42 +35,31 @@ body {
 
 .button-grid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	grid-template-areas:
-			"gear rules . ."
-			"undo redo ban zero"
-        	"seven eight nine minus"
-			"four five six plus"
-        	"one two three eye"
-        	"number top center color";
 	gap: 1vw;
 	justify-content: stretch;
 	align-items: stretch;
 	width: 100%;
-	max-width: 350px;
-	margin: 0 auto;
+	max-height: none;
 }
 
-@media (min-width: 769px) and (max-width: 992px) {
-	.button-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		grid-template-areas:
-			"gear rules ."
-			"undo redo ban"
-			"plus minus eye"
-        	"seven eight nine"
-			"four five six"
-        	"one two three"
-        	"number top center"
-			"color . .";
-		gap: 1vw;
-		justify-content: stretch;
-		align-items: stretch;
-		width: 100%;
-		max-width: 250px;
-		margin: 0 auto;
-	}
+.button-grid.landscape {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-areas:
+    "gear rules . ."
+    "undo redo ban zero"
+    "seven eight nine minus"
+    "four five six plus"
+    "one two three eye"
+    "number top center color";
+}
+
+.button-grid.portrait {
+	grid-template-columns: repeat(9, minmax(0, 1fr));
+	grid-template-areas:
+    "seven eight nine . zero . . gear rules"
+	"four five six . undo redo ban plus minus"
+    "one two three . number top center color eye"
+    ;
 }
 
 .btn-square {
@@ -136,9 +128,8 @@ body {
 }
 
 .timer {
-	font-size: 2rem;
-	font-weight: bold;
-	margin-bottom: 10px;
+	font-size: 1rem;
+	margin-bottom: 1rem;
 }
 
 /* Submenu positionieren */
