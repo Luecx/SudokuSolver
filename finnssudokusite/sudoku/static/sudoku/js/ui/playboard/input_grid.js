@@ -44,7 +44,7 @@ export class InputGrid {
     }
 
     initNumberButtons() {
-        this.numberButtons = Array.from(document.getElementsByClassName("IsBtnNumber"));
+        this.numberButtons = Array.from(document.getElementsByClassName("btn-number"));
         this.numberButtons.forEach((btn, i) => {
             btn.classList.add("btn-square"); // ensure same base styling
 
@@ -101,6 +101,7 @@ export class InputGrid {
     updateNumberButtonColors(activeMode) {
         const isColor = activeMode === InputMode.Color;
         const textColors = ["#000", "#000", "#fff", "#000", "#fff", "#fff", "#000", "#000", "#000"];
+        console.log("changing colors");
 
         this.numberButtons.forEach((btn, i) => {
             btn.style.backgroundColor = isColor ? InputColor[i + 1] : "white";
