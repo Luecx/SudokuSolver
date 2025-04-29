@@ -47,7 +47,7 @@ export class RegionSelectorOption {
         if (this.onStartPreSelecting) {
             this.onStartPreSelecting();
         }
-        this.board.setSelection(this.config);
+        this.board.setSelectionMode(this.config);
         if (this.onStartPostSelecting) {
             this.onStartPostSelecting();
         }

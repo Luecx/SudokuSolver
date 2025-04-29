@@ -18,5 +18,7 @@ export function createSelectionConfig(opts = {}) {
         excludeEdges       : opts.excludeEdges ?? [],
         excludeCorners     : opts.excludeCorners ?? [],
         initialSelected    : opts.initialSelected ?? [],
+
+        isDefault          : opts.isDefault ?? false,
     };
 }

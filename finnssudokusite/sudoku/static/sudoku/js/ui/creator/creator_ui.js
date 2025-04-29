@@ -15,7 +15,7 @@ class Creator {
         // create the board and hook it up to the UI
         this.board = createBoard(container);
         this.board.initBoard();
-        this.board.setSelection({
+        this.board.setSelectionMode({
             target:    RegionType.CELLS,
             mode:      SelectionMode.MULTIPLE,
             preserveOnModifier: "Shift", // hold Shift to preserve selection

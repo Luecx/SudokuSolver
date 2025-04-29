@@ -31,13 +31,14 @@ export function createBoard(container) {
     const hintLayer          = new HintDotLayer(container, renderer);
     const hintRCLayer        = new HintRCLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);
-    const interactionManager = new SelectionManager(grid, ruleManager, renderer);
+    const selectionManager   = new SelectionManager(grid, ruleManager, renderer);
 
     const board = {
         initBoard,
         render: () => renderer.render(ruleManager.getAllHandlers(), ruleManager.getCurrentHandler()),
         triggerRender: () => renderer.triggerRender(),
 
+        // grid related functions
         getCellTopLeft          : (r, c) => renderer.getCellTopLeft(r, c),
         getCellCorners          : (r, c) => renderer.getCellCorners(r, c),
         getPadding              : () => renderer.getPadding(),
@@ -46,18 +47,24 @@ export function createBoard(container) {
 
         getAllHandlers          : () => ruleManager.getAllHandlers(),
 
-        setSelectedRegion       : region => interactionManager.setSelectedRegion(region),
-        setSelection            : config => interactionManager.setSelection(config),
-        revertSelection         : () => interactionManager.revertSelection(),
-        resetSelectionToDefault : () => interactionManager.resetSelectionToDefault(),
+        // selection related functions
+        setSelectedRegion       : region => selectionManager.setSelectedRegion(region),
+        setSelectionMode        : config => selectionManager.setSelectionMode(config),
+        getSelectedRegion       : () => selectionManager.getSelectedRegion(),
+        isDefaultMode           : () => selectionManager.isDefaultMode(),
+        revertSelection         : () => selectionManager.revertSelection(),
+        resetSelectionToDefault : () => selectionManager.resetSelectionToDefault(),
 
+        // renderer related functions
         addRenderCall           : (name, func) => renderer.addRenderCall(name, func),
         removeRenderCall        : name => renderer.removeRenderCall(name),
 
+        // exporting and importing
         getRulesJSON            : () => ruleManager.serializeRules(),
         loadRulesJSON           : json => ruleManager.deserializeRules(json),
         getTags                 : () => ruleManager.getTags(),
 
+        // edge hints
         emitEvent               : (eventName, data) => eventManager.emit(eventName, data),
         onEvent                 : (eventName, callback) => eventManager.on(eventName, callback),
         offEvent                : (eventName, callback) => eventManager.off(eventName, callback),
@@ -105,7 +112,7 @@ export function createBoard(container) {
         hintRCLayer.init(board);
         cellLayer.init(board);
         contentLayer.init(board);
-        interactionManager.setup(board);
+        selectionManager.setup(board);
         ruleManager.registerDefaults(board);
 
         function resizeAndRebuild() {

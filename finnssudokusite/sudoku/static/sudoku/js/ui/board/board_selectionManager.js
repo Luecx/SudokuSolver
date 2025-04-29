@@ -12,14 +12,37 @@ export class SelectionManager {
 
         this.defaultConfig = createSelectionConfig({
             target: RegionType.CELLS,
-            mode: SelectionMode.MULTIPLE
+            mode: SelectionMode.MULTIPLE,
+            isDefault: true,
         });
     }
 
     setup(board) {
         this.board = board;
+        this.resetSelectionToDefault();
+    }
+    
+    isDefaultMode() {
+        return this.selectionConfig?.isDefault ?? false;
     }
 
+    getSelectedRegion() {
+        if (!this.selectionConfig) return null;
+
+        const target = this.selectionConfig.target;
+
+        if (target === RegionType.CELLS) {
+            return this.board.cellLayer.selected_region;
+        }
+        if (target === RegionType.EDGES || target === RegionType.CORNERS) {
+            return this.board.hintLayer.selected_region;
+        }
+        if (target === RegionType.ROWCOL) {
+            return this.board.hintRCLayer.selected_region;
+        }
+        return null;
+    }
+    
     setSelectedRegion(region) {
         if (!this.selectionConfig) return;
 
@@ -42,7 +65,7 @@ export class SelectionManager {
      * Stores the current config as the previous one before switching.
      * @param {Object} config - Configuration created by `createSelectionConfig()`
      */
-    setSelection(config) {
+    setSelectionMode(config) {
         // close any open selector
         if (this.selectionConfig && this.selectionConfig.target !== RegionType.NONE) {
             // emit an event which stops the current selection
@@ -108,7 +131,7 @@ export class SelectionManager {
      */
     revertSelection() {
         if (this.previousConfig) {
-            this.setSelection(this.previousConfig);
+            this.setSelectionMode(this.previousConfig);
         }
     }
 
@@ -116,7 +139,7 @@ export class SelectionManager {
      * Applies the default selection config (cells, multiple).
      */
     resetSelectionToDefault() {
-        this.setSelection(this.defaultConfig);
+        this.setSelectionMode(this.defaultConfig);
     }
 
     /**
