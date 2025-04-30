@@ -16,6 +16,10 @@ export class PalindromeHandler extends RuleTypeHandler {
         return [];
     }
 
+    getWarnings(rule) {
+
+    }
+
     getSpecificRuleScheme() {
         return [
             {

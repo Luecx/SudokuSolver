@@ -23,6 +23,7 @@
  * ev_rule_removed                  - [ RuleHandler, Rule ]
  * ev_rule_changed                  - [ RuleHandler, Rule ]
  * ev_rule_reset                    - [ RuleHandler, Rule ]
+ * ev_rule_validity_changed         - [ RuleHandler, Rule ]
  *
  */
 

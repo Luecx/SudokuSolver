@@ -19,7 +19,9 @@ export class CreatorRuleManager {
 
         this.ruleHandlers = this.board.getAllHandlers();
         this.addedRules = new Set();
-        this.activeRegionSelector = null; // <-- NEW: track the currently active region selector
+        this.activeRegionSelector = null;
+        this.ruleWarnings = new Map();   // rule.id -> warning string (or null)
+        this.handlerWarnings = new Map(); // handler.name -> boolean
 
         this._setupInputFiltering();
         this._attachGlobalListeners();
@@ -51,27 +53,112 @@ export class CreatorRuleManager {
             if (!container) return;
             const ui = handler.getSpecificRuleScheme().map(desc => this._createFieldComponent(desc, handler, rule));
             this._createRuleCard(handler, rule, ui, container, handler.can_create_rules);
+            this._refreshWarnings(); // <-- Refresh warnings when new rule is added
         });
 
         this.board.onEvent("ev_rule_reset", handler => {
             const container = this._getInstanceList(handler);
             if (!container) return;
             container.innerHTML = "";
+            this._refreshWarnings();
         });
 
         this.board.onEvent("ev_rule_removed", ([handler, rule]) => {
             const card = document.getElementById(`rule-${handler.name}-${rule.id}`);
             if (card) card.remove();
+            this._refreshWarnings();
         });
 
         this.board.onEvent("ev_rule_handler_disabled", handler => {
             const id = `rule-${handler.name.replace(/\s+/g, "-")}`;
             const wrapper = document.getElementById(id);
-            if (wrapper) {
-                wrapper.remove();
-            }
+            if (wrapper) wrapper.remove();
             this.removeRule(handler.name);
+            this._refreshWarnings();
         });
+
+    }
+
+    _refreshWarnings() {
+        this.ruleWarnings.clear();
+        this.handlerWarnings.clear();
+
+        for (const handler of Object.values(this.ruleHandlers)) {
+            // Only process if handler is enabled
+            if (!this.addedRules.has(handler.name)) continue;
+
+            const warnings = handler.getWarnings?.() || [];
+            for (const { rule, warnings: ruleWarnings } of warnings) {
+                if (ruleWarnings.length > 0) {
+                    this.ruleWarnings.set(rule.id, ruleWarnings.join("; "));
+                }
+            }
+            const anyWarnings = handler.rules.some(rule => this.ruleWarnings.has(rule.id));
+            this.handlerWarnings.set(handler.name, anyWarnings);
+        }
+
+        for (const handler of Object.values(this.ruleHandlers)) {
+            if (!this.addedRules.has(handler.name)) continue;
+            this._updateHandlerWarningIcon(handler);
+            for (const rule of handler.rules) {
+                this._updateRuleWarningIcon(handler, rule);
+            }
+        }
+    }
+
+
+    _updateRuleWarningIcon(handler, rule) {
+
+        const warning = this.ruleWarnings.get(rule.id) || null;
+        const card = document.getElementById(`rule-${handler.name}-${rule.id}`);
+        if (!card) return;
+
+        let icon = card.querySelector(".rule-warning-icon");
+        if (!warning && icon) {
+            icon.remove();
+            return;
+        }
+        if (warning && !icon) {
+            icon = document.createElement("i");
+            icon.className = "fa fa-exclamation-triangle text-warning rule-warning-icon ms-2";
+            icon.style.cursor = "pointer";
+            icon.setAttribute("data-bs-toggle", "tooltip");
+            icon.setAttribute("title", warning);
+            const labelWrapper = card.querySelector("strong")?.parentNode;
+            if (labelWrapper) {
+                labelWrapper.appendChild(icon);
+                new bootstrap.Tooltip(icon);
+            }
+        }
+        if (warning && icon) {
+            icon.setAttribute("title", warning);
+            icon.setAttribute("data-bs-original-title", warning);
+        }
+    }
+
+    _updateHandlerWarningIcon(handler) {
+        const hasWarning = this.handlerWarnings.get(handler.name) || false;
+        const wrapper = document.getElementById(`rule-${handler.name.replace(/\s+/g, "-")}`);
+        const header = wrapper?.querySelector(".accordion-header");
+        if (!header) return;
+
+        let icon = header.querySelector(".handler-warning-icon");
+        if (!hasWarning && icon) {
+            icon.remove();
+            return;
+        }
+        if (hasWarning && !icon) {
+            icon = document.createElement("i");
+            icon.className = "fa fa-exclamation-triangle text-warning handler-warning-icon ms-2";
+            icon.style.cursor = "pointer";
+            icon.setAttribute("data-bs-toggle", "tooltip");
+            icon.setAttribute("title", "Some rules have warnings");
+            const labelWrapper = header.querySelector(".accordion-button .fw-bold")?.parentNode;
+            if (labelWrapper) {
+                labelWrapper.appendChild(icon);
+                new bootstrap.Tooltip(icon);
+            }
+        }
     }
 
     _updateDropdown(query) {
@@ -98,7 +185,6 @@ export class CreatorRuleManager {
                 checkIcon.style.fontSize = "1rem";
                 checkIcon.style.marginLeft = "0.5rem";
                 li.appendChild(checkIcon);
-
                 li.classList.add("text-muted");
                 li.style.pointerEvents = "none";
             } else {
@@ -158,16 +244,7 @@ export class CreatorRuleManager {
         removeBtn.className = "border-0 bg-transparent ms-2 d-flex align-items-center justify-content-center";
         removeBtn.style.width = "2rem";
         removeBtn.style.height = "2rem";
-        removeBtn.style.padding = "0";
-        removeBtn.style.margin = "0";
-        removeBtn.style.alignSelf = "center";
-        removeBtn.style.fontSize = "1.2rem";
-        removeBtn.style.color = "red";
-        const icon = document.createElement("i");
-        icon.className = "fas fa-times";
-        icon.style.pointerEvents = "none";
-
-        removeBtn.appendChild(icon);
+        removeBtn.innerHTML = `<i class="fas fa-times"></i>`;
         removeBtn.addEventListener("click", () => {
             handler.disable();
         });
@@ -195,9 +272,7 @@ export class CreatorRuleManager {
             addCard.className = "btn btn-outline-primary w-100 my-2";
             addCard.innerHTML = `<i class="fa fa-plus me-1"></i> Add Instance`;
             addCard.addEventListener("click", () => {
-                const rule = {
-                    id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`
-                };
+                const rule = { id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}` };
                 handler.rules.push(rule);
                 handler.initializeRuleFields(rule);
                 handler.board.emitEvent("ev_rule_added", [handler, rule]);
@@ -239,15 +314,19 @@ export class CreatorRuleManager {
             onChange: ({ value }) => {
                 if (rule) {
                     handler.updateRuleField(rule, desc.key, value);
+                    this._refreshWarnings();
                 } else {
                     handler.updateGlobalField(desc.key, value);
+                    this._refreshWarnings();
                 }
             },
             onDone: ({ value })  => {
                 if (rule) {
                     handler.updateRuleField(rule, desc.key, value);
+                    this._refreshWarnings();
                 } else {
                     handler.updateGlobalField(desc.key, value);
+                    this._refreshWarnings();
                 }
             }
         };
@@ -321,11 +400,17 @@ export class CreatorRuleManager {
         const header = document.createElement("div");
         header.className = "d-flex justify-content-between align-items-center mb-2";
 
+        // Left side: label and (maybe) warning icon
+        const labelWrapper = document.createElement("div");
+        labelWrapper.className = "d-flex align-items-center gap-2";
+
         const label = document.createElement("strong");
         label.textContent = rule.label || `Rule #${handler.rules.length}`;
+        labelWrapper.appendChild(label);
 
-        header.appendChild(label);
+        header.appendChild(labelWrapper);
 
+        // Right side: remove button
         if (allowRemove) {
             const removeBtn = document.createElement("button");
             removeBtn.className = "btn btn-sm btn-outline-danger";
@@ -335,6 +420,7 @@ export class CreatorRuleManager {
             });
             header.appendChild(removeBtn);
         }
+
 
         card.appendChild(header);
         fields.forEach(opt => {
@@ -347,4 +433,5 @@ export class CreatorRuleManager {
         this.addedRules.delete(ruleName);
         this._updateDropdown(this.inputEl.value.trim());
     }
+
 }

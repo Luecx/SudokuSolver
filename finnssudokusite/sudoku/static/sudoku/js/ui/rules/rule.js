@@ -36,7 +36,6 @@ export class RuleTypeHandler {
             this.fields[desc.key] = desc.default ?? null;
         }
     }
-
     initializeRuleFields(rule) {
         if (!rule.fields) rule.fields = {};
         for (const desc of this.getSpecificRuleScheme()) {
@@ -138,7 +137,6 @@ export class RuleTypeHandler {
         this.board.triggerRender();
     }
 
-
     removeRuleById(id) {
         const rule = this.getRuleById(id);
         if (!rule) return;
@@ -146,5 +144,21 @@ export class RuleTypeHandler {
         this.rules = this.rules.filter(r => r !== rule);
         this.board.emitEvent("ev_rule_removed", [this, rule]);
         this.board.triggerRender();
+    }
+
+    // ===== Rule Warnings =====
+    getRuleWarnings(rule) {
+        return [];
+    }
+
+    getWarnings() {
+        const warnings = [];
+        for (const rule of this.rules) {
+            const ruleWarnings = this.getRuleWarnings(rule);
+            if (ruleWarnings.length > 0) {
+                warnings.push({ rule, warnings: ruleWarnings });
+            }
+        }
+        return warnings;
     }
 }

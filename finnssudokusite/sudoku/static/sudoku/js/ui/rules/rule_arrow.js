@@ -24,6 +24,41 @@ export class ArrowHandler extends RuleTypeHandler {
         ];
     }
 
+    getRuleWarnings(rule) {
+        let warnings = []
+        // check overlap
+        const base = rule.fields.base;
+        const path = rule.fields.path;
+        if (base && path && base.intersection(path).size > 0) {
+            warnings.push("Base and path cells overlap.");
+        }
+
+        // check if base is empty
+        if (!base || base.size() === 0) {
+            warnings.push("Base cells are empty.");
+        }
+
+        // check if path is empty
+        if (!path || path.size() === 0) {
+            warnings.push("Path cells are empty.");
+        }
+
+        // if base has more than 2 cells
+        if (base && base.size() > 2) {
+            warnings.push("Base cells should be 1 or 2.");
+        }
+
+        // if base has 2 cells, they must be adjacent and have same row
+        if (base && base.size() === 2) {
+            const cells = base.items;
+            if (cells[0].r !== cells[1].r && cells[0].c !== cells[1].c) {
+                warnings.push("Base cells must be adjacent and in the same row or column.");
+            }
+        }
+
+        return warnings;
+    }
+
     getDescriptionHTML() {
         return `
         In an Arrow Sudoku, the digits along the path of the arrow sum to the digit in the circle at the base.

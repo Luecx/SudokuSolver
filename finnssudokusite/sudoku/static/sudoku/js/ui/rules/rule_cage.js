@@ -14,6 +14,47 @@ export class CageHandler extends RuleTypeHandler {
         return [];
     }
 
+    getRuleWarnings(rule) {
+        let warnings = [];
+        // if cage is empty or none,
+        let cage_region = rule.fields.region;
+        if (!cage_region) {
+            warnings.push("Cage region is empty");
+            return warnings;
+        }
+        if (cage_region.size() === 0) {
+            warnings.push("Cage region is empty");
+            return warnings;
+        }
+        // if cage sum is too large ( > 9 * number of cells in cage)
+        let cage_sum = rule.fields.index;
+        if (cage_sum > 9 * cage_region.size()) {
+            warnings.push("Cage sum is too large");
+        }
+        // if cage sum is too small ( < number of cells in cage)
+        if (cage_sum < cage_region.size()) {
+            warnings.push("Cage sum is too small");
+        }
+        // if cage sum is not a number
+        if (isNaN(cage_sum)) {
+            warnings.push("Cage sum is not a number");
+        }
+        // if cage sum is not an integer
+        if (cage_sum % 1 !== 0) {
+            warnings.push("Cage sum is not an integer");
+        }
+        // if cage sum is not a positive number
+        if (cage_sum <= 0) {
+            warnings.push("Cage sum is not a positive number");
+        }
+        console.log(cage_region.connectedRegions());
+        // if cage has more than 1 region
+        if (cage_region.connectedRegions().length > 1) {
+            warnings.push("Cage has more than 1 region");
+        }
+        return warnings;
+    }
+
     getGeneralRuleScheme() {
         return [
             {
@@ -47,7 +88,7 @@ export class CageHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-        Along a <b>parity line</b>, adjacent cells must have different parity (one odd, one even).
+        Inside <b>cages</b>, the sum of the numbers must equal the specified value.
         `;
     }
 
