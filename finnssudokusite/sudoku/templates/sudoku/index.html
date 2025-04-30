@@ -1,6 +1,52 @@
 {% extends 'sudoku/base.html' %}
 
+{% block extra_css %}
+
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Londrina+Sketch&display=swap');
+	.londrina-sketch-regular {
+		font-family: "Londrina Sketch", sans-serif;
+		font-weight: 400;
+		font-style: normal;
+	}
+	
+	html, body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		background-color: #005792 !important;
+		color: #fff;
+	}
+	.full-height {
+		height: calc(100vh - 100px);
+	}
+	.brain-img {
+		max-width: 200px;
+		width: 100%;
+		height: auto;
+	}
+</style>
+{% endblock %}
+
+
 {% block content %}
-<h1>Sudoku Site</h1>
-<p>Welcome to the Sudoku Platform!</p>
+<div class="container-fluid full-height d-flex flex-column justify-content-center align-items-center">
+	<div class="row w-100 justify-content-center mb-3">
+		<div class="col-auto d-flex justify-content-center">
+			<img src="../../static/sudoku/img/brain.png" alt="Brain Icon" class="brain-img">
+		</div>
+	</div>
+	<div class="row w-100 justify-content-center">
+		<div class="col-auto d-flex justify-content-center">
+			<h1 class="londrina-sketch-regular display-4 fw-bold text-center">FINN´S SUDOKU APP</h1>
+		</div>
+	</div>
+	<div class="row w-100 justify-content-center mb-5">
+		<div class="col-auto d-flex justify-content-center">
+			<a href="{% url 'puzzles' %}" class="btn btn-sudoku" type="button">SELECT A PUZZLE TO PLAY</a>
+		
+		</div>
+	</div>
+</div>
+
 {% endblock %}

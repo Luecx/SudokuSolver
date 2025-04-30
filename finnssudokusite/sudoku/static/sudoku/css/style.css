@@ -5,6 +5,17 @@ body {
 }
 h1, h2, h3 { margin-bottom: 1rem; }
 
+/* color´s
+        white       #ffffff
+        gray        #e6e6e6
+        darkblue    #00395f
+        middleblue  #005792
+        blue        #0075c5
+        lightblue   #0094f8
+*/
+
+
+
 .layout-wrapper {
     display: flex;
     overflow: hidden;
