@@ -1,13 +1,18 @@
 import { createBoard } from "../board/board.js";
 import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
-import { RegionType}     from "../region/RegionType.js";
-import { getCSRFToken} from "../csrf/csrf.js";
+import { RegionType } from "../region/RegionType.js";
+import { getCSRFToken } from "../csrf/csrf.js";
 
 class Creator {
     constructor() {
-        const container = document.querySelector(".board-container");
+        setTimeout(() => {
+            const container = document.querySelector(".board-container");
+            this.init(container);
+        }, 0);
+    }
 
+    init(container) {
         if (!container) {
             throw new Error("Creator: .board-container element not found in the DOM.");
         }
@@ -16,8 +21,8 @@ class Creator {
         this.board = createBoard(container);
         this.board.initBoard();
         this.board.setSelectionMode({
-            target:    RegionType.CELLS,
-            mode:      SelectionMode.MULTIPLE,
+            target: RegionType.CELLS,
+            mode: SelectionMode.MULTIPLE,
             preserveOnModifier: "Shift", // hold Shift to preserve selection
         });
 
