@@ -37,93 +37,89 @@ function checkCage(instance, rule, board) {
     if (!region || typeof region.size !== "function" || region.size() === 0) return false;
 
     const cells = region.items.map(pos => board.getCell(pos));
+
     const filled = cells.filter(c => c.value !== EMPTY);
+    const sumFilled = filled.reduce((s, c) => s + c.value, 0);
     const usedValues = new Set(filled.map(c => c.value));
 
-    const soft = !allowRepeats ? getSoftBounds(region.size(), targetSum) : null;
-    let cellRanges = cells.map(c => getCellRange(c));
+    const remainingCells = cells.filter(c => c.value === EMPTY);
+    const remainingSum = targetSum - sumFilled;
+    const remainingN = remainingCells.length;
+
+    let minCandidate = 9;
+    let maxCandidate = 1;
+
+    for (const cell of remainingCells) {
+        for (let d = Candidates.MIN; d <= Candidates.MAX; ++d) {
+            if (cell.candidates.test(d)) {
+                minCandidate = Math.min(minCandidate, d);
+                maxCandidate = Math.max(maxCandidate, d);
+            }
+        }
+    }
+
+    const soft = getSoftBounds(remainingN, remainingSum, allowRepeats, minCandidate, maxCandidate);
 
     let changed = false;
 
-    for (let i = 0; i < cells.length; ++i) {
-        const cell = cells[i];
-        if (cell.value !== EMPTY) continue;
-
-        const others = cellRanges.slice(0, i).concat(cellRanges.slice(i + 1));
-        const otherMin = others.reduce((s, r) => s + r.min, 0);
-        const otherMax = others.reduce((s, r) => s + r.max, 0);
-
+    for (const cell of remainingCells) {
         const prev = cell.candidates.raw();
-
         for (let d = Candidates.MIN; d <= Candidates.MAX; ++d) {
             if (!cell.candidates.test(d)) continue;
+
             if (!allowRepeats && usedValues.has(d)) {
                 cell.candidates.disallow(d);
                 continue;
             }
 
-            const total = d + otherMin;
-            const totalMax = d + otherMax;
-
-            // Apply soft global bounds
-            if (soft && (d < soft.min || d > soft.max)) {
-                cell.candidates.disallow(d);
-                continue;
-            }
-
-            if (total > targetSum || totalMax < targetSum) {
+            if (d < soft.min || d > soft.max) {
                 cell.candidates.disallow(d);
             }
         }
-
         if (cell.candidates.raw() !== prev) changed = true;
-        cellRanges[i] = getCellRange(cell); // update range for next iteration
     }
 
     return changed;
 }
 
-function getCellRange(cell) {
-    if (cell.value !== EMPTY) {
-        return { min: cell.value, max: cell.value };
-    }
-    let min = 10, max = 0;
-    for (let d = Candidates.MIN; d <= Candidates.MAX; ++d) {
-        if (!cell.candidates.test(d)) continue;
-        min = Math.min(min, d);
-        max = Math.max(max, d);
-    }
+function getSoftBounds(N, sum, allowRepeats, minC, maxC) {
+    const min = lowerBound(N, sum, allowRepeats, maxC);
+    const max = upperBound(N, sum, allowRepeats, minC);
     return { min, max };
 }
 
-function getSoftBounds(n, targetSum) {
-    const min = sumOfLargest(n, targetSum); // smallest value that can appear
-    const max = sumOfSmallest(n, targetSum); // largest value that can appear
-    return { min, max };
+function maxSum(small, N, allowRepeats, maxC) {
+    if (allowRepeats) {
+        return small + (N - 1) * maxC;
+    } else {
+        let total = small;
+        let val = maxC;
+        for (let i = 0; i < N - 1; ++i) total += val--;
+        return total;
+    }
 }
 
-// Given N values, what's the smallest minimum digit that must appear?
-function sumOfLargest(n, sum) {
-    // Try placing largest N values: 9,8,... down to (10-N)
-    const minSum = (n * (n + 1)) / 2;
-    const maxSum = (n * (19 - n)) / 2;
-
-    if (sum < minSum || sum > maxSum) return 10; // impossible
-
-    for (let low = Candidates.MIN; low <= Candidates.MAX; ++low) {
-        let total = 0;
-        for (let i = 0; i < n; ++i) total += (low + i);
-        if (total >= sum) return low;
+function lowerBound(N, sum, allowRepeats, maxC) {
+    for (let low = Candidates.MIN; low <= maxC - (allowRepeats ? 0 : N - 1); ++low) {
+        if (maxSum(low, N, allowRepeats, maxC) >= sum) return low;
     }
     return 10;
 }
 
-// What's the largest possible digit that can appear?
-function sumOfSmallest(n, sum) {
-    for (let high = Candidates.MAX; high >= Candidates.MIN; --high) {
-        let total = 0;
-        for (let i = 0; i < n; ++i) total += (high - i);
-        if (total <= sum) return high;
+function minSum(large, N, allowRepeats, minC) {
+    if (allowRepeats) {
+        return large + (N - 1) * minC;
+    } else {
+        let total = large;
+        let val = minC;
+        for (let i = 0; i < N - 1; ++i) total += val++;
+        return total;
+    }
+}
+
+function upperBound(N, sum, allowRepeats, minC) {
+    for (let high = Candidates.MAX; high >= minC + (allowRepeats ? 0 : N - 1); --high) {
+        if (minSum(high, N, allowRepeats, minC) <= sum) return high;
     }
     return 0;
 }
