@@ -14,7 +14,72 @@ h1, h2, h3 { margin-bottom: 1rem; }
         lightblue   #0094f8
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Londrina+Sketch&display=swap');
 
+.londrina-sketch-regular {
+    font-family: "Londrina Sketch", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.link {
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.link::before,
+.link::after {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    top: 100%;
+    left: 0;
+    pointer-events: none;
+}
+
+.link::before {
+    content: '';
+    /* show by default */
+}
+
+.link--io::before {
+    transform-origin: 100% 50%;
+    transform: scale3d(0, 1, 1);
+    transition: transform 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.link--io:hover::before {
+    transform-origin: 0% 50%;
+    transform: scale3d(1, 1, 1);
+    transition-timing-function: cubic-bezier(0.4, 1, 0.8, 1);
+}
+
+.link--io::after {
+    content: '';
+    top: calc(100% + 4px);
+    transform-origin: 0% 50%;
+    transform: scale3d(0, 1, 1);
+    transition: transform 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.link--io:hover::after {
+    transform-origin: 100% 50%;
+    transform: scale3d(1, 1, 1);
+    transition-timing-function: cubic-bezier(0.4, 1, 0.8, 1);
+}
+
+.my-text-btn {
+    color: #0094f8;
+}
+.my-text-btn:hover,
+.my-text-btn:focus { color:#005792;}
+
+.full-height {  /* für vertikales zentrieren */
+    height: calc(100vh - 100px);
+}
 
 .layout-wrapper {
     display: flex;
