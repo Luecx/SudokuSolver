@@ -5,9 +5,9 @@
 {% block title %}Sudoku Creator{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
-	<link rel="stylesheet" href="{% static 'sudoku/css/rulemanager.css' %}">
-	<link rel="stylesheet" href="{% static 'sudoku/css/accordion.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/rulemanager.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/accordion.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -29,18 +29,41 @@
 		<div class="mt-4 my_white_box flex-fill overflow-auto" style="max-height: 600px;">
 			<div id="accordionContainer" class="accordion w-100 flex-fill"></div>
 		</div>
-		<!-- Submit Button -->
-		<div class="text-center pt-3">
-			<button id="submit-sudoku-btn" class="btn btn-success mb-4">Save Sudoku (Console)</button>
+		
+		
+		<!-- Wenn Analyse erfolgreich -->
+		<!--<div class="d-flex align-items-start mt-3">
+			<div class="d-flex flex-column me-3 gap-3">
+				<button id="publishButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPublish">{% trans "Publish" %}</button>
+				<button id="analysisButton" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#modalAnalysis">{% trans "Start analysis" %}</button>
+			</div>
+			<div>
+				{% blocktrans %}The Sudoku will publish it.{% endblocktrans %}
+			</div>
+		</div>-->
+		
+		<!-- Wenn Analyse NICHT erfolgreich -->
+		<div class="d-flex align-items-start mt-3">
+			<div class="d-flex flex-column me-3 gap-3">
+				<button id="submitButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSave">{% trans "Save" %}</button>
+				<button id="analysisButton" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#modalAnalysis">{% trans "Start analysis" %}</button>
+			</div>
+			<div>
+				{% blocktrans %}The Sudoku will only be saved. To publish it, a successful analysis must be completed first.{% endblocktrans %}
+			</div>
 		</div>
+		
+		
 	</div>
 </div>
+{% include "sudoku/creator/modal_analyse.html" %}
+
 {% endblock %}
 
 {% block extra_scripts %}
 <script type="module" src="{% static 'sudoku/js/ui/creator/creator_ui.js' %}"></script>
 <script>
-    /*  IMPORTANT
+	/*  IMPORTANT
 
 	YOU NEED  style.css
 
@@ -52,63 +75,63 @@
 	</div>
 
  */
-
-    function resizeLayout() {
-        const wrapper = document.getElementById("layoutWrapper");
-        const left = document.getElementById("leftCol");
-
-        const isPortrait = window.innerHeight > window.innerWidth;
-        wrapper.classList.toggle("portrait", isPortrait);
-        wrapper.classList.toggle("landscape", !isPortrait);
-
-        const right = document.getElementById("rightCol");
-        right.classList.toggle("landscape", !isPortrait);
-        right.classList.toggle("portrait", isPortrait);
-	    
-        const rect = wrapper.getBoundingClientRect();
-        let size;
-
-        if (isPortrait) {
-            // Portrait: Quadratische Breite + Höhe, begrenzt durch Wrapper
-            const maxHeight = rect.height * 2 / 3;
-            const maxWidth = rect.width;
-            size = Math.min(maxHeight, maxWidth);
-
-            left.style.width = size + "px";
-            left.style.height = size + "px";
-
-            // Rechte Spalte nimmt restliche Höhe ein
-            document.getElementById("rightCol").style.width = size + "px";
-            document.getElementById("rightCol").style.height = (rect.height - size) + "px";
-        } else {
-            const maxHeight = rect.height;
-            const maxLeftWidth = rect.width * 2 / 3;
-            const leftSize = Math.min(maxHeight, maxLeftWidth);
-
-            const availableRight = rect.width - leftSize - 16; // 16px ≈ 1rem margin
-
-            const rightWidth = Math.min(availableRight, 450);
-
-            left.style.width = leftSize + "px";
-            left.style.height = leftSize + "px";
-
-            right.style.height = leftSize + "px";
-            right.style.width = rightWidth + "px";
-
-            // Center beide, wenn genug Platz für beide plus Abstand
-            if (availableRight > 450) {
-                wrapper.classList.add("centered");
-            } else {
-                wrapper.classList.remove("centered");
-            }
-        }
-    }
-
-    window.addEventListener("resize", resizeLayout);
-    window.addEventListener("load", resizeLayout);
+	
+	function resizeLayout() {
+		const wrapper = document.getElementById("layoutWrapper");
+		const left = document.getElementById("leftCol");
+		
+		const isPortrait = window.innerHeight > window.innerWidth;
+		wrapper.classList.toggle("portrait", isPortrait);
+		wrapper.classList.toggle("landscape", !isPortrait);
+		
+		const right = document.getElementById("rightCol");
+		right.classList.toggle("landscape", !isPortrait);
+		right.classList.toggle("portrait", isPortrait);
+		
+		const rect = wrapper.getBoundingClientRect();
+		let size;
+		
+		if (isPortrait) {
+			// Portrait: Quadratische Breite + Höhe, begrenzt durch Wrapper
+			const maxHeight = rect.height * 2 / 3;
+			const maxWidth = rect.width;
+			size = Math.min(maxHeight, maxWidth);
+			
+			left.style.width = size + "px";
+			left.style.height = size + "px";
+			
+			// Rechte Spalte nimmt restliche Höhe ein
+			document.getElementById("rightCol").style.width = size + "px";
+			document.getElementById("rightCol").style.height = (rect.height - size) + "px";
+		} else {
+			const maxHeight = rect.height;
+			const maxLeftWidth = rect.width * 2 / 3;
+			const leftSize = Math.min(maxHeight, maxLeftWidth);
+			
+			const availableRight = rect.width - leftSize - 16; // 16px ≈ 1rem margin
+			
+			const rightWidth = Math.min(availableRight, 450);
+			
+			left.style.width = leftSize + "px";
+			left.style.height = leftSize + "px";
+			
+			right.style.height = leftSize + "px";
+			right.style.width = rightWidth + "px";
+			
+			// Center beide, wenn genug Platz für beide plus Abstand
+			if (availableRight > 450) {
+				wrapper.classList.add("centered");
+			} else {
+				wrapper.classList.remove("centered");
+			}
+		}
+	}
+	
+	window.addEventListener("resize", resizeLayout);
+	window.addEventListener("load", resizeLayout);
 	document.addEventListener("DOMContentLoaded", () => setTimeout(resizeLayout, 10));
-    document.addEventListener("orientationchange", resizeLayout);
-    
+	document.addEventListener("orientationchange", resizeLayout);
+
 </script>
 
 {% endblock %}
