@@ -1,0 +1,185 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-01 23:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: sudoku/templates/sudoku/base.html:30
+msgid "Finn's Sudoku App"
+msgstr "Finns Sudoku-App"
+
+#: sudoku/templates/sudoku/base.html:40
+msgid "Sudoku Creator"
+msgstr "Sudoku-Ersteller"
+
+#: sudoku/templates/sudoku/base.html:45
+msgid "Puzzles"
+msgstr "Rätsel"
+
+#: sudoku/templates/sudoku/base.html:50
+msgid "Leaderboards"
+msgstr "Bestenlisten"
+
+#: sudoku/templates/sudoku/base.html:55
+msgid "Play"
+msgstr "Spielen"
+
+#: sudoku/templates/sudoku/base.html:80
+msgid "Logout"
+msgstr "Abmelden"
+
+#: sudoku/templates/sudoku/base.html:87
+msgid "Login"
+msgstr "Anmelden"
+
+#: sudoku/templates/sudoku/creator/creator.html:21
+msgid "Create Your Sudoku"
+msgstr "Erstelle dein Sudoku"
+
+#: sudoku/templates/sudoku/index.html:42
+msgid "FINN'S SUDOKU APP"
+msgstr "FINNS SUDOKU-APP"
+
+#: sudoku/templates/sudoku/index.html:47
+msgid "CHOOSE A PUZZLE TO PLAY"
+msgstr "WÄHLE EIN RÄTSEL ZUM SPIELEN"
+
+#: sudoku/templates/sudoku/leaderboard.html:12
+msgid "For a detailed explanation of how the rating is computed, "
+msgstr "Für eine detaillierte Erklärung, wie die Bewertung berechnet wird, "
+
+#: sudoku/templates/sudoku/leaderboard.html:13
+msgid "click here"
+msgstr "klicke hier"
+
+#: sudoku/templates/sudoku/leaderboard.html:22
+msgid "Rank"
+msgstr "Rang"
+
+#: sudoku/templates/sudoku/leaderboard.html:23
+msgid "User"
+msgstr "Benutzer"
+
+#: sudoku/templates/sudoku/leaderboard.html:24
+msgid "Total Score"
+msgstr "Gesamtpunktzahl"
+
+#: sudoku/templates/sudoku/leaderboard.html:25
+msgid "Puzzles Solved"
+msgstr "Gelöste Rätsel"
+
+#: sudoku/templates/sudoku/leaderboard.html:47
+msgid "How Is Your Rating Calculated?"
+msgstr "Wie wird deine Bewertung berechnet?"
+
+#: sudoku/templates/sudoku/leaderboard.html:52
+msgid ""
+"\n            The leaderboard uses the <strong>Sudoku&nbsp;Power&nbsp;Index (SPI)</strong> &mdash; a 000 score that rewards\n            <em>fast</em> solves on <em>hard</em> puzzles, values <em>recency</em>, and gives a gentle boost for\n            tackling lots of puzzles.\n            "
+msgstr ""
+"\n            Die Bestenliste verwendet den <strong>Sudoku Power Index (SPI)</strong> &mdash; eine 0-100 Punktzahl, die\n            schnelle Lösungen bei schweren Rätseln belohnt, Aktualität wertschätzt und einen sanften Schub für\n            das Lösen vieler Rätsel gibt.\n            "
+
+#: sudoku/templates/sudoku/leaderboard.html:63
+msgid "Per0-puzzle points"
+msgstr "Punkte pro Rätsel"
+
+#: sudoku/templates/sudoku/leaderboard.html:65
+msgid "Each time you solve a puzzle you earn."
+msgstr "Jedes Mal, wenn du ein Rätsel löst, erhältst du."
+
+#: sudoku/templates/sudoku/leaderboard.html:69
+msgid "Recency"
+msgstr "Aktualität"
+
+#: sudoku/templates/sudoku/leaderboard.html:71
+msgid "600-day half-life"
+msgstr "60-Tage Halbwertszeit"
+
+#: sudoku/templates/sudoku/leaderboard.html:73
+msgid "Difficulty"
+msgstr "Schwierigkeit"
+
+#: sudoku/templates/sudoku/leaderboard.html:75
+msgid "where"
+msgstr "wo"
+
+#: sudoku/templates/sudoku/leaderboard.html:77
+msgid "Speed bonus"
+msgstr "Geschwindigkeitsbonus"
+
+#: sudoku/templates/sudoku/leaderboard.html:79
+msgid "Notation:"
+msgstr "Notation:"
+
+#: sudoku/templates/sudoku/leaderboard.html:80
+msgid "total solves"
+msgstr "Gesamtlösungen"
+
+#: sudoku/templates/sudoku/leaderboard.html:81
+msgid "attempts on the puzzle"
+msgstr "Versuche am Rätsel"
+
+#: sudoku/templates/sudoku/leaderboard.html:82
+msgid "average solve time"
+msgstr "durchschnittliche Lösungszeit"
+
+#: sudoku/templates/sudoku/leaderboard.html:83
+msgid "your time"
+msgstr "deine Zeit"
+
+#: sudoku/templates/sudoku/puzzles.html:8
+msgid "All Published Sudoku Puzzles"
+msgstr "Alle veröffentlichten Sudoku-Rätsel"
+
+#: sudoku/templates/sudoku/puzzles.html:14
+msgid "Name"
+msgstr "Name"
+
+#: sudoku/templates/sudoku/puzzles.html:15
+msgid "Creator"
+msgstr "Ersteller"
+
+#: sudoku/templates/sudoku/puzzles.html:16
+msgid "Solved / Attempts"
+msgstr "Gelöst / Versuche"
+
+#: sudoku/templates/sudoku/puzzles.html:17
+msgid "Rating"
+msgstr "Bewertung"
+
+#: sudoku/templates/sudoku/puzzles.html:18
+msgid "Avg Time"
+msgstr "Durchschn. Zeit"
+
+#: sudoku/templates/sudoku/puzzles.html:21
+msgid "Tags"
+msgstr "Tags"
+
+#: sudoku/templates/sudoku/puzzles.html:74
+msgid "No puzzles available."
+msgstr "Keine Rätsel verfügbar."
+
+#: sudoku_site/settings.py:86
+msgid "English"
+msgstr "Englisch"
+
+#: sudoku_site/settings.py:87
+msgid "Deutsch"
+msgstr "Deutsch"
+
+#: sudoku_site/settings.py:88
+msgid "日本語"
+msgstr "Japanisch"

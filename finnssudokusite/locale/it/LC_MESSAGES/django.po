@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-01 23:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: sudoku/templates/sudoku/base.html:30
+msgid "Finn's Sudoku App"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:40
+msgid "Sudoku Creator"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:45
+msgid "Puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:50
+msgid "Leaderboards"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:55
+msgid "Play"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:80
+msgid "Logout"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:87
+msgid "Login"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator.html:20
+msgid "Create Your Sudoku"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:41
+msgid "FINN'S SUDOKU APP"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:46
+msgid "CHOOSE A PUZZLE TO PLAY"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:11
+msgid "For a detailed explanation of how the rating is computed, "
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:12
+msgid "click here"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:21
+msgid "Rank"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:22
+msgid "User"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:23
+msgid "Total Score"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:24
+msgid "Puzzles Solved"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:46
+msgid "How Is Your Rating Calculated?"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:51
+msgid ""
+"\n"
+"            The leaderboard uses the <strong>Sudoku&nbsp;Power&nbsp;Index "
+"(SPI)</strong> &mdash; a 0‑100 score that rewards\n"
+"            <em>fast</em> solves on <em>hard</em> puzzles, values "
+"<em>recency</em>, and gives a gentle boost for\n"
+"            tackling lots of puzzles.\n"
+"            "
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:62
+msgid "Per‑puzzle points"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:64
+msgid "Each time you solve a puzzle you earn."
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:68
+msgid "Recency"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:70
+msgid "60‑day half‑life"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:72
+msgid "Difficulty"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:74
+msgid "where"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:76
+msgid "Speed bonus"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:78
+msgid "Notation:"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:79
+msgid "total solves"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:80
+msgid "attempts on the puzzle"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:81
+msgid "average solve time"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard.html:82
+msgid "your time"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:7
+msgid "All Published Sudoku Puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:13
+msgid "Name"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:14
+msgid "Creator"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:15
+msgid "Solved / Attempts"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:16
+msgid "Rating"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:17
+msgid "Avg Time"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:20
+msgid "Tags"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:73
+msgid "No puzzles available."
+msgstr ""
+
+#: sudoku_site/settings.py:86
+msgid "English"
+msgstr ""
+
+#: sudoku_site/settings.py:87
+msgid "Deutsch"
+msgstr ""
+
+#: sudoku_site/settings.py:88
+msgid "日本語"
+msgstr ""

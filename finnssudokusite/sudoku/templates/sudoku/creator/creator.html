@@ -1,10 +1,13 @@
 {% extends "sudoku/base.html" %}
+{% load i18n %}
 {% load static %}
 
+{% block title %}Sudoku Creator{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
-<link rel="stylesheet" href="{% static 'sudoku/css/rulemanager.css' %}">
-<link rel="stylesheet" href="{% static 'sudoku/css/accordion.css' %}">
+	<link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
+	<link rel="stylesheet" href="{% static 'sudoku/css/rulemanager.css' %}">
+	<link rel="stylesheet" href="{% static 'sudoku/css/accordion.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,7 +19,7 @@
 		</div>
 	</div>
 	<div id="rightCol" class="right-col">
-		<h2 class="text-center mt-4">Create Your Sudoku</h2>
+		<h2 class="text-center mt-4">{% trans "Create Your Sudoku" %}</h2>
 		
 		<div class="position-relative">
 			<input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..." autocomplete="off">
@@ -105,5 +108,7 @@
     window.addEventListener("load", resizeLayout);
 	document.addEventListener("DOMContentLoaded", () => setTimeout(resizeLayout, 10));
     document.addEventListener("orientationchange", resizeLayout);
+    
 </script>
+
 {% endblock %}

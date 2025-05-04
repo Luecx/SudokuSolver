@@ -1,5 +1,8 @@
-{% extends "../base.html" %}
+{% extends 'sudoku/base.html' %}
+{% load i18n %}
 {% load static %}
+
+{% block title %}Sudoku Play{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'sudoku/css/playboard.css' %}">

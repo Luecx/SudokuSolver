@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 24 24" id="email">
+  <g id="Duotone">
+    <path fill="#FFF" d="M22.5 17.5h-15l1-10h15z" style="fill:#fff"></path>
+    <path fill="#CCE7FF" d="m8.3 9.5-.8 8h15l.8-8z" style="fill:#cce7ff"></path>
+    <path d="M.5 15.5h5M2.5 12.5H6M4.5 9.5h2M22.5 17.5h-15l1-10h15z" style="fill:none;stroke:#1078ff;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"></path>
+    <path d="m8.5 7.5 7.5 6 7.5-6z" style="fill:none;stroke:#1078ff;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10"></path>
+  </g>
+  <path id="Frames-24px" fill="none" d="M0 0h24v24H0z" style="fill:none"></path>
+</svg>

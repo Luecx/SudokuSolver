@@ -39,7 +39,7 @@ def index(request):
 
 def playboard(request):
     """Renders the general Sudoku playboard page."""
-    return render(request, "sudoku/playboard/playboard.html")
+    return render(request, "sudoku/playboard.html")
 
 def puzzles_view(request):
     """Lists all available Sudoku puzzles."""
@@ -97,7 +97,7 @@ def play_sudoku(request, sudoku_id):
     except Exception:
         raise Http404("Invalid puzzle data.")
 
-    return render(request, "sudoku/playboard/playboard.html", {
+    return render(request, "sudoku/playboard.html", {
         "puzzle_data_json": json.dumps({
             "id": sudoku.id,
             "title": sudoku.title,

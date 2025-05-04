@@ -18,6 +18,11 @@ INSTALLED_APPS = [
     'corsheaders',
 
 ]
+
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -27,6 +32,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -71,3 +77,43 @@ CORS_ALLOW_ALL_ORIGINS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'sudoku_site.urls'
+
+LANGUAGE_CODE = 'en'
+
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('de', _('Deutsch')),
+    ('ja', _('日本語')),  # Japanisch
+#     ('fr', _('Français')),
+#     ('es', _('Español')),
+#     ('it', _('Italiano')),
+#     ('zh-hans', _('中文 (简体)')),  # Chinesisch (vereinfacht)
+#     ('ru', _('Русский')),
+#     ('pt-br', _('Português (Brasil)')),
+]
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
+
+import os
+BASE_DIR = Path(__file__).resolve().parent.parent
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+
+
+#
+# INSTALLED_APPS = [
+#     # ...
+#     'django.contrib.sites',
+#     'allauth',
+#     'allauth.account',
+#     'allauth.socialaccount',
+#     'allauth.socialaccount.providers.apple',
+#     # ggf. weitere Anbieter
+# ]
+# SITE_ID = 1
+#
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',
+#     'allauth.account.auth_backends.AuthenticationBackend',
+# )
