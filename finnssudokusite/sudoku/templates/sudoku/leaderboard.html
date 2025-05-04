@@ -4,175 +4,153 @@
 {% block title %}Sudoku Leaderboard{% endblock %}
 
 {% block content %}
-  <div class="container mt-5">
-  <h2 class="text-center mb-4">{% trans "Leaderboard" %}</h2>
-
-  <div class="text-center mb-4">
-    <p>
-      {% blocktrans %}For a detailed explanation of how the rating is computed, {% endblocktrans %}
-      <a href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">{% trans "click here" %}</a>.
-    </p>
-  </div>
-
-  <!-- Leaderboard Table -->
-  <div class="table-responsive">
-    <table class="table table-striped table-hover align-middle">
-      <thead>
-      <tr>
-        <th>{% trans "Rank" %}</th>
-        <th>{% trans "User" %}</th>
-        <th>{% trans "Total Score" %}</th>
-        <th>{% trans "Puzzles Solved" %}</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for entry in leaderboard %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ entry.user }}</td>
-        <td>{{ entry.score }}</td>
-        <td>{{ entry.solved }}</td>
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Modal -->
-  <!-- Modal explaining the new Sudoku Power Index (SPI) formula -->
-  <div class="modal fade" id="formulaModal" tabindex="-1" aria-labelledby="formulaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="formulaModalLabel">{% trans "How Is Your Rating Calculated?" %}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body px-4 py-3">
-          <p>
-            {% blocktrans %}
-            The leaderboard uses the <strong>Sudoku&nbsp;Power&nbsp;Index (SPI)</strong> &mdash; a 0‑100 score that rewards
-            <em>fast</em> solves on <em>hard</em> puzzles, values <em>recency</em>, and gives a gentle boost for
-            tackling lots of puzzles.
-            {% endblocktrans %}
-          </p>
-          
-          <ol class="list-group list-group-numbered list-group-flush">
-            <!--  1  -->
-            <li class="list-group-item d-flex justify-content-between align-items-start">
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">{% trans "Per‑puzzle points" %}</div>
-                <p>
-                  {% blocktrans %}Each time you solve a puzzle you earn.{% endblocktrans %}
-                  <span class="ps-3 text-primary">\({p = w_{rec}\;w_{diff}\;(1+\Delta_{speed})}\)</span>
-                </p>
-                <p>
-                  <strong>{% trans "Recency" %}</strong>
-                  <span class="px-3 text-primary">\(w_{rec}=2^{-\text{days}/60}\)</span>
-                  <span class="text-muted">{% trans "60‑day half‑life" %}</span>
-                  <br>
-                  <strong>{% trans "Difficulty" %}</strong>
-                  <span class="px-3 text-primary">\(w_{diff}=1+(1-q)^{1.7}\)</span>
-                  {% trans "where" %} <span class="ps-3 text-primary">\(q=\tfrac{s+1}{a+3}\)</span>
-                  <br>
-                  <strong>{% trans "Speed bonus" %}</strong>&nbsp;&nbsp;\(\Delta_{speed}=\max\bigl(0,\ln\bar t-\ln t_u\bigr)\)
-                  <br>
-                  <em>{% trans "Notation:" %}</em>
-                  \(s\) = {% trans "total solves" %},
-                  \(a\) = {% trans "attempts on the puzzle" %},
-                  \(\bar t\) = {% trans "average solve time" %},
-                  \(t_u\) = {% trans "your time" %}.
-                </p>
-              </div>
-            </li>
-            
-            <!--  2  -->
-            <li class="list-group-item d-flex justify-content-between align-items-start">
-              <div class="ms-2 me-auto">
-                <div id="landModalPoint2" class="fw-bold">Cumulative strength</div>
-                <p >
-                
-                  Your lifetime strength grows with the <em>recency‑weighted</em> sums
-                </p>
-              
-              </div>
-            </li>
-            
-            <!--  3  -->
-            <li class="list-group-item d-flex justify-content-between align-items-start">
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">Subheading</div>
-                Content for list item
-              </div>
-            </li>
-            
-            <!--  4  -->
-            <li class="list-group-item d-flex justify-content-between align-items-start">
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">Subheading</div>
-                Content for list item
-              </div>
-            </li>
-          </ol>
-            
-          
-          
-          
-
-          <hr class="my-4">
-
-         <p class="ps-3 text-primary">\(P=\sum p\) and \(N=\sum w_{rec}\) (<span id="langModalVolume">volume</span>).</p>
-
-          <p id="langModalPoint3">
-            <strong>3.&nbsp;Raw rating</strong><br>frequent players get a modest boost.
-          </p>
-          <p class="ps-3 text-primary">
-            \(R = P\,\bigl(1 + 0.04\,\sqrt{N}\bigr)\)
-          </p>
-
-          <p id="langModalPoint4">
-            <strong>4.&nbsp;Leaderboard score</strong><br>
-            Everyone is placed on a 0‑100 scale:
-          </p>
-          <p class="ps-3 text-primary">
-            \( \text{SPI}=100\,\frac{R}{\max R}\)
-          </p>
-          <p id="langModalPoint4Text">so the current number‑one player always shows <strong>100</strong>.</p>
-
-          <hr class="my-4">
-
-          <p><strong id="langModalWhy">Why exponential decay?</strong></p>
-          <p id="langModalWhyAns">
-            It keeps the board dynamic: a stellar run <em>today</em> can lift you quickly, but you need to keep performing to stay on top.
-            After 60&nbsp;days, a solve counts for only half its original value.
-          </p>
-
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container mt-5">
+	<h2 class="text-center mb-4">{% trans "Leaderboard" %}</h2>
+	
+	<div class="text-center mb-4">
+		<p>
+			{% blocktrans %}For a detailed explanation of how the rating is computed, {% endblocktrans %}
+			<a href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">{% trans "click here" %}</a>.
+		</p>
+	</div>
+	
+	<!-- Leaderboard Table -->
+	<div class="table-responsive">
+		<table class="table table-striped table-hover align-middle">
+			<thead>
+			<tr>
+				<th>{% trans "Rank" %}</th>
+				<th>{% trans "User" %}</th>
+				<th>{% trans "Total Score" %}</th>
+				<th>{% trans "Puzzles Solved" %}</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for entry in leaderboard %}
+			<tr>
+				<td>{{ forloop.counter }}</td>
+				<td>{{ entry.user }}</td>
+				<td>{{ entry.score }}</td>
+				<td>{{ entry.solved }}</td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	
+	<!-- Modal -->
+	<!-- Modal explaining the new Sudoku Power Index (SPI) formula -->
+	<div class="modal fade" id="formulaModal" tabindex="-1" aria-labelledby="formulaModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-scrollable">
+			<div class="modal-content rounded-5">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="formulaModalLabel">{% trans "How Is Your Rating Calculated?" %}</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body px-4 py-3">
+					<p>
+						{% blocktrans %}
+						The leaderboard uses the
+						<strong>Sudoku&nbsp;Power&nbsp;Index (SPI)</strong> &mdash; a 0‑100 score that rewards
+						<em>fast</em> solves on <em>hard</em> puzzles, values
+						<em>recency</em>, and gives a gentle boost for tackling lots of puzzles.
+						{% endblocktrans %}
+					</p>
+					
+					<ol class="list-group list-group-numbered">
+						<!--  1  -->
+						<li class="list-group-item d-flex justify-content-between align-items-start">
+							<div class="ms-2 me-auto">
+								<div class="fw-bold">{% trans "Per‑puzzle points" %}</div>
+								<p>
+									{% blocktrans %}Each time you solve a puzzle you earn.{% endblocktrans %}
+									<span class="ps-3 text-primary">\({p = w_{rec}\;w_{diff}\;(1+\Delta_{speed})}\)</span>
+								</p>
+								<p>
+									<strong>{% trans "Recency" %}</strong>
+									<span class="px-3 text-primary">\(w_{rec}=2^{-\text{days}/60}\)</span>
+									<span class="text-muted">{% trans "60‑day half‑life" %}</span>
+									<br>
+									<strong>{% trans "Difficulty" %}</strong>
+									<span class="px-3 text-primary">\(w_{diff}=1+(1-q)^{1.7}\)</span>
+									{% trans "where" %} <span class="ps-x text-primary">\(q=\tfrac{s+1}{a+3}\)</span>
+									<br>
+									<strong>{% trans "Speed bonus" %}</strong>&nbsp;&nbsp;\(\Delta_{speed}=\max\bigl(0,\ln\bar t-\ln t_u\bigr)\)
+									<br>
+									<em>{% trans "Notation:" %}</em>
+									\(s\) = {% trans "total solves" %},
+									\(a\) = {% trans "attempts on the puzzle" %},
+									\(\bar t\) = {% trans "average solve time" %},
+									\(t_u\) = {% trans "your time" %}.
+								</p>
+							</div>
+						</li>
+						
+						<!--  2  -->
+						<li class="list-group-item d-flex justify-content-between align-items-start">
+							<div class="ms-2 me-auto">
+								<div class="fw-bold">Cumulative strength</div>
+								<p>{% trans "Your lifetime strength grows with the <em>recency‑weighted</em> sums" %}
+								</p>
+								<p><span class="px-3 text-primary">\(P=\sum p\)</span> {% trans "and" %} <span class="px-3 text-primary">\(N=\sum w_{rec}\)</span> (<span>{% trans "volume" %}</span>)</p>
+							</div>
+						</li>
+						
+						<!--  3  -->
+						<li class="list-group-item d-flex justify-content-between align-items-start">
+							<div class="ms-2 me-auto">
+								<div class="fw-bold">{% trans "Raw rating" %}</div>
+								<p>{% trans "Frequent players get a modest boost." %}</p>
+								<p class="ps-3 text-primary">
+									\(R = P\,\bigl(1 + 0.04\,\sqrt{N}\bigr)\)
+								</p>
+							</div>
+						</li>
+						
+						<!--  4  -->
+						<li class="list-group-item d-flex justify-content-between align-items-start">
+							<div class="ms-2 me-auto">
+								<div class="fw-bold">{% trans "Leaderboard score" %}</div>
+								<p>{% trans "Everyone is placed on a 0‑100 scale:" %}</p>
+								<p class="ps-3 text-primary">\( \text{SPI}=100\,\frac{R}{\max R}\)</p>
+								<p>{% trans "so the current number‑one player always shows" %} <strong>100</strong>.</p>
+							</div>
+						</li>
+					</ol>
+					
+					<p><strong>{% trans "Why exponential decay?" %}</strong></p>
+					<p>{% blocktrans %}
+						It keeps the board dynamic: a stellar run
+						<em>today</em> can lift you quickly, but you need to keep performing to stay on top.
+						After 60&nbsp;days, a solve counts for only half its original value.{% endblocktrans %}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-  <!-- KaTeX CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
-  
-  <!-- KaTeX JS -->
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
-  
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      renderMathInElement(document.body, {
-        delimiters: [
-          {left: "$$", right: "$$", display: true},
-          {left: "\\[", right: "\\]", display: true},
-          {left: "$", right: "$", display: false},
-          {left: "\\(", right: "\\)", display: false}
-        ]
-      });
-    });
-  </script>
-  
+<!-- KaTeX CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+
+<!-- KaTeX JS -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		renderMathInElement(document.body, {
+			delimiters: [
+				{left: "$$", right: "$$", display: true},
+				{left: "\\[", right: "\\]", display: true},
+				{left: "$", right: "$", display: false},
+				{left: "\\(", right: "\\)", display: false}
+			]
+		});
+	});
+</script>
+
 {% endblock %}
