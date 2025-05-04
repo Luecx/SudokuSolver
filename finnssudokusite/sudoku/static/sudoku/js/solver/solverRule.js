@@ -4,7 +4,7 @@
  * Base class for all Sudoku rules.
  * Subclasses should implement all three methods.
  */
-export class Rule {
+export class SolverRule {
     /**
      * Called when a number is set on the board.
      * @param {Board} board

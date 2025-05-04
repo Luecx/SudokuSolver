@@ -1,4 +1,5 @@
 import { CellIdx } from "../region/CellIdx.js";
+import { SolverBoard } from "../../solver/solverBoard.js";
 
 export class Cell {
     constructor(r, c) {
@@ -59,6 +60,28 @@ export class BoardContentLayer {
                 this.cells.push(cell);
             }
         }
+    }
+
+    getSolverBoard() {
+        let solverboard = new SolverBoard();
+
+        // go through all handlers and attach them to the solverboard
+        for (const handler of this.board.getAllHandlers()) {
+            if (handler.enabled) {
+                solverboard.addHandler(handler);
+            }
+        }
+
+        for (const cell of this.cells) {
+            const idx   = cell.idx;
+            const value = cell.value;
+            const fixed = cell.fixed;
+            if (fixed && value !== null) {
+                solverboard.setCellForce(idx, value);
+            }
+        }
+
+        return solverboard;
     }
 
     _generate(cellSize, usedSize, gridOffset) {
@@ -425,6 +448,4 @@ export class BoardContentLayer {
             this.setValue(r, c, value, true);
         }
     }
-
-
 }

@@ -1,10 +1,13 @@
 import { RuleTypeHandler } from "./rule.js";
+import {attachStandardSolverLogic} from "./rule_standard_solver.js";
 
 export class StandardRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("Standard Sudoku", board);
         this.tag = "standard";
         this.can_create_rules = false;
+
+        attachStandardSolverLogic(this);
     }
 
     defaultRules() {
@@ -64,4 +67,7 @@ export class StandardRuleHandler extends RuleTypeHandler {
 
         ctx.restore();
     }
+
 }
+
+import './rule_standard_solver.js';

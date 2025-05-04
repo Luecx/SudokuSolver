@@ -1,7 +1,7 @@
 // === cell.js ===
 
 import { EMPTY } from './defs.js';
-import { Position } from './position.js';
+import { CellIdx } from '../ui/region/CellIdx.js';
 import { Candidates, CAND_ALL } from './candidates.js';
 
 export class Cell {
@@ -10,7 +10,7 @@ export class Cell {
      * @param {number} col
      */
     constructor(row = 0, col = 0) {
-        this.pos = new Position(row, col);
+        this.pos = new CellIdx(row, col);
         this.value = EMPTY;
         this.candidates = CAND_ALL.clone();
     }

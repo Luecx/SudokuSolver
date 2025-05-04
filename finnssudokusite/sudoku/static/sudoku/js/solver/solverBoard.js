@@ -1,11 +1,12 @@
 // === board.js ===
 
 import { EMPTY, BOARD_SIZE } from './defs.js';
+import { CellIdx } from "../ui/region/CellIdx.js";
 import { Cell } from './cell.js';
 import { CAND_NONE } from './candidates.js';
 import { SolverStats } from './stats.js';
 
-export class Board {
+export class SolverBoard {
     constructor() {
         // Create 2D grid of Cells
         this.grid = Array.from({ length: BOARD_SIZE }, (_, r) =>
@@ -30,8 +31,8 @@ export class Board {
         this.history = [];
     }
 
-    getCell(pos) {
-        return this.grid[pos.row][pos.col];
+    getCell(idx) {
+        return this.grid[idx.r][idx.c];
     }
 
     getRow(row) {
@@ -47,13 +48,13 @@ export class Board {
         return this.blocks[bi];
     }
 
-    addRule(ruleInstance) {
+    addHandler(ruleInstance) {
         this.rules.push(ruleInstance);
         this.processRuleCandidates();
     }
 
-    isValidMove(pos, number) {
-        return this.getCell(pos).candidates.test(number);
+    isValidMove(idx, number) {
+        return this.getCell(idx).candidates.test(number);
     }
 
     impossible() {
@@ -102,6 +103,14 @@ export class Board {
         return true;
     }
 
+    setCellForce(pos, number) {
+        const cell = this.getCell(pos);
+        cell.value = number;
+        cell.candidates.clear();
+        this.processRuleNumberChanged(cell);
+        this.processRuleCandidates();
+    }
+
     display() {
         const lines = this.grid.map(row => row.map(cell => cell.value || ".").join(" "));
         console.log(lines.join("\n"));
@@ -137,33 +146,13 @@ export class Board {
                     const count = cell.candidates.count();
                     if (count < minC) {
                         minC = count;
-                        best = { row: r, col: c };
+                        best = { r: r, c: c };
                     }
-                    if (count <= 2) return { row: r, col: c };
+                    if (count <= 2) return { r: r, c: c };
                 }
             }
         }
         return best;
-    }
-
-    solveTrivial() {
-        let applied = true;
-        while (applied) {
-            applied = false;
-            for (let r = 0; r < BOARD_SIZE; r++) {
-                for (let c = 0; c < BOARD_SIZE; c++) {
-                    const cell = this.grid[r][c];
-                    if (cell.value === EMPTY && cell.candidates.count() === 1) {
-                        for (const n of cell.candidates) {
-                            if (!this.setCell({ row: r, col: c }, n)) return false;
-                            applied = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     solve(maxSolutions = 1) {
@@ -175,7 +164,6 @@ export class Board {
             nodeCount++;
 
             // 1) Do all trivial fillings; if a contradiction arises, this path is dead:
-            // if (!this.solveTrivial()) return true;
 
             // 2) If we have a complete board, record it:
             if (this.isSolved()) {
@@ -215,7 +203,7 @@ export class Board {
 
 
     clone() {
-        const copy = new Board();
+        const copy = new SolverBoard();
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
                 const cell = this.grid[r][c];

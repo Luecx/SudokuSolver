@@ -1,12 +1,15 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
 import { Region } from "../region/Region.js";
+import { attachArrowSolverLogic} from "./rule_arrow_solver.js";
 
 export class ArrowHandler extends RuleTypeHandler {
     constructor(board) {
         super("Arrow", board);
         this.tag = "arrow";
         this.can_create_rules = true;
+
+        attachArrowSolverLogic(this);
     }
 
     defaultRules() {

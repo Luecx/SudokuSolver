@@ -1,10 +1,13 @@
 import { RuleTypeHandler } from "./rule.js";
+import { attachDiagonalSolverLogic} from "./rule_diagonal_solver.js";
 
 export class DiagonalRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("Diagonal Sudoku", board);
         this.tag = "diagonal";
         this.can_create_rules = false;
+
+        attachDiagonalSolverLogic(this);
     }
 
     defaultRules() {

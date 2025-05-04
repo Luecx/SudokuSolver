@@ -1,9 +1,9 @@
 import { InputMode, InputColor } from './input_constants.js';
 
 export class InputKeyboard {
-    constructor(board, options = {}) {
+    constructor(board, allowedModes) {
         this.board = board;
-        this.allowedModes = options.allowedModes || [InputMode.NumberRegular];
+        this.allowedModes = allowedModes;
         this.mode = this.allowedModes[0];
         this.events = new EventTarget();
 
@@ -19,10 +19,6 @@ export class InputKeyboard {
         this.specialBindings = {
             'Backspace': () => this.board.unsetValues(this.board.getSelectedRegion()),
             'Delete': () => this.board.unsetValues(this.board.getSelectedRegion()),
-            'ArrowLeft': () => this.board.moveCursor?.(-1, 0),
-            'ArrowRight': () => this.board.moveCursor?.(1, 0),
-            'ArrowUp': () => this.board.moveCursor?.(0, -1),
-            'ArrowDown': () => this.board.moveCursor?.(0, 1)
         };
 
         this.attachListeners();
@@ -77,6 +73,7 @@ export class InputKeyboard {
 
     attachListeners() {
         document.addEventListener('keydown', (event) => {
+
             if (event.code === 'Space') {
                 this.cycleMode();
                 event.preventDefault();

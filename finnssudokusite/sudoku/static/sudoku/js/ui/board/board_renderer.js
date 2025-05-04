@@ -5,7 +5,8 @@ export class BoardRenderer {
         this.gridSize = gridSize;
         this.paddingRatio = paddingRatio;
 
-        this.drawLayers = new Map(); // key: string → fn(ctx)
+        // Map: name → { fn, layer }
+        this.drawLayers = new Map();
     }
 
     setup(container) {
@@ -22,8 +23,9 @@ export class BoardRenderer {
         this.gridOffset = this.rawPadding + Math.floor(leftover / 2);
     }
 
-    addRenderCall(name, fn) {
-        this.drawLayers.set(name, fn); // Add or replace
+    addRenderCall(name, fn, layer = 0) {
+        console.log("added render call", name, layer);
+        this.drawLayers.set(name, { fn, layer }); // Add or replace
     }
 
     removeRenderCall(name) {
@@ -37,8 +39,11 @@ export class BoardRenderer {
 
         this._drawGrid();
 
-        for (const drawFn of this.drawLayers.values()) {
-            drawFn(ctx);
+        const drawEntries = Array.from(this.drawLayers.values());
+        drawEntries.sort((a, b) => a.layer - b.layer); // Sort by layer
+
+        for (const { fn } of drawEntries) {
+            fn(ctx);
         }
 
         ctx.restore();
@@ -89,7 +94,6 @@ export class BoardRenderer {
     getGridOffset() {
         return this.gridOffset;
     }
-
 
     getCellCorners(r, c) {
         const topLeft = this.getCellTopLeft(r, c);

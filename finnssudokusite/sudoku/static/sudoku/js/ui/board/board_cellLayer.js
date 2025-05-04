@@ -49,7 +49,7 @@ export class CellLayer {
         window.addEventListener("mouseup", (e) => this.selector.onMouseUp(e));
 
         // any changes shall cause a redraw
-        this.board.addRenderCall("render_selection", this._renderSelection.bind(this));
+        this.board.addRenderCall("render_selection", this._renderSelection.bind(this), 1000);
         this.board.onEvent("ev_selected_region_changed", () => {board.triggerRender()});
     }
 

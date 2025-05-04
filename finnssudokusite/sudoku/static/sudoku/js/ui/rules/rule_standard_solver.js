@@ -1,79 +1,73 @@
-import { Rule } from './rule.js';
-import { BOARD_SIZE, EMPTY } from '../defs.js';
-import { Candidates } from '../candidates.js';
+import { Candidates } from '../../solver/candidates.js';
+import { EMPTY } from '../../solver/defs.js';
 
 const ALL_DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const BOARD_SIZE = 9;
 
-function blockIndex(row, col) {
-    return Math.floor(row / 3) * 3 + Math.floor(col / 3);
-}
-
-export class StandardRule extends Rule {
-    numberChanged(board, changedCell) {
+export function attachStandardSolverLogic(instance) {
+    instance.numberChanged = function (board, changedCell) {
         if (changedCell.value === EMPTY) return false;
         let changed = false;
         const rm = Candidates.fromNumber(changedCell.value);
-        for (const c of board.getRow(changedCell.pos.row))
+        for (const c of board.getRow(changedCell.pos.r))
             if (c.value === EMPTY && c.removeCandidates(rm)) changed = true;
-        for (const c of board.getCol(changedCell.pos.col))
+        for (const c of board.getCol(changedCell.pos.c))
             if (c.value === EMPTY && c.removeCandidates(rm)) changed = true;
-        for (const c of board.getBlock(changedCell.pos.row, changedCell.pos.col))
+        for (const c of board.getBlock(changedCell.pos.r, changedCell.pos.c))
             if (c.value === EMPTY && c.removeCandidates(rm)) changed = true;
         return changed;
-    }
+    };
 
-    candidatesChanged(board) {
+    instance.candidatesChanged = function (board) {
         let changed = false;
+
         for (let i = 0; i < BOARD_SIZE; i++) {
             if (hiddenSingles(board.getRow(i))) changed = true;
             if (hiddenSingles(board.getCol(i))) changed = true;
         }
+
         for (let br = 0; br < BOARD_SIZE; br += 3)
             for (let bc = 0; bc < BOARD_SIZE; bc += 3)
                 if (hiddenSingles(board.getBlock(br, bc))) changed = true;
 
         if (pointing(board)) changed = true;
         if (claiming(board)) changed = true;
-        if (nakedPairs(board)) changed = true;
-        if (xWing(board)) changed = true;
-        if (swordfish(board)) changed = true;
-        if (xyWing(board)) changed = true;
+        // if (nakedPairs(board)) changed = true;
+        // if (xWing(board)) changed = true;
+        // if (swordfish(board)) changed = true;
+        // if (xyWing(board)) changed = true;
 
         return changed;
-    }
+    };
 
-    checkPlausibility(board) {
-        for (let i = 0; i < BOARD_SIZE; i++) {
+    instance.checkPlausibility = function (board) {
+        const groups = [...board.rows, ...board.cols, ...board.blocks];
+        for (const group of groups) {
             let seen = new Candidates();
-            for (const c of board.getRow(i))
-                seen = seen.or(c.value ? Candidates.fromNumber(c.value) : c.candidates);
-            if (seen.raw() !== Candidates.MASK_ALL) return false;
-
-            seen = new Candidates();
-            for (const c of board.getCol(i))
-                seen = seen.or(c.value ? Candidates.fromNumber(c.value) : c.candidates);
-            if (seen.raw() !== Candidates.MASK_ALL) return false;
-        }
-
-        for (let br = 0; br < BOARD_SIZE; br += 3)
-            for (let bc = 0; bc < BOARD_SIZE; bc += 3) {
-                let seen = new Candidates();
-                for (const c of board.getBlock(br, bc))
-                    seen = seen.or(c.value ? Candidates.fromNumber(c.value) : c.candidates);
-                if (seen.raw() !== Candidates.MASK_ALL) return false;
+            seen.mask = 0;
+            let combined = new Candidates();
+            for (const c of group) {
+                if (c.value !== EMPTY) {
+                    if (seen.test(c.value)) return false;
+                    seen.allow(c.value);
+                    combined.orEq(Candidates.fromNumber(c.value));
+                } else {
+                    combined.orEq(c.candidates);
+                }
             }
+            if (combined.raw() !== Candidates.MASK_ALL) return false;
+        }
         return true;
-    }
+    };
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Helper Functions
-// ──────────────────────────────────────────────────────────────────────────────
+/* === Advanced Rule Techniques === */
 
 function hiddenSingles(unit) {
     let changed = false;
     const seenOnce = new Candidates();
     const seenTwice = new Candidates();
+
     for (const c of unit) {
         if (c.value !== EMPTY) {
             seenOnce.orEq(Candidates.fromNumber(c.value));
@@ -82,7 +76,9 @@ function hiddenSingles(unit) {
             seenOnce.orEq(c.candidates);
         }
     }
+
     const unique = seenOnce.and(seenTwice.not());
+
     for (const c of unit) {
         if (c.value === EMPTY) {
             const pick = c.candidates.and(unique);
@@ -101,23 +97,23 @@ function pointing(board) {
                 let rowMask = 0, colMask = 0;
                 for (const c of block) {
                     if (c.value === EMPTY && c.candidates.test(d)) {
-                        rowMask |= 1 << (c.pos.row - br);
-                        colMask |= 1 << (c.pos.col - bc);
+                        rowMask |= 1 << (c.pos.r - br);
+                        colMask |= 1 << (c.pos.c - bc);
                     }
                 }
-                if (rowMask && [1, 2, 4].includes(rowMask)) {
+                if ([1, 2, 4].includes(rowMask)) {
                     const local = rowMask === 1 ? 0 : rowMask === 2 ? 1 : 2;
                     const global = br + local;
                     for (const peer of board.getRow(global)) {
-                        if (Math.floor(peer.pos.col / 3) !== Math.floor(bc / 3))
+                        if (Math.floor(peer.pos.c / 3) !== Math.floor(bc / 3))
                             if (peer.removeCandidate(d)) changed = true;
                     }
                 }
-                if (colMask && [1, 2, 4].includes(colMask)) {
+                if ([1, 2, 4].includes(colMask)) {
                     const local = colMask === 1 ? 0 : colMask === 2 ? 1 : 2;
                     const global = bc + local;
                     for (const peer of board.getCol(global)) {
-                        if (Math.floor(peer.pos.row / 3) !== Math.floor(br / 3))
+                        if (Math.floor(peer.pos.r / 3) !== Math.floor(br / 3))
                             if (peer.removeCandidate(d)) changed = true;
                     }
                 }
@@ -136,7 +132,7 @@ function claiming(board) {
             for (const c of row) {
                 if (c.value === EMPTY && c.candidates.test(d)) {
                     count++;
-                    const b = Math.floor(c.pos.col / 3);
+                    const b = Math.floor(c.pos.c / 3);
                     if (block < 0) block = b;
                     else if (block !== b) { block = -2; break; }
                 }
@@ -145,7 +141,7 @@ function claiming(board) {
                 const br = Math.floor(r / 3) * 3;
                 const bc = block * 3;
                 for (const c of board.getBlock(br, bc)) {
-                    if (c.value === EMPTY && c.pos.row !== r)
+                    if (c.value === EMPTY && c.pos.r !== r)
                         if (c.removeCandidate(d)) changed = true;
                 }
             }
@@ -159,7 +155,7 @@ function claiming(board) {
             for (const c of col) {
                 if (c.value === EMPTY && c.candidates.test(d)) {
                     count++;
-                    const b = Math.floor(c.pos.row / 3);
+                    const b = Math.floor(c.pos.r / 3);
                     if (block < 0) block = b;
                     else if (block !== b) { block = -2; break; }
                 }
@@ -168,7 +164,7 @@ function claiming(board) {
                 const br = block * 3;
                 const bc = Math.floor(cidx / 3) * 3;
                 for (const c of board.getBlock(br, bc)) {
-                    if (c.value === EMPTY && c.pos.col !== cidx)
+                    if (c.value === EMPTY && c.pos.c !== cidx)
                         if (c.removeCandidate(d)) changed = true;
                 }
             }
@@ -200,6 +196,7 @@ function nakedPairs(board) {
     for (let br = 0; br < BOARD_SIZE; br += 3)
         for (let bc = 0; bc < BOARD_SIZE; bc += 3)
             process(board.getBlock(br, bc));
+
     return changed;
 }
 
@@ -209,7 +206,7 @@ function xWing(board) {
         const rowCols = Array.from({ length: BOARD_SIZE }, () => []);
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
-                const cell = board.getCell({ row: r, col: c });
+                const cell = board.getCell({ r, c });
                 if (cell.value === EMPTY && cell.candidates.test(d)) rowCols[r].push(c);
             }
         }
@@ -220,7 +217,7 @@ function xWing(board) {
                 for (let r3 = 0; r3 < BOARD_SIZE; r3++) {
                     if (r3 === r1 || r3 === r2) continue;
                     for (const col of rowCols[r1]) {
-                        const cell = board.getCell({ row: r3, col });
+                        const cell = board.getCell({ r: r3, c: col });
                         if (cell.value === EMPTY && cell.removeCandidate(d)) changed = true;
                     }
                 }
@@ -236,7 +233,7 @@ function swordfish(board) {
         const rowCols = Array.from({ length: BOARD_SIZE }, () => []);
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
-                const cell = board.getCell({ row: r, col: c });
+                const cell = board.getCell({ r, c });
                 if (cell.value === EMPTY && cell.candidates.test(d)) rowCols[r].push(c);
             }
         }
@@ -251,7 +248,7 @@ function swordfish(board) {
                     for (let r2 = 0; r2 < BOARD_SIZE; r2++) {
                         if (r2 === a || r2 === b || r2 === c) continue;
                         for (const col of union) {
-                            const cell = board.getCell({ row: r2, col });
+                            const cell = board.getCell({ r: r2, c: col });
                             if (cell.value === EMPTY && cell.removeCandidate(d)) changed = true;
                         }
                     }
@@ -265,31 +262,42 @@ function swordfish(board) {
 function xyWing(board) {
     let changed = false;
     const bivals = [];
-    for (let r = 0; r < BOARD_SIZE; r++)
+    for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
-            const cell = board.getCell({ row: r, col: c });
+            const cell = board.getCell({ r, c });
             if (cell.value === EMPTY && cell.candidates.count() === 2)
                 bivals.push(cell);
         }
+    }
 
     const isPeer = (a, b) =>
-        a.pos.row === b.pos.row ||
-        a.pos.col === b.pos.col ||
-        blockIndex(a.pos.row, a.pos.col) === blockIndex(b.pos.row, b.pos.col);
+        a.pos.r === b.pos.r ||
+        a.pos.c === b.pos.c ||
+        Math.floor(a.pos.r / 3) * 3 + Math.floor(a.pos.c / 3) ===
+        Math.floor(b.pos.r / 3) * 3 + Math.floor(b.pos.c / 3);
 
     for (const P of bivals) {
-        const ds = [...P.candidates];
-        for (const W1 of bivals) {
-            if (W1 === P || !W1.candidates.test(ds[0]) || W1.candidates.test(ds[1]) || !isPeer(P, W1)) continue;
-            const d3 = [...W1.candidates.and(new Candidates(~(1 << ds[0]) & Candidates.MASK_ALL))][0];
-            for (const W2 of bivals) {
-                if (W2 === P || W2 === W1 || !W2.candidates.test(ds[1]) || W2.candidates.test(ds[0])) continue;
-                if (!W2.candidates.test(d3) || !isPeer(P, W2)) continue;
+        const [x, y] = [...P.candidates];
+        for (const A of bivals) {
+            if (A === P || !A.candidates.test(x) || A.candidates.test(y) || !isPeer(P, A)) continue;
+            const z = [...A.candidates.and(new Candidates(~(1 << x) & Candidates.MASK_ALL))][0];
+            for (const B of bivals) {
+                if (
+                    B === P || B === A || !B.candidates.test(y) || B.candidates.test(x)
+                    || !B.candidates.test(z) || !isPeer(P, B)
+                ) continue;
+
                 for (let r = 0; r < BOARD_SIZE; r++) {
                     for (let c = 0; c < BOARD_SIZE; c++) {
-                        const C = board.getCell({ row: r, col: c });
-                        if (C.value !== EMPTY || !C.candidates.test(d3)) continue;
-                        if (isPeer(C, W1) && isPeer(C, W2) && C.removeCandidate(d3)) changed = true;
+                        const C = board.getCell({ r, c });
+                        if (
+                            C.value === EMPTY &&
+                            C.candidates.test(z) &&
+                            isPeer(C, A) &&
+                            isPeer(C, B)
+                        ) {
+                            if (C.removeCandidate(z)) changed = true;
+                        }
                     }
                 }
             }

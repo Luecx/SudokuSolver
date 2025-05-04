@@ -56,7 +56,7 @@ export function createBoard(container) {
         resetSelectionToDefault : () => selectionManager.resetSelectionToDefault(),
 
         // renderer related functions
-        addRenderCall           : (name, func) => renderer.addRenderCall(name, func),
+        addRenderCall           : (name, func, layer) => renderer.addRenderCall(name, func, layer),
         removeRenderCall        : name => renderer.removeRenderCall(name),
 
         // exporting and importing
@@ -68,6 +68,9 @@ export function createBoard(container) {
         emitEvent               : (eventName, data) => eventManager.emit(eventName, data),
         onEvent                 : (eventName, callback) => eventManager.on(eventName, callback),
         offEvent                : (eventName, callback) => eventManager.off(eventName, callback),
+
+        // solver related
+        getSolverBoard          : () => contentLayer.getSolverBoard(),
 
         // ───  CONTENT-LAYER APIs ────────────────────────────────────────
         // single-cell
@@ -139,6 +142,8 @@ export function createBoard(container) {
     }
 
     function saveBoard() {
+        let solverBoard = contentLayer.getSolverBoard();
+
         return serializeObject({
             // fixedCells: contentLayer.saveFixedCells(),
             rules: ruleManager.saveRules()

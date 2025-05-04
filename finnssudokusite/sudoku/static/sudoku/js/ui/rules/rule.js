@@ -1,5 +1,8 @@
-export class RuleTypeHandler {
+import {SolverRule} from "../../solver/solverRule.js";
+
+export class RuleTypeHandler extends SolverRule{
     constructor(name, board) {
+        super();
         this.name = name;
         this.board = board;
         this.rules = [];
@@ -9,7 +12,7 @@ export class RuleTypeHandler {
 
         this.can_create_rules = true;
 
-        this.board.addRenderCall(this.name, this.renderAll.bind(this));
+        this.board.addRenderCall(this.name, this.renderAll.bind(this), 0);
 
         this.board.onEvent("ev_rule_added"   , () => this.board.triggerRender());
         this.board.onEvent("ev_rule_removed" , () => this.board.triggerRender());

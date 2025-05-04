@@ -11,14 +11,13 @@ export class PlayBoard {
     constructor(options = {}) {
         const container = document.querySelector(".board-container");
         this.board = createBoard(container);
-        this.keyboard = new InputKeyboard(this.board, {
-            allowedModes: options.allowedModes || [
+        this.keyboard = new InputKeyboard(this.board, [
                 InputMode.NumberRegular,
                 InputMode.CandidateRegular,
                 InputMode.CandidateCentered,
                 InputMode.Color
             ]
-        });
+        );
 
         this.init();
     }

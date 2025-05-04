@@ -1,13 +1,15 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
 import { buildInsetPath } from "../util/inset_path.js";
-
+import { attachCageSolverLogic} from "./rule_cage_solver.js";
 
 export class CageHandler extends RuleTypeHandler {
     constructor(board) {
         super("Cage", board);
         this.tag = "cage";
         this.can_create_rules = true;
+
+        attachCageSolverLogic(this);
     }
 
     defaultRules() {
@@ -92,13 +94,14 @@ export class CageHandler extends RuleTypeHandler {
         `;
     }
 
-    render(rule, ctx) {    
+    render(rule, ctx) {
+        console.log("rendering cage");
         const region = rule.fields.region;
 
         if (!region) return;
         
         const s = this.board.getCellSize();
-        const insetPx = 3;
+        const insetPx = 5;
         const inset = insetPx / s;
     
         const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
@@ -111,7 +114,7 @@ export class CageHandler extends RuleTypeHandler {
         ctx.lineCap = "round";   // Ensures smooth caps at the ends
     
         // Dash pattern: [5px line, 5px space]
-        ctx.setLineDash([5, 5]);
+        ctx.setLineDash([10, 10]);
     
         for (const loop of loops) {
             ctx.beginPath();
@@ -131,13 +134,24 @@ export class CageHandler extends RuleTypeHandler {
         // Position top left
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
         const topLeft = this.board.getCellTopLeft(firstPoint.r, firstPoint.c);
-        const x = topLeft.x + s * 0.09;  // s * 0.09 padding
-        const y = topLeft.y + s * 0.17;  // s * 0.17 padding
+        const boxWidth = s * 0.20;
+        const boxHeight = s * 0.20;
+        const paddingX = s * 0.03;
+        const paddingY = s * 0.05;
 
-        // Draw index
+        const rectX = topLeft.x + paddingX;
+        const rectY = topLeft.y + paddingY;
+
+        // Draw white rectangle background
+        ctx.fillStyle = "white";
+        ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
+
+        // Draw index text
         const index = rule.fields.index;
         ctx.fillStyle = "black";
-        ctx.fillText(index.toString(), x, y);
+        ctx.font = `${s * 0.16}px sans-serif`; // Larger font
+        ctx.textBaseline = "top";
+        ctx.fillText(index.toString(), rectX + s * 0.02, rectY + s * 0.01);
 
         ctx.restore();
     }

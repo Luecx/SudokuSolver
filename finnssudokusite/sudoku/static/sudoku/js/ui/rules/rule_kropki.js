@@ -1,12 +1,15 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
 import { Region } from "../region/Region.js";
+import { attachKropkiSolverLogic} from "./rule_kropki_solver.js";
 
 export class KropkiHandler extends RuleTypeHandler {
     constructor(board) {
         super("Kropki", board);
         this.tag = "kropki";
         this.can_create_rules = false;
+
+        attachKropkiSolverLogic(this);
     }
 
     defaultRules() {
