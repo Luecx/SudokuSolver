@@ -73,6 +73,7 @@ h1, h2, h3 { margin-bottom: 1rem; }
 
 .my-text-btn {
     color: #0094f8;
+    text-decoration: none;
 }
 .my-text-btn:hover,
 .my-text-btn:focus { color:#005792;}
