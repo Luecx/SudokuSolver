@@ -27,8 +27,9 @@ class Creator {
 
         document.getElementById("submit-sudoku-btn").addEventListener("click", async () => {
             let solverboard = this.board.getSolverBoard();
-            let sol = solverboard.solve(10);
-            console.log(sol);
+            // let sol = solverboard.solve(10);
+            // console.log(sol);
+            console.log(solverboard.toString(true));
 
             // console.log(solverboard.toString(true));
             // let sol = solverboard.solve(10);

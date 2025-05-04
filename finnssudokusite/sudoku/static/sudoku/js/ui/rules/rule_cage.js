@@ -49,7 +49,6 @@ export class CageHandler extends RuleTypeHandler {
         if (cage_sum <= 0) {
             warnings.push("Cage sum is not a positive number");
         }
-        console.log(cage_region.connectedRegions());
         // if cage has more than 1 region
         if (cage_region.connectedRegions().length > 1) {
             warnings.push("Cage has more than 1 region");
@@ -95,7 +94,6 @@ export class CageHandler extends RuleTypeHandler {
     }
 
     render(rule, ctx) {
-        console.log("rendering cage");
         const region = rule.fields.region;
 
         if (!region) return;
