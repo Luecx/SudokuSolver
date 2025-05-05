@@ -46,14 +46,14 @@
 		<div class="d-flex align-items-start mt-3">
 			<div class="d-flex flex-column me-3 gap-3">
 				<button id="submit-sudoku-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSave">{% trans "Save" %}</button>
-				<button id="analysisButton" class="btn btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#modalAnalysis">{% trans "Start analysis" %}</button>
+				<button id="start-analysis-btn" class="btn btn-primary text-nowrap">{% trans "Start analysis" %}</button>
 			</div>
 			<div>
 				{% blocktrans %}The Sudoku will only be saved. To publish it, a successful analysis must be completed first.{% endblocktrans %}
 			</div>
 		</div>
-		
-		
+		<!-- ALERT BOX -->
+		<div id="alertBox" class="mt-3"></div>
 	</div>
 </div>
 {% include "sudoku/creator/modal_analyse.html" %}
@@ -62,6 +62,63 @@
 
 {% block extra_scripts %}
 <script type="module" src="{% static 'sudoku/js/creator/creator_ui.js' %}"></script>
+<!--	ALERT SCRIPT	-->
+<script>
+	const alertBox = document.getElementById('alertBox');
+	
+	const openAlert = () => {
+		// Alert-HTML neu aufbauen
+		alertBox.innerHTML = `
+			<div class="alert alert-light alert-dismissible show" role="alert">
+				<p>Analysis is running...</p>
+				<button type="button" class="btn-close" aria-label="Close" id="alertCloseBtn"></button>
+				<div class="progress mb-3" style="height: 28px;">
+					<div id="loading-bar" class="progress-bar bg-danger" role="progressbar" style="width: 0%;">0%</div>
+				</div>
+				<div id="alertContent"></div>
+			</div>
+		`;
+		
+		// Event-Listener für manuelles Schließen
+		document.getElementById('alertCloseBtn').addEventListener('click', () => {
+			alertBox.innerHTML = ''; // komplett entfernen
+		});
+		
+		// Ladebalken-Animation starten
+		const progressBar = document.getElementById('loading-bar');
+		let progress = 0;
+		const interval = setInterval(() => {
+			if (progress >= 100) {
+				clearInterval(interval);
+				progressBar.textContent = 'Complete';
+				progressBar.classList.remove('bg-danger');
+				progressBar.classList.add('bg-primary');
+				addTextToContent("<p>Es wurde X Lösungen gefunden</p>")
+			} else {
+				progress += 1;
+				progressBar.style.width = progress + '%';
+				progressBar.textContent = progress + '%';
+			}
+		}, 50);
+	};
+	
+	const addTextToContent = (html) => {
+		const alertContent = document.getElementById('alertContent');
+		if (alertContent) {
+			const div = document.createElement('div');
+			div.innerHTML = html; // ← HTML wird korrekt interpretiert
+			alertContent.appendChild(div);
+		}
+	};
+	
+	// Button-Trigger
+	const alertTrigger = document.getElementById('start-analysis-btn');
+	if (alertTrigger) {
+		alertTrigger.addEventListener('click', openAlert);
+	}
+	
+</script>
+
 <script>
 	/*  IMPORTANT
 
