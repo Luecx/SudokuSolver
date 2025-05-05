@@ -35,13 +35,11 @@
 		
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				{% if user.is_authenticated %}
 				<li class="nav-item ms-3">
 					<a class="nav-link" href="{% url 'creator' %}">
 						<i class="fas fa-pencil-alt me-1"></i> {% trans "Sudoku Creator" %}
 					</a>
 				</li>
-				{% endif %}
 				<li class="nav-item ms-3">
 					<a class="nav-link" href="{% url 'puzzles' %}">
 						<i class="fas fa-th-list me-1"></i> {% trans "Puzzles" %}
