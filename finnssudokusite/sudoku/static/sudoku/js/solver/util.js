@@ -1,4 +1,4 @@
-import { CellRegion } from "../region/Region.js";
+import { Region } from "../region/Region.js";
 import { EMPTY } from "./defs.js";
 import { Candidates } from "./candidates.js";
 import { CellIdx } from "../region/CellIdx.js";
