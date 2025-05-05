@@ -1,11 +1,14 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import {attachParitySolverLogic} from "./rule_parity_solver.js";
 
 export class ParityHandler extends RuleTypeHandler {
     constructor(board) {
         super("Parity", board);
         this.tag = "parity";
         this.can_create_rules = true;
+
+        attachParitySolverLogic(this);
     }
 
     defaultRules() {
