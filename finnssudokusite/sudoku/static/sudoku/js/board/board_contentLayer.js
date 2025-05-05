@@ -1,5 +1,5 @@
 import { CellIdx } from "../region/CellIdx.js";
-import { SolverBoard } from "../../solver/solverBoard.js";
+import { SolverBoard } from "../solver/solverBoard.js";
 
 export class Cell {
     constructor(r, c) {

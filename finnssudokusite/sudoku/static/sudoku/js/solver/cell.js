@@ -1,7 +1,7 @@
 // === cell.js ===
 
 import { EMPTY } from './defs.js';
-import { CellIdx } from '../ui/region/CellIdx.js';
+import { CellIdx } from '../region/CellIdx.js';
 import { Candidates, CAND_ALL } from './candidates.js';
 
 export class Cell {

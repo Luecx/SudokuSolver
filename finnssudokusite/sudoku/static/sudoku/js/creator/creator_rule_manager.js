@@ -394,15 +394,26 @@ export class CreatorRuleManager {
 
     _createRuleCard(handler, rule, fields, container, allowRemove = true) {
         const card = document.createElement("div");
-        card.className = "rule-instance-card border rounded p-3 bg-light position-relative";
+        card.className = "rule-instance-card border rounded p-2";
         card.id = `rule-${handler.name}-${rule.id}`;
 
         const header = document.createElement("div");
-        header.className = "d-flex justify-content-between align-items-center mb-2";
+        header.className = "d-flex justify-content-between align-items-center";
+        header.style.cursor = "pointer";
 
-        // Left side: label and (maybe) warning icon
         const labelWrapper = document.createElement("div");
         labelWrapper.className = "d-flex align-items-center gap-2";
+
+        const arrowIcon = document.createElement("i");
+        arrowIcon.className = "fas fa-chevron-right fa-fw transition-icon";
+        arrowIcon.style.width = "1rem"; // Optional manual width for perfect alignment
+
+        const iconWrapper = document.createElement("span");
+        iconWrapper.style.display = "inline-flex";
+        iconWrapper.style.width = "1.2rem";  // Adjust as needed
+        iconWrapper.style.justifyContent = "center";
+        iconWrapper.appendChild(arrowIcon);
+        labelWrapper.appendChild(iconWrapper);
 
         const label = document.createElement("strong");
         label.textContent = rule.label || `Rule #${handler.rules.length}`;
@@ -410,7 +421,6 @@ export class CreatorRuleManager {
 
         header.appendChild(labelWrapper);
 
-        // Right side: remove button
         if (allowRemove) {
             const removeBtn = document.createElement("button");
             removeBtn.className = "btn btn-sm btn-outline-danger";
@@ -421,13 +431,44 @@ export class CreatorRuleManager {
             header.appendChild(removeBtn);
         }
 
+        // Collapsible content with animation
+        const content = document.createElement("div");
+        content.className = "rule-collapse-content";
+        content.style.overflow = "hidden";
+        content.style.maxHeight = "0";
+        content.style.transition = "max-height 0.3s ease";
+
+        fields.forEach(opt => {
+            if (opt) content.appendChild(opt.element);
+        });
+
+        // Toggle logic
+        header.addEventListener("click", (e) => {
+            if (e.target.closest("button")) return;
+
+            const isOpen = content.style.maxHeight !== "0px";
+            if (isOpen) {
+                content.style.maxHeight = "0";
+                arrowIcon.classList.replace("fa-chevron-down", "fa-chevron-right");
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                arrowIcon.classList.replace("fa-chevron-right", "fa-chevron-down");
+            }
+        });
+
+        // Optional: recalculate maxHeight on window resize
+        window.addEventListener("resize", () => {
+            if (content.style.maxHeight !== "0px") {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
 
         card.appendChild(header);
-        fields.forEach(opt => {
-            if (opt) card.appendChild(opt.element);
-        });
+        card.appendChild(content);
         container.appendChild(card);
     }
+
+
 
     removeRule(ruleName) {
         this.addedRules.delete(ruleName);

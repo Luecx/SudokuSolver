@@ -1,10 +1,11 @@
 // === board.js ===
 
 import { EMPTY, BOARD_SIZE } from './defs.js';
-import { CellIdx } from "../ui/region/CellIdx.js";
+import { CellIdx } from "../region/CellIdx.js";
 import { Cell } from './cell.js';
 import { CAND_NONE } from './candidates.js';
 import { SolverStats } from './stats.js';
+import * as RegionUtils from './util.js'
 
 export class SolverBoard {
     constructor() {
@@ -288,5 +289,12 @@ export class SolverBoard {
             border
         ].join("\n");
     }
+}
 
+// === Attach RegionUtils functions as SolverBoard methods ===
+
+for (const [name, fn] of Object.entries(RegionUtils)) {
+    SolverBoard.prototype[name] = function (region, ...rest) {
+        return fn(region, this, ...rest);
+    };
 }

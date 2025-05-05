@@ -1,5 +1,5 @@
-import { Candidates } from '../../solver/candidates.js';
-import { EMPTY } from '../../solver/defs.js';
+import { Candidates } from '../solver/candidates.js';
+import { EMPTY } from '../solver/defs.js';
 
 const ALL_DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const BOARD_SIZE = 9;

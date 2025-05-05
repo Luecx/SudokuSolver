@@ -175,3 +175,7 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+.transition-icon {
+    transition: transform 0.3s ease;
+}

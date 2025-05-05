@@ -1,4 +1,4 @@
-import {SolverRule} from "../../solver/solverRule.js";
+import {SolverRule} from "../solver/solverRule.js";
 
 export class RuleTypeHandler extends SolverRule{
     constructor(name, board) {

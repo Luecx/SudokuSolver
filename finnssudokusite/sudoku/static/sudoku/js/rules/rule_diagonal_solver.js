@@ -1,5 +1,5 @@
-import { EMPTY } from "../../solver/defs.js";
-import { Candidates } from "../../solver/candidates.js";
+import { EMPTY } from "../solver/defs.js";
+import { Candidates } from "../solver/candidates.js";
 
 export function attachDiagonalSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
