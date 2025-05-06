@@ -17,6 +17,7 @@ urlpatterns = [
     path('play-sudoku/<int:sudoku_id>/', views.play_sudoku, name='play_sudoku'),
 
     path('playboard/', views.playboard, name='playboard'),
+    path('auswahl/', views.auswahl_view, name='auswahl'),
 
     # Activation
     path('activate/<uid>/<token>/', views.activate, name='activate'),

@@ -1,0 +1,56 @@
+{% extends 'sudoku/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}Choose{% endblock %}
+
+{% block extra_css %}
+<style>
+	.sudoku-grid {
+		display: grid;
+		grid-template-columns: repeat(9, 1fr);
+		grid-template-rows: repeat(9, 1fr);
+		gap: 1px;
+		border: 1px solid #222;
+		width: 100%; /* <-- Volle Breite der Card */
+		aspect-ratio: 1 / 1; /* <-- Macht das Grid quadratisch */
+		margin: 0 auto;
+		background: #fff;
+	}
+	
+	.sudoku-cell {
+		border: 1px solid #888;
+		background: #fafafa;
+		width: 100%; /* Füllt die Grid-Zelle aus */
+		height: 100%; /* Füllt die Grid-Zelle aus */
+		box-sizing: border-box;
+	}
+	
+	.sudoku-wrapper {padding: 1rem;}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+	
+	<div class="col-6 col-lg-3 mb-4">
+		<div class="card m-1 w-100">
+			<div class="sudoku-wrapper">
+				<div class="sudoku-grid">
+				</div>
+			</div>
+			<div class="card-body">
+				<h5 class="card-title">Name</h5>
+				<p class="card-text">Schwierigkeit</p>
+				<a href="{% url 'playboard' %}" class="btn btn-primary">Play</a>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{% endblock %}

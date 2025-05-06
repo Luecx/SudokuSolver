@@ -21,6 +21,9 @@ import zlib
 
 # === General Views === #
 
+def auswahl_view(request):
+    return render(request, 'sudoku/auswahl.html')
+
 def index(request):
     """Main landing page showing all Sudoku puzzles and user stats if logged in."""
     sudokus = Sudoku.objects.annotate(

@@ -41,12 +41,13 @@
 	<div id="rightCol" class="right-col">
 		<nav>
 			<div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
-				<button class="nav-link active" id="nav-Publish-tab" data-bs-toggle="tab" data-bs-target="#nav-Create" type="button" role="tab" aria-controls="nav-Create" aria-selected="true">Create</button>
-				<button class="nav-link" id="nav-Analyse-tab" data-bs-toggle="tab" data-bs-target="#nav-Analyse" type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">Analyse</button>
-				<button class="nav-link" id="nav-Publish-tab" data-bs-toggle="tab" data-bs-target="#nav-Publish" type="button" role="tab" aria-controls="nav-Publish" aria-selected="false">Publish</button>
+				<button class="nav-link active" id="nav-Create-tab" data-bs-toggle="tab" data-bs-target="#nav-Create" type="button" role="tab" aria-controls="nav-Create" aria-selected="true">{% trans "Create" %}</button>
+				<button class="nav-link" id="nav-Analyse-tab" data-bs-toggle="tab" data-bs-target="#nav-Analyse" type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">{% trans "Analysis" %}</button>
+				<button class="nav-link" id="nav-Publish-tab" data-bs-toggle="tab" data-bs-target="#nav-Publish" type="button" role="tab" aria-controls="nav-Publish" aria-selected="false">{% trans "Publish" %}</button>
 			</div>
 		</nav>
-		<div id="nav-tabContent" class="tab-content my_white_box border-top-0 p-3" >
+		<div id="nav-tabContent" class="tab-content my_white_box border-top-0 p-3">
+			
 			<!--	CREATOR	-->
 			<div id="nav-Create" class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-Create-tab" tabindex="0">
 				<h2 class="text-center mt-4">{% trans "Create Your Sudoku" %}</h2>
@@ -70,9 +71,13 @@
 			
 			<!--	PUBLISH	-->
 			<div id="nav-Publish" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Publish-tab" tabindex="0">
-				<button id="submit-sudoku-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSave">{% trans "Save" %}</button>
-				{% blocktrans %}The Sudoku will only be saved. To publish it, a successful analysis must be completed first.{% endblocktrans %}
+				<div id="publish-info"></div>
+				<form>
+					<input type="text" class="form-control mb-3" name="sudoku_name" placeholder="Enter Sudoku name...">
+					<button id="submit-sudoku-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSave">Save</button>
+				</form>
 			</div>
+		
 		</div>
 	</div>
 </div>
@@ -82,72 +87,95 @@
 {% block extra_scripts %}
 <script type="module" src="{% static 'sudoku/js/creator/creator_ui.js' %}"></script>
 
-<!--	ALERT SCRIPT	--> <script>
-	const alertBox = document.getElementById('alertBox');
-	
-	// Tab-Wechsel: AlertBox leeren, wenn Analyse-Tab aktiviert wird
-	const navAnalyseTab = document.getElementById('nav-Analyse-tab');
-	if (navAnalyseTab) {
-		navAnalyseTab.addEventListener('shown.bs.tab', () => {
-			if (alertBox) {
-				alertBox.innerHTML = '';
-			}
-		});
-	}
-	
-	const openAlert = () => {
-		// Alert-HTML neu aufbauen
-		alertBox.innerHTML = `
-			<div class="alert alert-light alert-dismissible show" role="alert">
+<!--	ALERT SCRIPT	-->
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		
+		
+		const alertBox = document.getElementById('alertBox');
+		let result = 12;
+		
+		// Tab-Wechsel: AlertBox leeren, wenn Analyse-Tab aktiviert wird
+		const navAnalyseTab = document.getElementById('nav-Analyse-tab');
+		if (navAnalyseTab) {
+			navAnalyseTab.addEventListener('shown.bs.tab', () => {
+				if (alertBox) {
+					alertBox.innerHTML = '';
+				}
+			});
+		}
+		
+		const openAlert = () => {
+			// Alert-HTML neu aufbauen
+			alertBox.innerHTML = `
+			<div class="alert show" role="alert">
 				<p>Analysis is running...</p>
-				<button type="button" class="btn-close" aria-label="Close" id="alertCloseBtn"></button>
 				<div class="progress mb-3" style="height: 28px;">
 					<div id="loading-bar" class="progress-bar bg-danger" role="progressbar" style="width: 0%;">0%</div>
 				</div>
 				<div id="alertContent"></div>
 			</div>
 		`;
+			
+			
+			// Ladebalken-Animation starten
+			const progressBar = document.getElementById('loading-bar');
+			let progress = 0;
+			const interval = setInterval(() => {
+				if (progress >= 100) {
+					clearInterval(interval);
+					progressBar.textContent = 'Complete';
+					progressBar.classList.remove('bg-danger');
+					progressBar.classList.add('bg-success');
+					
+					addTextToContent(`<p>${result} solutions were found.</p>`);
+					//	addTextToContent(`<p>${result} ${gettext("solutions were found.")}</p>`);
+					
+					const maxResult = 10;
+					const loopLimit = Math.min(result, maxResult);
+					let listHTML = "<ol>";
+					for (let i = 1; i <= loopLimit; i++) {
+						listHTML += "<li><a href='#'>LINK</a></li>";
+					}
+					listHTML += "</ol>";
+					addTextToContent(listHTML);
+					
+				} else {
+					progress += 1;
+					progressBar.style.width = progress + '%';
+					progressBar.textContent = progress + '%';
+				}
+			}, 50);
+		};
 		
-		// Event-Listener für manuelles Schließen
-		document.getElementById('alertCloseBtn').addEventListener('click', () => {
-			alertBox.innerHTML = '';
-		});
-		
-		// Ladebalken-Animation starten
-		const progressBar = document.getElementById('loading-bar');
-		let progress = 0;
-		const interval = setInterval(() => {
-			if (progress >= 100) {
-				clearInterval(interval);
-				progressBar.textContent = 'Complete';
-				progressBar.classList.remove('bg-danger');
-				progressBar.classList.add('bg-primary');
-				addTextToContent("<p>Es wurde X Lösungen gefunden</p>");
-			} else {
-				progress += 1;
-				progressBar.style.width = progress + '%';
-				progressBar.textContent = progress + '%';
+		const addTextToContent = (html) => {
+			const alertContent = document.getElementById('alertContent');
+			if (alertContent) {
+				const div = document.createElement('div');
+				div.innerHTML = html;
+				alertContent.appendChild(div);
 			}
-		}, 50);
-	};
-	
-	const addTextToContent = (html) => {
-		const alertContent = document.getElementById('alertContent');
-		if (alertContent) {
-			const div = document.createElement('div');
-			div.innerHTML = html;
-			alertContent.appendChild(div);
+		};
+		
+		// Publish
+		if (result > 1) {
+			document.getElementById('publish-info').innerHTML = `<p>The Sudoku will only be saved. To publish it, a successful analysis must be completed first.</p>`;
+		} else {
+			document.getElementById('publish-info').innerHTML = '';
 		}
-	};
-	
-	// Button-Trigger
-	const alertTrigger = document.getElementById('start-analysis-btn');
-	if (alertTrigger) {
-		alertTrigger.addEventListener('click', openAlert);
-	}
+		
+		
+		// Button-Trigger
+		const alertTrigger = document.getElementById('start-analysis-btn');
+		if (alertTrigger) {
+			alertTrigger.addEventListener('click', openAlert);
+		}
+		
+	});
 </script>
 
-<!--	WINDOW RESIZE --> <script>
+<!--	WINDOW RESIZE -->
+<script>
 	/*  IMPORTANT
 
 	YOU NEED  style.css
