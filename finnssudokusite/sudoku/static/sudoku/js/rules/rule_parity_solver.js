@@ -1,5 +1,5 @@
 import { EMPTY } from "../solver/defs.js";
-import { CAND_EVEN, CAND_ODD } from "../solver/candidates.js";
+import {CAND_ALL, CAND_EVEN, CAND_ODD, Candidates} from "../solver/candidates.js";
 
 /**
  * Enforces alternating parity in a sorted region:
@@ -8,27 +8,35 @@ import { CAND_EVEN, CAND_ODD } from "../solver/candidates.js";
  */
 function enforceParityAlternation(region, board) {
     const items = region.items;
-    let index_even = null;
+
+    let cand_mask_even_id = new Candidates();
+    cand_mask_even_id.mask = CAND_ALL.mask;
+    let cand_mask_odd_id  = new Candidates();
+    cand_mask_odd_id.mask = CAND_ALL.mask;
 
     // Step 1: Find first known parity
     for (let i = 0; i < items.length; ++i) {
         const cell = board.getCell(items[i]);
 
         if (cell.value !== EMPTY) {
-            index_even = (cell.value % 2 === 0) ? i : i + 1;
-            break;
+            if (i % 2 === 0) {
+                cand_mask_even_id.andEq(cell.value % 2 === 0 ? CAND_EVEN : CAND_ODD);
+                cand_mask_odd_id .andEq(cell.value % 2 === 0 ? CAND_ODD  : CAND_EVEN);
+            }else {
+                cand_mask_even_id.andEq(cell.value % 2 === 0 ? CAND_ODD  : CAND_EVEN);
+                cand_mask_odd_id .andEq(cell.value % 2 === 0 ? CAND_EVEN : CAND_ODD);
+            }
+            // index_even = (cell.value % 2 === 0) ? i : i + 1;
         } else if (cell.candidates.and(CAND_ODD).count() === 0) {
-            // Only even candidates
-            index_even = i;
-            break;
+            // no odd candidates at this i
+            cand_mask_even_id.andEq(i % 2 === 0 ? CAND_EVEN : CAND_ODD);
+            cand_mask_odd_id .andEq(i % 2 === 0 ? CAND_ODD  : CAND_EVEN);
         } else if (cell.candidates.and(CAND_EVEN).count() === 0) {
-            // Only odd candidates
-            index_even = i + 1;
-            break;
+            // no even candidates at this i
+            cand_mask_even_id.andEq(i % 2 === 0 ? CAND_ODD  : CAND_EVEN);
+            cand_mask_odd_id .andEq(i % 2 === 0 ? CAND_EVEN : CAND_ODD);
         }
     }
-
-    if (index_even === null) return false;
 
     // Step 2: Enforce alternating parity
     let changed = false;
@@ -36,15 +44,16 @@ function enforceParityAlternation(region, board) {
         const cell = board.getCell(items[i]);
         if (cell.value !== EMPTY) continue;
 
-        const is_even = (i % 2 === index_even % 2);
-        const prev = cell.candidates.raw();
+        let mask = i % 2 === 0 ? cand_mask_even_id : cand_mask_odd_id;
 
-        cell.candidates.andEq(is_even ? CAND_EVEN : CAND_ODD);
+        // check if something will be changed
+        if (cell.candidates.and(mask.not()).count() > 0)
+            changed = true;
 
-        if (cell.candidates.raw() !== prev) changed = true;
+        cell.candidates.andEq(mask);
     }
 
-    return changed;
+    return false;
 }
 
 /**
@@ -55,19 +64,21 @@ export function attachParitySolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
         let changed = false;
         for (const rule of instance.rules) {
+            if (!rule?.fields?.path) continue;
             if (rule.fields?.path?.has(changedCell.pos)) {
                 changed |= enforceParityAlternation(rule.fields.path, board);
             }
         }
-        return changed;
+        return false;
     };
 
     instance.candidatesChanged = function (board) {
         let changed = false;
         for (const rule of instance.rules) {
+            if (!rule?.fields?.path) continue;
             changed |= enforceParityAlternation(rule.fields.path, board);
         }
-        return changed;
+        return false;
     };
 
     instance.checkPlausibility = function (board) {
