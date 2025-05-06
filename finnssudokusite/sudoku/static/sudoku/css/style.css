@@ -80,6 +80,8 @@ h1, h2, h3 { margin-bottom: 1rem; }
 
 .full-height {  /* für vertikales zentrieren */
     height: calc(100vh - 100px);
+    padding-top: 30px; /* für die menüzeile */
+    box-sizing: border-box;
 }
 
 .layout-wrapper {
@@ -99,6 +101,9 @@ h1, h2, h3 { margin-bottom: 1rem; }
 }
 
 .right-col {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     overflow-y: auto;
     flex-grow: 1;
 }
