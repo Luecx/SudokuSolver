@@ -12,28 +12,60 @@ body {
 	padding-right: 2rem;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
+.timer {
+	font-size: 1rem;
+	margin-bottom: 1rem;
+	font-family: "Orbitron", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+}
+
 /* === Grid Areas === */
 #btn-gear { grid-area: gear; }
+
 #btn-rules { grid-area: rules; }
+
 #btn-undo { grid-area: undo; }
+
 #btn-redo { grid-area: redo; }
+
 #btn-clear { grid-area: clear; }
+
 #btn-one { grid-area: one; }
+
 #btn-two { grid-area: two; }
+
 #btn-three { grid-area: three; }
+
 #btn-four { grid-area: four; }
+
 #btn-five { grid-area: five; }
+
 #btn-six { grid-area: six; }
+
 #btn-seven { grid-area: seven; }
+
 #btn-eight { grid-area: eight; }
+
 #btn-nine { grid-area: nine; }
+
 #btn-colorMode { grid-area: color; }
+
 #btn-numberMode { grid-area: number; }
+
 #btn-topMode { grid-area: top; }
+
 #btn-centerMode { grid-area: center; }
+
 #btn-minus { grid-area: minus; }
+
 #btn-plus { grid-area: plus; }
+
 #btn-toggleEye { grid-area: eye; }
+
 #btn-zero { grid-area: zero; }
 
 /* === Button Grid === */
@@ -100,35 +132,51 @@ body {
 }
 
 /* Standardfarben mit 0.5 Alpha */
-.btn-color-1 { background-color: rgba(230, 25, 75,  0.5);}
-.btn-color-2 { background-color: rgba(60, 180, 75,  0.5); }
+.btn-color-1 { background-color: rgba(230, 25, 75, 0.5);}
+
+.btn-color-2 { background-color: rgba(60, 180, 75, 0.5); }
+
 .btn-color-3 { background-color: rgba(255, 225, 25, 0.5); }
-.btn-color-4 { background-color: rgba(67, 99, 216,  0.5); }
+
+.btn-color-4 { background-color: rgba(67, 99, 216, 0.5); }
+
 .btn-color-5 { background-color: rgba(245, 130, 49, 0.5); }
+
 .btn-color-6 { background-color: rgba(145, 30, 180, 0.5); }
+
 .btn-color-7 { background-color: rgba(70, 240, 240, 0.5); }
+
 .btn-color-8 { background-color: rgba(240, 50, 230, 0.5); }
+
 .btn-color-9 { background-color: rgba(188, 246, 12, 0.5); }
 
 /* Hover: Alpha auf 1 */
 .btn-color-1:hover,
-.btn-selected-1		{ background-color: rgba(230, 25, 75, 1);}
+.btn-selected-1 { background-color: rgba(230, 25, 75, 1);}
+
 .btn-color-2:hover,
-.btn-selected-2		 { background-color: rgba(60, 180, 75, 1); }
+.btn-selected-2 { background-color: rgba(60, 180, 75, 1); }
+
 .btn-color-3:hover,
-.btn-selected-3		 { background-color: rgba(255, 225, 25, 1); }
+.btn-selected-3 { background-color: rgba(255, 225, 25, 1); }
+
 .btn-color-4:hover,
-.btn-selected-4		 { background-color: rgba(67, 99, 216, 1); }
+.btn-selected-4 { background-color: rgba(67, 99, 216, 1); }
+
 .btn-color-5:hover,
-.btn-selected-5		 { background-color: rgba(245, 130, 49, 1); }
+.btn-selected-5 { background-color: rgba(245, 130, 49, 1); }
+
 .btn-color-6:hover,
-.btn-selected-6		 { background-color: rgba(145, 30, 180, 1); }
+.btn-selected-6 { background-color: rgba(145, 30, 180, 1); }
+
 .btn-color-7:hover,
-.btn-selected-7		 { background-color: rgba(70, 240, 240, 1); }
+.btn-selected-7 { background-color: rgba(70, 240, 240, 1); }
+
 .btn-color-8:hover,
-.btn-selected-8		 { background-color: rgba(240, 50, 230, 1); }
+.btn-selected-8 { background-color: rgba(240, 50, 230, 1); }
+
 .btn-color-9:hover,
-.btn-selected-9		 { background-color: rgba(188, 246, 12, 1); }
+.btn-selected-9 { background-color: rgba(188, 246, 12, 1); }
 
 
 /* === Bootstrap-like Hover / Focus for All Buttons === */
@@ -181,10 +229,6 @@ body {
 	width: 100%;
 }
 
-.timer {
-	font-size: 1rem;
-	margin-bottom: 1rem;
-}
 
 .dropdown-submenu > .dropdown-menu {
 	display: none;

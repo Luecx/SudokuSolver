@@ -11,46 +11,199 @@
 		grid-template-columns: repeat(9, 1fr);
 		grid-template-rows: repeat(9, 1fr);
 		gap: 1px;
-		border: 1px solid #222;
+		border: 1px solid darkgray;
 		width: 100%; /* <-- Volle Breite der Card */
 		aspect-ratio: 1 / 1; /* <-- Macht das Grid quadratisch */
 		margin: 0 auto;
-		background: #fff;
+		background: darkgray;
 	}
 	
 	.sudoku-cell {
-		border: 1px solid #888;
-		background: #fafafa;
+		background: white;
 		width: 100%; /* Füllt die Grid-Zelle aus */
 		height: 100%; /* Füllt die Grid-Zelle aus */
 		box-sizing: border-box;
 	}
 	
-	.sudoku-wrapper {padding: 1rem;}
+	.sudoku-wrapper {padding: 0 1rem;}
+	
+	.my_green 		{color: white; background-color: green;}
+	.my_green:hover {color: white;background-color: #005400;}
+	.my_gold 		{color: black; background-color: gold;}
+	.my_gold:hover 	{color: white;background-color: goldenrod;}
+	.my_red 		{color: white; background-color: firebrick;}
+	.my_red:hover 	{color: white;background-color: darkred;}
+	.my_violet 		{color: white; background-color: darkviolet;}
+	.my_violet:hover	{color: white;background-color: #540090;}
+	.my_black 		{color: white; background-color: black;}
+	.my_black:hover {color: white;background-color: dimgray;}
+	
+	.grid-container {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(5, 1fr);
+	}
+	
+	@media (max-width: 1200px) {
+		.grid-container {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+	
+	@media (max-width: 768px) {
+		.grid-container {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
 </style>
 {% endblock %}
 
 
 {% block content %}
-<div class="row">
+<div class="grid-container">
 	
-	<div class="col-6 col-lg-3 mb-4">
-		<div class="card m-1 w-100">
-			<div class="sudoku-wrapper">
-				<div class="sudoku-grid">
-				</div>
+	<!--	Easy	-->
+		<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
+			<div class="text-center py-2 my_green">
+				<h4 class="mb-0">Easy</h4>
 			</div>
-			<div class="card-body">
-				<h5 class="card-title">Name</h5>
-				<p class="card-text">Schwierigkeit</p>
-				<a href="{% url 'playboard' %}" class="btn btn-primary">Play</a>
+			
+			<div class="card-body bg-white p-3">
+				<div class="sudoku-wrapper">
+					<div class="sudoku-grid">
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+					</div>
+				</div>
+				
+				<h5 class="card-title mt-3">Name</h5>
+				<p class="card-text">TAGS</p>
+				<a href="{% url 'playboard' %}" class="btn my_green w-100 ">Play</a>
 			</div>
 		</div>
-	</div>
-
+	
+	<!--	Medium	-->
+		<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
+			<div class="my_gold text-center py-2">
+				<h4 class="mb-0">Medium</h4>
+			</div>
+			
+			<div class="card-body bg-white p-3">
+				<div class="sudoku-wrapper">
+					<div class="sudoku-grid">
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+					</div>
+				</div>
+				
+				<h5 class="card-title mt-3">Name</h5>
+				<p class="card-text">TAGS</p>
+				<a href="{% url 'playboard' %}" class="btn my_gold w-100 ">Play</a>
+			</div>
+		</div>
+	
+	<!--	Hard	-->
+		<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
+			<div class="my_red text-center py-2">
+				<h4 class="mb-0">Hard</h4>
+			</div>
+			
+			<div class="card-body bg-white p-3">
+				<div class="sudoku-wrapper">
+					<div class="sudoku-grid">
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+					</div>
+				</div>
+				
+				<h5 class="card-title mt-3">Name</h5>
+				<p class="card-text">TAGS</p>
+				<a href="{% url 'playboard' %}" class="btn my_red w-100 ">{% trans "Play" %}</a>
+			</div>
+		</div>
+	
+	<!--	Expert	-->
+		<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
+			<div class="my_violet text-center py-2">
+				<h4 class="mb-0">Expert</h4>
+			</div>
+			
+			<div class="card-body bg-white p-3">
+				<div class="sudoku-wrapper">
+					<div class="sudoku-grid">
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+					</div>
+				</div>
+				
+				<h5 class="card-title mt-3">Name</h5>
+				<p class="card-text">TAGS</p>
+				<a href="{% url 'playboard' %}" class="btn my_violet w-100 ">Play</a>
+			</div>
+		</div>
+	
+	<!--	Extreme	-->
+		<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
+			<div class="my_black text-center py-2">
+				<h4 class="mb-0">Extreme</h4>
+			</div>
+			
+			<div class="card-body bg-white p-3">
+				<div class="sudoku-wrapper">
+					<div class="sudoku-grid">
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+						<div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div><div class="sudoku-cell"></div>
+					</div>
+				</div>
+				
+				<h5 class="card-title mt-3">Name</h5>
+				<p class="card-text">TAGS</p>
+				<a href="{% url 'playboard' %}" class="btn my_black w-100 ">Play</a>
+			</div>
+		</div>
+	
 </div>
 
-{% endblock %}
+<div class="row justify-content-center mt-5">
+	<div class="col-12 text-center">
+		<a href="#" class="btn btn-primary mx-2" style="width: 300px">Refresh</a>
+		<a href="#" class="btn btn-primary mx-2" style="width: 300px">Choose from Puzzle List</a>
+	</div>
+</div>
 
-{% block extra_scripts %}
 {% endblock %}

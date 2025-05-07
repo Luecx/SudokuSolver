@@ -78,17 +78,22 @@ h1, h2, h3 { margin-bottom: 1rem; }
 .my-text-btn:hover,
 .my-text-btn:focus { color:#005792;}
 
-.full-height {  /* für vertikales zentrieren */
-    height: calc(100vh - 100px);
-    padding-top: 30px; /* für die menüzeile */
+.full-height {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: calc(100dvh - 60px); /* 60px menüzeile*/
     box-sizing: border-box;
+    padding-top: 0px; /* Platz für Menü  */
 }
 
 .layout-wrapper {
     display: flex;
     overflow: hidden;
-    height: calc(100vh - 100px);
+    height: calc(100dvh - 60px); /* 60px menüzeile*/
     width: 100%;
+    box-sizing: border-box;
+    
 }
 
 .layout-wrapper.portrait {

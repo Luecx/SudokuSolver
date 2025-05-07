@@ -10,7 +10,8 @@
 {% endblock %}
 
 
-{% block content %}
+{% block container %}
+<div class="container">
 	<div id="layoutWrapper" class="layout-wrapper">
 		<div id="leftCol" class="left-col">
 			<div class="my_board_box">
@@ -24,33 +25,9 @@
 				<div class="block-part justify-content-start p-3" data-block="middle">
 					<div class="timer" id="timer">0:00:00  (Beste Zeit)</div>
 					<div class="button-grid">
-						<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-fill"></i></button>
-						<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-reverse"></i></button>
-						<button id="btn-clear" class="btn btn-custom-white btn-square"><i class="bi bi-trash"></i></button>
-						<button id="btn-zero" class="btn btn-custom-white btn-square"></button>
-						
-						<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
-						<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
-						<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
-						<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
-						<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
-						<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
-						<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
-						<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
-						<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
-						
-						<button id="btn-plus" class="btn btn-secondary btn-square">+</button>
-						<button id="btn-minus" class="btn btn-secondary btn-square">-</button>
-						<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i>
-						</button>
-						
-						<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
-						<button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
-						<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
-						<button id="btn-colorMode" class="btn btn-custom-white btn-square"><img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28" /></button>
-						<div class="dropdown" id="btn-gear" >
+						<div id="btn-gear" class="dropdown"  >
 							<button class="btn btn-secondary btn-square "
-							        data-bs-toggle="dropdown" aria-expanded="false">
+									data-bs-toggle="dropdown" aria-expanded="false">
 								<i class="bi bi-gear"></i>
 							</button>
 							<ul id="theme-menu" class="dropdown-menu dropdown-menu-dark" aria-labelledby="btn-gear">
@@ -62,6 +39,28 @@
 							</ul>
 						</div>
 						<button id="btn-rules" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-info-lg"></i></button>
+						<button id="btn-plus" class="btn btn-secondary btn-square">+</button>
+						<button id="btn-minus" class="btn btn-secondary btn-square">-</button>
+						
+						<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-fill"></i></button>
+						<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-reverse"></i></button>
+						<button id="btn-clear" class="btn btn-custom-white btn-square"><i class="bi bi-trash"></i></button>
+						<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
+						
+						<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
+						<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
+						<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
+						<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
+						<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
+						<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
+						<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
+						<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
+						<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
+						
+						<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
+						<button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
+						<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
+						<button id="btn-colorMode" class="btn btn-custom-white btn-square"><img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28" /></button>
 						
 						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
 							<div class="offcanvas-header">
@@ -76,7 +75,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="block-part" data-block="bottom"></div>
 			</div>
 		</div>
 	</div>
