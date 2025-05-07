@@ -13,6 +13,7 @@ export class Cell {
         this.pos = new CellIdx(row, col);
         this.value = EMPTY;
         this.candidates = CAND_ALL.clone();
+        this.ruleCount = 0;
     }
 
     removeCandidate(number) {

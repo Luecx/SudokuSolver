@@ -23,7 +23,7 @@ export class XVRuleHandler extends RuleTypeHandler {
             {
                 key: "allDotsGiven",
                 type: "boolean",
-                default: true,
+                default: false,
                 label: "All symbols given"
             }
         ];

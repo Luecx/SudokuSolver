@@ -24,7 +24,7 @@ export class KropkiHandler extends RuleTypeHandler {
             {
                 key: "allDotsGiven",
                 type: "boolean",
-                default: true,
+                default: false,
                 label: "All dots given"
             }
         ];

@@ -7,6 +7,9 @@ export class InputKeyboard {
         this.mode = this.allowedModes[0];
         this.events = new EventTarget();
 
+        this.enabled = false;
+        this._boundKeyHandler = this._handleKeyDown.bind(this);
+
         this.keyToValue = {
             '1': 1, '2': 2, '3': 3,
             '4': 4, '5': 5, '6': 6,
@@ -21,7 +24,7 @@ export class InputKeyboard {
             'Delete': () => this.board.unsetValues(this.board.getSelectedRegion()),
         };
 
-        this.attachListeners();
+        this.setEnabled(true); // Enable keyboard input by default
     }
 
     getAvailableModes() {
@@ -71,27 +74,34 @@ export class InputKeyboard {
         this.events.dispatchEvent(new CustomEvent('keyinput', { detail: { val } }));
     }
 
-    attachListeners() {
-        document.addEventListener('keydown', (event) => {
+    _handleKeyDown(event) {
+        if (event.code === 'Space') {
+            this.cycleMode();
+            event.preventDefault();
+            return;
+        }
 
-            if (event.code === 'Space') {
-                this.cycleMode();
-                event.preventDefault();
-                return;
-            }
+        if (this.specialBindings[event.key]) {
+            this.specialBindings[event.key]();
+            event.preventDefault();
+            return;
+        }
 
-            if (this.specialBindings[event.key]) {
-                this.specialBindings[event.key]();
-                event.preventDefault();
-                return;
-            }
+        const val = this.keyToValue[event.key] || this.keyToValue[event.code];
+        if (val) {
+            this.handleInput(val);
+            event.preventDefault();
+        }
+    }
 
-            const val = this.keyToValue[event.key] || this.keyToValue[event.code];
-            if (val) {
-                this.handleInput(val);
-                event.preventDefault();
-            }
-        });
+    setEnabled(enabled) {
+        if (enabled && !this.enabled) {
+            document.addEventListener('keydown', this._boundKeyHandler);
+            this.enabled = true;
+        } else if (!enabled && this.enabled) {
+            document.removeEventListener('keydown', this._boundKeyHandler);
+            this.enabled = false;
+        }
     }
 
     on(eventName, callback) {
