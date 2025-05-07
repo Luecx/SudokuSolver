@@ -1,12 +1,15 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
 import { Region } from "../region/Region.js";
+import {attachSandwichSolverLogic} from "./rule_sandwich_solver.js";
 
 export class SandwichHandler extends RuleTypeHandler {
     constructor(board) {
         super("Sandwich", board);
         this.tag = "sandwich";
         this.can_create_rules = true; // allow user to add sandwiches manually
+
+        attachSandwichSolverLogic(this);
     }
 
     defaultRules() {
@@ -60,8 +63,6 @@ export class SandwichHandler extends RuleTypeHandler {
             ctx.textBaseline = "middle";
 
             let x, y;
-
-            console.log(item.row, item.col);
 
             if (!isNaN(item.row) && item.row != null) {
                 // Row sandwich

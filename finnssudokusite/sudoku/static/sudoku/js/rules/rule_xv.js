@@ -1,11 +1,14 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import {attachXVRuleSolverLogic} from "./rule_xv_solver.js";
 
 export class XVRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("XV Rule", board);
         this.tag = "xv";
         this.can_create_rules = false;
+
+        attachXVRuleSolverLogic(this);
     }
 
     defaultRules() {

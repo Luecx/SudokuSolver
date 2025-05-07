@@ -113,6 +113,38 @@ export class Candidates {
         return bitStr;
     }
 
+    static greaterThan(n) {
+        let bits = 0;
+        for (let i = n + 1; i <= Candidates.MAX; i++) {
+            bits |= (1 << i);
+        }
+        return new Candidates(bits);
+    };
+
+    static greaterEqThan(n) {
+        let bits = 0;
+        for (let i = n; i <= Candidates.MAX; i++) {
+            bits |= (1 << i);
+        }
+        return new Candidates(bits);
+    };
+
+    static lessThan (n) {
+        let bits = 0;
+        for (let i = Candidates.MIN; i < n; i++) {
+            bits |= (1 << i);
+        }
+        return new Candidates(bits);
+    };
+
+    static lessEqThan(n) {
+        let bits = 0;
+        for (let i = Candidates.MIN; i <= n; i++) {
+            bits |= (1 << i);
+        }
+        return new Candidates(bits);
+    };
+
 }
 
 // === Predefined candidate sets ===

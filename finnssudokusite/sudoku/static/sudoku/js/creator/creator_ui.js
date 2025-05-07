@@ -25,7 +25,7 @@ class Creator {
         this.keyboard = new InputKeyboard(this.board, [InputMode.NumberFixed]);
         console.log(this.keyboard);
 
-        document.getElementById("submit-sudoku-btn").addEventListener("click", async () => {
+        document.getElementById("test-sudoku-btn").addEventListener("click", async () => {
             let solverboard = this.board.getSolverBoard();
             // let sol = solverboard.solve(4);
             // console.log(sol);
