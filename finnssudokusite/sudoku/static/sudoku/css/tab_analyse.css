@@ -1,0 +1,47 @@
+.square-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-btn.active {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-btn.active.btn-outline-success {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+}
+
+.toggle-btn.active.btn-outline-warning {
+    background-color: #ffc107;
+    color: black;
+    border-color: #ffc107;
+}
+
+
+#solutionList .list-group-item {
+    cursor: pointer;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    user-select: none;
+}
+
+#solutionList .list-group-item.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+
+#nav-Analyse,
+#nav-tabContent,
+.tab-content,
+.tab-pane {
+    height: 100%;
+    min-height: 0;
+}

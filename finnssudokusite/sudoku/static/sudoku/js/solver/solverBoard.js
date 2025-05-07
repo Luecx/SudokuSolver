@@ -51,8 +51,29 @@ export class SolverBoard {
 
     addHandler(ruleInstance) {
         this.rules.push(ruleInstance);
+
+        this.updateRuleCounts();
+
         this.processRuleCandidates();
     }
+
+    updateRuleCounts() {
+        // Reset all counts
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                this.grid[r][c].ruleCount = 0;
+            }
+        }
+
+        // Recompute from scratch
+        for (const handler of this.rules) {
+            const region = handler.relevantCells(this);
+            for (const cellIdx of region.items) {
+                this.getCell(cellIdx).ruleCount += 1;
+            }
+        }
+    }
+
 
     isValidMove(idx, number) {
         return this.getCell(idx).candidates.test(number);
@@ -139,30 +160,69 @@ export class SolverBoard {
 
     getNextCell() {
         let best = null;
-        let minC = BOARD_SIZE + 1;
+        let bestQuality = Infinity;
+
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
                 const cell = this.grid[r][c];
                 if (cell.value === EMPTY) {
                     const count = cell.candidates.count();
-                    if (count < minC) {
-                        minC = count;
-                        best = { r: r, c: c };
+                    const quality = count - cell.ruleCount / 10;
+
+                    if (count <= 2) return cell.pos;
+
+                    if (quality < bestQuality) {
+                        best = cell;
+                        bestQuality = quality;
                     }
-                    if (count <= 2) return { r: r, c: c };
                 }
             }
         }
-        return best;
+
+        return best.pos;
     }
 
-    solve(maxSolutions = 1) {
+
+    solveComplete() {
+        const solutions = new Map();  // key: board string, value: board object
+
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                const cell = this.grid[r][c];
+                if (cell.value !== EMPTY) continue;
+
+                const candidates = Array.from(cell.candidates);
+                for (const n of candidates) {
+                    const clone = this.clone();
+                    const success = clone.setCell({ r, c }, n);
+                    if (!success) continue;
+
+                    const partialSolutions = clone.solve(1);
+                    for (const sol of partialSolutions) {
+                        const key = sol.toString();
+                        if (!solutions.has(key)) {
+                            solutions.set(key, sol);
+                        }
+                    }
+                }
+            }
+        }
+
+        return Array.from(solutions.values());
+    }
+
+    solve(maxSolutions = 1, max_nodes = 1024) {
         const solutions = [];
         let nodeCount = 0;
         const start = performance.now();
 
         const backtrack = () => {
+
             nodeCount++;
+
+            if (nodeCount > max_nodes) {
+                return false;
+            }
 
             // 1) Do all trivial fillings; if a contradiction arises, this path is dead:
 
@@ -288,6 +348,26 @@ export class SolverBoard {
             ...lines.map(line => `#${line}#`),
             border
         ].join("\n");
+    }
+
+    showRuleCount() {
+        const counts = this.grid.map(row => row.map(cell => cell.ruleCount));
+        const maxCount = Math.max(...counts.flat());
+        const maxWidth = String(maxCount).length;
+
+        // return this.grid.map(row =>
+        //     row.map(cell => {
+        //         const countStr = String(cell.ruleCount);
+        //         return countStr.padStart(maxWidth, " ");
+        //     }).join(" ")
+        // ).join("\n");
+
+        console.log(this.grid.map(row =>
+            row.map(cell => {
+                const countStr = String(cell.ruleCount);
+                return countStr.padStart(maxWidth, " ");
+            }).join(" ")
+        ).join("\n"));
     }
 }
 

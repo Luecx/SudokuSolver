@@ -125,6 +125,50 @@ export class Region {
         return regions;
     }
 
+    toCellRegion() {
+        const region = new Region(RegionType.CELLS);
+        switch (this.type) {
+            case RegionType.CELLS:
+                this.items.forEach(item => region.add(item));
+                break;
+            case RegionType.EDGES:
+                this.items.forEach(item => {
+                    let cell1 = new CellIdx(item.r1, item.c1);
+                    let cell2 = new CellIdx(item.r2, item.c2);
+                    region.add(cell1);
+                    region.add(cell2);
+                });
+                break;
+            case RegionType.CORNERS:
+                this.items.forEach(item => {
+                    let cell1 = new CellIdx(item.r, item.c);
+                    let cell2 = new CellIdx(item.r+1, item.c);
+                    let cell3 = new CellIdx(item.r, item.c+1);
+                    let cell4 = new CellIdx(item.r+1, item.c+1);
+                    region.add(cell1);
+                    region.add(cell2);
+                    region.add(cell3);
+                    region.add(cell4);
+                });
+                break;
+            case RegionType.ROWCOL:
+                this.items.forEach(item => {
+                    for (let i = 0; i < 9; i++) {
+                        if (item.row >= 0 && !isNaN(item.row)) {
+                            let cell = new CellIdx(item.row, i);
+                            region.add(cell);
+                        }
+                        if (item.col >= 0 && !isNaN(item.col)) {
+                            let cell = new CellIdx(i, item.col);
+                            region.add(cell);
+                        }
+                    }
+                });
+                break;
+        }
+        return region;
+    }
+
     largestKingJump() {
         if (this.type !== RegionType.CELLS) {
             throw new Error("largestKingJump is only supported for RegionType.CELLS");

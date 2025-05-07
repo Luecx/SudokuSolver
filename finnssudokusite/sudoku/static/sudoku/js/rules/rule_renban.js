@@ -1,11 +1,14 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import {attachRenbanSolverLogic} from "./rule_renban_solver.js";
 
 export class RenbanHandler extends RuleTypeHandler {
     constructor(board) {
         super("Renban", board);
         this.tag = "renban";
         this.can_create_rules = true;
+
+        attachRenbanSolverLogic(this);
     }
 
     defaultRules() {

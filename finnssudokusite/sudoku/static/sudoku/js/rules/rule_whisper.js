@@ -1,11 +1,13 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import { attachWhisperSolverLogic } from "./rule_whisper_solver.js";
 
 export class WhisperHandler extends RuleTypeHandler {
     constructor(board) {
         super("Whisper", board);
         this.tag = "whisper";
         this.can_create_rules = true;
+        attachWhisperSolverLogic(this);
     }
 
     defaultRules() {

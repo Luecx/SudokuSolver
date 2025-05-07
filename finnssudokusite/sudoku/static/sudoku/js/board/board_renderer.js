@@ -24,7 +24,6 @@ export class BoardRenderer {
     }
 
     addRenderCall(name, fn, layer = 0) {
-        console.log("added render call", name, layer);
         this.drawLayers.set(name, { fn, layer }); // Add or replace
     }
 

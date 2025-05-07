@@ -9,6 +9,7 @@ export class Cell {
         this.ordinaryCandidates = [];
         this.centeredCandidates = [];
         this.colors = [];
+
         this.element = null;
         this.valueLayer = null;
         this.candidateLayer = null;
@@ -28,7 +29,7 @@ export class Cell {
     }
 }
 
-export class BoardContentLayer {
+export class BoardNumberLayer {
     constructor(container, renderer, gridSize = 9) {
         this.container = container;
         this.gridSize = gridSize;
@@ -36,6 +37,8 @@ export class BoardContentLayer {
 
         this.cells = [];
         this.grid = null;
+        this.useSolutionStyle = false;
+
     }
 
     init(board) {
@@ -149,16 +152,26 @@ export class BoardContentLayer {
             valueLayer.style.height = `${cellSize}px`;
             valueLayer.style.fontSize = `${cellSize * 0.8}px`;
             valueLayer.classList.add(cell.fixed ? "fixed" : "editable");
+
+            // Apply coloring
+            if (cell.fixed) {
+                valueLayer.style.color = "black";
+            } else {
+                valueLayer.style.color = this.useSolutionStyle ? "green" : "blue";
+            }
         }
 
         // Fill 3x3 grid with ordinary candidates
         const candidateOrder = [1,2,3,4,5,6,7,8,9];
+        const candidateColor = this.useSolutionStyle ? "red" : "#222";
         for (let n of candidateOrder) {
             const candidate = document.createElement("div");
             candidate.className = "candidate-cell";
             candidate.style.fontSize = `${cellSize * 0.2}px`;
             candidate.style.width = `${cellSize / 3}px`;
             candidate.style.height = `${cellSize / 3}px`;
+            candidate.style.color = candidateColor;
+
             if (cell.ordinaryCandidates.includes(n)) {
                 candidate.textContent = n;
             }
@@ -166,13 +179,13 @@ export class BoardContentLayer {
         }
         candidateLayer.style.display = "grid";
 
-        // Fill centered candidates text
         if (cell.centeredCandidates.length > 0) {
             centeredCandidateLayer.textContent = cell.centeredCandidates.sort().join("");
             centeredCandidateLayer.style.fontSize = `${cellSize * 0.2}px`;
             centeredCandidateLayer.style.width = `${cellSize}px`;
             centeredCandidateLayer.style.height = `${cellSize}px`;
             centeredCandidateLayer.style.display = "flex";
+            centeredCandidateLayer.style.color = candidateColor;
         } else {
             centeredCandidateLayer.style.display = "none";
         }
@@ -184,41 +197,6 @@ export class BoardContentLayer {
 
         const slice = 360 / colors.length;
         return `conic-gradient(${colors.map((c, i) => `${c} ${slice * i}deg ${slice * (i + 1)}deg`).join(", ")})`;
-    }
-
-    fillRandom() {
-        for (const cell of this.cells) {
-            const rand = Math.random();
-            if (rand < 0.2) {
-                cell.value = this.randomValue();
-                cell.fixed = true;
-            } else if (rand < 0.4) {
-                cell.value = this.randomValue();
-                cell.fixed = false;
-            } else if (rand < 0.7) {
-
-                if (Math.random() < 0.5) {
-                    for (let n = 1; n <= 9; n++) {
-                        if (Math.random() < 0.4) {
-                            cell.ordinaryCandidates.push(n);
-                        }
-                    }
-                }else {
-                    for (let n = 1; n <= 9; n++) {
-                        if (Math.random() < 0.2) {
-                            cell.centeredCandidates.push(n);
-                        }
-                    }
-                }
-
-            } else {
-                cell.clear();
-            }
-        }
-    }
-
-    randomValue() {
-        return Math.floor(Math.random() * 9) + 1;
     }
 
     // --- Single cell operations ---
@@ -322,6 +300,7 @@ export class BoardContentLayer {
     // --- Region-wide operations ---
 
     setValues(region, value, fixed = false) {
+        console.log("setValues", region, value, fixed);
         region.forEach(idx => {
             if (idx instanceof CellIdx) {
                 this.setValue(idx, value, fixed);
@@ -330,6 +309,7 @@ export class BoardContentLayer {
     }
 
     unsetValues(region) {
+        console.log("unsetValues", region);
         region.forEach(idx => {
             if (idx instanceof CellIdx) {
                 this.setValue(idx, null, false);
@@ -338,6 +318,7 @@ export class BoardContentLayer {
     }
 
     toggleValues(region, value, fixed = false) {
+        console.log("", region, value, fixed);
         // smart‐toggle: if every cell already === value, clear all; else set all
         const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
         const allHave = cells.every(c => c.value === value && (value === null || c.fixed === fixed));
@@ -431,6 +412,39 @@ export class BoardContentLayer {
             cell.clear();
             this.updateCell(cell);
         }
+    }
+
+    setSolutionStyle(enabled = true) {
+        this.useSolutionStyle = enabled;
+        for (const cell of this.cells) {
+            this.updateCell(cell);
+        }
+    }
+
+    toggleStyle() {
+        this.setSolutionStyle(!this.useSolutionStyle);
+    }
+
+    show() {
+        if (this.grid) {
+            this.grid.style.display = "block";
+        }
+    }
+
+    hide() {
+        if (this.grid) {
+            this.grid.style.display = "none";
+        }
+    }
+
+    toggleVisibility() {
+        if (this.grid) {
+            this.grid.style.display = this.grid.style.display === "none" ? "block" : "none";
+        }
+    }
+
+    isVisible() {
+        return this.grid && this.grid.style.display !== "none";
     }
 
     saveFixedCells() {

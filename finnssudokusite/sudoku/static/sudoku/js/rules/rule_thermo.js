@@ -1,11 +1,14 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import {attachThermometerSolverLogic} from "./rule_thermo_solver.js";
 
 export class ThermometerHandler extends RuleTypeHandler {
     constructor(board) {
         super("Thermometer", board);
         this.tag = "thermometer";
         this.can_create_rules = true;
+
+        attachThermometerSolverLogic(this);
     }
 
     defaultRules() {

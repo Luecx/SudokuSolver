@@ -1,11 +1,14 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule.js";
+import {attachPalindromeSolverLogic} from "./rule_palindrome_solver.js";
 
 export class PalindromeHandler extends RuleTypeHandler {
     constructor(board) {
         super("Palindrome", board);
         this.tag = "palindrome";
         this.can_create_rules = true;
+
+        attachPalindromeSolverLogic(this);
     }
 
     defaultRules() {
