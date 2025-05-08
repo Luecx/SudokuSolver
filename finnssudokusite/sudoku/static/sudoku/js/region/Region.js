@@ -18,8 +18,6 @@ import { RCIdx } from "./RCIdx.js";
 export const RegionClassMap = {
     [RegionType.CELLS]: CellIdx,
     [RegionType.EDGES]: EdgeIdx,
-    [RegionType.HOR_EDGES]: EdgeIdx,
-    [RegionType.VER_EDGES]: EdgeIdx,
     [RegionType.CORNERS]: CornerIdx,
     [RegionType.ROWCOL]: RCIdx,
 };
