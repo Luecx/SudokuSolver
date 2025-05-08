@@ -5,7 +5,6 @@ import { RuleTypeHandler } from "./rule_handler.js";
 function drawChevron(ctx, x, y, direction = 'down') {
     const size = 28;
 
-    ctx.save(); 
     ctx.translate(x, y);
     ctx.scale(size / 24, size / 24);
     
@@ -30,7 +29,7 @@ function drawChevron(ctx, x, y, direction = 'down') {
         ctx.lineTo(12, 6.172);
         ctx.lineTo(3.879, 14.293);
     }
-    else if (direction === 'left') {
+    else if (direction === 'right') {
         ctx.moveTo(8.293, 5.293);
         ctx.lineTo(15, 12);
         ctx.lineTo(8.293, 18.707);
@@ -38,7 +37,7 @@ function drawChevron(ctx, x, y, direction = 'down') {
         ctx.lineTo(17.828, 12);
         ctx.lineTo(9.707, 3.879);
     }
-    else if (direction === 'right') {
+    else if (direction === 'left') {
         ctx.moveTo(15.707, 5.293);
         ctx.lineTo(9, 12);
         ctx.lineTo(15.707, 18.707);
@@ -49,19 +48,22 @@ function drawChevron(ctx, x, y, direction = 'down') {
     
     ctx.closePath();
     ctx.fill();
-    ctx.restore();
 }
 
 export class ChevronHandler extends RuleTypeHandler {
-    constructor(board, chevronType) {
-        super(`${chevronType} Chevron Rule`, board);
-        this.can_create_rules = true;
-        this.tag = chevronType.toLowerCase() + "chevron";
-        this.chevronType = chevronType.toLowerCase();
+    constructor(board) {
+        super("Chevron Rule", board);
+        this.can_create_rules = false;
+        this.tag = "chevron";
     }
 
     defaultRules() {
-        return [];
+        return [
+            { label: "Up Chevron Rule", symbol: "up", fields: {} },
+            { label: "Down Chevron Rule", symbol: "down", fields: {} },
+            { label: "Right Chevron Rule", symbol: "right", fields: {} },
+            { label: "Left Chevron Rule", symbol: "left", fields: {} },
+        ];
     }
 
     getGeneralRuleScheme() {
@@ -103,31 +105,8 @@ export class ChevronHandler extends RuleTypeHandler {
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = "black";
-            drawChevron(ctx, cx, cy, this.chevronType);
+            drawChevron(ctx, cx, cy, rule.symbol);
+            ctx.restore();
         }
-    }
-}
-
-export class ChevronUpHandler extends ChevronHandler {
-    constructor(board) {
-        super(board, "Up");
-    }
-}
-
-export class ChevronDownHandler extends ChevronHandler {
-    constructor(board) {
-        super(board, "Down");
-    }
-}
-
-export class ChevronRightHandler extends ChevronHandler {
-    constructor(board) {
-        super(board, "Right");
-    }
-}
-
-export class ChevronLeftHandler extends ChevronHandler {
-    constructor(board) {
-        super(board, "Left");
     }
 }

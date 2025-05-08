@@ -10,7 +10,7 @@ import {ThermometerHandler} from "./rule_thermo.js";
 import {RenbanHandler} from "./rule_renban.js";
 import { WhisperHandler} from "./rule_whisper.js";
 import { CageHandler } from "./rule_cage.js";
-import { ChevronUpHandler, ChevronDownHandler, ChevronRightHandler, ChevronLeftHandler } from "./rule_chevron.js";
+import { ChevronHandler } from "./rule_chevron.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -27,9 +27,6 @@ export function createAllRuleHandlers(board) {
         new RenbanHandler(board),
         new WhisperHandler(board),
         new CageHandler(board),
-        new ChevronUpHandler(board),
-        new ChevronDownHandler(board),
-        new ChevronRightHandler(board),
-        new ChevronLeftHandler(board)
+        new ChevronHandler(board),
     ];
 }
