@@ -6,8 +6,16 @@
 
 {% block extra_css %}
 <style>
-	
 	@import url('https://fonts.googleapis.com/css2?family=Londrina+Sketch&display=swap');
+	
+	.full-height {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: calc(100dvh - 60px); /* 60px menüzeile*/
+		box-sizing: border-box;
+		padding-top: 0; /* Platz für Menü  */
+	}
 	
 	.brain-img {
 		width: 250px;
@@ -120,4 +128,3 @@
 	});
 </script>
 {% endblock %}
-

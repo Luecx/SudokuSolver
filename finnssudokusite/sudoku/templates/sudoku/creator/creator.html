@@ -11,197 +11,203 @@
 <link rel="stylesheet" href="{% static 'sudoku/css/tab_analyse.css' %}">
 
 <style>
-    /* Tabs oben sollen nicht scrollen */
-    #nav-tab {
-        flex-shrink: 0;
-    }
+	/* Tabs oben sollen nicht scrollen */
+	#nav-tab {
+		flex-shrink: 0;
+	}
+	
+	/* Inhalt bekommt volle Höhe */
+	#nav-tabContent {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+	
+	#ruleDropdown {
+		max-height: 300px;
+		overflow-y: auto;
+	}
+	
+	.grid-container {
+		display: grid;
+		width: 100%;
+		height: 100%;
+		gap: 1rem;
+		overflow: hidden;
+	}
+	
+	.left-pane-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		position: relative;
+	}
+	
+	.left-pane {
+		aspect-ratio: 1 / 1;
+		width: min(100%, calc(100dvh - 60px - 2rem)); /* Korrekte Berechnung */
+		max-height: 100%; /* Wichtig! */
+		max-width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.right-pane {
+	}
+	
+	/* Landscape: 2 Spalten */
+	@media (min-aspect-ratio: 1/1) {
+		.grid-container {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 450px);
+		}
+		
+		.right-pane {
+			width: 450px;
+			height: 100%;
+			overflow: auto;
+		}
+		
+		.left-pane {
+			width: min(100%, calc(100dvh - 60px - 2rem));
+			max-height: 100%;
+			max-width: 100%;
+		}
+	}
+	
+	/* Portrait: 2 Zeilen */
+	@media (max-aspect-ratio: 1/1) {
+		.grid-container {
+			grid-template-rows: minmax(0, 1fr) 300px;
+		}
+		
+		.left-pane-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: min(100vw - 2rem, 100dvh - 60px - 2rem - 300px);
+		}
+		
+		.left-pane {
+			aspect-ratio: 1 / 1;
+			width: min(100vw - 2rem, 100dvh - 60px - 2rem - 300px);
+			height: auto;
+			max-width: 100%;
+			max-height: 100%;
+		}
+		
+		.right-pane {
+			height: 300px;
+			width: 100%;
+		}
+	}
 
-    /* Inhalt bekommt volle Höhe */
-    #nav-tabContent {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-    }
-
-    #ruleDropdown {
-        max-height: 300px;
-        overflow-y: auto;
-    }
 </style>
 {% endblock %}
 
-{% block content %}
-<div id="layoutWrapper" class="layout-wrapper">
-    <div id="leftCol" class="left-col">
-        <div class="my_board_box">
-            <div class="board-container">
-            </div>
-        </div>
-    </div>
-    <div id="rightCol" class="right-col">
-        <nav>
-            <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
-                <button class="nav-link active" id="nav-Create-tab" data-bs-toggle="tab" data-bs-target="#nav-Create"
-                        type="button" role="tab" aria-controls="nav-Create" aria-selected="true">{% trans "Create" %}
-                </button>
-				<button class="nav-link" id="nav-Analyse-tab" data-bs-toggle="tab" data-bs-target="#nav-Analyse"
-						type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">{% trans "Analysis" %}
-				</button>
-				</button>
-                <button class="nav-link" id="nav-Publish-tab" data-bs-toggle="tab" data-bs-target="#nav-Publish"
-                        type="button" role="tab" aria-controls="nav-Publish" aria-selected="false">{% trans "Publish" %}
-                </button>
-            </div>
-        </nav>
-        <div id="nav-tabContent" class="tab-content my_white_box border-top-0 p-3">
-
-            <!--	CREATOR	-->
-            <div id="nav-Create" class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-Create-tab"
-                 tabindex="0">
-                <h2 class="text-center mt-4">{% trans "Create Your Sudoku" %}</h2>
-
-                <div class="position-relative">
-                    <input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..."
-                           autocomplete="off">
-                    <ul id="ruleDropdown" class="list-group position-absolute rounded overflow-auto w-100"
-                        style="z-index: 1000;"></ul>
-                </div>
-
-                <div class="mt-4 flex-fill overflow-auto">
-                    <div id="accordionContainer" class="accordion w-100 flex-fill"></div>
-                </div>
-            </div>
-
-            <!--	ANALYSE	-->
-            <div id="nav-Analyse" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Analyse-tab" tabindex="0">
-				<div class="d-flex flex-column h-100">
-
-					<!-- Top Controls (buttons) -->
-					<div class="d-flex justify-content-between align-items-center gap-2 mb-2 flex-shrink-0">
-						<div class="d-flex gap-2">
-							<button id="start-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
-								<i class="fas fa-play"></i>
-							</button>
-							<button id="clear-analysis-btn" class="btn btn-danger square-btn" data-bs-toggle="tooltip" title="Clear Results">
-								<i class="fas fa-times"></i>
-							</button>
-						</div>
-						<div class="d-flex gap-2">
-							<button id="toggle-definite" class="btn btn-outline-success square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Definite Squares">
-								<i class="fas fa-check-square"></i>
-							</button>
-							<button id="toggle-uncertain" class="btn btn-outline-warning square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Uncertain Squares">
-								<i class="fas fa-question-circle"></i>
-							</button>
-						</div>
-
-					</div>
-
-					<!-- Alert Box (fixed position inside tab) -->
-					<div id="alertBox" class="flex-shrink-0 mb-2"></div>
-
-					<!-- Scrollable Solution List -->
-					<div class="flex-grow-1 overflow-auto">
-						<ul id="solutionList" class="list-group"></ul>
-					</div>
-
+{% block container %}
+<div class="fullwindow">
+	
+	<div class="grid-container">
+		<div class="left-pane-wrapper">
+			<div class="left-pane my_box_style">
+				<div class="board-container">
 				</div>
-
 			</div>
-
-            <!--	PUBLISH	-->
-            <div id="nav-Publish" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Publish-tab" tabindex="0">
-                <div id="publish-info"></div>
-                <form>
-                    <input type="text" class="form-control mb-3" name="sudoku_name" placeholder="Enter Sudoku name...">
-                    <button id="submit-sudoku-btn" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#modalSave">Save
-                    </button>
-                </form>
-                <button id="test-sudoku-btn" class="btn btn-primary">Test</button>
-            </div>
-
-        </div>
-    </div>
+		</div>
+		<div class="right-pane my_box_style">
+			<nav>
+				<div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
+					<button class="nav-link active" id="nav-Create-tab" data-bs-toggle="tab" data-bs-target="#nav-Create"
+							type="button" role="tab" aria-controls="nav-Create" aria-selected="true">{% trans "Create" %}
+					</button>
+					<button class="nav-link" id="nav-Analyse-tab" data-bs-toggle="tab" data-bs-target="#nav-Analyse"
+							type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">{% trans "Analysis" %}
+					</button>
+					</button>
+					<button class="nav-link" id="nav-Publish-tab" data-bs-toggle="tab" data-bs-target="#nav-Publish"
+							type="button" role="tab" aria-controls="nav-Publish" aria-selected="false">{% trans "Publish" %}
+					</button>
+				</div>
+			</nav>
+			<div id="nav-tabContent" class="tab-content my_white_box border-top-0 p-3">
+				
+				<!--	CREATOR	-->
+				<div id="nav-Create" class="tab-pane fade show active" role="tabpanel"
+					 aria-labelledby="nav-Create-tab" tabindex="0">
+					<h2 class="text-center mt-4">{% trans "Create Your Sudoku" %}</h2>
+					
+					<div class="position-relative">
+						<input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..."
+							   autocomplete="off">
+						<ul id="ruleDropdown" class="list-group position-absolute rounded overflow-auto w-100"
+							style="z-index: 1000;"></ul>
+					</div>
+					
+					<div class="mt-4 flex-fill overflow-auto">
+						<div id="accordionContainer" class="accordion w-100 flex-fill"></div>
+					</div>
+				</div>
+				
+				<!--	ANALYSE	-->
+				<div id="nav-Analyse" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Analyse-tab" tabindex="0">
+					<div class="d-flex flex-column h-100">
+						
+						<!-- Top Controls (buttons) -->
+						<div class="d-flex justify-content-between align-items-center gap-2 mb-2 flex-shrink-0">
+							<div class="d-flex gap-2">
+								<button id="start-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
+									<i class="fas fa-play"></i>
+								</button>
+								<button id="clear-analysis-btn" class="btn btn-danger square-btn" data-bs-toggle="tooltip" title="Clear Results">
+									<i class="fas fa-times"></i>
+								</button>
+							</div>
+							<div class="d-flex gap-2">
+								<button id="toggle-definite" class="btn btn-outline-success square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Definite Squares">
+									<i class="fas fa-check-square"></i>
+								</button>
+								<button id="toggle-uncertain" class="btn btn-outline-warning square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Uncertain Squares">
+									<i class="fas fa-question-circle"></i>
+								</button>
+							</div>
+						
+						</div>
+						
+						<!-- Alert Box (fixed position inside tab) -->
+						<div id="alertBox" class="flex-shrink-0 mb-2"></div>
+						
+						<!-- Scrollable Solution List -->
+						<div class="flex-grow-1 overflow-auto">
+							<ul id="solutionList" class="list-group"></ul>
+						</div>
+					
+					</div>
+				
+				</div>
+				
+				<!--	PUBLISH	-->
+				<div id="nav-Publish" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Publish-tab" tabindex="0">
+					<div id="publish-info"></div>
+					<form>
+						<input type="text" class="form-control mb-3" name="sudoku_name" placeholder="Enter Sudoku name...">
+						<button id="submit-sudoku-btn" class="btn btn-primary" data-bs-toggle="modal"
+								data-bs-target="#modalSave">Save
+						</button>
+					</form>
+					<button id="test-sudoku-btn" class="btn btn-primary">Test</button>
+				</div>
+			
+			</div>
+		</div>
+	</div>
 </div>
-
 {% endblock %}
 
 {% block extra_scripts %}
 <script type="module" src="{% static 'sudoku/js/creator/creator_ui.js' %}"></script>
-
-<!--	WINDOW RESIZE -->
-<script>
-    /*  IMPORTANT
-
-    YOU NEED  style.css
-
-    Use this Structure:
-
-    <div id="layoutWrapper" class="layout-wrapper">
-        <div id="leftCol" class="left-col"></div>
-        <div id="rightCol" class="right-col"></div>
-    </div>
-
- */
-
-    function resizeLayout() {
-        const wrapper = document.getElementById("layoutWrapper");
-        const left = document.getElementById("leftCol");
-
-        const isPortrait = window.innerHeight > window.innerWidth;
-        wrapper.classList.toggle("portrait", isPortrait);
-        wrapper.classList.toggle("landscape", !isPortrait);
-
-        const right = document.getElementById("rightCol");
-        right.classList.toggle("landscape", !isPortrait);
-        right.classList.toggle("portrait", isPortrait);
-
-        const rect = wrapper.getBoundingClientRect();
-        let size;
-
-        if (isPortrait) {
-            // Portrait: Quadratische Breite + Höhe, begrenzt durch Wrapper
-            const maxHeight = rect.height * 2 / 3;
-            const maxWidth = rect.width;
-            size = Math.min(maxHeight, maxWidth);
-
-            left.style.width = size + "px";
-            left.style.height = size + "px";
-
-            // Rechte Spalte nimmt restliche Höhe ein
-            document.getElementById("rightCol").style.width = size + "px";
-            document.getElementById("rightCol").style.height = (rect.height - size) + "px";
-        } else {
-            const maxHeight = rect.height;
-            const maxLeftWidth = rect.width * 2 / 3;
-            const leftSize = Math.min(maxHeight, maxLeftWidth);
-
-            const availableRight = rect.width - leftSize - 16; // 16px ≈ 1rem margin
-
-            const rightWidth = Math.min(availableRight, 450);
-
-            left.style.width = leftSize + "px";
-            left.style.height = leftSize + "px";
-
-            right.style.height = leftSize + "px";
-            right.style.width = rightWidth + "px";
-
-            // Center beide, wenn genug Platz für beide plus Abstand
-            if (availableRight > 450) {
-                wrapper.classList.add("centered");
-            } else {
-                wrapper.classList.remove("centered");
-            }
-        }
-    }
-
-    window.addEventListener("resize", resizeLayout);
-    window.addEventListener("load", resizeLayout);
-    document.addEventListener("DOMContentLoaded", () => setTimeout(resizeLayout, 10));
-    document.addEventListener("orientationchange", resizeLayout);
-
-</script>
-
 {% endblock %}

@@ -6,21 +6,108 @@ body {
 	min-height: 100vh;
 }
 
-.container {
-	max-width: none !important;
-	padding-left: 2rem;
-	padding-right: 2rem;
+.grid-container {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	gap: 1rem;
+	overflow: hidden;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+.left-pane-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
 
+.left-pane {
+	aspect-ratio: 1 / 1;
+	width: min(100%, calc(100dvh - 60px - 2rem)); /* Korrekte Berechnung */
+	max-height: 100%; /* Wichtig! */
+	max-width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.right-pane {
+}
+
+/* Landscape: 2 Spalten */
+@media (min-aspect-ratio: 1/1) {
+	.grid-container {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+	}
+	
+	.right-pane {
+		width: 300px;
+		height: 100%;
+		overflow: auto;
+	}
+	
+	.left-pane {
+		width: min(100%, calc(100dvh - 60px - 2rem)); /* Hier ebenfalls anpassen */
+		max-height: 100%;
+		max-width: 100%;
+	}
+}
+
+/* Portrait: 2 Zeilen */
+@media (max-aspect-ratio: 1/1) {
+	.grid-container {
+		grid-template-rows: minmax(0, 1fr) calc(200px - 20px);
+	}
+	
+	.left-pane-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: min(100vw - 2rem, 100dvh - 60px - 2rem - 200px);
+	}
+	
+	.left-pane {
+		aspect-ratio: 1 / 1;
+		width: min(100vw - 2rem, 100dvh - 60px - 2rem - 200px);
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+	}
+	
+	.right-pane {
+		height: 200px;
+		width: 100%;
+	}
+	.no-block-in-Portrait-Mode { display: none;}
+}
+
+.my_board_box {
+	background: white;
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	box-sizing: border-box;
+}
+
+.my_white_box {
+	background-color: white;
+	border: 1px solid #dee2e6;   /* Bootstrap border color */
+	border-radius: 0.25rem;      /* Bootstrap border radius */
+	width: 100%;                 /* Volle Breite */
+	overflow-y: auto;
+}
 .timer {
-	font-size: 1rem;
-	margin-bottom: 1rem;
-	font-family: "Orbitron", sans-serif;
+	font-size: 2rem;
+	font-family: "JetBrains Mono", monospace;
 	font-optical-sizing: auto;
 	font-weight: 400;
 	font-style: normal;
+	background-color: #7FBCFF;
+	border: #0d6efd solid 1px;
+	width: 100%;
+	text-align: center;
 }
 
 /* === Grid Areas === */
@@ -70,34 +157,53 @@ body {
 
 /* === Button Grid === */
 .button-grid {
+	gap: 0.5rem;
 	display: grid;
-	gap: 1vw;
-	justify-content: stretch;
-	align-items: stretch;
-	width: 100%;
 	max-height: none;
 }
 
-.button-grid.landscape {
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	grid-template-areas:
-		"gear rules plus minus"
-		"undo redo clear eye"
-		"seven eight nine ."
-		"four five six ."
-		"one two three ."
-		"number top center color";
+/* Landscape: 300px breit, 1rem vom Rand entfernt */
+@media (min-aspect-ratio: 1/1) {
+	.button-grid {
+		width: calc(300px - 2rem);
+		margin-left: auto;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-areas:
+            "gear rules plus minus"
+            "undo redo clear eye"
+            "seven eight nine ."
+            "four five six ."
+            "one two three ."
+            "number top center color";
+	}
+	
+	.block-content { padding: 1rem; }
 }
 
-.button-grid.portrait {
-	grid-template-columns: repeat(8, minmax(0, 1fr));
-	grid-template-areas:
-		"seven eight nine . plus minus gear rules"
-		"four five six . zero undo redo clear"
-		"one two three number top center color eye";
+/* Portrait: 200px hoch, 1rem vom Rand entfernt */
+@media (max-aspect-ratio: 1/1) {
+	.button-grid {
+		height: 180px;
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(8, 40px);
+		grid-template-rows: repeat(3, 40px); /* Zeilenhöhe festlegen */
+		gap: 5px; /* Ggf. anpassen */
+		box-sizing: border-box;grid-template-areas:
+            "seven eight nine . plus minus gear rules"
+            "four five six . eye undo redo clear"
+            "one two three . number top center color";
+	}
+	.timer {
+		height: 15px;
+		font-size: 1rem;
+		border: none;
+		background-color: white;
+		text-align: start;
+		
+	}
+	.block-content { padding: 2px 1rem; }
 }
-
-/* === Button Base === */
 
 /* Erzeugt weiße button */
 .btn-custom-white {
@@ -119,17 +225,16 @@ body {
 
 /* macht die Buttons Quadratisch */
 .btn-square {
-	border-radius: 1rem !important;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
 	min-height: 0;
 	aspect-ratio: 1 / 1;
-	width: 100%;
-	height: auto;
 	font-size: 1.8rem;
 }
+
+
 
 /* Standardfarben mit 0.5 Alpha */
 .btn-color-1 { background-color: rgba(230, 25, 75, 0.5);}
@@ -205,7 +310,6 @@ body {
 
 
 /* === Layout Details === */
-.block-bg { padding: 0; }
 
 .block-top {
 	background: url("../img/playboard/block-top.png") top center no-repeat;

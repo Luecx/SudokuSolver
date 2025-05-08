@@ -5,177 +5,87 @@
 {% block title %}Sudoku Play{% endblock %}
 
 {% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="{% static 'sudoku/css/playboard.css' %}">
 <link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
 {% endblock %}
 
-
 {% block container %}
-<div class="container">
-	<div id="layoutWrapper" class="layout-wrapper">
-		<div id="leftCol" class="left-col">
-			<div class="my_board_box">
-				<div class="board-container w-100 justify-content-start">
-				</div>
+<div class="fullwindow">
+	<div class="grid-container">
+		<div class="left-pane-wrapper">
+			<div class="left-pane my_box_style">
+				<div class="board-container w-100 justify-content-start"></div>
 			</div>
 		</div>
-		<div id="rightCol" class="right-col">
-			<div class="my_white_box block-bg pb-3" style="overflow: visible !important">
-				<div class="block-part" data-block="top"></div>
-				<div class="block-part justify-content-start p-3" data-block="middle">
-					<div class="timer" id="timer">0:00:00  (Beste Zeit)</div>
-					<div class="button-grid">
-						<div id="btn-gear" class="dropdown"  >
-							<button class="btn btn-secondary btn-square "
-									data-bs-toggle="dropdown" aria-expanded="false">
-								<i class="bi bi-gear"></i>
-							</button>
-							<ul id="theme-menu" class="dropdown-menu dropdown-menu-dark" aria-labelledby="btn-gear">
-								<li><a id="classic" class="dropdown-item" href="#">Classic</a></li>
-								<li><a id="cement" class="dropdown-item" href="#">Cement</a></li>
-								<li><a id="glow" class="dropdown-item" href="#">Glow</a></li>
-								<li><a id="stone" class="dropdown-item" href="#">Stone</a></li>
-								<li><a id="wood" class="dropdown-item" href="#">Wood</a></li>
-							</ul>
+		<div class="right-pane">
+			<div class="block-part no-block-in-Portrait-Mode" data-block="top"></div>
+			<div class="block-part block-content my_box_style justify-content-start" data-block="middle">
+				<div class="timer mb-3" id="timer">0:00:00</div>
+				<div class="button-grid">
+					<button id="btn-gear" class="btn btn-secondary btn-square"
+							data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="bi bi-gear"></i>
+					</button>
+					<ul id="theme-menu" class="dropdown-menu dropdown-menu-dark" aria-labelledby="btn-gear">
+						<li><a id="classic" class="dropdown-item" href="#">Classic</a></li>
+						<li><a id="cement" class="dropdown-item" href="#">Cement</a></li>
+						<li><a id="glow" class="dropdown-item" href="#">Glow</a></li>
+						<li><a id="stone" class="dropdown-item" href="#">Stone</a></li>
+						<li><a id="wood" class="dropdown-item" href="#">Wood</a></li>
+					</ul>
+					
+					<button id="btn-rules" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-info-lg"></i></button>
+					<button id="btn-plus" class="btn btn-secondary btn-square">+</button>
+					<button id="btn-minus" class="btn btn-secondary btn-square">-</button>
+					
+					<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-fill"></i></button>
+					<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-reverse"></i></button>
+					<button id="btn-clear" class="btn btn-custom-white btn-square"><i class="bi bi-trash"></i></button>
+					<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
+					
+					<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
+					<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
+					<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
+					<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
+					<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
+					<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
+					<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
+					<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
+					<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
+					
+					<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
+					<button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
+					<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
+					<button id="btn-colorMode" class="btn btn-custom-white btn-square">
+						<img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28" />
+					</button>
+					
+					<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+						<div class="offcanvas-header">
+							<h5 class="offcanvas-title" id="offcanvasExampleLabel">Rules</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 						</div>
-						<button id="btn-rules" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-info-lg"></i></button>
-						<button id="btn-plus" class="btn btn-secondary btn-square">+</button>
-						<button id="btn-minus" class="btn btn-secondary btn-square">-</button>
-						
-						<button id="btn-undo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-fill"></i></button>
-						<button id="btn-redo" class="btn btn-custom-white btn-square"><i class="bi bi-backspace-reverse"></i></button>
-						<button id="btn-clear" class="btn btn-custom-white btn-square"><i class="bi bi-trash"></i></button>
-						<button id="btn-toggleEye" class="btn btn-custom-white btn-square"><i class="bi bi-eye"></i></button>
-						
-						<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
-						<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
-						<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
-						<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
-						<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
-						<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
-						<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
-						<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
-						<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
-						
-						<button id="btn-numberMode" class="btn btn-custom-white btn-square"><i class="bi bi-pencil-square"></i></button>
-						<button id="btn-topMode" class="btn btn-custom-white btn-square"><i class="bi bi-arrow-up-left-square"></i></button>
-						<button id="btn-centerMode" class="btn btn-custom-white btn-square"><i class="bi bi-dash-square"></i></button>
-						<button id="btn-colorMode" class="btn btn-custom-white btn-square"><img src="{% static 'sudoku/img/playboard/btn-farbe.svg' %}" alt="Icon" width="28" height="28" /></button>
-						
-						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-							<div class="offcanvas-header">
-								<h5 class="offcanvas-title" id="offcanvasExampleLabel">Rules</h5>
-								<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-							</div>
-							<div class="offcanvas-body">
-								<div>
-									Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
-								</div>
+						<div class="offcanvas-body">
+							<div>
+								Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<div class="block-part no-block-in-Portrait-Mode" data-block="bottom"></div>
 		</div>
 	</div>
-
+</div>
 
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-    window.puzzle_data = {{puzzle_data_json | safe}};
-</script>
+<script>window.puzzle_data={{puzzle_data_json | safe}};</script>
 <script type="module" src="{% static 'sudoku/js/playboard/playboard.js' %}"></script>
-
-<script>
-    /*  IMPORTANT
-
-	YOU NEED  style.css
-
-	Use this Structure:
-
-	<div id="layoutWrapper" class="layout-wrapper">
-		<div id="leftCol" class="left-col"></div>
-		<div id="rightCol" class="right-col"></div>
-	</div>
-
- */
-
-     function resizeLayout() {
-        const wrapper = document.getElementById("layoutWrapper");
-        const left = document.getElementById("leftCol");
-
-        const isPortrait = window.innerHeight > window.innerWidth;
-        wrapper.classList.toggle("portrait", isPortrait);
-        wrapper.classList.toggle("landscape", !isPortrait);
-        
-        const right = document.getElementById("rightCol");
-        right.classList.toggle("landscape", !isPortrait);
-        right.classList.toggle("portrait", isPortrait);
-
-         const grid = document.querySelector(".button-grid");
-         grid.classList.toggle("portrait", isPortrait);
-         grid.classList.toggle("landscape", !isPortrait);
-         
-        const rect = wrapper.getBoundingClientRect();
-        let size;
-
-        if (isPortrait) {
-            // Portrait: Quadratische Breite + Höhe, begrenzt durch Wrapper
-            const maxHeight = rect.height * 2 / 3;
-            const maxWidth = rect.width;
-            size = Math.min(maxHeight, maxWidth);
-
-            left.style.width = size + "px";
-            left.style.height = size + "px";
-
-            // Rechte Spalte nimmt restliche Höhe ein
-            document.getElementById("rightCol").style.width = size + "px";
-            document.getElementById("rightCol").style.height = (rect.height - size) + "px";
-        } else {
-            const maxHeight = rect.height;
-            const maxLeftWidth = rect.width * 2 / 3;
-            const leftSize = Math.min(maxHeight, maxLeftWidth);
-
-            const availableRight = rect.width - leftSize - 16; // 16px ≈ 1rem margin
-
-            const rightWidth = Math.min(availableRight, 450);
-
-            left.style.width = leftSize + "px";
-            left.style.height = leftSize + "px";
-
-            right.style.height = leftSize + "px";
-            right.style.width = rightWidth + "px";
-
-            // Center beide, wenn genug Platz für beide plus Abstand
-            if (availableRight > 450) {
-                wrapper.classList.add("centered");
-            } else {
-                wrapper.classList.remove("centered");
-            }
-        }
-
-         if (grid) {
-             // Rücksetzen
-             grid.style.transform = "";
-             grid.style.transformOrigin = "top center";
-
-             // Maße
-             const gridHeight = grid.scrollHeight;
-             const rightHeight = right.clientHeight;
-
-             if (gridHeight > rightHeight) {
-                 const scale = rightHeight / gridHeight;
-                 grid.style.transform = `scale(${scale})`;
-             }
-         }
-    }
-
-    window.addEventListener("resize", resizeLayout);
-    window.addEventListener("load", resizeLayout);
-    document.addEventListener("orientationchange", resizeLayout);
-
-</script>
 
 {% endblock %}

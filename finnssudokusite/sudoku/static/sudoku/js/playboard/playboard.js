@@ -40,7 +40,7 @@ export class PlayBoard {
         const backgrounds = {
             stone: "url('/static/sudoku/img/playboard/stone.jpg')",
             glow: "url('/static/sudoku/img/playboard/glow.jpg')",
-            cement: "url('/static/sudoku/img/playboard/zement.jpg')",
+            cement: "url('/static/sudoku/img/playboard/cement.jpg')",
             wood: "url('/static/sudoku/img/playboard/wood.jpg')",
             classic: "none"
         };
@@ -50,7 +50,7 @@ export class PlayBoard {
             if (!backgrounds[id]) return;
             document.body.style.backgroundImage = backgrounds[id];
 
-            document.querySelectorAll(".block-bg").forEach(bg => bg.classList.toggle("my_white_box", id === "classic"));
+            document.querySelectorAll(".block-content").forEach(bg => bg.classList.toggle("my_box_style", id === "classic"));
             document.querySelectorAll(".block-part").forEach(part => {
                 const type = part.getAttribute("data-block");
                 part.classList.toggle("block-top", id !== "classic" && type === "top");
