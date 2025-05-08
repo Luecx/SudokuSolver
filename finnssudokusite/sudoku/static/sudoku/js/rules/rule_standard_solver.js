@@ -1,20 +1,20 @@
-import { Candidates } from '../solver/candidates.js';
-import { EMPTY } from '../solver/defs.js';
+import { NumberSet } from '../number/number_set.js';
+import { NO_NUMBER } from '../number/number.js';
 
 const ALL_DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const BOARD_SIZE = 9;
 
 export function attachStandardSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
-        if (changedCell.value === EMPTY) return false;
+        if (changedCell.value === NO_NUMBER) return false;
         let changed = false;
-        const rm = Candidates.fromNumber(changedCell.value);
+        const rm = NumberSet.fromNumber(changedCell.value);
         for (const c of board.getRow(changedCell.pos.r))
-            if (c.value === EMPTY && c.removeCandidates(rm)) changed = true;
+            if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
         for (const c of board.getCol(changedCell.pos.c))
-            if (c.value === EMPTY && c.removeCandidates(rm)) changed = true;
+            if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
         for (const c of board.getBlock(changedCell.pos.r, changedCell.pos.c))
-            if (c.value === EMPTY && c.removeCandidates(rm)) changed = true;
+            if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
         return changed;
     };
 
@@ -43,19 +43,19 @@ export function attachStandardSolverLogic(instance) {
     instance.checkPlausibility = function (board) {
         const groups = [...board.rows, ...board.cols, ...board.blocks];
         for (const group of groups) {
-            let seen = new Candidates();
+            let seen = new NumberSet();
             seen.mask = 0;
-            let combined = new Candidates();
+            let combined = new NumberSet();
             for (const c of group) {
-                if (c.value !== EMPTY) {
+                if (c.value !== NO_NUMBER) {
                     if (seen.test(c.value)) return false;
                     seen.allow(c.value);
-                    combined.orEq(Candidates.fromNumber(c.value));
+                    combined.orEq(NumberSet.fromNumber(c.value));
                 } else {
                     combined.orEq(c.candidates);
                 }
             }
-            if (combined.raw() !== Candidates.MASK_ALL) return false;
+            if (combined.raw() !== NumberSet.all().raw()) return false;
         }
         return true;
     };
@@ -65,12 +65,12 @@ export function attachStandardSolverLogic(instance) {
 
 function hiddenSingles(unit) {
     let changed = false;
-    const seenOnce = new Candidates();
-    const seenTwice = new Candidates();
+    const seenOnce = new NumberSet();
+    const seenTwice = new NumberSet();
 
     for (const c of unit) {
-        if (c.value !== EMPTY) {
-            seenOnce.orEq(Candidates.fromNumber(c.value));
+        if (c.value !== NO_NUMBER) {
+            seenOnce.orEq(NumberSet.fromNumber(c.value));
         } else {
             seenTwice.orEq(seenOnce.and(c.candidates));
             seenOnce.orEq(c.candidates);
@@ -80,7 +80,7 @@ function hiddenSingles(unit) {
     const unique = seenOnce.and(seenTwice.not());
 
     for (const c of unit) {
-        if (c.value === EMPTY) {
+        if (c.value === NO_NUMBER) {
             const pick = c.candidates.and(unique);
             if (pick.count() === 1 && c.removeCandidates(pick.not())) changed = true;
         }
@@ -96,7 +96,7 @@ function pointing(board) {
             for (const d of ALL_DIGITS) {
                 let rowMask = 0, colMask = 0;
                 for (const c of block) {
-                    if (c.value === EMPTY && c.candidates.test(d)) {
+                    if (c.value === NO_NUMBER && c.candidates.test(d)) {
                         rowMask |= 1 << (c.pos.r - br);
                         colMask |= 1 << (c.pos.c - bc);
                     }
@@ -130,7 +130,7 @@ function claiming(board) {
         for (const d of ALL_DIGITS) {
             let block = -1, count = 0;
             for (const c of row) {
-                if (c.value === EMPTY && c.candidates.test(d)) {
+                if (c.value === NO_NUMBER && c.candidates.test(d)) {
                     count++;
                     const b = Math.floor(c.pos.c / 3);
                     if (block < 0) block = b;
@@ -141,7 +141,7 @@ function claiming(board) {
                 const br = Math.floor(r / 3) * 3;
                 const bc = block * 3;
                 for (const c of board.getBlock(br, bc)) {
-                    if (c.value === EMPTY && c.pos.r !== r)
+                    if (c.value === NO_NUMBER && c.pos.r !== r)
                         if (c.removeCandidate(d)) changed = true;
                 }
             }
@@ -153,7 +153,7 @@ function claiming(board) {
         for (const d of ALL_DIGITS) {
             let block = -1, count = 0;
             for (const c of col) {
-                if (c.value === EMPTY && c.candidates.test(d)) {
+                if (c.value === NO_NUMBER && c.candidates.test(d)) {
                     count++;
                     const b = Math.floor(c.pos.r / 3);
                     if (block < 0) block = b;
@@ -164,7 +164,7 @@ function claiming(board) {
                 const br = block * 3;
                 const bc = Math.floor(cidx / 3) * 3;
                 for (const c of board.getBlock(br, bc)) {
-                    if (c.value === EMPTY && c.pos.c !== cidx)
+                    if (c.value === NO_NUMBER && c.pos.c !== cidx)
                         if (c.removeCandidate(d)) changed = true;
                 }
             }
@@ -177,7 +177,7 @@ function claiming(board) {
 function nakedPairs(board) {
     let changed = false;
     const process = (unit) => {
-        const masks = unit.map(cell => (cell.value === EMPTY ? cell.candidates : new Candidates()));
+        const masks = unit.map(cell => (cell.value === NO_NUMBER ? cell.candidates : new NumberSet()));
         for (let i = 0; i < BOARD_SIZE; i++) {
             if (masks[i].count() !== 2) continue;
             for (let j = i + 1; j < BOARD_SIZE; j++) {
@@ -185,7 +185,7 @@ function nakedPairs(board) {
                 for (let k = 0; k < BOARD_SIZE; k++) {
                     if (k === i || k === j) continue;
                     const c = unit[k];
-                    if (c.value === EMPTY && c.removeCandidates(masks[i])) changed = true;
+                    if (c.value === NO_NUMBER && c.removeCandidates(masks[i])) changed = true;
                 }
             }
         }
@@ -207,7 +207,7 @@ function xWing(board) {
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
                 const cell = board.getCell({ r, c });
-                if (cell.value === EMPTY && cell.candidates.test(d)) rowCols[r].push(c);
+                if (cell.value === NO_NUMBER && cell.candidates.test(d)) rowCols[r].push(c);
             }
         }
         for (let r1 = 0; r1 < BOARD_SIZE; r1++) {
@@ -218,7 +218,7 @@ function xWing(board) {
                     if (r3 === r1 || r3 === r2) continue;
                     for (const col of rowCols[r1]) {
                         const cell = board.getCell({ r: r3, c: col });
-                        if (cell.value === EMPTY && cell.removeCandidate(d)) changed = true;
+                        if (cell.value === NO_NUMBER && cell.removeCandidate(d)) changed = true;
                     }
                 }
             }
@@ -234,7 +234,7 @@ function swordfish(board) {
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
                 const cell = board.getCell({ r, c });
-                if (cell.value === EMPTY && cell.candidates.test(d)) rowCols[r].push(c);
+                if (cell.value === NO_NUMBER && cell.candidates.test(d)) rowCols[r].push(c);
             }
         }
         for (let a = 0; a < BOARD_SIZE; a++) {
@@ -249,7 +249,7 @@ function swordfish(board) {
                         if (r2 === a || r2 === b || r2 === c) continue;
                         for (const col of union) {
                             const cell = board.getCell({ r: r2, c: col });
-                            if (cell.value === EMPTY && cell.removeCandidate(d)) changed = true;
+                            if (cell.value === NO_NUMBER && cell.removeCandidate(d)) changed = true;
                         }
                     }
                 }
@@ -265,7 +265,7 @@ function xyWing(board) {
     for (let r = 0; r < BOARD_SIZE; r++) {
         for (let c = 0; c < BOARD_SIZE; c++) {
             const cell = board.getCell({ r, c });
-            if (cell.value === EMPTY && cell.candidates.count() === 2)
+            if (cell.value === NO_NUMBER && cell.candidates.count() === 2)
                 bivals.push(cell);
         }
     }
@@ -280,7 +280,7 @@ function xyWing(board) {
         const [x, y] = [...P.candidates];
         for (const A of bivals) {
             if (A === P || !A.candidates.test(x) || A.candidates.test(y) || !isPeer(P, A)) continue;
-            const z = [...A.candidates.and(new Candidates(~(1 << x) & Candidates.MASK_ALL))][0];
+            const z = [...A.candidates.and(new NumberSet(~(1 << x) & NumberSet.all().mask))][0];
             for (const B of bivals) {
                 if (
                     B === P || B === A || !B.candidates.test(y) || B.candidates.test(x)
@@ -291,7 +291,7 @@ function xyWing(board) {
                     for (let c = 0; c < BOARD_SIZE; c++) {
                         const C = board.getCell({ r, c });
                         if (
-                            C.value === EMPTY &&
+                            C.value === NO_NUMBER &&
                             C.candidates.test(z) &&
                             isPeer(C, A) &&
                             isPeer(C, B)

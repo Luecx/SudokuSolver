@@ -1,5 +1,5 @@
-import { EMPTY } from "../solver/defs.js";
-import { Candidates } from "../solver/candidates.js";
+import { NO_NUMBER } from "../number/number.js";
+import { NumberSet } from "../number/number_set.js";
 
 export function attachRenbanSolverLogic(instance) {
     instance.candidatesChanged = function (board) {
@@ -10,32 +10,25 @@ export function attachRenbanSolverLogic(instance) {
             if (!path || path.length < 2) continue;
 
             const cells = path.map(p => board.getCell(p));
-            const n = cells.length;
+            const length = cells.length;
 
             const knownValues = cells
                 .map(c => c.value)
-                .filter(v => v !== EMPTY);
+                .filter(v => v !== NO_NUMBER);
 
-            // Get valid ranges
-            const possibleRanges =
-                knownValues.length > 0
-                    ? getRangesIncludingValues(n, knownValues)
-                    : getAllConsecutiveRanges(n);
+            const possibleRanges = knownValues.length > 0
+                ? getRangesIncludingValues(length, knownValues)
+                : getAllConsecutiveRanges(length);
 
-            // Union of all digits from those ranges
-            const allowed = new Candidates();
+            const allowed = new NumberSet();
             for (const range of possibleRanges) {
-                for (const v of range) {
-                    allowed.allow(v);
-                }
+                for (const v of range) allowed.allow(v);
             }
 
             for (const cell of cells) {
-                if (cell.value !== EMPTY) continue;
+                if (cell.value !== NO_NUMBER) continue;
 
-                const before = cell.candidates.clone();
-                cell.candidates.andEq(allowed);
-                if (!cell.candidates.equals(before)) changed = true;
+                changed |= cell.removeCandidates(allowed.not());
             }
         }
 
@@ -50,10 +43,9 @@ export function attachRenbanSolverLogic(instance) {
             if (!path || path.length < 2) continue;
 
             const values = path.map(p => board.getCell(p).value);
-            if (values.includes(EMPTY)) continue;
+            if (values.includes(NO_NUMBER)) continue;
 
-            const sorted = [...values].sort((a, b) => a - b);
-
+            const sorted = values.slice().sort((a, b) => a - b);
             for (let i = 1; i < sorted.length; i++) {
                 if (sorted[i] !== sorted[i - 1] + 1) return false;
             }
@@ -65,37 +57,27 @@ export function attachRenbanSolverLogic(instance) {
 
 /* === Range Generators === */
 
+// All possible consecutive digit ranges of given length
 function getAllConsecutiveRanges(length) {
     const ranges = [];
-
-    for (let start = Candidates.MIN; start <= Candidates.MAX - length + 1; start++) {
-        const range = [];
-        for (let v = start; v < start + length; v++) {
-            range.push(v);
-        }
-        ranges.push(range);
+    for (let start = 1; start <= 9 - length + 1; start++) {
+        ranges.push(Array.from({ length }, (_, i) => start + i));
     }
-
     return ranges;
 }
 
+// Only consecutive ranges that include all known values
 function getRangesIncludingValues(length, requiredValues) {
-    const ranges = [];
-
     const minKnown = Math.min(...requiredValues);
     const maxKnown = Math.max(...requiredValues);
 
     const minStart = Math.max(1, maxKnown - length + 1);
     const maxStart = Math.min(9 - length + 1, minKnown);
 
+    const ranges = [];
     for (let start = minStart; start <= maxStart; start++) {
-        const range = [];
-        for (let v = start; v < start + length; v++) {
-            range.push(v);
-        }
-
-        // Must include ALL known values
-        if (requiredValues.every(val => range.includes(val))) {
+        const range = Array.from({ length }, (_, i) => start + i);
+        if (requiredValues.every(v => range.includes(v))) {
             ranges.push(range);
         }
     }

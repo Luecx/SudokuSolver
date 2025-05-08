@@ -1,5 +1,5 @@
-import { EMPTY } from "../solver/defs.js";
-import { Candidates } from "../solver/candidates.js";
+import { NO_NUMBER } from "../number/number.js";
+import { NumberSet } from "../number/number_set.js";
 
 export function attachCageSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
@@ -38,19 +38,19 @@ function checkCage(instance, rule, board) {
 
     const cells = region.items.map(pos => board.getCell(pos));
 
-    const filled = cells.filter(c => c.value !== EMPTY);
+    const filled = cells.filter(c => c.value !== NO_NUMBER);
     const sumFilled = filled.reduce((s, c) => s + c.value, 0);
     const usedValues = new Set(filled.map(c => c.value));
 
-    const remainingCells = cells.filter(c => c.value === EMPTY);
+    const remainingCells = cells.filter(c => c.value === NO_NUMBER);
     const remainingSum = targetSum - sumFilled;
     const remainingN = remainingCells.length;
 
-    let minCandidate = 9;
+    let minCandidate = board.size;
     let maxCandidate = 1;
 
     for (const cell of remainingCells) {
-        for (let d = Candidates.MIN; d <= Candidates.MAX; ++d) {
+        for (let d = 1; d <= board.size; ++d) {
             if (cell.candidates.test(d)) {
                 minCandidate = Math.min(minCandidate, d);
                 maxCandidate = Math.max(maxCandidate, d);
@@ -58,13 +58,13 @@ function checkCage(instance, rule, board) {
         }
     }
 
-    const soft = getSoftBounds(remainingN, remainingSum, allowRepeats, minCandidate, maxCandidate);
+    const soft = getSoftBounds(remainingN, remainingSum, allowRepeats, minCandidate, maxCandidate, board.size);
 
     let changed = false;
 
     for (const cell of remainingCells) {
         const prev = cell.candidates.raw();
-        for (let d = Candidates.MIN; d <= Candidates.MAX; ++d) {
+        for (let d = 1; d <= board.size; ++d) {
             if (!cell.candidates.test(d)) continue;
 
             if (!allowRepeats && usedValues.has(d)) {
@@ -82,9 +82,9 @@ function checkCage(instance, rule, board) {
     return changed;
 }
 
-function getSoftBounds(N, sum, allowRepeats, minC, maxC) {
-    const min = lowerBound(N, sum, allowRepeats, maxC);
-    const max = upperBound(N, sum, allowRepeats, minC);
+function getSoftBounds(N, sum, allowRepeats, minC, maxC, size) {
+    const min = lowerBound(N, sum, allowRepeats, maxC, size);
+    const max = upperBound(N, sum, allowRepeats, minC, size);
     return { min, max };
 }
 
@@ -99,11 +99,11 @@ function maxSum(small, N, allowRepeats, maxC) {
     }
 }
 
-function lowerBound(N, sum, allowRepeats, maxC) {
-    for (let low = Candidates.MIN; low <= maxC - (allowRepeats ? 0 : N - 1); ++low) {
+function lowerBound(N, sum, allowRepeats, maxC, size) {
+    for (let low = 1; low <= maxC - (allowRepeats ? 0 : N - 1); ++low) {
         if (maxSum(low, N, allowRepeats, maxC) >= sum) return low;
     }
-    return 10;
+    return size + 1;
 }
 
 function minSum(large, N, allowRepeats, minC) {
@@ -117,8 +117,8 @@ function minSum(large, N, allowRepeats, minC) {
     }
 }
 
-function upperBound(N, sum, allowRepeats, minC) {
-    for (let high = Candidates.MAX; high >= minC + (allowRepeats ? 0 : N - 1); --high) {
+function upperBound(N, sum, allowRepeats, minC, size) {
+    for (let high = size; high >= minC + (allowRepeats ? 0 : N - 1); --high) {
         if (minSum(high, N, allowRepeats, minC) <= sum) return high;
     }
     return 0;
@@ -131,7 +131,7 @@ function checkCagePlausibility(instance, rule, board) {
     if (!region || typeof region.size !== "function" || region.size() === 0) return true;
 
     const cells = region.items.map(pos => board.getCell(pos));
-    const filled = cells.filter(c => c.value !== EMPTY);
+    const filled = cells.filter(c => c.value !== NO_NUMBER);
     const values = filled.map(c => c.value);
 
     const sum = values.reduce((s, v) => s + v, 0);

@@ -1,25 +1,35 @@
-import { EMPTY } from "../solver/defs.js";
-import { Candidates } from "../solver/candidates.js";
+import { NO_NUMBER } from "../number/number.js";
+import { NumberSet } from "../number/number_set.js";
 
 export function attachDiagonalSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
-        if (changedCell.value === EMPTY) return false;
+        if (changedCell.value === NO_NUMBER) return false;
 
-        let changed = false;
-        const rm = Candidates.fromNumber(changedCell.value);
+        const size = board.size;
+        const rm = NumberSet.fromNumber(changedCell.value, size);
         const { r, c } = changedCell.pos;
 
+        let changed = false;
+
         if (instance.fields.diagonal && r === c) {
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < size; i++) {
                 const cell = board.getCell({ r: i, c: i });
-                if (cell.value === EMPTY && cell.removeCandidates(rm)) changed = true;
+                if (cell.value === NO_NUMBER) {
+                    const before = cell.candidates.raw();
+                    cell.candidates.andEq(rm.not());
+                    if (cell.candidates.raw() !== before) changed = true;
+                }
             }
         }
 
-        if (instance.fields.antiDiagonal && r + c === 8) {
-            for (let i = 0; i < 9; i++) {
-                const cell = board.getCell({ r: i, c: 8 - i });
-                if (cell.value === EMPTY && cell.removeCandidates(rm)) changed = true;
+        if (instance.fields.antiDiagonal && r + c === size - 1) {
+            for (let i = 0; i < size; i++) {
+                const cell = board.getCell({ r: i, c: size - 1 - i });
+                if (cell.value === NO_NUMBER) {
+                    const before = cell.candidates.raw();
+                    cell.candidates.andEq(rm.not());
+                    if (cell.candidates.raw() !== before) changed = true;
+                }
             }
         }
 
@@ -27,34 +37,30 @@ export function attachDiagonalSolverLogic(instance) {
     };
 
     instance.candidatesChanged = function (board) {
-        return false; // Optional advanced logic like naked singles not needed here
+        return false; // Optional advanced logic
     };
 
     instance.checkPlausibility = function (board) {
-        if (instance.fields.diagonal && !checkUniqueDiagonal(board, true)) return false;
-        if (instance.fields.antiDiagonal && !checkUniqueDiagonal(board, false)) return false;
+        const size = board.size;
+        if (instance.fields.diagonal && !checkUniqueDiagonal(board, true, size)) return false;
+        if (instance.fields.antiDiagonal && !checkUniqueDiagonal(board, false, size)) return false;
         return true;
     };
 }
 
-function checkUniqueDiagonal(board, isMain) {
-    const seen = new Candidates();
-    seen.mask = 0;
-    const combined = new Candidates();
+function checkUniqueDiagonal(board, isMain, size) {
+    const seen = new Set();
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < size; i++) {
         const cell = isMain
             ? board.getCell({ r: i, c: i })
-            : board.getCell({ r: i, c: 8 - i });
+            : board.getCell({ r: i, c: size - 1 - i });
 
-        if (cell.value !== EMPTY) {
-            if (seen.test(cell.value)) return false;
-            seen.allow(cell.value);
-            combined.orEq(Candidates.fromNumber(cell.value));
-        } else {
-            combined.orEq(cell.candidates);
+        if (cell.value !== NO_NUMBER) {
+            if (seen.has(cell.value)) return false;
+            seen.add(cell.value);
         }
     }
 
-    return combined.raw() === Candidates.MASK_ALL;
+    return true;
 }

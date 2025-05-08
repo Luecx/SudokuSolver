@@ -1,5 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import {attachThermometerSolverLogic} from "./rule_thermo_solver.js";
 
 export class ThermometerHandler extends RuleTypeHandler {

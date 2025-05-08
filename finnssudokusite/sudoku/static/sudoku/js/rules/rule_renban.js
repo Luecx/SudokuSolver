@@ -1,5 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import {attachRenbanSolverLogic} from "./rule_renban_solver.js";
 
 export class RenbanHandler extends RuleTypeHandler {

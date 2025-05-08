@@ -1,30 +1,43 @@
-// === board.js ===
+// === solver_board.js ===
 
-import { EMPTY, BOARD_SIZE } from './defs.js';
+import { NO_NUMBER } from '../number/number.js';
 import { CellIdx } from "../region/CellIdx.js";
-import { Cell } from './cell.js';
-import { CAND_NONE } from './candidates.js';
-import { SolverStats } from './stats.js';
-import * as RegionUtils from './util.js'
+import { SolverCell } from './solverCell.js';
+import { SolverStats } from './solverStats.js';
+import * as RegionUtils from './solverUtil.js';
 
 export class SolverBoard {
-    constructor() {
-        // Create 2D grid of Cells
-        this.grid = Array.from({ length: BOARD_SIZE }, (_, r) =>
-            Array.from({ length: BOARD_SIZE }, (_, c) => new Cell(r, c))
+    /**
+     * Creates a new SolverBoard for the given board size.
+     * @param {number} size - Board size (e.g. 9). Must be a perfect square.
+     */
+    constructor(size = 9) {
+        this.size = size;
+        this.blockSize = Math.sqrt(size);
+
+        if (!Number.isInteger(this.blockSize)) {
+            throw new Error(`Board size ${size} must be a perfect square.`);
+        }
+
+        // Create grid of SolverCells
+        this.grid = Array.from({ length: size }, (_, r) =>
+            Array.from({ length: size }, (_, c) =>
+                new SolverCell(new CellIdx(r, c), size)
+            )
         );
 
-        // Create row, col, block pointers
+        // Create row and column access
         this.rows = this.grid.map(row => [...row]);
-        this.cols = Array.from({ length: BOARD_SIZE }, (_, c) =>
+        this.cols = Array.from({ length: size }, (_, c) =>
             this.grid.map(row => row[c])
         );
 
-        this.blocks = Array.from({ length: BOARD_SIZE }, () => []);
-        for (let i = 0; i < BOARD_SIZE; i++) {
-            for (let j = 0; j < BOARD_SIZE; j++) {
-                const bi = Math.floor(i / 3) * 3 + Math.floor(j / 3);
-                this.blocks[bi].push(this.grid[i][j]);
+        // Create blocks
+        this.blocks = Array.from({ length: size }, () => []);
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                const blockIdx = Math.floor(r / this.blockSize) * this.blockSize + Math.floor(c / this.blockSize);
+                this.blocks[blockIdx].push(this.grid[r][c]);
             }
         }
 
@@ -45,45 +58,40 @@ export class SolverBoard {
     }
 
     getBlock(row, col) {
-        const bi = Math.floor(row / 3) * 3 + Math.floor(col / 3);
+        const bi = Math.floor(row / this.blockSize) * this.blockSize + Math.floor(col / this.blockSize);
         return this.blocks[bi];
     }
 
     addHandler(ruleInstance) {
         this.rules.push(ruleInstance);
-
         this.updateRuleCounts();
-
         this.processRuleCandidates();
     }
 
     updateRuleCounts() {
-        // Reset all counts
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
                 this.grid[r][c].ruleCount = 0;
             }
         }
 
-        // Recompute from scratch
         for (const handler of this.rules) {
-            const region = handler.relevantCells(this);
+            const region = handler.attachedCells(this);
             for (const cellIdx of region.items) {
                 this.getCell(cellIdx).ruleCount += 1;
             }
         }
     }
 
-
     isValidMove(idx, number) {
-        return this.getCell(idx).candidates.test(number);
+        return this.getCell(idx).getCandidates().test(number);
     }
 
     impossible() {
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
                 const cell = this.grid[r][c];
-                if (cell.value === EMPTY && cell.candidates.count() === 0)
+                if (cell.value === NO_NUMBER && cell.candidates.count() === 0)
                     return true;
             }
         }
@@ -101,8 +109,8 @@ export class SolverBoard {
     stackPop() {
         if (!this.history.length) return false;
         const snapshot = this.history.pop();
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
                 this.grid[r][c].value = snapshot[r][c].value;
                 this.grid[r][c].candidates = snapshot[r][c].candidates;
             }
@@ -134,7 +142,9 @@ export class SolverBoard {
     }
 
     display() {
-        const lines = this.grid.map(row => row.map(cell => cell.value || ".").join(" "));
+        const lines = this.grid.map(row =>
+            row.map(cell => cell.value || ".").join(" ")
+        );
         console.log(lines.join("\n"));
     }
 
@@ -155,17 +165,19 @@ export class SolverBoard {
     }
 
     isSolved() {
-        return this.grid.every(row => row.every(cell => cell.value !== EMPTY));
+        return this.grid.every(row =>
+            row.every(cell => cell.value !== NO_NUMBER)
+        );
     }
 
     getNextCell() {
         let best = null;
         let bestQuality = Infinity;
 
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
                 const cell = this.grid[r][c];
-                if (cell.value === EMPTY) {
+                if (cell.value === NO_NUMBER) {
                     const count = cell.candidates.count();
                     const quality = count - cell.ruleCount / 10;
 
@@ -179,22 +191,24 @@ export class SolverBoard {
             }
         }
 
-        return best.pos;
+        return best?.pos || null;
     }
 
-
     solveComplete() {
-        const solutions = new Map();  // key: board string, value: board object
+        console.log(this.toString(true));
+        return this.solve(1, 1024);
 
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+        const solutions = new Map();
+
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
                 const cell = this.grid[r][c];
-                if (cell.value !== EMPTY) continue;
+                if (cell.value !== NO_NUMBER) continue;
 
                 const candidates = Array.from(cell.candidates);
                 for (const n of candidates) {
                     const clone = this.clone();
-                    const success = clone.setCell({ r, c }, n);
+                    const success = clone.setCell(new CellIdx(r, c), n);
                     if (!success) continue;
 
                     const partialSolutions = clone.solve(1);
@@ -211,70 +225,60 @@ export class SolverBoard {
         return Array.from(solutions.values());
     }
 
-    solve(maxSolutions = 1, max_nodes = 1024) {
+    solve(maxSolutions = 1, maxNodes = 1024) {
         const solutions = [];
         let nodeCount = 0;
+        let interrupted = false;
         const start = performance.now();
 
         const backtrack = () => {
-
-            nodeCount++;
-
-            if (nodeCount > max_nodes) {
+            if (++nodeCount > maxNodes) {
+                interrupted = true;
                 return false;
             }
 
-            // 1) Do all trivial fillings; if a contradiction arises, this path is dead:
-
-            // 2) If we have a complete board, record it:
             if (this.isSolved()) {
                 solutions.push(this.clone());
-                // If we still want more, continue searching other branches:
-                if (solutions.length < maxSolutions) {
-                    return true;
-                }
-                // Otherwise, stop everything:
-                return false;
+                if (solutions.length >= maxSolutions) return false;
+                return true;
             }
 
-            // 3) Pick the next cell and try each candidate:
             const pos = this.getNextCell();
+            if (!pos) return true;
+
             const toTry = Array.from(this.getCell(pos).candidates);
             for (const n of toTry) {
                 if (this.setCell(pos, n)) {
                     const keepGoing = backtrack();
-                    this.stackPop();          // undo the guess
-                    if (!keepGoing) {
-                        // quota reached → unwind all the way out
-                        return false;
-                    }
+                    this.stackPop();
+                    if (!keepGoing) return false;
                 }
             }
 
-            // No more guesses here → backtrack further
             return true;
         };
 
         backtrack();
 
         const end = performance.now();
-        new SolverStats(solutions.length, nodeCount, end - start).print();
+        new SolverStats(solutions.length, nodeCount, end - start, interrupted).print();
         return solutions;
     }
 
 
     clone() {
-        const copy = new SolverBoard();
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            for (let c = 0; c < BOARD_SIZE; c++) {
+        const copy = new SolverBoard(this.size);
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
                 const cell = this.grid[r][c];
                 copy.grid[r][c].value = cell.value;
                 copy.grid[r][c].candidates = cell.candidates.clone();
             }
         }
-        copy.rules = this.rules; // share rule refs
+        copy.rules = this.rules;
         return copy;
     }
+
 
     toString(details = false) {
         const supportsAnsi = false;
@@ -282,7 +286,7 @@ export class SolverBoard {
         if (!details) {
             return this.grid.map(row =>
                 row.map(cell =>
-                    cell.value === EMPTY
+                    cell.value === NO_NUMBER
                         ? "."
                         : (supportsAnsi ? `\x1b[32m${cell.value}\x1b[0m` : `${cell.value}`)
                 ).join(" ")
@@ -299,7 +303,7 @@ export class SolverBoard {
         const betweenBlockVerSep = 2;
         const verticalSepFill    = " ";
         const totalWidth =
-            BOARD_SIZE * CELL_WIDTH
+            this.size * CELL_WIDTH
             + 2 * betweenBlockHorSep.length
             + 6 * withinBlockHorSep.length;
 
@@ -307,7 +311,7 @@ export class SolverBoard {
         const cellBuffers = this.grid.map(row =>
             row.map(cell => {
                 const buf = Array.from({ length: CELL_HEIGHT }, () => " ".repeat(CELL_WIDTH).split(""));
-                if (cell.value !== EMPTY) {
+                if (cell.value !== NO_NUMBER) {
                     buf[1][3] = supportsAnsi ? `\x1b[32m${cell.value}\x1b[0m` : `${cell.value}`;
                 } else {
                     for (let d = 1; d <= 9; d++) {
@@ -324,17 +328,17 @@ export class SolverBoard {
 
         // Stitch rows together with block separators
         const lines = [];
-        for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let r = 0; r < this.size; r++) {
             for (let l = 0; l < CELL_HEIGHT; l++) {
                 let line = "";
-                for (let c = 0; c < BOARD_SIZE; c++) {
+                for (let c = 0; c < this.size; c++) {
                     line += cellBuffers[r][c][l];
-                    if (c < BOARD_SIZE - 1)
+                    if (c < this.size - 1)
                         line += (c + 1) % 3 === 0 ? betweenBlockHorSep : withinBlockHorSep;
                 }
                 lines.push(line);
             }
-            if (r < BOARD_SIZE - 1) {
+            if (r < this.size - 1) {
                 const sepLines = (r + 1) % 3 === 0 ? betweenBlockVerSep : withinBlockVerSep;
                 for (let i = 0; i < sepLines; i++) {
                     lines.push(verticalSepFill.repeat(totalWidth));
@@ -355,18 +359,10 @@ export class SolverBoard {
         const maxCount = Math.max(...counts.flat());
         const maxWidth = String(maxCount).length;
 
-        // return this.grid.map(row =>
-        //     row.map(cell => {
-        //         const countStr = String(cell.ruleCount);
-        //         return countStr.padStart(maxWidth, " ");
-        //     }).join(" ")
-        // ).join("\n");
-
         console.log(this.grid.map(row =>
-            row.map(cell => {
-                const countStr = String(cell.ruleCount);
-                return countStr.padStart(maxWidth, " ");
-            }).join(" ")
+            row.map(cell =>
+                String(cell.ruleCount).padStart(maxWidth, " ")
+            ).join(" ")
         ).join("\n"));
     }
 }

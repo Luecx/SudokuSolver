@@ -1,4 +1,4 @@
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import { attachDiagonalSolverLogic} from "./rule_diagonal_solver.js";
 
 export class DiagonalRuleHandler extends RuleTypeHandler {

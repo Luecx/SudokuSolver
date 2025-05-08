@@ -1,5 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import {attachParitySolverLogic} from "./rule_parity_solver.js";
 
 export class ParityHandler extends RuleTypeHandler {

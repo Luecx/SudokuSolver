@@ -1,5 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
 import { attachArrowSolverLogic} from "./rule_arrow_solver.js";
 

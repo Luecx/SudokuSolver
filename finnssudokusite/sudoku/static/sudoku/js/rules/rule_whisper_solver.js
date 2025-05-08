@@ -1,9 +1,9 @@
-import { EMPTY } from "../solver/defs.js";
-import { Candidates } from "../solver/candidates.js";
+import { NO_NUMBER } from "../number/number.js";
+import { NumberSet } from "../number/number_set.js";
 
 export function attachWhisperSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
-        if (changedCell.value === EMPTY) return false;
+        if (changedCell.value === NO_NUMBER) return false;
         let changed = false;
 
         for (const rule of instance.rules) {
@@ -60,9 +60,9 @@ export function attachWhisperSolverLogic(instance) {
 /* === Logic === */
 
 function applyNumberConstraint(a, b) {
-    if (a.value === EMPTY || b.value !== EMPTY) return false;
+    if (a.value === NO_NUMBER || b.value !== NO_NUMBER) return false;
 
-    const allowed = new Candidates();
+    const allowed = new NumberSet();
     for (let i = 1; i <= 9; i++) {
         if (Math.abs(i - a.value) >= 5) {
             allowed.allow(i);
@@ -88,9 +88,9 @@ function applyCandidateConstraint(a, b) {
         changed = true;
     }
 
-    if (a.value !== EMPTY || b.value !== EMPTY) return changed;
+    if (a.value !== NO_NUMBER || b.value !== NO_NUMBER) return changed;
 
-    const validA = new Candidates();
+    const validA = new NumberSet();
     for (const n of a.candidates) {
         for (const m of b.candidates) {
             if (Math.abs(n - m) >= 5) {
@@ -104,7 +104,7 @@ function applyCandidateConstraint(a, b) {
     a.candidates.andEq(validA);
     changed ||= !a.candidates.equals(beforeA);
 
-    const validB = new Candidates();
+    const validB = new NumberSet();
     for (const n of b.candidates) {
         for (const m of a.candidates) {
             if (Math.abs(n - m) >= 5) {
@@ -123,6 +123,6 @@ function applyCandidateConstraint(a, b) {
 
 function checkPairPlausibility(a, b) {
     if (a.value === 5 || b.value === 5) return false;
-    if (a.value === EMPTY || b.value === EMPTY) return true;
+    if (a.value === NO_NUMBER || b.value === NO_NUMBER) return true;
     return Math.abs(a.value - b.value) >= 5;
 }

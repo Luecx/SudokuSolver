@@ -1,10 +1,10 @@
-import { EMPTY } from "../solver/defs.js";
-import { Candidates } from "../solver/candidates.js";
+import { NO_NUMBER } from "../number/number.js";
+import { NumberSet } from "../number/number_set.js";
 import { EdgeIdx } from "../region/EdgeIdx.js";
 
 export function attachXVRuleSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
-        if (changedCell.value === EMPTY) return false;
+        if (changedCell.value === NO_NUMBER) return false;
         let changed = false;
 
         for (const rule of instance.rules) {
@@ -73,10 +73,10 @@ export function attachXVRuleSolverLogic(instance) {
 /* === Enforce (rule present) === */
 
 function enforceSum(a, b, sum) {
-    if (a.value !== EMPTY && b.value === EMPTY) {
+    if (a.value !== NO_NUMBER && b.value === NO_NUMBER) {
         const target = sum - a.value;
         if (target >= 1 && target <= 9) {
-            const allowed = Candidates.fromNumber(target);
+            const allowed = NumberSet.fromNumber(target);
             const before = b.candidates.clone();
             b.candidates.andEq(allowed);
             return !b.candidates.equals(before);
@@ -84,10 +84,10 @@ function enforceSum(a, b, sum) {
         return false;
     }
 
-    if (a.value === EMPTY && b.value === EMPTY) {
+    if (a.value === NO_NUMBER && b.value === NO_NUMBER) {
         let changed = false;
 
-        const validA = new Candidates();
+        const validA = new NumberSet();
         for (const n of [...a.candidates]) {
             const other = sum - n;
             if (other >= 1 && other <= 9 && b.candidates.test(other)) {
@@ -99,7 +99,7 @@ function enforceSum(a, b, sum) {
         a.candidates.andEq(validA);
         changed ||= !a.candidates.equals(beforeA);
 
-        const validB = new Candidates();
+        const validB = new NumberSet();
         for (const n of [...b.candidates]) {
             const other = sum - n;
             if (other >= 1 && other <= 9 && a.candidates.test(other)) {
@@ -123,17 +123,17 @@ const enforceX = (a, b) => enforceSum(a, b, 10);
 /* === Deny (rule not present, but allDotsGiven === true) === */
 
 function denforceSum(a, b, sum) {
-    if (a.value !== EMPTY && b.value === EMPTY) {
-        const forbidden = Candidates.fromNumber(sum - a.value);
+    if (a.value !== NO_NUMBER && b.value === NO_NUMBER) {
+        const forbidden = NumberSet.fromNumber(sum - a.value);
         return b.removeCandidates(forbidden);
     }
 
-    if (a.value === EMPTY && b.value !== EMPTY) {
-        const forbidden = Candidates.fromNumber(sum - b.value);
+    if (a.value === NO_NUMBER && b.value !== NO_NUMBER) {
+        const forbidden = NumberSet.fromNumber(sum - b.value);
         return a.removeCandidates(forbidden);
     }
 
-    // If both are EMPTY, do nothing
+    // If both are NO_NUMBER, do nothing
     return false;
 }
 
@@ -179,6 +179,6 @@ function denforceMissingSymbols(instance, board) {
 /* === Plausibility === */
 
 function checkSumPair(a, b, sum) {
-    if (a.value === EMPTY || b.value === EMPTY) return true;
+    if (a.value === NO_NUMBER || b.value === NO_NUMBER) return true;
     return a.value + b.value === sum;
 }

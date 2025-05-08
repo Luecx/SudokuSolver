@@ -8,7 +8,7 @@ import { EventManager } from "./board_eventManager.js";
 import { BoardNumberLayer } from "./board_numberLayer.js";
 import { serializeObject, deserializeObject } from "../util/jsonify.js";
 import { CellIdx } from "../region/CellIdx.js";
-import { EMPTY } from "../solver/defs.js";
+import { NO_NUMBER } from "../number/number.js";
 
 export function createBoard(container) {
     const gridSize = 9;
@@ -199,7 +199,7 @@ export function createBoard(container) {
                 const value        = solutionCell.value;
 
                 // Treat as fixed if present in initial
-                const fixed = (initialCell.value !== EMPTY);
+                const fixed = (initialCell.value !== NO_NUMBER);
                 solutionLayer.setValue(idx, value, fixed);
             }
         }
@@ -216,7 +216,7 @@ export function createBoard(container) {
                 const idx = new CellIdx(r, c);
                 const initialCell = initial.getCell(idx);
 
-                if (initialCell.value !== EMPTY) {
+                if (initialCell.value !== NO_NUMBER) {
                     // Fixed cell
                     solutionLayer.setValue(idx, initialCell.value, true);
                     continue;

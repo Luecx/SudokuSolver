@@ -1,5 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import {attachPalindromeSolverLogic} from "./rule_palindrome_solver.js";
 
 export class PalindromeHandler extends RuleTypeHandler {

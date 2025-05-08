@@ -1,5 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import {attachXVRuleSolverLogic} from "./rule_xv_solver.js";
 
 export class XVRuleHandler extends RuleTypeHandler {

@@ -1,4 +1,5 @@
-import { EMPTY } from "../solver/defs.js";
+import { NO_NUMBER } from "../number/number.js";
+import { NumberSet } from "../number/number_set.js";
 
 export function attachPalindromeSolverLogic(instance) {
     instance.numberChanged = function (board) {
@@ -13,8 +14,8 @@ export function attachPalindromeSolverLogic(instance) {
                 const a = board.getCell(path[i]);
                 const b = board.getCell(path[n - 1 - i]);
 
-                changed ||= enforceSymmetry(a, b);
-                changed ||= enforceSymmetry(b, a);
+                changed ||= enforceSymmetry(a, b, board.size);
+                changed ||= enforceSymmetry(b, a, board.size);
             }
         }
 
@@ -33,16 +34,15 @@ export function attachPalindromeSolverLogic(instance) {
                 const a = board.getCell(path[i]);
                 const b = board.getCell(path[n - 1 - i]);
 
-                // Restrict to mutual candidates
                 const intersection = a.candidates.and(b.candidates);
-                const beforeA = a.candidates.clone();
-                const beforeB = b.candidates.clone();
+                const beforeA = a.candidates.raw();
+                const beforeB = b.candidates.raw();
 
                 a.candidates.andEq(intersection);
                 b.candidates.andEq(intersection);
 
-                changed ||= !a.candidates.equals(beforeA);
-                changed ||= !b.candidates.equals(beforeB);
+                changed ||= a.candidates.raw() !== beforeA;
+                changed ||= b.candidates.raw() !== beforeB;
             }
         }
 
@@ -59,7 +59,7 @@ export function attachPalindromeSolverLogic(instance) {
                 const a = board.getCell(path[i]);
                 const b = board.getCell(path[n - 1 - i]);
 
-                if (a.value !== EMPTY && b.value !== EMPTY && a.value !== b.value) {
+                if (a.value !== NO_NUMBER && b.value !== NO_NUMBER && a.value !== b.value) {
                     return false;
                 }
             }
@@ -69,14 +69,15 @@ export function attachPalindromeSolverLogic(instance) {
     };
 }
 
-/* === Helpers === */
+/* === Helper === */
 
-function enforceSymmetry(a, b) {
-    if (a.value === EMPTY || b.value !== EMPTY) return false;
+function enforceSymmetry(a, b, size) {
+    if (a.value === NO_NUMBER || b.value !== NO_NUMBER) return false;
 
-    if (!b.candidates.test(a.value)) return false;
+    const allowed = new NumberSet(size);
+    allowed.allow(a.value);
 
-    const old = b.candidates.clone();
-    b.candidates.andEq(a.candidates); // reduce b to only match a.value
-    return !b.candidates.equals(old);
+    const before = b.candidates.raw();
+    b.candidates.andEq(allowed);
+    return b.candidates.raw() !== before;
 }

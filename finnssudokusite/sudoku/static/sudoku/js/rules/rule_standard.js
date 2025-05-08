@@ -1,4 +1,4 @@
-import { RuleTypeHandler } from "./rule.js";
+import { RuleTypeHandler } from "./rule_handler.js";
 import {attachStandardSolverLogic} from "./rule_standard_solver.js";
 
 export class StandardRuleHandler extends RuleTypeHandler {
