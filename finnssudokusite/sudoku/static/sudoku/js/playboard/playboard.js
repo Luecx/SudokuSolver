@@ -21,7 +21,7 @@ export class PlayBoard {
 
         setTimeout(() => {
             this.init();
-        }, 0);        
+        }, 250); // wait till everything initializes before redndering the board
     }
 
     init() {
