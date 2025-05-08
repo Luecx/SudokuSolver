@@ -34,7 +34,9 @@ export class SelectionManager {
         if (target === RegionType.CELLS) {
             return this.board.cellLayer.selected_region;
         }
-        if (target === RegionType.EDGES || target === RegionType.CORNERS) {
+
+        if (target === RegionType.EDGES ||target === RegionType.HOR_EDGES 
+            || target === RegionType.VER_EDGES || target === RegionType.CORNERS) {
             return this.board.hintLayer.selected_region;
         }
         if (target === RegionType.ROWCOL) {
@@ -51,8 +53,12 @@ export class SelectionManager {
         if (target === RegionType.CELLS && region.type === RegionType.CELLS) {
             this.board.cellLayer.selected_region = region;
         }
-        if ((target === RegionType.EDGES || target === RegionType.CORNERS) &&
-            (region.type === RegionType.EDGES || region.type === RegionType.CORNERS)) {
+
+        let isTargetEdge = target === RegionType.EDGES || target === RegionType.HOR_EDGES || target === RegionType.VER_EDGES;
+        let isRegionTypeEdge = region.type === RegionType.EDGES || region.type === RegionType.HOR_EDGES || region.type === RegionType.VER_EDGES;
+        
+        if ((isTargetEdge || target === RegionType.CORNERS) &&
+            (isRegionTypeEdge || region.type === RegionType.CORNERS)) {
             this.board.hintLayer.selected_region = region;
         }
         if (target === RegionType.ROWCOL && region.type === RegionType.ROWCOL) {
@@ -72,6 +78,8 @@ export class SelectionManager {
             this.board.emitEvent("ev_selection_ended",
                 this.selectionConfig.target === RegionType.CELLS   ? this.board.cellLayer.selected_region :
                 this.selectionConfig.target === RegionType.EDGES   ? this.board.hintLayer.selected_region :
+                this.selectionConfig.target === RegionType.HOR_EDGES ? this.board.hintLayer.selected_region :
+                this.selectionConfig.target === RegionType.VER_EDGES ? this.board.hintLayer.selected_region :
                 this.selectionConfig.target === RegionType.CORNERS ? this.board.hintLayer.selected_region :
                 this.selectionConfig.target === RegionType.ROWCOL  ? this.board.hintRCLayer.selected_region : null
             );
@@ -96,6 +104,8 @@ export class SelectionManager {
         const target = config.target;
 
         const isHint = target === RegionType.EDGES
+            || target === RegionType.HOR_EDGES
+            || target === RegionType.VER_EDGES 
             || target === RegionType.CORNERS;
 
         const isRC = target === RegionType.ROWCOL;
@@ -152,6 +162,8 @@ export class SelectionManager {
 
         if (
             this.selectionConfig?.target === RegionType.EDGES ||
+            this.selectionConfig?.target === RegionType.HOR_EDGES ||
+            this.selectionConfig?.target === RegionType.VER_EDGES ||
             this.selectionConfig?.target === RegionType.CORNERS
         ) {
             this.board.hintLayer.clearSelection();

@@ -128,23 +128,42 @@ export class HintDotLayer {
         if (!this.showing || !this.config || this.config.target === RegionType.NONE) return;
 
         const target = this.config.target;
-        if (target === RegionType.EDGES) {
-            this._renderEdges();
+        if (target === RegionType.EDGES || target === RegionType.HOR_EDGES || target === RegionType.VER_EDGES) {
+            this._renderEdges(target);
         } else if (target === RegionType.CORNERS) {
             this._renderCorners();
         }
     }
 
-    _renderEdges() {
+    _renderEdges(regionType) {
         const size = this.gridSize;
         const cellSize = this.renderer.getCellSize();
 
+        let directions = [];
+        
+        // Handle all possible region types explicitly
+        switch (regionType) {
+            case RegionType.HOR_EDGES:
+                directions = [[1, 0]];
+                break;
+            case RegionType.VER_EDGES:
+                directions = [[0, 1]];
+                break;
+            default:
+                directions = [[1, 0], [0, 1]];  // both
+                break;
+        }
+
+        // Rest of your function remains the same...
         for (let r = 0; r < size; r++) {
             for (let c = 0; c < size; c++) {
-                for (const [nr, nc] of [[r + 1, c], [r, c + 1]]) {
+                for (const [dr, dc] of directions) {
+                    const nr = r + dr;
+                    const nc = c + dc;
+                    
                     if (nr >= size || nc >= size) continue;
 
-                    const idx = new RegionClassMap[RegionType.EDGES](r, c, nr, nc);
+                    const idx = new RegionClassMap[regionType](r, c, nr, nc);
                     if (this.excluded_region.has(idx)) continue;
 
                     const a = this.renderer.getCellTopLeft(r, c);

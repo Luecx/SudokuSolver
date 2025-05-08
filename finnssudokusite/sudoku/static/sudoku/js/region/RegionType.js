@@ -15,6 +15,10 @@ export const RegionType = {
     /** Region composed of EdgeIdx items (edges between cells) */
     EDGES: 'edges',
 
+    HOR_EDGES: 'hor_edges',
+
+    VER_EDGES: 'ver_edges',
+
     /** Region composed of CornerIdx items (junctions between 4 cells) */
     CORNERS: 'corners',
 
