@@ -21,9 +21,7 @@ export class PlayBoard {
 
         setTimeout(() => {
             this.init();
-        }, 0);
-
-        
+        }, 0);        
     }
 
     init() {
