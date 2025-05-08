@@ -30,6 +30,7 @@ export class SolverCell {
     }
 
     removeCandidates(remove_set) {
+        if (this.value !== NO_NUMBER) return false;
         // return true if candidates  changed
         const before = this.candidates.raw();
         this.candidates.andEq(remove_set.not());
@@ -38,6 +39,7 @@ export class SolverCell {
     }
 
     onlyAllowCandidates(allowed_set) {
+        if (this.value !== NO_NUMBER) return false;
         // return true if candidates changed
         const before = this.candidates.raw();
         this.candidates.andEq(allowed_set);
@@ -46,6 +48,7 @@ export class SolverCell {
     }
 
     removeCandidate(number) {
+        if (this.value !== NO_NUMBER) return false;
         return this.removeCandidates(NumberSet.fromNumber(number));
     }
 }

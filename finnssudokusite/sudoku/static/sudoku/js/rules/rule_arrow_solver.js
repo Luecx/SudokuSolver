@@ -1,223 +1,3 @@
-// import { NO_NUMBER } from "../number/number.js";
-// import { NumberSet } from "../number/number_set.js";
-//
-// export function attachArrowSolverLogic(instance) {
-//     function getBaseValue(cells) {
-//         if (cells.length === 1) {
-//             return cells[0].value;
-//         } else if (cells.length === 2) {
-//             const [a, b] = sortBaseCells(cells);
-//             if (a.value !== NO_NUMBER && b.value !== NO_NUMBER) {
-//                 return a.value * 10 + b.value;
-//             }
-//         }
-//         return null;
-//     }
-//
-//     function sortBaseCells(cells) {
-//         return cells.slice().sort((a, b) => {
-//             if (a.pos.r !== b.pos.r) return a.pos.r - b.pos.r;
-//             return a.pos.c - b.pos.c;
-//         });
-//     }
-//
-//     function sumFilled(cells) {
-//         return cells
-//             .filter(c => c.value !== NO_NUMBER)
-//             .reduce((sum, c) => sum + c.value, 0);
-//     }
-//
-//     function allFilled(cells) {
-//         return cells.every(c => c.value !== NO_NUMBER);
-//     }
-//
-//     function sumBoundsWithRepeats(count, size) {
-//         return {
-//             min: count * 1,
-//             max: count * size
-//         };
-//     }
-//
-//     function applyBaseValueToPath(baseValue, pathCells, filledSum, size) {
-//         const empty = pathCells.filter(c => c.value === NO_NUMBER);
-//         const remaining = baseValue - filledSum;
-//         const { min, max } = sumBoundsWithRepeats(empty.length, size);
-//         let changed = false;
-//
-//         if (remaining < min || remaining > max) {
-//             for (const c of empty) {
-//                 const prev = c.candidates.raw();
-//                 c.candidates.clear();
-//                 if (c.candidates.raw() !== prev) changed = true;
-//             }
-//         } else {
-//             for (const c of empty) {
-//                 const prev = c.candidates.raw();
-//                 for (let d = 1; d <= size; ++d) {
-//                     if (c.candidates.test(d) && d > remaining) {
-//                         c.candidates.disallow(d);
-//                     }
-//                 }
-//                 if (c.candidates.raw() !== prev) changed = true;
-//             }
-//         }
-//         return changed;
-//     }
-//
-//     function applyFilledPathToBase(baseCells, total, size) {
-//         let changed = false;
-//
-//         if (baseCells.length === 1) {
-//             const cell = baseCells[0];
-//             const prev = cell.candidates.raw();
-//             for (let d = 1; d <= size; ++d) {
-//                 if (cell.candidates.test(d) && d !== total) {
-//                     cell.candidates.disallow(d);
-//                 }
-//             }
-//             if (cell.candidates.raw() !== prev) changed = true;
-//         }
-//
-//         if (baseCells.length === 2) {
-//             const [a, b] = sortBaseCells(baseCells);
-//             const options = [];
-//
-//             for (let x = 1; x <= size; ++x) {
-//                 for (let y = 0; y <= size; ++y) {
-//                     if (10 * x + y === total) options.push([x, y]);
-//                 }
-//             }
-//
-//             const allowedA = new Set(options.map(opt => opt[0]));
-//             const allowedB = new Set(options.map(opt => opt[1]));
-//
-//             const prevA = a.candidates.raw();
-//             const prevB = b.candidates.raw();
-//
-//             for (let d = 1; d <= size; ++d) {
-//                 if (a.candidates.test(d) && !allowedA.has(d)) a.candidates.disallow(d);
-//                 if (b.candidates.test(d) && !allowedB.has(d)) b.candidates.disallow(d);
-//             }
-//
-//             if (a.candidates.raw() !== prevA) changed = true;
-//             if (b.candidates.raw() !== prevB) changed = true;
-//         }
-//
-//         return changed;
-//     }
-//
-//     function applyPartialPathBoundsToBase(baseCells, filledSum, emptyCount, size) {
-//         const { min: minPathSum, max: maxPathSum } = sumBoundsWithRepeats(emptyCount, size);
-//         const totalMin = filledSum + minPathSum;
-//         const totalMax = filledSum + maxPathSum;
-//         let changed = false;
-//
-//         if (baseCells.length === 1) {
-//             const cell = baseCells[0];
-//             const prev = cell.candidates.raw();
-//             for (let d = 1; d <= size; ++d) {
-//                 if (cell.candidates.test(d) && (d < totalMin || d > totalMax)) {
-//                     cell.candidates.disallow(d);
-//                 }
-//             }
-//             if (cell.candidates.raw() !== prev) changed = true;
-//         }
-//
-//         if (baseCells.length === 2) {
-//             const [a, b] = sortBaseCells(baseCells);
-//             const allowedA = new Set();
-//             const allowedB = new Set();
-//
-//             for (let x = 1; x <= size; ++x) {
-//                 for (let y = 0; y <= size; ++y) {
-//                     if (10 * x + y >= totalMin && 10 * x + y <= totalMax) {
-//                         allowedA.add(x);
-//                         allowedB.add(y);
-//                     }
-//                 }
-//             }
-//
-//             const prevA = a.candidates.raw();
-//             const prevB = b.candidates.raw();
-//
-//             for (let d = 1; d <= size; ++d) {
-//                 if (a.candidates.test(d) && !allowedA.has(d)) a.candidates.disallow(d);
-//                 if (b.candidates.test(d) && !allowedB.has(d)) b.candidates.disallow(d);
-//             }
-//
-//             if (a.candidates.raw() !== prevA) changed = true;
-//             if (b.candidates.raw() !== prevB) changed = true;
-//         }
-//
-//         return changed;
-//     }
-//
-//     function checkArrow(rule, board) {
-//         const baseRegion = rule.fields?.base;
-//         const pathRegion = rule.fields?.path;
-//         if (!baseRegion || !pathRegion || baseRegion.size() === 0 || pathRegion.size() === 0) return false;
-//
-//         const size = board.size;
-//         const baseCells = baseRegion.items.map(pos => board.getCell(pos));
-//         const pathCells = pathRegion.items.map(pos => board.getCell(pos));
-//         const filledPathSum = sumFilled(pathCells);
-//         const baseValue = getBaseValue(baseCells);
-//         const emptyPath = pathCells.filter(c => c.value === NO_NUMBER);
-//
-//         let changed = false;
-//
-//         if (baseValue != null && baseValue > 0) {
-//             changed ||= applyBaseValueToPath(baseValue, pathCells, filledPathSum, size);
-//         }
-//
-//         if (allFilled(pathCells)) {
-//             changed ||= applyFilledPathToBase(baseCells, filledPathSum, size);
-//         } else {
-//             changed ||= applyPartialPathBoundsToBase(baseCells, filledPathSum, emptyPath.length, size);
-//         }
-//
-//         return changed;
-//     }
-//
-//     instance.numberChanged = function (board, changedCell) {
-//         let changed = false;
-//         for (const rule of instance.rules) {
-//             const base = rule.fields?.base;
-//             const path = rule.fields?.path;
-//             if (base?.has?.(changedCell.pos) || path?.has?.(changedCell.pos)) {
-//                 if (checkArrow(rule, board)) changed = true;
-//             }
-//         }
-//         return changed;
-//     };
-//
-//     instance.candidatesChanged = function (board) {
-//         let changed = false;
-//         for (const rule of instance.rules) {
-//             if (checkArrow(rule, board)) changed = true;
-//         }
-//         return changed;
-//     };
-//
-//     instance.checkPlausibility = function (board) {
-//         for (const rule of instance.rules) {
-//             const baseRegion = rule.fields?.base;
-//             const pathRegion = rule.fields?.path;
-//             if (!baseRegion || !pathRegion || baseRegion.size() === 0 || pathRegion.size() === 0) continue;
-//
-//             const baseCells = baseRegion.items.map(pos => board.getCell(pos));
-//             const pathCells = pathRegion.items.map(pos => board.getCell(pos));
-//             const baseValue = getBaseValue(baseCells);
-//
-//             if (baseValue === null) continue;
-//
-//             const sum = sumFilled(pathCells);
-//             if (sum !== baseValue) return false;
-//         }
-//
-//         return true;
-//     };
-// }
 import { NO_NUMBER } from "../number/number.js";
 import { NumberSet } from "../number/number_set.js";
 
@@ -235,7 +15,7 @@ export function attachArrowSolverLogic(instance) {
 
         // we first need to estimate the possible range of numbers in the path
         let lb = board.lowerbound(path);
-        let up = board.upperbound(path);
+        let ub = board.upperbound(path);
 
         // next, we need to differentiate between the amount of base cells
         if (base.items.length === 1) {
@@ -248,7 +28,7 @@ export function attachArrowSolverLogic(instance) {
             let cands1 = new NumberSet(board.size);
             let cands2 = new NumberSet(board.size);
 
-            for (let i = lb, j = up; i <= j; i++) {
+            for (let i = lb; i <= ub; i++) {
                 if (i > 10)
                     cands1.allow(Math.floor(i / 10));
                 if (i % 10 > 0)
@@ -257,6 +37,7 @@ export function attachArrowSolverLogic(instance) {
 
             changed |= cell1.onlyAllowCandidates(cands1);
             changed |= cell2.onlyAllowCandidates(cands2);
+
         }
         return changed
     }
@@ -299,8 +80,6 @@ export function attachArrowSolverLogic(instance) {
         // now we need to determine the possible numbers in the path
         let [lb_path, ub_path] = bounds_path(board, path);
 
-        console.log(lb, ub, lb_path, ub_path);
-
         // go through each non empty cell in the path
         for (let idx of board.empty(path).items) {
             let cell = board.getCell(idx);
@@ -309,15 +88,15 @@ export function attachArrowSolverLogic(instance) {
             let lb_rest = lb_path - cell.getCandidates().lowest();
             let ub_rest = ub_path - cell.getCandidates().highest();
 
-            // the lb of the current cell must be greater than the difference of lb base to lb rest
-            let _lb = lb - lb_rest;
-            let _ub = ub - ub_rest;
+            let _up = ub - lb_rest;
+            let _lb = lb - ub_rest;
 
             _lb = Math.max(_lb, 1);
-            _ub = Math.min(_ub, 9);
+            _up = Math.min(_up, 9);
 
-            changed |= cell.onlyAllowCandidates(NumberSet.greaterEqThan(_lb, 9)
-                                           .and(NumberSet.lessEqThan   (_ub, 9)));
+            let mask = NumberSet.greaterEqThan(_lb, 9).and(NumberSet.lessEqThan(_up, 9));
+
+            changed |= cell.onlyAllowCandidates(mask);
         }
         return changed;
     }
@@ -333,9 +112,6 @@ export function attachArrowSolverLogic(instance) {
             if (base.has(changedCell.pos) || path.has(changedCell.pos)) {
                 changed |= determine_base_options(board, base, path);
                 changed |= determine_path_options(board, base, path);
-                for (let i = 0; i < 5; i++) {
-                    console.log(i);
-                }
             }
         }
         return changed;

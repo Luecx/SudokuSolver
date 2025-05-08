@@ -179,7 +179,7 @@ export class SolverBoard {
                 const cell = this.grid[r][c];
                 if (cell.value === NO_NUMBER) {
                     const count = cell.candidates.count();
-                    const quality = count - cell.ruleCount / 10;
+                    const quality = count - 2 * cell.ruleCount;
 
                     if (count <= 2) return cell.pos;
 
@@ -196,7 +196,7 @@ export class SolverBoard {
 
     solveComplete() {
         console.log(this.toString(true));
-        return this.solve(1, 1024);
+        return this.solve(1, 16384);
 
         const solutions = new Map();
 
@@ -244,6 +244,7 @@ export class SolverBoard {
             }
 
             const pos = this.getNextCell();
+            console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
             if (!pos) return true;
 
             const toTry = Array.from(this.getCell(pos).candidates);
