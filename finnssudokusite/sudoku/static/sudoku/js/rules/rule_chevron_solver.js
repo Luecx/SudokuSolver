@@ -100,23 +100,23 @@ function enforceGreaterLess(cell, neighbor, symbol) {
         // Current cell must be < neighbor
         if (cell.value !== NO_NUMBER) {
             // neighbor must be > current value
-            changed ||= neighbor.onlyAllowCandidates(
+            changed |= neighbor.onlyAllowCandidates(
                 NumberSet.greaterThan(cell.value, cell.size)
             );
         } else if (neighbor.value !== NO_NUMBER) {
             // Current cell must be < neighbor value
-            changed ||= cell.onlyAllowCandidates(
+            changed |= cell.onlyAllowCandidates(
                 NumberSet.lessThan(neighbor.value, cell.size)
             );
         } else {
             // Both empty - mutual restriction
             const minCell = candidates.lowest();
-            changed ||= neighbor.onlyAllowCandidates(
+            changed |= neighbor.onlyAllowCandidates(
                 NumberSet.greaterThan(minCell - 1, cell.size)
             );
 
             const maxNeighbor = neighborCandidates.highest();
-            changed ||= cell.onlyAllowCandidates(
+            changed |= cell.onlyAllowCandidates(
                 NumberSet.lessThan(maxNeighbor + 1, cell.size)
             );
         }
@@ -125,23 +125,23 @@ function enforceGreaterLess(cell, neighbor, symbol) {
         // Current cell must be > neighbor
         if (cell.value !== NO_NUMBER) {
             // Neighbor must be < current value
-            changed ||= neighbor.onlyAllowCandidates(
+            changed |= neighbor.onlyAllowCandidates(
                 NumberSet.lessThan(cell.value, cell.size)
             );
         } else if (neighbor.value !== NO_NUMBER) {
             // Current cell must be > neighbor value
-            changed ||= cell.onlyAllowCandidates(
+            changed |= cell.onlyAllowCandidates(
                 NumberSet.greaterThan(neighbor.value, cell.size)
             );
         } else {
             // Both empty - mutual restriction
             const maxCell = candidates.highest();
-            changed ||= neighbor.onlyAllowCandidates(
+            changed |= neighbor.onlyAllowCandidates(
                 NumberSet.lessThan(maxCell + 1, cell.size)
             );
 
             const minNeighbor = neighborCandidates.lowest();
-            changed ||= cell.onlyAllowCandidates(
+            changed |= cell.onlyAllowCandidates(
                 NumberSet.greaterThan(minNeighbor - 1, cell.size)
             );
         }
