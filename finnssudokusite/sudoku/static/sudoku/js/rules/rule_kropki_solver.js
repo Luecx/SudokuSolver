@@ -87,26 +87,23 @@ function applyNumberConstraint(a, b, isWhite, size) {
 function applyCandidateConstraint(a, b, isWhite, size) {
     if (a.value !== NO_NUMBER || b.value !== NO_NUMBER) return false;
 
-    const allowed = new NumberSet(size);
+    const allowed = a.candidates.clone();
 
     for (let n = 1; n <= size; ++n) {
         if (!a.candidates.test(n)) continue;
         let valid = false;
 
         if (isWhite) {
-            valid = (n > 1 && b.candidates.test(n - 1)) || (n < size && b.candidates.test(n + 1));
+            valid = (n > 1    && b.candidates.test(n - 1))
+                 || (n < size && b.candidates.test(n + 1));
         } else {
-            valid =
-                (n % 2 === 0 && n / 2 >= 1 && b.candidates.test(n / 2)) ||
-                (n * 2 <= size && b.candidates.test(n * 2));
+            valid = (n % 2 === 0    && n / 2 >= 1 && b.candidates.test(n / 2)) ||
+                    (n * 2 <= size  &&               b.candidates.test(n * 2));
         }
-
         if (!valid) allowed.disallow(n);
     }
 
-    const before = a.candidates.raw();
-    a.candidates.andEq(allowed);
-    return a.candidates.raw() !== before;
+    return a.onlyAllowCandidates(allowed);
 }
 
 function checkPairPlausibility(a, b, isWhite) {

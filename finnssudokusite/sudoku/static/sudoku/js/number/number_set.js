@@ -221,6 +221,28 @@ export class NumberSet {
         this.mask ^= other.mask;
     }
 
+    /**
+     * Returns a new NumberSet with all allowed digits shifted left (incremented by 1).
+     * Digits exceeding `max` are discarded.
+     * @returns {NumberSet}
+     */
+    shiftLeft() {
+        let shifted = (this.mask << 1) & this.mask_all;
+        return new NumberSet(this.max, shifted);
+    }
+
+    /**
+     * Returns a new NumberSet with all allowed digits shifted right (decremented by 1).
+     * Digits below 1 are discarded.
+     * @returns {NumberSet}
+     */
+    shiftRight() {
+        // mask_all shifted right by 1, then mask
+        let shifted = (this.mask >> 1) & this.mask_all;
+        return new NumberSet(this.max, shifted);
+    }
+
+
     #validate(n) {
         if (!Number.isInteger(n) || n < this.min || n > this.max) {
             throw new RangeError(`Digit must be between ${this.min} and ${this.max}`);

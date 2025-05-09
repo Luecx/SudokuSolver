@@ -75,6 +75,15 @@ export class InputKeyboard {
     }
 
     _handleKeyDown(event) {
+        const target = event.target;
+        const isTypingField = (
+            target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable
+        );
+
+        if (isTypingField) return; // Don't handle keys while typing in inputs
+
         if (event.code === 'Space') {
             this.cycleMode();
             event.preventDefault();
@@ -93,6 +102,7 @@ export class InputKeyboard {
             event.preventDefault();
         }
     }
+
 
     setEnabled(enabled) {
         if (enabled && !this.enabled) {

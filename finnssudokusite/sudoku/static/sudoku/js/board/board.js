@@ -79,26 +79,34 @@ export function createBoard(container) {
 
         // ───  CONTENT-LAYER APIs ────────────────────────────────────────
         // single-cell
-        setValue:       (idx,value,fixed=false)    => numberLayer.setValue(idx,value,fixed),
-        setCandidate:   (idx,c,centered=false)     => numberLayer.setCandidate(idx,c,centered),
-        unsetCandidate: (idx,c,centered=false)     => numberLayer.unsetCandidate(idx,c,centered),
-        toggleCandidate:(idx,c,centered=false)     => numberLayer.toggleCandidate(idx,c,centered),
-        setColor:       (idx,col)                  => numberLayer.setColor(idx,col),
-        unsetColor:     (idx,col)                  => numberLayer.unsetColor(idx,col),
-        toggleColor:    (idx,col,force=false)      => numberLayer.toggleColor(idx,col,force),
+        // setValue:       (idx,value,fixed=false)    => numberLayer.setValue(idx,value,fixed),
+        // setCandidate:   (idx,c,centered=false)     => numberLayer.setCandidate(idx,c,centered),
+        // unsetCandidate: (idx,c,centered=false)     => numberLayer.unsetCandidate(idx,c,centered),
+        // toggleCandidate:(idx,c,centered=false)     => numberLayer.toggleCandidate(idx,c,centered),
+        // setColor:       (idx,col)                  => numberLayer.setColor(idx,col),
+        // unsetColor:     (idx,col)                  => numberLayer.unsetColor(idx,col),
+        // toggleColor:    (idx,col,force=false)      => numberLayer.toggleColor(idx,col,force),
 
         // region‐wide
-        setValues:       (region,val,fixed=false)  => numberLayer.setValues(region,val,fixed),
-        unsetValues:     (region,               )  => numberLayer.unsetValues(region),
-        toggleValues:    (region,val,fixed=false)  => numberLayer.toggleValues(region,val,fixed),
+        setValues:       (region,val,fixed=false)  => {numberLayer.setValues(region,val,fixed);
+                                                       eventManager.emit("ev_number_changed", region)},
+        unsetValues:     (region,               )  => {numberLayer.unsetValues(region);
+                                                       eventManager.emit("ev_number_changed", region)},
+        toggleValues:    (region,val,fixed=false)  => {numberLayer.toggleValues(region,val,fixed);
+                                                       eventManager.emit("ev_number_changed", region)},
+        setCandidates:   (region,c,centered=false) => {numberLayer.setCandidates(region,c,centered);
+                                                       eventManager.emit("ev_candidates_changed", region)},
+        unsetCandidates: (region,c,centered=false) => {numberLayer.unsetCandidates(region,c,centered);
+                                                       eventManager.emit("ev_candidates_changed", region)},
+        toggleCandidates:(region,c,centered=false) => {numberLayer.toggleCandidates(region,c,centered);
+                                                       eventManager.emit("ev_candidates_changed", region)},
+        setColors:       (region,col)              => {numberLayer.setColors(region,col);
+                                                       eventManager.emit("ev_color_changed", region)},
+        unsetColors:     (region,col)              => {numberLayer.unsetColors(region,col);
+                                                       eventManager.emit("ev_color_changed", region)},
+        toggleColors:    (region,col,force=false)  => {numberLayer.toggleColors(region,col,force);
+                                                       eventManager.emit("ev_color_changed", region)},
 
-        setCandidates:   (region,c,centered=false) => numberLayer.setCandidates(region,c,centered),
-        unsetCandidates: (region,c,centered=false) => numberLayer.unsetCandidates(region,c,centered),
-        toggleCandidates:(region,c,centered=false) => numberLayer.toggleCandidates(region,c,centered),
-
-        setColors:       (region,col)              => numberLayer.setColors(region,col),
-        unsetColors:     (region,col)              => numberLayer.unsetColors(region,col),
-        toggleColors:    (region,col,force=false)  => numberLayer.toggleColors(region,col,force),
         // ----─  CONTENT-LAYER APIs END ────────────────────────────────────────
         resetBoard,
         saveBoard,
@@ -152,27 +160,22 @@ export function createBoard(container) {
     }
 
     function saveBoard() {
-        let solverBoard = numberLayer.getSolverBoard();
-
         return serializeObject({
-            // fixedCells: contentLayer.saveFixedCells(),
+            fixedCells: numberLayer.saveFixedCells(),
             rules: ruleManager.saveRules()
         });
     }
 
     function loadBoard(json) {
 
-        console.log("data");
-
         let dat = deserializeObject(json);
+        console.log("loading board", dat);
+        console.log(json);
 
-        console.log(dat);
         this.resetBoard();
-
-        // if (data.board.fixedCells) {
-        //
-        //     contentLayer.loadFixedCells(data.board.fixedCells);
-        // }
+        if (dat.fixedCells) {
+            numberLayer.loadFixedCells(dat.fixedCells);
+        }
 
         if (dat.rules) {
             ruleManager.loadRules(dat.rules);
