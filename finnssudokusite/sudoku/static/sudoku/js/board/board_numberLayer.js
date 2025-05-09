@@ -459,7 +459,9 @@ export class BoardNumberLayer {
 
     loadFixedCells(data) {
         for (const { r, c, value } of data) {
-            this.setValue(r, c, value, true);
+            console.log("loadFixedCells", r, c, value);
+            let cell_idx = new CellIdx(r, c);
+            this.setValue(cell_idx, value, true);
         }
     }
 }
