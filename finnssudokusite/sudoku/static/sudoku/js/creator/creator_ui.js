@@ -1,7 +1,5 @@
 import { createBoard } from "../board/board.js";
 import { CreatorRuleManager } from "./creator_rule_manager.js";
-import { SelectionMode } from "../board/board_selectionEnums.js";
-import { RegionType } from "../region/RegionType.js";
 import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../playboard/input_keyboard.js";
 import { InputMode } from "../playboard/input_constants.js";
@@ -11,7 +9,7 @@ class Creator {
         setTimeout(() => {
             const container = document.querySelector(".board-container");
             this.init(container);
-        }, 250); // wait till everything initializes before redndering the board
+        }, 250);
     }
 
     init(container) {
@@ -24,9 +22,12 @@ class Creator {
         this.keyboard = new InputKeyboard(this.board, [InputMode.NumberFixed]);
         this.rule_manager = new CreatorRuleManager(this.board);
 
+        this.analysisUnlocked = false;
+        this.completeAnalysisDone = false;
+
         this.initTestButton();
         this.initSaveButton();
-        this.initAnalysisButton();
+        this.initAnalysisButtons();
     }
 
     initTestButton() {
@@ -73,64 +74,148 @@ class Creator {
         });
     }
 
-    initAnalysisButton() {
-        const startBtn = document.getElementById("start-analysis-btn");
+    initAnalysisButtons() {
+        const normalBtn = document.getElementById("start-normal-analysis-btn");
+        const completeBtn = document.getElementById("start-complete-analysis-btn");
         const clearBtn = document.getElementById("clear-analysis-btn");
         const toggleDefinite = document.getElementById("toggle-definite");
         const toggleUncertain = document.getElementById("toggle-uncertain");
         const alertBox = document.getElementById("alertBox");
         const solutionList = document.getElementById("solutionList");
 
-        if (!startBtn || !alertBox || !solutionList) return;
-
         let selectedIndex = null;
         let solutionsRef = [];
         let showDefinite = true;
         let showUncertain = true;
 
-        const setButtonState = (el, enabled) => {
-            el.disabled = !enabled;
-        };
+        const setButtonState = (el, enabled) => el && (el.disabled = !enabled);
 
         const clearSelectedListItem = () => {
             selectedIndex = null;
-            const items = solutionList.querySelectorAll(".list-group-item");
-            items.forEach(item => item.classList.remove("active"));
-            if (this.board.hideSolution) {
-                this.board.hideSolution();
-            }
+            solutionList.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
+            this.board.hideSolution?.();
         };
 
-        setButtonState(clearBtn, false);
-        setButtonState(toggleDefinite, false);
-        setButtonState(toggleUncertain, false);
-
-        startBtn.addEventListener("click", async () => {
+        const runNormalAnalysis = () => {
             const solverboard = this.board.getSolverBoard();
+            solutionList.innerHTML = "";
+            clearSelectedListItem();
+            setButtonState(toggleDefinite, false);
+            setButtonState(toggleUncertain, false);
+            setButtonState(completeBtn, false);
+            setButtonState(clearBtn, true);
+            this.keyboard.setEnabled(false);
+            this.analysisUnlocked = false;
+            this.completeAnalysisDone = false;
 
+            // Show initial loading bar
             alertBox.innerHTML = `
-            <div class="alert alert-warning show" role="alert">
-                <div class="progress mb-2" style="height: 28px;">
-                    <div id="loading-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%;">
-                        <span id="loading-text">Analyzing...</span>
-                    </div>
-                </div>
-                <div id="alertContent"></div>
-            </div>
-        `;
+		<div class="alert alert-warning show" role="alert">
+			<div class="progress mb-2" style="height: 28px;">
+				<div id="loading-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%;">
+					<span id="loading-text">Analyzing...</span>
+				</div>
+			</div>
+			<div id="alertContent"></div>
+		</div>
+	`;
+
+            setTimeout(() => {
+                const { solutions, stats } = solverboard.solve(17, 16384);
+                const wrapper = alertBox.querySelector(".alert");
+                const bar = alertBox.querySelector(".progress-bar");
+                const content = alertBox.querySelector("#alertContent");
+
+                const displaySolutions = (solutions) => {
+                    solutionsRef = solutions;
+                    solutions.forEach((solution, i) => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item";
+                        li.textContent = `Solution ${i + 1}`;
+                        li.addEventListener("click", () => {
+                            if (selectedIndex === i) {
+                                li.classList.remove("active");
+                                selectedIndex = null;
+                                this.board.hideSolution();
+                            } else {
+                                solutionList.querySelectorAll(".list-group-item").forEach(item => item.classList.remove("active"));
+                                li.classList.add("active");
+                                selectedIndex = i;
+                                this.board.showSolution(solverboard, solution);
+                            }
+                        });
+                        solutionList.appendChild(li);
+                    });
+                };
+
+                if (solutions.length === 0 && !stats.interrupted) {
+                    wrapper.classList.replace("alert-warning", "alert-danger");
+                    bar.classList.replace("bg-warning", "bg-danger");
+                    bar.textContent = "No solution";
+                    content.innerHTML = `<p>❌ No solution exists for this puzzle.</p>`;
+                } else if (solutions.length === 0 && stats.interrupted) {
+                    wrapper.classList.replace("alert-warning", "alert-danger");
+                    bar.classList.replace("bg-warning", "bg-danger");
+                    bar.textContent = "Search interrupted";
+                    content.innerHTML = `<p>❌ Branching factor too high. Add more constraints.</p>`;
+                } else if (solutions.length === 1 && !stats.interrupted) {
+                    wrapper.classList.replace("alert-warning", "alert-success");
+                    bar.classList.replace("bg-warning", "bg-success");
+                    bar.textContent = "1 solution";
+                    content.innerHTML = `<p>✅ Exactly one solution exists with certainty.</p>`;
+                    this.board.showSolution(solverboard, solutions[0]);
+                    displaySolutions(solutions);
+                } else if (solutions.length === 1 && stats.interrupted) {
+                    wrapper.classList.replace("alert-warning", "alert-warning");
+                    bar.classList.replace("bg-warning", "bg-warning");
+                    bar.textContent = "Partial result";
+                    content.innerHTML = `<p>⚠️ One solution found, but more may exist. Run complete analysis to verify.</p>`;
+                    displaySolutions(solutions);
+                    setButtonState(completeBtn, true);
+                    this.analysisUnlocked = true;
+                } else {
+                    wrapper.classList.replace("alert-warning", "alert-danger");
+                    bar.classList.replace("bg-warning", "bg-danger");
+                    bar.textContent = `${solutions.length} solutions`;
+                    content.innerHTML = `<p>❌ At least ${solutions.length} solutions found. Run complete analysis for certainty.</p>`;
+                    displaySolutions(solutions);
+                    setButtonState(completeBtn, true);
+                    this.analysisUnlocked = true;
+                }
+            }, 50);
+        };
+
+
+        const runCompleteAnalysis = async () => {
+            if (!this.analysisUnlocked) {
+                alert("Run normal analysis first.");
+                return;
+            }
+
+            const solverboard = this.board.getSolverBoard();
+            alertBox.innerHTML = `
+				<div class="alert alert-warning show" role="alert">
+					<div class="progress mb-2" style="height: 28px;">
+						<div id="loading-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%;">
+							<span id="loading-text">Analyzing...</span>
+						</div>
+					</div>
+					<div id="alertContent"></div>
+				</div>
+			`;
             solutionList.innerHTML = "";
             clearSelectedListItem();
 
-            setButtonState(startBtn, false);
+            setButtonState(normalBtn, false);
+            setButtonState(completeBtn, false);
             setButtonState(clearBtn, false);
             setButtonState(toggleDefinite, false);
             setButtonState(toggleUncertain, false);
 
             this.keyboard.setEnabled(false);
-
-            const loadingText = document.getElementById("loading-text");
             let nodeCount = 0;
 
+            const loadingText = document.getElementById("loading-text");
             const nodeInterval = setInterval(() => {
                 nodeCount += Math.floor(Math.random() * 100 + 20);
                 if (loadingText) loadingText.textContent = `${nodeCount} nodes processed...`;
@@ -144,77 +229,58 @@ class Creator {
             });
 
             clearInterval(nodeInterval);
-
             solutionsRef = solutions;
+            this.completeAnalysisDone = true;
 
-            const resultCount = solutions.length || 0;
-            const alertWrapper = alertBox.querySelector(".alert");
-            const progressBar = alertBox.querySelector(".progress-bar");
-            const alertContent = document.getElementById("alertContent");
+            const resultCount = solutions.length;
+            const wrapper = alertBox.querySelector(".alert");
+            const bar = alertBox.querySelector(".progress-bar");
+            const content = alertBox.querySelector("#alertContent");
 
             if (resultCount === 0) {
-                alertWrapper.classList.replace("alert-warning", "alert-danger");
-                progressBar.classList.replace("bg-warning", "bg-danger");
-                progressBar.textContent = "No solution found";
-
-                if (alertContent) {
-                    alertContent.innerHTML = `<p>No solutions could be found for this puzzle.</p>`;
-                }
-
-                // Fix: re-enable interface
-                setButtonState(startBtn, true);
-                setButtonState(clearBtn, true); // allow clearing
-
-                return;
-            }
-
-
-            if (resultCount === 1) {
-                alertWrapper.classList.replace("alert-warning", "alert-success");
-                progressBar.classList.replace("bg-warning", "bg-success");
-                progressBar.textContent = "1 solution found";
-                if (alertContent) {
-                    alertContent.innerHTML = `<p>1 solution found.</p>`;
-                }
+                wrapper.classList.replace("alert-warning", "alert-danger");
+                bar.classList.replace("bg-warning", "bg-danger");
+                bar.textContent = "No solution found";
+                content.innerHTML = `<p>No solutions could be found for this puzzle.</p>`;
+            } else if (resultCount === 1) {
+                wrapper.classList.replace("alert-warning", "alert-success");
+                bar.classList.replace("bg-warning", "bg-success");
+                bar.textContent = "1 solution found";
+                content.innerHTML = `<p>Exactly one solution found.</p>`;
             } else {
-                alertWrapper.classList.replace("alert-warning", "alert-danger");
-                progressBar.classList.replace("bg-warning", "bg-danger");
-                progressBar.textContent = `Atleast ${resultCount} solutions found`;
-                if (alertContent) {
-                    alertContent.innerHTML = `<p>More than 1 solution found (${resultCount}).</p>`;
-                }
+                wrapper.classList.replace("alert-warning", "alert-danger");
+                bar.classList.replace("bg-warning", "bg-danger");
+                bar.textContent = `${resultCount} solutions found`;
+                content.innerHTML = `<p>Multiple solutions found (${resultCount}).</p>`;
             }
 
             solutions.forEach((solution, i) => {
                 const li = document.createElement("li");
                 li.className = "list-group-item";
                 li.textContent = `Solution ${i + 1}`;
-
                 li.addEventListener("click", () => {
                     if (selectedIndex === i) {
                         li.classList.remove("active");
                         selectedIndex = null;
                         this.board.hideSolution();
-
                     } else {
-                        const items = solutionList.querySelectorAll(".list-group-item");
-                        items.forEach(item => item.classList.remove("active"));
+                        solutionList.querySelectorAll(".list-group-item").forEach(item => item.classList.remove("active"));
                         li.classList.add("active");
                         selectedIndex = i;
-
                         this.board.showSolution(solverboard, solution);
                     }
                 });
-
                 solutionList.appendChild(li);
             });
 
-            setButtonState(startBtn, true);
+            setButtonState(normalBtn, true);
             setButtonState(clearBtn, true);
             setButtonState(toggleDefinite, true);
             setButtonState(toggleUncertain, true);
-        });
+        };
 
+        normalBtn.addEventListener("click", runNormalAnalysis);
+        completeBtn.addEventListener("click", runCompleteAnalysis);
         clearBtn.addEventListener("click", () => {
             alertBox.innerHTML = "";
             solutionList.innerHTML = "";
@@ -224,7 +290,10 @@ class Creator {
             setButtonState(toggleDefinite, false);
             setButtonState(toggleUncertain, false);
             setButtonState(clearBtn, false);
+            setButtonState(completeBtn, false);
             this.keyboard.setEnabled(true);
+            this.analysisUnlocked = false;
+            this.completeAnalysisDone = false;
         });
 
         const toggleButton = (btn, type) => {
@@ -238,7 +307,6 @@ class Creator {
             }
 
             clearSelectedListItem();
-
             const solverboard = this.board.getSolverBoard();
             if (this.board.showSolutions && solutionsRef.length > 0) {
                 this.board.showSolutions(solverboard, solutionsRef, showDefinite, showUncertain);
@@ -253,9 +321,9 @@ class Creator {
             toggleButton(this, "uncertain");
         });
 
-        // Initialize Bootstrap tooltips if needed
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+        [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(el =>
+            new bootstrap.Tooltip(el)
+        );
     }
 }
 

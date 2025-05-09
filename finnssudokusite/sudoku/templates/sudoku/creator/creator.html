@@ -126,8 +126,13 @@
 							type="button" role="tab" aria-controls="nav-Create" aria-selected="true">{% trans "Create" %}
 					</button>
 					<button class="nav-link" id="nav-Analyse-tab" data-bs-toggle="tab" data-bs-target="#nav-Analyse"
-							type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">{% trans "Analysis" %}
-					</button>
+							type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">
+					  <span class="d-inline-flex align-items-center justify-content-center gap-2">
+						{% trans "Analysis" %}
+						<span class="badge bg-warning text-dark" style="font-size: 0.75em;">
+						  Beta
+						</span>
+					  </span>
 					</button>
 					<button class="nav-link" id="nav-Publish-tab" data-bs-toggle="tab" data-bs-target="#nav-Publish"
 							type="button" role="tab" aria-controls="nav-Publish" aria-selected="false">{% trans "Publish" %}
@@ -160,8 +165,11 @@
 						<!-- Top Controls (buttons) -->
 						<div class="d-flex justify-content-between align-items-center gap-2 mb-2 flex-shrink-0">
 							<div class="d-flex gap-2">
-								<button id="start-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
+								<button id="start-normal-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
 									<i class="fas fa-play"></i>
+								</button>
+								<button id="start-complete-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
+									<i class="fas fa-forward"></i>
 								</button>
 								<button id="clear-analysis-btn" class="btn btn-danger square-btn" data-bs-toggle="tooltip" title="Clear Results">
 									<i class="fas fa-times"></i>

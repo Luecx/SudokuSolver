@@ -68,7 +68,7 @@ export class RCIdx {
      * @returns {boolean}
      */
     isRow() {
-        return this.row !== null && this.col === null;
+        return this.#valid(this.row) && !this.#valid(this.col);
     }
 
     /**
@@ -76,7 +76,7 @@ export class RCIdx {
      * @returns {boolean}
      */
     isCol() {
-        return this.row === null && this.col !== null;
+        return this.#valid(this.col) && !this.#valid(this.row);
     }
 
     /**
@@ -86,8 +86,11 @@ export class RCIdx {
      * @returns {CellIdx[]}
      */
     attachedCells(board_size) {
+        console.log("attached cells of RCIdx", this.toString());
+        console.log("isRow", this.isRow());
+        console.log("isCol", this.isCol());
         const cells = [];
-        if (this.row !== null && this.col !== null) {
+        if (this.#valid(this.row) && this.#valid(this.col)) {
             cells.push(new CellIdx(this.row, this.col));
         } else if (this.isRow()) {
             for (let j = 0; j < board_size; ++j) {
@@ -106,5 +109,9 @@ export class RCIdx {
             }
         }
         return cells;
+    }
+
+    #valid(idx) {
+        return idx !== null && idx >= 0 && idx < board_size && Number.isInteger(idx) && !isNaN(idx);
     }
 }

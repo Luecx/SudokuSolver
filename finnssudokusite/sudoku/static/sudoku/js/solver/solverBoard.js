@@ -77,6 +77,7 @@ export class SolverBoard {
 
         for (const handler of this.rules) {
             const region = handler.attachedCells(this);
+            console.log(region);
             for (const cellIdx of region.items) {
                 this.getCell(cellIdx).ruleCount += 1;
             }
@@ -195,10 +196,7 @@ export class SolverBoard {
     }
 
     solveComplete() {
-        console.log(this.toString(true));
-        return this.solve(1, 16384);
-
-        const solutions = new Map();
+        const all_solutions = new Map();
 
         for (let r = 0; r < this.size; r++) {
             for (let c = 0; c < this.size; c++) {
@@ -211,18 +209,19 @@ export class SolverBoard {
                     const success = clone.setCell(new CellIdx(r, c), n);
                     if (!success) continue;
 
-                    const partialSolutions = clone.solve(1);
-                    for (const sol of partialSolutions) {
+                    const {solutions, stats} = clone.solve(1, 128);
+                    console.log(`Found ${solutions.length} partial solutions for ${r},${c} = ${n}`);
+                    for (const sol of solutions) {
                         const key = sol.toString();
-                        if (!solutions.has(key)) {
-                            solutions.set(key, sol);
+                        if (!all_solutions.has(key)) {
+                            all_solutions.set(key, sol);
                         }
                     }
                 }
             }
         }
 
-        return Array.from(solutions.values());
+        return Array.from(all_solutions.values());
     }
 
     solve(maxSolutions = 1, maxNodes = 1024) {
@@ -244,7 +243,7 @@ export class SolverBoard {
             }
 
             const pos = this.getNextCell();
-            console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
+            // console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
             if (!pos) return true;
 
             const toTry = Array.from(this.getCell(pos).candidates);
@@ -262,8 +261,10 @@ export class SolverBoard {
         backtrack();
 
         const end = performance.now();
-        new SolverStats(solutions.length, nodeCount, end - start, interrupted).print();
-        return solutions;
+        const stats = new SolverStats(solutions.length, nodeCount, end - start, interrupted);
+        stats.print();
+        return { solutions, stats };
+
     }
 
 

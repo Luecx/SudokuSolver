@@ -16,6 +16,8 @@ export function attachArrowSolverLogic(instance) {
         // we first need to estimate the possible range of numbers in the path
         let lb = board.lowerbound(path);
         let ub = board.upperbound(path);
+        ub = Math.min(ub, 99);
+        lb = Math.min(lb, 99);
 
         // next, we need to differentiate between the amount of base cells
         if (base.items.length === 1) {
