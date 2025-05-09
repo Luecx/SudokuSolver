@@ -19,21 +19,21 @@ export class PlayBoard {
             ]
         );
 
-        this.init();
+        setTimeout(() => {
+            this.init();
+        }, 250); // wait till everything initializes before redndering the board
     }
 
     init() {
-        document.addEventListener("DOMContentLoaded", () => {
-            this.board.initBoard();
+        this.board.initBoard();
 
-            const jsonData = window.puzzle_data;
-            if (jsonData) this.board.loadBoard(jsonData.board);
+        const jsonData = window.puzzle_data;
+        if (jsonData) this.board.loadBoard(jsonData.board);
 
-            new Timer("timer").init();
-            new InputGrid(this.keyboard);
+        new Timer("timer").init();
+        new InputGrid(this.keyboard);
 
-            this.setupThemeMenu();
-        });
+        this.setupThemeMenu();
     }
 
     setupThemeMenu() {

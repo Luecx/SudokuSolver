@@ -11,7 +11,7 @@ class Creator {
         setTimeout(() => {
             const container = document.querySelector(".board-container");
             this.init(container);
-        }, 0);
+        }, 250); // wait till everything initializes before redndering the board
     }
 
     init(container) {
