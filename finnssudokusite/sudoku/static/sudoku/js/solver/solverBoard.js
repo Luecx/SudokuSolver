@@ -5,6 +5,7 @@ import { CellIdx } from "../region/CellIdx.js";
 import { SolverCell } from './solverCell.js';
 import { SolverStats } from './solverStats.js';
 import * as RegionUtils from './solverUtil.js';
+import {NumberSet} from "../number/number_set.js";
 
 export class SolverBoard {
     /**
@@ -195,34 +196,104 @@ export class SolverBoard {
         return best?.pos || null;
     }
 
+    /**
+     * Attempts to find all distinct valid solutions for the current board
+     * while simultaneously refining the candidates in each cell based on
+     * provably invalid options.
+     *
+     * This function performs a guided exhaustive search using the following strategy:
+     *
+     * - For each unset cell and each of its current candidates (in randomized order):
+     *   - It attempts to place the candidate on a cloned board (`board`).
+     *   - If the placement is invalid, the candidate is immediately removed from the
+     *     candidate list of both the solving board and the candidate-tracking board.
+     *   - If the placement is valid, it invokes `solve(1, 128)` to search for a complete
+     *     solution starting from that configuration.
+     *   - If a solution is found:
+     *     - The values from the solution are used to eliminate them as candidates in
+     *       the candidate-tracking board (`board_nums_to_check`), under the assumption
+     *       that they have now been sufficiently explored.
+     *     - A debug message prints how many candidate values are skipped as a result.
+     *     - The solution is stored in a map (by stringified key) to avoid duplicates.
+     *   - If no solution is found and the solve was **not interrupted**, then the candidate
+     *     is provably invalid and removed permanently from both boards.
+     *
+     * Throughout this process:
+     * - A dedicated candidate-tracking board (`board_nums_to_check`) is used to manage
+     *   which values still need to be tested.
+     * - Candidate sets on the solving board (`board`) are left mostly untouched except
+     *   when a candidate is immediately invalid.
+     * - The original board (`this`) remains unchanged.
+     *
+     * @returns {SolverBoard[]} An array of unique solutions found across all valid candidate attempts.
+     *
+     * Side effect: The candidate sets on `board_nums_to_check` will have been refined.
+     *              This does not modify the original board's candidates.
+     */
     solveComplete() {
         const all_solutions = new Map();
 
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                const cell = this.grid[r][c];
-                if (cell.value !== NO_NUMBER) continue;
+        const board = this.clone();                 // solving board
+        const board_nums_to_check = this.clone();   // candidate tracker board
 
-                const candidates = Array.from(cell.candidates);
-                for (const n of candidates) {
-                    const clone = this.clone();
-                    const success = clone.setCell(new CellIdx(r, c), n);
-                    if (!success) continue;
+        // Randomized iteration over all cell positions
+        const shuffledPositions = [...Array(this.size * this.size).keys()]
+            .map(i => ({ r: Math.floor(i / this.size), c: i % this.size }))
+            .sort(() => Math.random() - 0.5);
 
-                    const {solutions, stats} = clone.solve(1, 128);
-                    console.log(`Found ${solutions.length} partial solutions for ${r},${c} = ${n}`);
+        for (const { r, c } of shuffledPositions) {
+            const cell  = board.grid[r][c];
+            const cands = board_nums_to_check.grid[r][c].candidates;
+
+            if (cell.value !== NO_NUMBER) continue;
+
+            for (const n of cands.clone()) {
+                console.log(`Trying ${cell.pos.r},${cell.pos.c} = ${n} (${cands.count()} candidates)`);
+
+                if (!board.setCell(new CellIdx(r, c), n)) {
+                    cands.disallow(n);
+                    cell.candidates.disallow(n);
+                    continue;
+                }
+
+                const { solutions, stats } = board.solve(1, 128);
+
+                if (solutions.length > 0) {
                     for (const sol of solutions) {
+                        let skipped = 0;
+
+                        for (let r_ = 0; r_ < this.size; r_++) {
+                            for (let c_ = 0; c_ < this.size; c_++) {
+                                const value = sol.grid[r_][c_].value;
+                                const cell_check = board_nums_to_check.grid[r_][c_];
+                                if (cell_check.candidates.test(value)) {
+                                    cell_check.candidates.disallow(value);
+                                    skipped++;
+                                }
+                            }
+                        }
+
+                        console.log(`→ Solution found. Skipping ${skipped} candidate(s) due to known placements.`);
+
                         const key = sol.toString();
                         if (!all_solutions.has(key)) {
                             all_solutions.set(key, sol);
                         }
                     }
+                } else if (!stats.interrupted) {
+                    console.log(`→ Candidate ${n} at (${r},${c}) eliminated – no solution and not interrupted.`);
+                    cell.candidates.disallow(n);
+                    cands.disallow(n);
                 }
+
+                board.stackPop(); // reset board state
             }
         }
 
         return Array.from(all_solutions.values());
     }
+
+
 
     solve(maxSolutions = 1, maxNodes = 1024) {
         const solutions = [];
