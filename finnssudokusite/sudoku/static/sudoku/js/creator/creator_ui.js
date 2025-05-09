@@ -13,9 +13,7 @@ class Creator {
     }
 
     init(container) {
-        if (!container) {
-            throw new Error("Creator: .board-container element not found in the DOM.");
-        }
+        if (!container) throw new Error("Creator: .board-container element not found in the DOM.");
 
         this.board = createBoard(container);
         this.board.initBoard();
@@ -24,23 +22,22 @@ class Creator {
 
         this.analysisUnlocked = false;
         this.completeAnalysisDone = false;
+        this.selectedIndex = null;
+        this.solutionsRef = [];
+        this.showDefinite = true;
+        this.showUncertain = true;
 
-        this.initTestButton();
         this.initSaveButton();
         this.initAnalysisButtons();
+        this.registerBoardChangeListeners();
     }
 
-    initTestButton() {
-        const btn = document.getElementById("test-sudoku-btn");
-        if (!btn) return;
-        btn.addEventListener("click", () => {
-            const solverboard = this.board.getSolverBoard();
-            console.log(solverboard.toString(true));
-        });
+    get(id) {
+        return document.getElementById(id);
     }
 
     initSaveButton() {
-        const btn = document.getElementById("submit-sudoku-btn");
+        const btn = this.get("submit-sudoku-btn");
         if (!btn) return;
 
         btn.addEventListener("click", async (e) => {
@@ -60,278 +57,236 @@ class Creator {
                     },
                     body: JSON.stringify(payload),
                 });
-
                 const data = await response.json();
-                if (data.status === "success") {
-                    alert(`Sudoku saved! ID: ${data.sudoku_id}`);
-                } else {
-                    alert(`Error saving sudoku: ${data.message}`);
-                }
-            } catch (error) {
-                console.error("Save error:", error);
+                alert(data.status === "success"
+                    ? `Sudoku saved! ID: ${data.sudoku_id}`
+                    : `Error saving sudoku: ${data.message}`);
+            } catch (err) {
+                console.error("Save error:", err);
                 alert("Unexpected error while saving.");
             }
         });
+
+        const nameInput = document.querySelector("input[name='sudoku_name']");
+        if (nameInput) {
+            nameInput.addEventListener("input", () => this.checkIfCanSubmit());
+        }
+
+        this.checkIfCanSubmit();
+    }
+
+    renderAlert(type, text, html) {
+        const alertBox = this.get("alertBox");
+        const color = {
+            warning: "warning",
+            success: "success",
+            danger: "danger",
+        }[type];
+
+        alertBox.innerHTML = `
+            <div class="alert alert-${color}" role="alert">
+                <div class="progress mb-2" style="height: 28px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-${color}" style="width: 100%;">
+                        <span id="loading-text">${text}</span>
+                    </div>
+                </div>
+                <div id="alertContent">${html}</div>
+            </div>
+        `;
+    }
+
+    createSolutionItem(i, solverboard, solution) {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.textContent = `Solution ${i + 1}`;
+        li.addEventListener("click", () => {
+            const solutionList = this.get("solutionList");
+            if (this.selectedIndex === i) {
+                li.classList.remove("active");
+                this.selectedIndex = null;
+                this.board.hideSolution();
+            } else {
+                solutionList.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
+                li.classList.add("active");
+                this.selectedIndex = i;
+                this.board.showSolution(solverboard, solution);
+            }
+        });
+        return li;
+    }
+
+    displaySolutions(solverboard, solutions) {
+        const solutionList = this.get("solutionList");
+        solutionList.innerHTML = "";
+        this.solutionsRef = solutions;
+        solutions.forEach((s, i) => {
+            solutionList.appendChild(this.createSolutionItem(i, solverboard, s));
+        });
+    }
+
+    clearAnalysisUI() {
+        this.get("alertBox").innerHTML = "";
+        this.get("solutionList").innerHTML = "";
+        this.get("toggle-definite").classList.remove("active");
+        this.get("toggle-uncertain").classList.remove("active");
+        this.selectedIndex = null;
+        this.board.hideSolution?.();
+    }
+
+    runNormalAnalysis() {
+        const solverboard = this.board.getSolverBoard();
+        this.clearAnalysisUI();
+        this.renderAlert("warning", "Analyzing...", "");
+
+        this.analysisUnlocked = false;
+        this.completeAnalysisDone = false;
+        this.keyboard.setEnabled(false);
+
+        setTimeout(() => {
+            const { solutions, stats } = solverboard.solve(17, 16384);
+
+            if (solutions.length === 0 && !stats.interrupted) {
+                this.renderAlert("danger", "No solution", "<p>❌ No solution exists for this puzzle.</p>");
+            } else if (solutions.length === 0 && stats.interrupted) {
+                this.renderAlert("danger", "Search interrupted", "<p>❌ Branching factor too high. Add more constraints.</p>");
+            } else if (solutions.length === 1 && !stats.interrupted) {
+                this.renderAlert("success", "1 solution", "<p>✅ Exactly one solution exists.</p>");
+                this.board.showSolution(solverboard, solutions[0]);
+                this.displaySolutions(solverboard, solutions);
+                this.checkIfCanSubmit();
+            } else {
+                const msg = stats.interrupted
+                    ? "⚠️ One or more solutions found, but more may exist."
+                    : `❌ At least ${solutions.length} solutions found.`;
+
+                this.renderAlert("danger", "Multiple solutions", `<p>${msg}</p>`);
+                this.displaySolutions(solverboard, solutions);
+                this.analysisUnlocked = true;
+                this.get("start-complete-analysis-btn").disabled = false;
+            }
+
+            this.get("clear-analysis-btn").disabled = false;
+        }, 50);
+    }
+
+    async runCompleteAnalysis() {
+        if (!this.analysisUnlocked) {
+            alert("Run normal analysis first.");
+            return;
+        }
+
+        const solverboard = this.board.getSolverBoard();
+        this.clearAnalysisUI();
+        this.renderAlert("warning", "Analyzing...", "");
+
+        let nodeCount = 0;
+        const loadingText = () => this.get("loading-text");
+        const interval = setInterval(() => {
+            nodeCount += Math.floor(Math.random() * 100 + 20);
+            if (loadingText()) loadingText().textContent = `${nodeCount} nodes processed...`;
+        }, 100);
+
+        const solutions = await new Promise(resolve => {
+            setTimeout(() => resolve(solverboard.solveComplete()), 50);
+        });
+
+        clearInterval(interval);
+        this.completeAnalysisDone = true;
+        this.solutionsRef = solutions;
+
+        if (solutions.length === 1) {
+            this.renderAlert("success", "1 solution", "<p>✅ Exactly one solution found.</p>");
+        } else if (solutions.length === 0) {
+            this.renderAlert("danger", "No solution", "<p>❌ No solution found.</p>");
+        } else {
+            this.renderAlert("danger", `${solutions.length} solutions`, `<p>Multiple solutions found (${solutions.length}).</p>`);
+        }
+
+        this.displaySolutions(solverboard, solutions);
+        this.get("clear-analysis-btn").disabled = false;
+        this.get("toggle-definite").disabled = false;
+        this.get("toggle-uncertain").disabled = false;
     }
 
     initAnalysisButtons() {
-        const normalBtn = document.getElementById("start-normal-analysis-btn");
-        const completeBtn = document.getElementById("start-complete-analysis-btn");
-        const clearBtn = document.getElementById("clear-analysis-btn");
-        const debugBtn = document.getElementById("debug-analysis-btn");
-        const toggleDefinite = document.getElementById("toggle-definite");
-        const toggleUncertain = document.getElementById("toggle-uncertain");
-        const alertBox = document.getElementById("alertBox");
-        const solutionList = document.getElementById("solutionList");
+        const normalBtn = this.get("start-normal-analysis-btn");
+        const completeBtn = this.get("start-complete-analysis-btn");
+        const clearBtn = this.get("clear-analysis-btn");
+        const debugBtn = this.get("debug-analysis-btn");
+        const toggleDefinite = this.get("toggle-definite");
+        const toggleUncertain = this.get("toggle-uncertain");
 
-        let selectedIndex = null;
-        let solutionsRef = [];
-        let showDefinite = true;
-        let showUncertain = true;
+        // ✅ Disable by default
+        completeBtn.disabled = true;
+        clearBtn.disabled = true;
+        toggleDefinite.disabled = true;
+        toggleUncertain.disabled = true;
 
-        const setButtonState = (el, enabled) => el && (el.disabled = !enabled);
-
-        const clearSelectedListItem = () => {
-            selectedIndex = null;
-            solutionList.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
-            this.board.hideSolution?.();
-        };
-
-        const debugAnalysis = () => {
-            const solverboard = this.board.getSolverBoard();
-            console.log(solverboard.toString(true));
-        }
-
-        const runNormalAnalysis = () => {
-            const solverboard = this.board.getSolverBoard();
-            solutionList.innerHTML = "";
-            clearSelectedListItem();
-            setButtonState(toggleDefinite, false);
-            setButtonState(toggleUncertain, false);
-            setButtonState(completeBtn, false);
-            setButtonState(clearBtn, true);
-            this.keyboard.setEnabled(false);
-            this.analysisUnlocked = false;
-            this.completeAnalysisDone = false;
-
-            // Show initial loading bar
-            alertBox.innerHTML = `
-		<div class="alert alert-warning show" role="alert">
-			<div class="progress mb-2" style="height: 28px;">
-				<div id="loading-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%;">
-					<span id="loading-text">Analyzing...</span>
-				</div>
-			</div>
-			<div id="alertContent"></div>
-		</div>
-	`;
-
-            setTimeout(() => {
-                const { solutions, stats } = solverboard.solve(17, 16384);
-                const wrapper = alertBox.querySelector(".alert");
-                const bar = alertBox.querySelector(".progress-bar");
-                const content = alertBox.querySelector("#alertContent");
-
-                const displaySolutions = (solutions) => {
-                    solutionsRef = solutions;
-                    solutions.forEach((solution, i) => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.textContent = `Solution ${i + 1}`;
-                        li.addEventListener("click", () => {
-                            if (selectedIndex === i) {
-                                li.classList.remove("active");
-                                selectedIndex = null;
-                                this.board.hideSolution();
-                            } else {
-                                solutionList.querySelectorAll(".list-group-item").forEach(item => item.classList.remove("active"));
-                                li.classList.add("active");
-                                selectedIndex = i;
-                                this.board.showSolution(solverboard, solution);
-                            }
-                        });
-                        solutionList.appendChild(li);
-                    });
-                };
-
-                if (solutions.length === 0 && !stats.interrupted) {
-                    wrapper.classList.replace("alert-warning", "alert-danger");
-                    bar.classList.replace("bg-warning", "bg-danger");
-                    bar.textContent = "No solution";
-                    content.innerHTML = `<p>❌ No solution exists for this puzzle.</p>`;
-                } else if (solutions.length === 0 && stats.interrupted) {
-                    wrapper.classList.replace("alert-warning", "alert-danger");
-                    bar.classList.replace("bg-warning", "bg-danger");
-                    bar.textContent = "Search interrupted";
-                    content.innerHTML = `<p>❌ Branching factor too high. Add more constraints.</p>`;
-                } else if (solutions.length === 1 && !stats.interrupted) {
-                    wrapper.classList.replace("alert-warning", "alert-success");
-                    bar.classList.replace("bg-warning", "bg-success");
-                    bar.textContent = "1 solution";
-                    content.innerHTML = `<p>✅ Exactly one solution exists with certainty.</p>`;
-                    this.board.showSolution(solverboard, solutions[0]);
-                    displaySolutions(solutions);
-                } else if (solutions.length === 1 && stats.interrupted) {
-                    wrapper.classList.replace("alert-warning", "alert-warning");
-                    bar.classList.replace("bg-warning", "bg-warning");
-                    bar.textContent = "Partial result";
-                    content.innerHTML = `<p>⚠️ One solution found, but more may exist. Run complete analysis to verify.</p>`;
-                    displaySolutions(solutions);
-                    setButtonState(completeBtn, true);
-                    this.analysisUnlocked = true;
-                } else {
-                    wrapper.classList.replace("alert-warning", "alert-danger");
-                    bar.classList.replace("bg-warning", "bg-danger");
-                    bar.textContent = `${solutions.length} solutions`;
-                    content.innerHTML = `<p>❌ At least ${solutions.length} solutions found. Run complete analysis for certainty.</p>`;
-                    displaySolutions(solutions);
-                    setButtonState(completeBtn, true);
-                    this.analysisUnlocked = true;
-                }
-            }, 50);
-        };
-
-
-        const runCompleteAnalysis = async () => {
-            if (!this.analysisUnlocked) {
-                alert("Run normal analysis first.");
-                return;
-            }
-
-            const solverboard = this.board.getSolverBoard();
-            alertBox.innerHTML = `
-				<div class="alert alert-warning show" role="alert">
-					<div class="progress mb-2" style="height: 28px;">
-						<div id="loading-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%;">
-							<span id="loading-text">Analyzing...</span>
-						</div>
-					</div>
-					<div id="alertContent"></div>
-				</div>
-			`;
-            solutionList.innerHTML = "";
-            clearSelectedListItem();
-
-            setButtonState(normalBtn, false);
-            setButtonState(completeBtn, false);
-            setButtonState(clearBtn, false);
-            setButtonState(toggleDefinite, false);
-            setButtonState(toggleUncertain, false);
-
-            this.keyboard.setEnabled(false);
-            let nodeCount = 0;
-
-            const loadingText = document.getElementById("loading-text");
-            const nodeInterval = setInterval(() => {
-                nodeCount += Math.floor(Math.random() * 100 + 20);
-                if (loadingText) loadingText.textContent = `${nodeCount} nodes processed...`;
-            }, 100);
-
-            const solutions = await new Promise((resolve) => {
-                setTimeout(() => {
-                    const res = solverboard.solveComplete();
-                    resolve(res);
-                }, 50);
-            });
-
-            clearInterval(nodeInterval);
-            solutionsRef = solutions;
-            this.completeAnalysisDone = true;
-
-            const resultCount = solutions.length;
-            const wrapper = alertBox.querySelector(".alert");
-            const bar = alertBox.querySelector(".progress-bar");
-            const content = alertBox.querySelector("#alertContent");
-
-            if (resultCount === 0) {
-                wrapper.classList.replace("alert-warning", "alert-danger");
-                bar.classList.replace("bg-warning", "bg-danger");
-                bar.textContent = "No solution found";
-                content.innerHTML = `<p>No solutions could be found for this puzzle.</p>`;
-            } else if (resultCount === 1) {
-                wrapper.classList.replace("alert-warning", "alert-success");
-                bar.classList.replace("bg-warning", "bg-success");
-                bar.textContent = "1 solution found";
-                content.innerHTML = `<p>Exactly one solution found.</p>`;
-            } else {
-                wrapper.classList.replace("alert-warning", "alert-danger");
-                bar.classList.replace("bg-warning", "bg-danger");
-                bar.textContent = `${resultCount} solutions found`;
-                content.innerHTML = `<p>Multiple solutions found (${resultCount}).</p>`;
-            }
-
-            solutions.forEach((solution, i) => {
-                const li = document.createElement("li");
-                li.className = "list-group-item";
-                li.textContent = `Solution ${i + 1}`;
-                li.addEventListener("click", () => {
-                    if (selectedIndex === i) {
-                        li.classList.remove("active");
-                        selectedIndex = null;
-                        this.board.hideSolution();
-                    } else {
-                        solutionList.querySelectorAll(".list-group-item").forEach(item => item.classList.remove("active"));
-                        li.classList.add("active");
-                        selectedIndex = i;
-                        this.board.showSolution(solverboard, solution);
-                    }
-                });
-                solutionList.appendChild(li);
-            });
-
-            setButtonState(normalBtn, true);
-            setButtonState(clearBtn, true);
-            setButtonState(toggleDefinite, true);
-            setButtonState(toggleUncertain, true);
-        };
-
-        normalBtn.addEventListener("click", runNormalAnalysis);
-        completeBtn.addEventListener("click", runCompleteAnalysis);
+        normalBtn.addEventListener("click", () => this.runNormalAnalysis());
+        completeBtn.addEventListener("click", () => this.runCompleteAnalysis());
         clearBtn.addEventListener("click", () => {
-            alertBox.innerHTML = "";
-            solutionList.innerHTML = "";
-            toggleDefinite.classList.remove("active");
-            toggleUncertain.classList.remove("active");
-            clearSelectedListItem();
-            setButtonState(toggleDefinite, false);
-            setButtonState(toggleUncertain, false);
-            setButtonState(clearBtn, false);
-            setButtonState(completeBtn, false);
+            this.clearAnalysisUI();
             this.keyboard.setEnabled(true);
             this.analysisUnlocked = false;
             this.completeAnalysisDone = false;
-        });
-        debugBtn.addEventListener("click", debugAnalysis);
 
-        const toggleButton = (btn, type) => {
+            // ✅ Disable again after clearing
+            clearBtn.disabled = true;
+            completeBtn.disabled = true;
+            toggleDefinite.disabled = true;
+            toggleUncertain.disabled = true;
+        });
+
+        debugBtn?.addEventListener("click", () => console.log(this.board.getSolverBoard().toString(true)));
+
+        const toggleFn = (btn, key) => {
             if (btn.disabled) return;
             btn.classList.toggle("active");
-
-            if (type === "definite") {
-                showDefinite = btn.classList.contains("active");
-            } else if (type === "uncertain") {
-                showUncertain = btn.classList.contains("active");
-            }
-
-            clearSelectedListItem();
-            const solverboard = this.board.getSolverBoard();
-            if (this.board.showSolutions && solutionsRef.length > 0) {
-                this.board.showSolutions(solverboard, solutionsRef, showDefinite, showUncertain);
-            }
+            this[`show${key}`] = btn.classList.contains("active");
+            this.board.showSolutions?.(this.board.getSolverBoard(), this.solutionsRef, this.showDefinite, this.showUncertain);
         };
 
-        toggleDefinite?.addEventListener("click", function () {
-            toggleButton(this, "definite");
+        toggleDefinite?.addEventListener("click", () => toggleFn(toggleDefinite, "Definite"));
+        toggleUncertain?.addEventListener("click", () => toggleFn(toggleUncertain, "Uncertain"));
+
+        // Init tooltips
+        [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(el => {
+            new bootstrap.Tooltip(el, { trigger: 'hover' });
         });
 
-        toggleUncertain?.addEventListener("click", function () {
-            toggleButton(this, "uncertain");
-        });
-
-        [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(el =>
-            new bootstrap.Tooltip(el)
-        );
     }
+
+    checkIfCanSubmit() {
+        const btn = this.get("submit-sudoku-btn");
+        const name = document.querySelector("input[name='sudoku_name']")?.value?.trim();
+        const hasExactlyOneSolution = this.solutionsRef.length === 1;
+        const isNameValid = name.length > 0;
+
+        btn.disabled = !(hasExactlyOneSolution && isNameValid);
+    }
+
+
+    disableSubmit() {
+        const btn = this.get("submit-sudoku-btn");
+        if (btn) btn.disabled = true;
+    }
+
+    registerBoardChangeListeners() {
+        const events = [
+            "ev_rule_handler_enabled",
+            "ev_rule_handler_disabled",
+            "ev_rule_added",
+            "ev_rule_removed",
+            "ev_rule_changed",
+            "ev_rule_reset",
+            "ev_rule_number_changed",
+        ];
+
+        events.forEach(event => {
+            this.board.onEvent(event, () => this.disableSubmit());
+        });
+    }
+
 }
 
 new Creator();
