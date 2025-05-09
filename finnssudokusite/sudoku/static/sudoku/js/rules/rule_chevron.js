@@ -1,5 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
+import { attachChevronRuleSolverLogic } from "./rule_chevron_solver.js";
 
 // Helper function to draw chevrons
 function drawChevron(ctx, x, y, direction = 'down') {
@@ -53,8 +54,10 @@ function drawChevron(ctx, x, y, direction = 'down') {
 export class ChevronHandler extends RuleTypeHandler {
     constructor(board) {
         super("Chevron Rule", board);
-        this.can_create_rules = false;
         this.tag = "chevron";
+        this.can_create_rules = false;
+
+        attachChevronRuleSolverLogic(this);
     }
 
     defaultRules() {
