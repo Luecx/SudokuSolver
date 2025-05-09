@@ -12,6 +12,7 @@ import { WhisperHandler} from "./rule_whisper.js";
 import { CageHandler } from "./rule_cage.js";
 import { ChevronHandler } from "./rule_chevron.js";
 import { ChessRuleHandler } from "./rule_chess.js";
+import { IrregularHandler } from "./rule_irregular.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -29,6 +30,7 @@ export function createAllRuleHandlers(board) {
         new WhisperHandler(board),
         new CageHandler(board),
         new ChevronHandler(board),
-        new ChessRuleHandler(board)
+        new ChessRuleHandler(board),
+        new IrregularHandler(board),
     ];
 }
