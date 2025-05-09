@@ -3,27 +3,36 @@ import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { attachIrregularSolverLogic} from "./rule_irregular_solver.js";
 
+function drawRegions(ctx, board, region, color)
+{
+    if(region == null) return;
+
+    const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
+    const loops = buildInsetPath(cells, 0);
+
+    ctx.fillStyle = color;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+
+    for (const loop of loops) {
+        ctx.beginPath();
+        loop.forEach((pt, i) => {
+            const topLeft = board.getCellTopLeft(pt.x, pt.y);
+            const x = topLeft.x;
+            const y = topLeft.y;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
 export class IrregularHandler extends RuleTypeHandler {
     constructor(board) {
         super("Irregular", board);
         this.tag = "irregular";
         this.can_create_rules = false;
-
-        this.ruleCounter = 0;
-
-        this.colors = [
-            'rgba(255, 0, 0, 0.3)',
-            'rgba(0, 255, 0, 0.3)',
-            'rgba(0, 0, 255, 0.3)',
-            'rgba(255, 255, 0, 0.3)',
-            'rgba(255, 0, 255, 0.3)',
-            'rgba(0, 255, 255, 0.3)',
-            'rgba(255, 165, 0, 0.3)',
-            'rgba(128, 0, 128, 0.3)',
-            'rgba(0, 128, 0, 0.3)'
-        ];
-
-        console.log(this.fields);
 
      //   attachIrregularSolverLogic(this);
     }
@@ -32,12 +41,12 @@ export class IrregularHandler extends RuleTypeHandler {
         return [];
     }
 
-    getRuleWarnings(rule) {
-        console.log("test");
-      
+    getRuleWarnings() {
         let warnings = [];
-  /*
-         if (!region) {
+
+        console.log("f");
+   /*
+        if (!region) {
             warnings.push("Irregular region is empty");
             return warnings;
         }
@@ -151,40 +160,30 @@ export class IrregularHandler extends RuleTypeHandler {
         `;
     }
 
-    render(rule, ctx) {
-        console.log("Rendering irregular rule");
-        /*
-        const region = rule.fields.region;
-        if (!rule || !region) return;
+    renderAll(ctx) {
+        if (!this.enabled) return;
+        this.render(ctx);
+    }
 
-        if (!rule.fields.colorIndex) {
-            rule.fields.colorIndex = this.ruleCounter++;
-        }
-
-        const colorIndex = rule.fields.colorIndex % this.colors.length;
-        const color = this.colors[colorIndex];
-
-        const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
-        const loops = buildInsetPath(cells, 0);
-
+    render(ctx) {
         ctx.save();
-        ctx.fillStyle = color;
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
 
-        for (const loop of loops) {
-            ctx.beginPath();
-            loop.forEach((pt, i) => {
-                const topLeft = this.board.getCellTopLeft(pt.x, pt.y);
-                const x = topLeft.x;
-                const y = topLeft.y;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.closePath();
-            ctx.fill();
+        const regions = [
+            ['region1', 'rgba(255, 0, 0, 0.3)'],
+            ['region2', 'rgba(0, 255, 0, 0.3)'],
+            ['region3', 'rgba(0, 0, 255, 0.3)'],
+            ['region4', 'rgba(255, 255, 0, 0.3)'],
+            ['region5', 'rgba(255, 0, 255, 0.3)'],
+            ['region6', 'rgba(0, 255, 255, 0.3)'],
+            ['region7', 'rgba(255, 165, 0, 0.3)'],
+            ['region8', 'rgba(128, 0, 128, 0.3)'],
+            ['region9', 'rgba(0, 128, 0, 0.3)']
+        ];
+
+        for (const [regionKey, color] of regions) {
+            drawRegions(ctx, this.board, this.fields[regionKey], color);
         }
 
-        ctx.restore();*/
+        ctx.restore();   
     }
 }
