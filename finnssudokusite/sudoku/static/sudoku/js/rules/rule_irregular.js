@@ -3,32 +3,29 @@ import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { attachIrregularSolverLogic} from "./rule_irregular_solver.js";
 
-function getRandomColor() {
-    const hex = Math.floor(Math.random() * 0xFFFFFF).toString(16);
-    return `#${hex.padStart(6, '0')}`;
-}
-
 export class IrregularHandler extends RuleTypeHandler {
     constructor(board) {
         super("Irregular", board);
         this.tag = "irregular";
-        this.can_create_rules = true;
+        this.can_create_rules = false;
 
         this.ruleCounter = 0;
 
-        this.colors =  [
-            '#FF0000', // Red
-            '#00FF00', // Green
-            '#0000FF', // Blue
-            '#FFFF00', // Yellow
-            '#FF00FF', // Magenta
-            '#00FFFF', // Cyan
-            '#FFA500', // Orange
-            '#800080', // Purple
-            '#008000'  // Dark Green
+        this.colors = [
+            'rgba(255, 0, 0, 0.3)',
+            'rgba(0, 255, 0, 0.3)',
+            'rgba(0, 0, 255, 0.3)',
+            'rgba(255, 255, 0, 0.3)',
+            'rgba(255, 0, 255, 0.3)',
+            'rgba(0, 255, 255, 0.3)',
+            'rgba(255, 165, 0, 0.3)',
+            'rgba(128, 0, 128, 0.3)',
+            'rgba(0, 128, 0, 0.3)'
         ];
 
-        attachIrregularSolverLogic(this);
+        console.log(this.fields);
+
+     //   attachIrregularSolverLogic(this);
     }
 
     defaultRules() {
@@ -36,20 +33,17 @@ export class IrregularHandler extends RuleTypeHandler {
     }
 
     getRuleWarnings(rule) {
+        console.log("test");
+      
         let warnings = [];
-        let region = rule.fields.region;
-
-        if (!region) {
+  /*
+         if (!region) {
             warnings.push("Irregular region is empty");
             return warnings;
         }
 
         if (region.size() != 9) {
             warnings.push("Irregular region must contain 9 cells");
-        }
-
-        if (this.rules.length != 9) {
-            warnings.push("Irregular Rule must contain 9 regions");
         }
 
         // Check for collisions with other regions
@@ -75,28 +69,80 @@ export class IrregularHandler extends RuleTypeHandler {
         if (hasCollision) {
             warnings.push("Region collision detected");
         }
-
+*/
         return warnings;
     }
 
     getGeneralRuleScheme() {
-        return [];
-    }
-
-    getSpecificRuleScheme() {
         return [
             {
-                key: "region",
+                key: "region1",
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: "MULTIPLE",
-                label: "Cage Region"
+                label: "Region 1"
             },
             {
-                key: "colorIndex",
-                type: "x" // do this for now so the type is not recognized
+                key: "region2",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 2"
+            },
+            {
+                key: "region3",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 3"
+            },
+            {
+                key: "region4",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 4"
+            },
+            {
+                key: "region5",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 5"
+            },
+            {
+                key: "region6",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 6"
+            },
+            {
+                key: "region7",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 7"
+            },
+            {
+                key: "region8",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 8"
+            },
+            {
+                key: "region9",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: "MULTIPLE",
+                label: "Region 9"
             }
         ];
+    }
+
+    getSpecificRuleScheme() {
+        return [ ];
     }
 
     getDescriptionHTML() {
@@ -106,15 +152,15 @@ export class IrregularHandler extends RuleTypeHandler {
     }
 
     render(rule, ctx) {
+        console.log("Rendering irregular rule");
+        /*
         const region = rule.fields.region;
         if (!rule || !region) return;
 
-        // Initialize color based on rule creation order
         if (!rule.fields.colorIndex) {
             rule.fields.colorIndex = this.ruleCounter++;
         }
 
-        // Cycle through colors if we exceed the palette
         const colorIndex = rule.fields.colorIndex % this.colors.length;
         const color = this.colors[colorIndex];
 
@@ -122,8 +168,7 @@ export class IrregularHandler extends RuleTypeHandler {
         const loops = buildInsetPath(cells, 0);
 
         ctx.save();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
+        ctx.fillStyle = color;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
 
@@ -137,9 +182,9 @@ export class IrregularHandler extends RuleTypeHandler {
                 else ctx.lineTo(x, y);
             });
             ctx.closePath();
-            ctx.stroke();
+            ctx.fill();
         }
 
-        ctx.restore();
+        ctx.restore();*/
     }
 }
