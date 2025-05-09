@@ -7,20 +7,11 @@ body {
 }
 
 .grid-container {
-	display: grid;
-	width: 100%;
-	height: 100%;
-	gap: 1rem;
-	overflow: hidden;
-}
-
-.left-pane-wrapper {
 	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
+	gap: 1rem;
 	height: 100%;
-	position: relative;
+	justify-content: center;
+	align-items: flex-start;
 }
 
 .left-pane {
@@ -33,19 +24,20 @@ body {
 	justify-content: center;
 }
 
-.right-pane {
-}
 
 /* Landscape: 2 Spalten */
 @media (min-aspect-ratio: 1/1) {
 	.grid-container {
-		grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+		flex-direction: row;
 	}
 	
 	.right-pane {
-		width: 300px;
-		height: 100%;
-		overflow: auto;
+		aspect-ratio: 300 / 501;
+		width: min(300px, 100%);
+		max-height: 100%;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
 	}
 	
 	.left-pane {
@@ -55,18 +47,12 @@ body {
 	}
 }
 
-/* Portrait: 2 Zeilen */
+/* Portrait */
 @media (max-aspect-ratio: 1/1) {
 	.grid-container {
+		display: grid;
+		gap: 3px;
 		grid-template-rows: minmax(0, 1fr) calc(200px - 20px);
-	}
-	
-	.left-pane-wrapper {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: min(100vw - 2rem, 100dvh - 60px - 2rem - 200px);
 	}
 	
 	.left-pane {
@@ -76,10 +62,12 @@ body {
 		max-width: 100%;
 		max-height: 100%;
 	}
-	
 	.right-pane {
-		height: 200px;
-		width: 100%;
+		height: min(200px, 100%);
+		max-width: 100%;
+		overflow: hidden;
+		display: flex;
+		flex-direction: row;
 	}
 	.no-block-in-Portrait-Mode { display: none;}
 }
@@ -98,17 +86,7 @@ body {
 	width: 100%;                 /* Volle Breite */
 	overflow-y: auto;
 }
-.timer {
-	font-size: 2rem;
-	font-family: "JetBrains Mono", monospace;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
-	background-color: #7FBCFF;
-	border: #0d6efd solid 1px;
-	width: 100%;
-	text-align: center;
-}
+
 
 /* === Grid Areas === */
 #btn-gear { grid-area: gear; }
@@ -156,18 +134,33 @@ body {
 #btn-zero { grid-area: zero; }
 
 /* === Button Grid === */
-.button-grid {
-	gap: 0.5rem;
-	display: grid;
-	max-height: none;
+
+.block-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 1rem;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
-/* Landscape: 300px breit, 1rem vom Rand entfernt */
+.timer {
+	font-family: "JetBrains Mono", monospace;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+}
+
+/* LANDSCAPE */
 @media (min-aspect-ratio: 1/1) {
 	.button-grid {
-		width: calc(300px - 2rem);
-		margin-left: auto;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		flex: 1;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-auto-rows: 1fr;
+		gap: 0.5rem;
+		width: 100%;
+		box-sizing: border-box;
 		grid-template-areas:
             "gear rules plus minus"
             "undo redo clear eye"
@@ -176,33 +169,68 @@ body {
             "one two three ."
             "number top center color";
 	}
+	.timer {
+		height: 3rem;
+		font-size: 2rem;
+		margin-bottom: 0.5rem;
+		background-color: #7FBCFF;
+		border: #0d6efd solid 1px;
+		width: 100%;
+		text-align: center;
+	}
+	.block-content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
 	
-	.block-content { padding: 1rem; }
+	.button-grid {
+		flex: 1;
+		min-height: 0;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-auto-rows: 1fr;
+	}
 }
 
-/* Portrait: 200px hoch, 1rem vom Rand entfernt */
+/* Portrait: 200px hoch */
 @media (max-aspect-ratio: 1/1) {
-	.button-grid {
-		height: 180px;
-		width: 100%;
-		display: grid;
-		grid-template-columns: repeat(8, 40px);
-		grid-template-rows: repeat(3, 40px); /* Zeilenhöhe festlegen */
-		gap: 5px; /* Ggf. anpassen */
-		box-sizing: border-box;grid-template-areas:
-            "seven eight nine . plus minus gear rules"
-            "four five six . eye undo redo clear"
-            "one two three . number top center color";
+	.right-pane {
+		height: min(200px, 100%);
+		max-width: 100%;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		min-height: 0; /* ← Wichtig! */
 	}
+	
+	.block-content {
+		flex: 1;
+		min-height: 0;  /* ← erlaubt dem Kind-Element Scrollen */
+		overflow: auto; /* ← falls nötig, lieber Scroll statt Abschneiden */
+	}
+	
 	.timer {
-		height: 15px;
+		height: 1.5rem;
 		font-size: 1rem;
-		border: none;
-		background-color: white;
-		text-align: start;
-		
+		margin-bottom: 0.5rem;
 	}
-	.block-content { padding: 2px 1rem; }
+	
+	.button-grid {
+		flex: 1;
+		grid-auto-rows: 1fr; /* --> gleichmäßige Zeilenhöhe */
+		width: auto;
+		display: grid;
+		grid-template-columns: repeat(8, 1fr);
+		grid-template-rows: repeat(3, 1fr);
+		gap: 5px;
+		box-sizing: border-box;
+		grid-template-areas:
+			"seven eight nine plus minus gear rules ."
+			"four five six eye undo redo clear ."
+			"one two three number top center color .";
+	}
 }
 
 /* Erzeugt weiße button */
@@ -232,6 +260,7 @@ body {
 	min-height: 0;
 	aspect-ratio: 1 / 1;
 	font-size: 1.8rem;
+	width: 100%;
 }
 
 
