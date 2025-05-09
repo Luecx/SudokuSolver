@@ -78,6 +78,7 @@ class Creator {
         const normalBtn = document.getElementById("start-normal-analysis-btn");
         const completeBtn = document.getElementById("start-complete-analysis-btn");
         const clearBtn = document.getElementById("clear-analysis-btn");
+        const debugBtn = document.getElementById("debug-analysis-btn");
         const toggleDefinite = document.getElementById("toggle-definite");
         const toggleUncertain = document.getElementById("toggle-uncertain");
         const alertBox = document.getElementById("alertBox");
@@ -95,6 +96,11 @@ class Creator {
             solutionList.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
             this.board.hideSolution?.();
         };
+
+        const debugAnalysis = () => {
+            const solverboard = this.board.getSolverBoard();
+            console.log(solverboard.toString(true));
+        }
 
         const runNormalAnalysis = () => {
             const solverboard = this.board.getSolverBoard();
@@ -295,6 +301,7 @@ class Creator {
             this.analysisUnlocked = false;
             this.completeAnalysisDone = false;
         });
+        debugBtn.addEventListener("click", debugAnalysis);
 
         const toggleButton = (btn, type) => {
             if (btn.disabled) return;
