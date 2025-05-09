@@ -160,27 +160,22 @@ export function createBoard(container) {
     }
 
     function saveBoard() {
-        let solverBoard = numberLayer.getSolverBoard();
-
         return serializeObject({
-            // fixedCells: contentLayer.saveFixedCells(),
+            fixedCells: numberLayer.saveFixedCells(),
             rules: ruleManager.saveRules()
         });
     }
 
     function loadBoard(json) {
 
-        console.log("data");
-
         let dat = deserializeObject(json);
+        console.log("loading board", dat);
+        console.log(json);
 
-        console.log(dat);
         this.resetBoard();
-
-        // if (data.board.fixedCells) {
-        //
-        //     contentLayer.loadFixedCells(data.board.fixedCells);
-        // }
+        if (dat.fixedCells) {
+            numberLayer.loadFixedCells(dat.fixedCells);
+        }
 
         if (dat.rules) {
             ruleManager.loadRules(dat.rules);
