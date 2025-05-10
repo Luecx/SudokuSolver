@@ -15,9 +15,6 @@ export function attachIrregularSolverLogic(instance) {
             if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
         for (const c of board.getCol(changedCell.pos.c))
             if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
-
-        // Kann fix vereinfacht werden mit region functions
-        // habs erstmal so gelassen, werds aber in der zukunft anpassen
         
         // Find the region containing this cell
         for (const region of getIrregularRegions(instance)) {
