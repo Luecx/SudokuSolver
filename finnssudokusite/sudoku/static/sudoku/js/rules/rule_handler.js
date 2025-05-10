@@ -4,7 +4,7 @@ import { RegionType } from "../region/RegionType.js";
 import { SolverBoard } from "../solver/solverBoard.js";
 
 export class RuleTypeHandler {
-    constructor(name, board) {
+    constructor(name, board, render_prio=0) {
         this.name = name;
         this.board = board;
         this.rules = [];
@@ -14,7 +14,7 @@ export class RuleTypeHandler {
 
         this.can_create_rules = true;
 
-        this.board.addRenderCall(this.name, this.renderAll.bind(this), 0);
+        this.board.addRenderCall(this.name, this.renderAll.bind(this), render_prio);
 
         this.board.onEvent("ev_rule_added"   , () => this.board.triggerRender());
         this.board.onEvent("ev_rule_removed" , () => this.board.triggerRender());
@@ -31,6 +31,9 @@ export class RuleTypeHandler {
 
     // ===== Description (override in subclass) =====
     getDescriptionHTML() {
+        return "";
+    }
+    getDescriptionPlayHTML() {
         return "";
     }
 

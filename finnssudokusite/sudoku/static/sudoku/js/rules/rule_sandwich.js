@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
 import {attachSandwichSolverLogic} from "./rule_sandwich_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class SandwichHandler extends RuleTypeHandler {
     constructor(board) {
@@ -45,6 +46,10 @@ export class SandwichHandler extends RuleTypeHandler {
         In a Sandwich Sudoku, the sum of the numbers between 1 and 9 (the "bread") in a given row or column must match the given total. 
         Cells outside the sandwich or part of the "bread" itself do not count toward the sum.
         `;
+    }
+
+    getDescriptionPlayHTML() {
+        return "In a <b>Sandwich Sudoku</b>, the digits between <b>1</b> and <b>9</b> in a marked row or column must sum to the given total. The <b>1</b> and <b>9</b> act as the ends of the sandwich and are not included in the sum.";
     }
 
     render(rule, ctx) {

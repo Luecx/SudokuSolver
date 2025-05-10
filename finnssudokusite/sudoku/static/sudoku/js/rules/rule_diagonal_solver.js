@@ -1,5 +1,6 @@
 import { NO_NUMBER } from "../number/number.js";
 import { NumberSet } from "../number/number_set.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export function attachDiagonalSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {

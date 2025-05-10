@@ -46,6 +46,21 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        const diag = this.fields?.diagonal;
+        const anti = this.fields?.antiDiagonal;
+
+        if (diag && anti) {
+            return "In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on both diagonals.";
+        } else if (diag) {
+            return "In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the <b>main diagonal</b> (top-left to bottom-right).";
+        } else if (anti) {
+            return "In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the <b>anti-diagonal</b> (top-right to bottom-left).";
+        } else {
+            return "In a <b>Diagonal Sudoku</b>, diagonal constraints are disabled.";
+        }
+    }
+
     renderAll(ctx) {
         if (!this.enabled) return;
         this.render(ctx);

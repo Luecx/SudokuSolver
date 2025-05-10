@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachParitySolverLogic} from "./rule_parity_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ParityHandler extends RuleTypeHandler {
     constructor(board) {
@@ -25,7 +26,7 @@ export class ParityHandler extends RuleTypeHandler {
                 key: "path",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Parity Line Path"
             }
         ];
@@ -35,6 +36,10 @@ export class ParityHandler extends RuleTypeHandler {
         return `
         Along a <b>parity line</b>, adjacent cells must have different parity (one odd, one even).
         `;
+    }
+
+    getDescriptionPlayHTML() {
+        return "In a <b>Parity Sudoku</b>, adjacent digits along each <b>green parity line</b> must alternate between odd and even.";
     }
 
     render(rule, ctx) {
