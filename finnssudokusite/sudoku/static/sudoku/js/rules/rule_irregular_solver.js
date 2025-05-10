@@ -1,30 +1,8 @@
 import { NumberSet } from '../number/number_set.js';
 import { NO_NUMBER } from '../number/number.js';
 
-
 const ALL_DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const BOARD_SIZE = 9;
-
-function getIrregularRegions(instance) {
-    const regionKeys = [
-        'region1', 
-        'region2', 
-        'region3', 
-        'region4', 
-        'region5',
-        'region6', 
-        'region7', 
-        'region8', 
-        'region9'
-    ];
-   
-    let regions = [];
-    for (const key of regionKeys) {
-        regions.push(instance.fields[key]);
-    }
-
-    return regions;
-}
 
 export function attachIrregularSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
@@ -33,11 +11,8 @@ export function attachIrregularSolverLogic(instance) {
         let changed = false;
         const rm = NumberSet.fromNumber(changedCell.value);
         
-        // Apply constraints to row
         for (const c of board.getRow(changedCell.pos.r))
             if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
-        
-        // Apply constraints to column
         for (const c of board.getCol(changedCell.pos.c))
             if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
         
@@ -115,7 +90,29 @@ export function attachIrregularSolverLogic(instance) {
     };
 }
 
-// Helper function to check if a group of cells is plausible
+// Helper functions
+
+function getIrregularRegions(instance) {
+    const regionKeys = [
+        'region1', 
+        'region2', 
+        'region3', 
+        'region4', 
+        'region5',
+        'region6', 
+        'region7', 
+        'region8', 
+        'region9'
+    ];
+   
+    let regions = [];
+    for (const key of regionKeys) {
+        regions.push(instance.fields[key]);
+    }
+
+    return regions;
+}
+
 function groupIsPlausible(group) {
     let seen = new NumberSet();
     seen.mask = 0;
@@ -162,9 +159,7 @@ function hiddenSingles(unit) {
 function irregularPointing(board, regions) {
     let changed = false;
     
-    // For each irregular region
     for (const region of regions) {        
-        // For each possible digit
         for (const d of ALL_DIGITS) {
             // Find which rows this digit appears in within the region
             const rowCounts = new Array(BOARD_SIZE).fill(0);
@@ -232,11 +227,8 @@ function irregularPointing(board, regions) {
 function irregularClaiming(board, regions) {
     let changed = false;
     
-    // For each row
     for (let r = 0; r < BOARD_SIZE; r++) {
-        // For each digit
         for (const d of ALL_DIGITS) {
-            // Find which regions contain this digit in this row
             const regionCounts = new Map();
             
             // Count occurrences of the digit in this row by region
@@ -278,11 +270,8 @@ function irregularClaiming(board, regions) {
         }
     }
     
-    // For each column
     for (let c = 0; c < BOARD_SIZE; c++) {
-        // For each digit
         for (const d of ALL_DIGITS) {
-            // Find which regions contain this digit in this column
             const regionCounts = new Map();
             
             // Count occurrences of the digit in this column by region
