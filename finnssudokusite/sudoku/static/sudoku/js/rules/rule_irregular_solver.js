@@ -15,26 +15,20 @@ export function attachIrregularSolverLogic(instance) {
             if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
         for (const c of board.getCol(changedCell.pos.c))
             if (c.value === NO_NUMBER && c.removeCandidates(rm)) changed = true;
+
+        // Kann fix vereinfacht werden mit region functions
+        // habs erstmal so gelassen, werds aber in der zukunft anpassen
         
-        // Apply constraints to region
         // Find the region containing this cell
-        for (const region of getIrregularRegions(instance)) {            
-            // Check if the region contains the changed cell
-            let cellInRegion = false;
-            for (const cell of region.items) {
-                if (cell.r === changedCell.pos.r && cell.c === changedCell.pos.c) {
-                    cellInRegion = true;
-                    break;
-                }
-            }
+        for (const region of getIrregularRegions(instance)) {
+            if (!region.has(changedCell.pos))
+                continue;
             
-            if (cellInRegion) {
-                // Remove the candidate from all cells in this region
-                for (const pos of region.items) {
-                    const cell = board.getCell({r: pos.r, c: pos.c});
-                    if (cell.value === NO_NUMBER && cell.removeCandidates(rm)) 
-                        changed = true;
-                }
+            // Remove the candidate from all cells in this region
+            for (const pos of region.items) {
+                const cell = board.getCell({r: pos.r, c: pos.c});
+                if (cell.value === NO_NUMBER && cell.removeCandidates(rm)) 
+                    changed = true;
             }
         }
         
@@ -148,12 +142,12 @@ function pointing(board, regions) {
     
     for (const region of regions) {        
         for (const d of ALL_DIGITS) {
-            // Find which rows this digit appears in within the region
+            // find which rows this digit appears in within the region
             const rowCounts = new Array(BOARD_SIZE).fill(0);
-            // Find which columns this digit appears in within the region
+            // find which columns this digit appears in within the region
             const colCounts = new Array(BOARD_SIZE).fill(0);
             
-            // Count occurrences in each row and column
+            // count occurrences in each row and column
             for (const pos of region.items) {
                 const cell = board.getCell({r: pos.r, c: pos.c});
                 if (cell.value === NO_NUMBER && cell.candidates.test(d)) {
@@ -162,19 +156,19 @@ function pointing(board, regions) {
                 }
             }
             
-            // If digit is confined to a single row in this region
+            // if digit is confined to a single row in this region
             for (let r = 0; r < BOARD_SIZE; r++) {
                 if (rowCounts[r] > 0) {
-                    // Check if all cells with this candidate in the region are in this row
+                    // check if all cells with this candidate in the region are in this row
                     const totalCandidates = region.items.reduce((count, pos) => {
                         const cell = board.getCell({r: pos.r, c: pos.c});
                         return count + (cell.value === NO_NUMBER && cell.candidates.test(d) ? 1 : 0);
                     }, 0);
                     
                     if (rowCounts[r] === totalCandidates && rowCounts[r] > 1) {
-                        // Remove this digit from other cells in the same row but outside the region
+                        // remove this digit from other cells in the same row but outside the region
                         for (const cell of board.getRow(r)) {
-                            // Check if this cell is not in our region
+                            // check if this cell is not in our region
                             const inRegion = region.items.some(pos => pos.r === r && pos.c === cell.pos.c);
                             if (!inRegion && cell.value === NO_NUMBER && cell.removeCandidate(d)) {
                                 changed = true;
@@ -184,19 +178,19 @@ function pointing(board, regions) {
                 }
             }
             
-            // If digit is confined to a single column in this region
+            // if digit is confined to a single column in this region
             for (let c = 0; c < BOARD_SIZE; c++) {
                 if (colCounts[c] > 0) {
-                    // Check if all cells with this candidate in the region are in this column
+                    // check if all cells with this candidate in the region are in this column
                     const totalCandidates = region.items.reduce((count, pos) => {
                         const cell = board.getCell({r: pos.r, c: pos.c});
                         return count + (cell.value === NO_NUMBER && cell.candidates.test(d) ? 1 : 0);
                     }, 0);
                     
                     if (colCounts[c] === totalCandidates && colCounts[c] > 1) {
-                        // Remove this digit from other cells in the same column but outside the region
+                        // remove this digit from other cells in the same column but outside the region
                         for (const cell of board.getCol(c)) {
-                            // Check if this cell is not in our region
+                            // check if this cell is not in our region
                             const inRegion = region.items.some(pos => pos.r === cell.pos.r && pos.c === c);
                             if (!inRegion && cell.value === NO_NUMBER && cell.removeCandidate(d)) {
                                 changed = true;
@@ -218,11 +212,11 @@ function claiming(board, regions) {
         for (const d of ALL_DIGITS) {
             const regionCounts = new Map();
             
-            // Count occurrences of the digit in this row by region
+            // count occurrences of the digit in this row by region
             for (let c = 0; c < BOARD_SIZE; c++) {
                 const cell = board.getCell({r: r, c: c});
                 if (cell.value === NO_NUMBER && cell.candidates.test(d)) {
-                    // Find the region this cell belongs to
+                    // find the region this cell belongs to
                     for (let regionIdx = 0; regionIdx < regions.length; regionIdx++) {
                         let region = regions[regionIdx];
                         
@@ -234,14 +228,14 @@ function claiming(board, regions) {
                 }
             }
             
-            // If all candidates in the row are in a single region
+            // if all candidates in the row are in a single region
             for (const [regionIdx, count] of regionCounts.entries()) {
                 if (count > 1) {
-                    // Count total occurrences of this digit in the row
+                    // count total occurrences of this digit in the row
                     const totalInRow = Array.from(regionCounts.values()).reduce((sum, val) => sum + val, 0);
                     
                     if (count === totalInRow) {
-                        // Remove this digit from other cells in the same region but not in this row
+                        // remove this digit from other cells in the same region but not in this row
                         const region = regions[regionIdx];
                         for (const pos of region.items) {
                             if (pos.r !== r) {
@@ -261,11 +255,11 @@ function claiming(board, regions) {
         for (const d of ALL_DIGITS) {
             const regionCounts = new Map();
             
-            // Count occurrences of the digit in this column by region
+            // count occurrences of the digit in this column by region
             for (let r = 0; r < BOARD_SIZE; r++) {
                 const cell = board.getCell({r: r, c: c});
                 if (cell.value === NO_NUMBER && cell.candidates.test(d)) {
-                    // Find the region this cell belongs to
+                    // find the region this cell belongs to
                     for (let regionIdx = 0; regionIdx < regions.length; regionIdx++) {
                         const region = regions[regionIdx];                        
                         if (region.items.some(pos => pos.r === r && pos.c === c)) {
@@ -276,14 +270,14 @@ function claiming(board, regions) {
                 }
             }
             
-            // If all candidates in the column are in a single region
+            // if all candidates in the column are in a single region
             for (const [regionIdx, count] of regionCounts.entries()) {
                 if (count > 1) {
-                    // Count total occurrences of this digit in the column
+                    // count total occurrences of this digit in the column
                     const totalInCol = Array.from(regionCounts.values()).reduce((sum, val) => sum + val, 0);
                     
                     if (count === totalInCol) {
-                        // Remove this digit from other cells in the same region but not in this column
+                        // remove this digit from other cells in the same region but not in this column
                         const region = regions[regionIdx];
                         for (const pos of region.items) {
                             if (pos.c !== c) {
