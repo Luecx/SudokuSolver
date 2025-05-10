@@ -44,43 +44,30 @@ export function attachIrregularSolverLogic(instance) {
     instance.candidatesChanged = function (board) {
         let changed = false;
 
-        // Process rows for hidden singles
         for (let i = 0; i < BOARD_SIZE; i++) {
             if (hiddenSingles(board.getRow(i))) changed = true;
-        }
-
-        // Process columns for hidden singles
-        for (let i = 0; i < BOARD_SIZE; i++) {
             if (hiddenSingles(board.getCol(i))) changed = true;
         }
 
-        // Process irregular regions for hidden singles
+        // process irregular regions for hidden singles
         for (const region of getIrregularRegions(instance)) {            
             const cells = region.items.map(pos => board.getCell({r: pos.r, c: pos.c}));
             if (hiddenSingles(cells)) changed = true;
         }
 
-        // Process pointing pairs/triples in irregular regions
-        if (irregularPointing(board, getIrregularRegions(instance))) changed = true;
-        
-        // Process claiming pairs/triples in irregular regions
-        if (irregularClaiming(board, getIrregularRegions(instance))) changed = true;
+        if (pointing(board, getIrregularRegions(instance))) changed = true;
+        if (claiming(board, getIrregularRegions(instance))) changed = true;
 
         return changed;
     };
 
     instance.checkPlausibility = function (board) {
-        // Check rows
-        for (let r = 0; r < BOARD_SIZE; r++) {
-            if (!groupIsPlausible(board.getRow(r))) return false;
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            if (!groupIsPlausible(board.getRow(i))) return false;
+            if (!groupIsPlausible(board.getCol(i))) return false;
         }
         
-        // Check columns
-        for (let c = 0; c < BOARD_SIZE; c++) {
-            if (!groupIsPlausible(board.getCol(c))) return false;
-        }
-        
-        // Check irregular regions
+        // check irregular regions
         for (const region of getIrregularRegions(instance)) {
             const cells = region.items.map(pos => board.getCell({r: pos.r, c: pos.c}));
             if (!groupIsPlausible(cells)) return false;
@@ -156,7 +143,7 @@ function hiddenSingles(unit) {
     return changed;
 }
 
-function irregularPointing(board, regions) {
+function pointing(board, regions) {
     let changed = false;
     
     for (const region of regions) {        
@@ -224,7 +211,7 @@ function irregularPointing(board, regions) {
     return changed;
 }
 
-function irregularClaiming(board, regions) {
+function claiming(board, regions) {
     let changed = false;
     
     for (let r = 0; r < BOARD_SIZE; r++) {
