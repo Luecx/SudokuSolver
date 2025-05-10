@@ -3,37 +3,24 @@ import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { attachIrregularSolverLogic} from "./rule_irregular_solver.js";
 
-function drawRegions(ctx, board, region, color)
-{
-    if(region == null) return;
-
-    const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
-    const loops = buildInsetPath(cells, 0);
-
-    ctx.fillStyle = color;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-
-    for (const loop of loops) {
-        ctx.beginPath();
-        loop.forEach((pt, i) => {
-            const topLeft = board.getCellTopLeft(pt.x, pt.y);
-            const x = topLeft.x;
-            const y = topLeft.y;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-        ctx.closePath();
-        ctx.fill();
-    }
-}
-
 export class IrregularHandler extends RuleTypeHandler {
     constructor(board) {
         super("Irregular", board);
         this.tag = "irregular";
         this.can_create_rules = false;
 
+        this.regionKeys = [
+            'region1', 
+            'region2', 
+            'region3', 
+            'region4', 
+            'region5', 
+            'region6', 
+            'region7', 
+            'region8', 
+            'region9'
+        ];
+        
         attachIrregularSolverLogic(this);
     }
 
@@ -41,44 +28,18 @@ export class IrregularHandler extends RuleTypeHandler {
         return [];
     }
 
-    getRuleWarnings() {
+    getRuleWarnings(region) {
         let warnings = [];
 
-        console.log("f");
-   /*
-        if (!region) {
+       if (!region) {
             warnings.push("Irregular region is empty");
             return warnings;
         }
-
-        if (region.size() != 9) {
-            warnings.push("Irregular region must contain 9 cells");
-        }
-
-        // Check for collisions with other regions
-        const currentCells = new Set(region.items.map(item => item.toString()));
-        let hasCollision = false;
         
-        for (const otherRule of this.rules) {
-            if (otherRule === rule) continue; // skip current rule
-            
-            const otherRegion = otherRule.fields?.region;
-            if (!otherRegion) continue;
-            
-            for (const item of otherRegion.items) {
-                if (currentCells.has(item.toString())) {
-                    hasCollision = true;
-                    break;
-                }
-            }
-            
-            if (hasCollision) break;
+        if (region.items.length !== 9) {
+            warnings.push(`Region must have 9 cells`);
         }
-        
-        if (hasCollision) {
-            warnings.push("Region collision detected");
-        }
-*/
+
         return warnings;
     }
 
@@ -168,22 +129,116 @@ export class IrregularHandler extends RuleTypeHandler {
     render(ctx) {
         ctx.save();
 
-        const regions = [
-            ['region1', 'rgba(255, 0, 0, 0.3)'],
-            ['region2', 'rgba(0, 255, 0, 0.3)'],
-            ['region3', 'rgba(0, 0, 255, 0.3)'],
-            ['region4', 'rgba(255, 255, 0, 0.3)'],
-            ['region5', 'rgba(255, 0, 255, 0.3)'],
-            ['region6', 'rgba(0, 255, 255, 0.3)'],
-            ['region7', 'rgba(255, 165, 0, 0.3)'],
-            ['region8', 'rgba(128, 0, 128, 0.3)'],
-            ['region9', 'rgba(0, 128, 0, 0.3)']
+        const regionColors = [
+            'rgba(255, 0, 0, 0.3)',
+            'rgba(0, 255, 0, 0.3)',
+            'rgba(0, 0, 255, 0.3)',
+            'rgba(255, 255, 0, 0.3)',
+            'rgba(255, 0, 255, 0.3)',
+            'rgba(0, 255, 255, 0.3)',
+            'rgba(255, 165, 0, 0.3)',
+            'rgba(128, 0, 128, 0.3)',
+            'rgba(0, 128, 0, 0.3)'
         ];
 
-        for (const [regionKey, color] of regions) {
-            drawRegions(ctx, this.board, this.fields[regionKey], color);
+        // draw all regions
+        for (let i = 0; i < this.regionKeys.length; i++) {
+            const key = this.regionKeys[i];
+            this.drawRegions(ctx, this.fields[key], regionColors[i]);
+        }
+        
+        // Check for collisions directly in render method
+        const collidingCells = this.findCollidingCells();
+        
+        // draw red X on colliding cells
+        for (const collision of collidingCells) {
+            this.drawCollisionX(ctx, collision.cell);
         }
 
         ctx.restore();   
+    }
+
+    // helper functions
+
+    findCollidingCells() {
+        const cellCounts = new Map();
+
+        for (const key of this.regionKeys) {
+            const region = this.fields?.[key];
+            if (!region) continue;
+            
+            for (const item of region.items) {
+                const cellKey = `${item.r},${item.c}`;
+                if (!cellCounts.has(cellKey)) {
+                    cellCounts.set(cellKey, { count: 1, cell: item, regions: [key] });
+                } else {
+                    const entry = cellCounts.get(cellKey);
+                    entry.count += 1;
+                    entry.regions.push(key);
+                }
+            }
+        }
+        
+        const collidingCells = [];
+        for (const [cellKey, entry] of cellCounts.entries()) {
+            if (entry.count > 1) {
+                collidingCells.push({
+                    cell: entry.cell,
+                    key: cellKey,
+                    regions: entry.regions
+                });
+            }
+        }
+        
+        return collidingCells;
+    }
+
+    drawRegions(ctx, region, color)
+    {
+        if(region == null) return;
+
+        const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
+        const loops = buildInsetPath(cells, 0);
+
+        ctx.fillStyle = color;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+
+        ctx.beginPath();
+
+        for (const loop of loops) {
+            loop.forEach((pt, i) => {
+                const topLeft = this.board.getCellTopLeft(pt.x, pt.y);
+                const x = topLeft.x;
+                const y = topLeft.y;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+        }
+
+        ctx.fill();
+    }
+
+    drawCollisionX(ctx, cell) {
+        const { r, c } = cell;
+        const topLeft = this.board.getCellTopLeft(r, c);
+        const cellSize = this.board.getCellSize();
+        
+        const x = topLeft.x;
+        const y = topLeft.y;
+        
+        ctx.save();
+        ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        ctx.moveTo(x + cellSize * 0.2, y + cellSize * 0.2);
+        ctx.lineTo(x + cellSize * 0.8, y + cellSize * 0.8);
+        ctx.moveTo(x + cellSize * 0.8, y + cellSize * 0.2);
+        ctx.lineTo(x + cellSize * 0.2, y + cellSize * 0.8);
+        
+        ctx.stroke();
+        ctx.restore();
     }
 }
