@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
 import { attachArrowSolverLogic} from "./rule_arrow_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ArrowHandler extends RuleTypeHandler {
     constructor(board) {
@@ -22,8 +23,8 @@ export class ArrowHandler extends RuleTypeHandler {
 
     getSpecificRuleScheme() {
         return [
-            { key: "base", type: "region", regionType: RegionType.CELLS, selectionMode: "MULTIPLE", label: "Arrow Base Cells" },
-            { key: "path", type: "region", regionType: RegionType.CELLS, selectionMode: "MULTIPLE", label: "Arrow Path Cells" },
+            { key: "base", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Arrow Base Cells" },
+            { key: "path", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Arrow Path Cells" },
         ];
     }
 

@@ -1,4 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
 import { attachKropkiSolverLogic} from "./rule_kropki_solver.js";
@@ -36,7 +37,7 @@ export class KropkiHandler extends RuleTypeHandler {
                 key: "region",
                 type: "region",
                 regionType: RegionType.EDGES,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Kropki Dot Edges"
             }
         ];

@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
 import {attachSandwichSolverLogic} from "./rule_sandwich_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class SandwichHandler extends RuleTypeHandler {
     constructor(board) {

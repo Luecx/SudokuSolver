@@ -1,5 +1,6 @@
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachChessSolverLogic} from "./rule_chess_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ChessRuleHandler extends RuleTypeHandler {
     constructor(board) {

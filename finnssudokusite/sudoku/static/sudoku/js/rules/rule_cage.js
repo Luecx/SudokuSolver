@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { attachCageSolverLogic} from "./rule_cage_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class CageHandler extends RuleTypeHandler {
     constructor(board) {
@@ -73,7 +74,7 @@ export class CageHandler extends RuleTypeHandler {
                 key: "region",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Cage Region"
             },
             {

@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachXVRuleSolverLogic} from "./rule_xv_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class XVRuleHandler extends RuleTypeHandler {
     constructor(board) {
@@ -35,7 +36,7 @@ export class XVRuleHandler extends RuleTypeHandler {
                 key: "region",
                 type: "region",
                 regionType: RegionType.EDGES,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "XV Symbol Edges"
             }
         ];

@@ -1,5 +1,6 @@
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachStandardSolverLogic} from "./rule_standard_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class StandardRuleHandler extends RuleTypeHandler {
     constructor(board) {

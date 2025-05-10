@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachPalindromeSolverLogic} from "./rule_palindrome_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class PalindromeHandler extends RuleTypeHandler {
     constructor(board) {
@@ -29,7 +30,7 @@ export class PalindromeHandler extends RuleTypeHandler {
                 key: "path",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Palindrome Path"
             }
         ];

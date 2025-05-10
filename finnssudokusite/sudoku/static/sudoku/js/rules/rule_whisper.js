@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { attachWhisperSolverLogic } from "./rule_whisper_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class WhisperHandler extends RuleTypeHandler {
     constructor(board) {
@@ -24,7 +25,7 @@ export class WhisperHandler extends RuleTypeHandler {
                 key: "path",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Whisper Line Path"
             }
         ];
