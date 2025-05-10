@@ -11,9 +11,9 @@ import {RenbanHandler} from "./rule_renban.js";
 import { WhisperHandler} from "./rule_whisper.js";
 import { CageHandler } from "./rule_cage.js";
 import { ChevronHandler } from "./rule_chevron.js";
-import { ChessRuleHandler } from "./rule_chess.js";
+import { AntiChessRuleHandler } from "./rule_anti_chess.js";
 import { MagicSquareHandler } from "./rule_magic_square.js";
-import { IrregularRegionsHandler } from "./rule_irregular.js";
+import { IrregularRegionsHandler } from "./rule_irregular_regions.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -31,7 +31,7 @@ export function createAllRuleHandlers(board) {
         new WhisperHandler(board),
         new CageHandler(board),
         new ChevronHandler(board),
-        new ChessRuleHandler(board),
+        new AntiChessRuleHandler(board),
         new MagicSquareHandler(board),
         new IrregularRegionsHandler(board),
     ];

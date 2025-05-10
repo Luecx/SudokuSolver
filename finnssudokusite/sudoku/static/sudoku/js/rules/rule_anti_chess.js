@@ -1,13 +1,13 @@
 import { RuleTypeHandler } from "./rule_handler.js";
-import {attachChessSolverLogic} from "./rule_chess_solver.js";
+import {attachAntiChessSolverLogic} from "./rule_anti_chess_solver.js";
 
-export class ChessRuleHandler extends RuleTypeHandler {
+export class AntiChessRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("Anti-Chess", board);
-        this.tag = "anti_chess";
+        this.tag = "antichess";
         this.can_create_rules = false;
 
-        attachChessSolverLogic(this);
+        attachAntiChessSolverLogic(this);
     }
 
     defaultRules() {
@@ -37,7 +37,7 @@ export class ChessRuleHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-            In <b>Chess Sudoku</b>:
+            In <b>Anti-Chess Sudoku</b>:
             <ul>
                 <li>Cells a knight's move apart cannot contain the same number.</li>
                 <li>Cells a king's move apart cannot contain the same number.</li>
