@@ -6,7 +6,7 @@ import { attachKropkiSolverLogic} from "./rule_kropki_solver.js";
 
 export class KropkiHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Kropki", board);
+        super("Kropki", board, 10);
         this.tag = "kropki";
         this.can_create_rules = false;
 
