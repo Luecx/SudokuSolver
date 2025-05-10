@@ -1,7 +1,8 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
-import { attachIrregularSolverLogic} from "./rule_irregular_solver.js";
+import { attachIrregularSolverLogic} from "./rule_irregular_regions_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class IrregularRegionsHandler extends RuleTypeHandler {
     constructor(board) {
@@ -49,63 +50,63 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
                 key: "region1",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 1"
             },
             {
                 key: "region2",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 2"
             },
             {
                 key: "region3",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 3"
             },
             {
                 key: "region4",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 4"
             },
             {
                 key: "region5",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 5"
             },
             {
                 key: "region6",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 6"
             },
             {
                 key: "region7",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 7"
             },
             {
                 key: "region8",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 8"
             },
             {
                 key: "region9",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Region 9"
             }
         ];

@@ -1,72 +1,23 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import { attachChevronRuleSolverLogic } from "./rule_chevron_solver.js";
+import { attachChevronSolverLogic } from "./rule_chevron_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
-
-// Helper function to draw chevrons
-function drawChevron(ctx, x, y, direction = 'down') {
-    const size = 28;
-
-    ctx.translate(x, y);
-    ctx.scale(size / 24, size / 24);
-    
-    // Center the drawing 
-    ctx.translate(-12, -12); // Shift back by half the icon size
-    
-    ctx.beginPath();
-    
-    if (direction === 'down') {
-        ctx.moveTo(5.293, 8.293);
-        ctx.lineTo(12, 15);
-        ctx.lineTo(18.707, 8.293);
-        ctx.lineTo(20.121, 9.707);
-        ctx.lineTo(12, 17.828);
-        ctx.lineTo(3.879, 9.707);
-    } 
-    else if (direction === 'up') {
-        ctx.moveTo(5.293, 15.707);
-        ctx.lineTo(12, 9);
-        ctx.lineTo(18.707, 15.707);
-        ctx.lineTo(20.121, 14.293);
-        ctx.lineTo(12, 6.172);
-        ctx.lineTo(3.879, 14.293);
-    }
-    else if (direction === 'right') {
-        ctx.moveTo(8.293, 5.293);
-        ctx.lineTo(15, 12);
-        ctx.lineTo(8.293, 18.707);
-        ctx.lineTo(9.707, 20.121);
-        ctx.lineTo(17.828, 12);
-        ctx.lineTo(9.707, 3.879);
-    }
-    else if (direction === 'left') {
-        ctx.moveTo(15.707, 5.293);
-        ctx.lineTo(9, 12);
-        ctx.lineTo(15.707, 18.707);
-        ctx.lineTo(14.293, 20.121);
-        ctx.lineTo(6.172, 12);
-        ctx.lineTo(14.293, 3.879);
-    }
-    
-    ctx.closePath();
-    ctx.fill();
-}
 
 export class ChevronHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Chevron Rule", board);
+        super("Chevron", board);
         this.tag = "chevron";
         this.can_create_rules = false;
 
-        attachChevronRuleSolverLogic(this);
+        attachChevronSolverLogic(this);
     }
 
     defaultRules() {
         return [
-            { label: "Up Chevron Rule", symbol: "up", fields: {} },
-            { label: "Down Chevron Rule", symbol: "down", fields: {} },
-            { label: "Right Chevron Rule", symbol: "right", fields: {} },
-            { label: "Left Chevron Rule", symbol: "left", fields: {} },
+            { label: "Up Chevron", symbol: "up", fields: {} },
+            { label: "Down Chevron", symbol: "down", fields: {} },
+            { label: "Right Chevron", symbol: "right", fields: {} },
+            { label: "Left Chevron", symbol: "left", fields: {} },
         ];
     }
 
@@ -114,8 +65,57 @@ export class ChevronHandler extends RuleTypeHandler {
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = "black";
-            drawChevron(ctx, cx, cy, rule.symbol);
+            this.drawChevron(ctx, cx, cy, rule.symbol);
             ctx.restore();
         }
+    }
+
+    // Helper function
+    drawChevron(ctx, x, y, direction = 'down') {
+        const size = 28;
+
+        ctx.translate(x, y);
+        ctx.scale(size / 24, size / 24);
+        
+        // Center the drawing 
+        ctx.translate(-12, -12); // Shift back by half the icon size
+        
+        ctx.beginPath();
+        
+        if (direction === 'down') {
+            ctx.moveTo(5.293, 8.293);
+            ctx.lineTo(12, 15);
+            ctx.lineTo(18.707, 8.293);
+            ctx.lineTo(20.121, 9.707);
+            ctx.lineTo(12, 17.828);
+            ctx.lineTo(3.879, 9.707);
+        } 
+        else if (direction === 'up') {
+            ctx.moveTo(5.293, 15.707);
+            ctx.lineTo(12, 9);
+            ctx.lineTo(18.707, 15.707);
+            ctx.lineTo(20.121, 14.293);
+            ctx.lineTo(12, 6.172);
+            ctx.lineTo(3.879, 14.293);
+        }
+        else if (direction === 'right') {
+            ctx.moveTo(8.293, 5.293);
+            ctx.lineTo(15, 12);
+            ctx.lineTo(8.293, 18.707);
+            ctx.lineTo(9.707, 20.121);
+            ctx.lineTo(17.828, 12);
+            ctx.lineTo(9.707, 3.879);
+        }
+        else if (direction === 'left') {
+            ctx.moveTo(15.707, 5.293);
+            ctx.lineTo(9, 12);
+            ctx.lineTo(15.707, 18.707);
+            ctx.lineTo(14.293, 20.121);
+            ctx.lineTo(6.172, 12);
+            ctx.lineTo(14.293, 3.879);
+        }
+        
+        ctx.closePath();
+        ctx.fill();
     }
 }

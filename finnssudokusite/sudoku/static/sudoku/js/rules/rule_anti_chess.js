@@ -1,6 +1,5 @@
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachAntiChessSolverLogic} from "./rule_anti_chess_solver.js";
-import {attachChessSolverLogic} from "./rule_chess_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class AntiChessRuleHandler extends RuleTypeHandler {
