@@ -69,6 +69,11 @@ export class BoardRenderer {
             ctx.lineTo(pos, offset + this.usedSize);
             ctx.stroke();
         }
+
+        // bold outline
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(offset, offset, this.usedSize, this.usedSize);
     }
 
     triggerRender() {
