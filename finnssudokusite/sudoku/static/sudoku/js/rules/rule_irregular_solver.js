@@ -5,9 +5,31 @@ import { NO_NUMBER } from '../number/number.js';
 const ALL_DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const BOARD_SIZE = 9;
 
+function getIrregularRegions(instance) {
+    const regionKeys = [
+        'region1', 
+        'region2', 
+        'region3', 
+        'region4', 
+        'region5',
+        'region6', 
+        'region7', 
+        'region8', 
+        'region9'
+    ];
+   
+    let regions = [];
+    for (const key of regionKeys) {
+        regions.push(instance.fields[key]);
+    }
+
+    return regions;
+}
+
 export function attachIrregularSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
         if (changedCell.value === NO_NUMBER) return false;
+        
         let changed = false;
         const rm = NumberSet.fromNumber(changedCell.value);
         
@@ -21,13 +43,10 @@ export function attachIrregularSolverLogic(instance) {
         
         // Apply constraints to region
         // Find the region containing this cell
-        for (const rule of instance.rules) {
-            const region = rule.fields?.region;
-            if (!region) continue;
-            
+        for (const region of getIrregularRegions(instance)) {            
             // Check if the region contains the changed cell
             let cellInRegion = false;
-            for (const cell of region) {
+            for (const cell of region.items) {
                 if (cell.r === changedCell.pos.r && cell.c === changedCell.pos.c) {
                     cellInRegion = true;
                     break;
@@ -36,8 +55,8 @@ export function attachIrregularSolverLogic(instance) {
             
             if (cellInRegion) {
                 // Remove the candidate from all cells in this region
-                for (const pos of region) {
-                    const cell = board.getCell(pos.r, pos.c);
+                for (const pos of region.items) {
+                    const cell = board.getCell({r: pos.r, c: pos.c});
                     if (cell.value === NO_NUMBER && cell.removeCandidates(rm)) 
                         changed = true;
                 }
@@ -61,19 +80,16 @@ export function attachIrregularSolverLogic(instance) {
         }
 
         // Process irregular regions for hidden singles
-        for (const rule of instance.rules) {
-            const region = rule.fields?.region;
-            if (!region) continue;
-            
-            const cells = region.map(pos => board.getCell(pos.r, pos.c));
+        for (const region of getIrregularRegions(instance)) {            
+            const cells = region.items.map(pos => board.getCell({r: pos.r, c: pos.c}));
             if (hiddenSingles(cells)) changed = true;
         }
 
         // Process pointing pairs/triples in irregular regions
-        if (irregularPointing(board, instance.rules)) changed = true;
+        if (irregularPointing(board, getIrregularRegions(instance))) changed = true;
         
         // Process claiming pairs/triples in irregular regions
-        if (irregularClaiming(board, instance.rules)) changed = true;
+        if (irregularClaiming(board, getIrregularRegions(instance))) changed = true;
 
         return changed;
     };
@@ -90,11 +106,8 @@ export function attachIrregularSolverLogic(instance) {
         }
         
         // Check irregular regions
-        for (const rule of instance.rules) {
-            const region = rule.fields?.region;
-            if (!region) continue;
-            
-            const cells = region.map(pos => board.getCell(pos.r, pos.c));
+        for (const region of getIrregularRegions(instance)) {
+            const cells = region.items.map(pos => board.getCell({r: pos.r, c: pos.c}));
             if (!groupIsPlausible(cells)) return false;
         }
         
@@ -146,14 +159,11 @@ function hiddenSingles(unit) {
     return changed;
 }
 
-function irregularPointing(board, rules) {
+function irregularPointing(board, regions) {
     let changed = false;
     
     // For each irregular region
-    for (const rule of rules) {
-        const region = rule.fields?.region;
-        if (!region) continue;
-        
+    for (const region of regions) {        
         // For each possible digit
         for (const d of ALL_DIGITS) {
             // Find which rows this digit appears in within the region
@@ -162,8 +172,8 @@ function irregularPointing(board, rules) {
             const colCounts = new Array(BOARD_SIZE).fill(0);
             
             // Count occurrences in each row and column
-            for (const pos of region) {
-                const cell = board.getCell(pos.r, pos.c);
+            for (const pos of region.items) {
+                const cell = board.getCell({r: pos.r, c: pos.c});
                 if (cell.value === NO_NUMBER && cell.candidates.test(d)) {
                     rowCounts[pos.r]++;
                     colCounts[pos.c]++;
@@ -174,8 +184,8 @@ function irregularPointing(board, rules) {
             for (let r = 0; r < BOARD_SIZE; r++) {
                 if (rowCounts[r] > 0) {
                     // Check if all cells with this candidate in the region are in this row
-                    const totalCandidates = region.reduce((count, pos) => {
-                        const cell = board.getCell(pos.r, pos.c);
+                    const totalCandidates = region.items.reduce((count, pos) => {
+                        const cell = board.getCell({r: pos.r, c: pos.c});
                         return count + (cell.value === NO_NUMBER && cell.candidates.test(d) ? 1 : 0);
                     }, 0);
                     
@@ -183,7 +193,7 @@ function irregularPointing(board, rules) {
                         // Remove this digit from other cells in the same row but outside the region
                         for (const cell of board.getRow(r)) {
                             // Check if this cell is not in our region
-                            const inRegion = region.some(pos => pos.r === r && pos.c === cell.pos.c);
+                            const inRegion = region.items.some(pos => pos.r === r && pos.c === cell.pos.c);
                             if (!inRegion && cell.value === NO_NUMBER && cell.removeCandidate(d)) {
                                 changed = true;
                             }
@@ -196,8 +206,8 @@ function irregularPointing(board, rules) {
             for (let c = 0; c < BOARD_SIZE; c++) {
                 if (colCounts[c] > 0) {
                     // Check if all cells with this candidate in the region are in this column
-                    const totalCandidates = region.reduce((count, pos) => {
-                        const cell = board.getCell(pos.r, pos.c);
+                    const totalCandidates = region.items.reduce((count, pos) => {
+                        const cell = board.getCell({r: pos.r, c: pos.c});
                         return count + (cell.value === NO_NUMBER && cell.candidates.test(d) ? 1 : 0);
                     }, 0);
                     
@@ -205,7 +215,7 @@ function irregularPointing(board, rules) {
                         // Remove this digit from other cells in the same column but outside the region
                         for (const cell of board.getCol(c)) {
                             // Check if this cell is not in our region
-                            const inRegion = region.some(pos => pos.r === cell.pos.r && pos.c === c);
+                            const inRegion = region.items.some(pos => pos.r === cell.pos.r && pos.c === c);
                             if (!inRegion && cell.value === NO_NUMBER && cell.removeCandidate(d)) {
                                 changed = true;
                             }
@@ -219,7 +229,7 @@ function irregularPointing(board, rules) {
     return changed;
 }
 
-function irregularClaiming(board, rules) {
+function irregularClaiming(board, regions) {
     let changed = false;
     
     // For each row
@@ -231,15 +241,14 @@ function irregularClaiming(board, rules) {
             
             // Count occurrences of the digit in this row by region
             for (let c = 0; c < BOARD_SIZE; c++) {
-                const cell = board.getCell(r, c);
+                const cell = board.getCell({r: r, c: c});
                 if (cell.value === NO_NUMBER && cell.candidates.test(d)) {
                     // Find the region this cell belongs to
-                    for (let ruleIdx = 0; ruleIdx < rules.length; ruleIdx++) {
-                        const region = rules[ruleIdx].fields?.region;
-                        if (!region) continue;
+                    for (let regionIdx = 0; regionIdx < regions.length; regionIdx++) {
+                        let region = regions[regionIdx];
                         
-                        if (region.some(pos => pos.r === r && pos.c === c)) {
-                            regionCounts.set(ruleIdx, (regionCounts.get(ruleIdx) || 0) + 1);
+                        if (region.items.some(pos => pos.r === r && pos.c === c)) {
+                            regionCounts.set(regionIdx, (regionCounts.get(regionIdx) || 0) + 1);
                             break;
                         }
                     }
@@ -247,17 +256,17 @@ function irregularClaiming(board, rules) {
             }
             
             // If all candidates in the row are in a single region
-            for (const [ruleIdx, count] of regionCounts.entries()) {
+            for (const [regionIdx, count] of regionCounts.entries()) {
                 if (count > 1) {
                     // Count total occurrences of this digit in the row
                     const totalInRow = Array.from(regionCounts.values()).reduce((sum, val) => sum + val, 0);
                     
                     if (count === totalInRow) {
                         // Remove this digit from other cells in the same region but not in this row
-                        const region = rules[ruleIdx].fields?.region;
-                        for (const pos of region) {
+                        const region = regions[regionIdx];
+                        for (const pos of region.items) {
                             if (pos.r !== r) {
-                                const cell = board.getCell(pos.r, pos.c);
+                                const cell = board.getCell({r: pos.r, c: pos.c});
                                 if (cell.value === NO_NUMBER && cell.removeCandidate(d)) {
                                     changed = true;
                                 }
@@ -278,15 +287,13 @@ function irregularClaiming(board, rules) {
             
             // Count occurrences of the digit in this column by region
             for (let r = 0; r < BOARD_SIZE; r++) {
-                const cell = board.getCell(r, c);
+                const cell = board.getCell({r: r, c: c});
                 if (cell.value === NO_NUMBER && cell.candidates.test(d)) {
                     // Find the region this cell belongs to
-                    for (let ruleIdx = 0; ruleIdx < rules.length; ruleIdx++) {
-                        const region = rules[ruleIdx].fields?.region;
-                        if (!region) continue;
-                        
-                        if (region.some(pos => pos.r === r && pos.c === c)) {
-                            regionCounts.set(ruleIdx, (regionCounts.get(ruleIdx) || 0) + 1);
+                    for (let regionIdx = 0; regionIdx < regions.length; regionIdx++) {
+                        const region = regions[regionIdx];                        
+                        if (region.items.some(pos => pos.r === r && pos.c === c)) {
+                            regionCounts.set(regionIdx, (regionCounts.get(regionIdx) || 0) + 1);
                             break;
                         }
                     }
@@ -294,17 +301,17 @@ function irregularClaiming(board, rules) {
             }
             
             // If all candidates in the column are in a single region
-            for (const [ruleIdx, count] of regionCounts.entries()) {
+            for (const [regionIdx, count] of regionCounts.entries()) {
                 if (count > 1) {
                     // Count total occurrences of this digit in the column
                     const totalInCol = Array.from(regionCounts.values()).reduce((sum, val) => sum + val, 0);
                     
                     if (count === totalInCol) {
                         // Remove this digit from other cells in the same region but not in this column
-                        const region = rules[ruleIdx].fields?.region;
-                        for (const pos of region) {
+                        const region = regions[regionIdx];
+                        for (const pos of region.items) {
                             if (pos.c !== c) {
-                                const cell = board.getCell(pos.r, pos.c);
+                                const cell = board.getCell({r: pos.r, c: pos.c});
                                 if (cell.value === NO_NUMBER && cell.removeCandidate(d)) {
                                     changed = true;
                                 }

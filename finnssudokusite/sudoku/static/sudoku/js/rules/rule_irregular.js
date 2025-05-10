@@ -34,7 +34,7 @@ export class IrregularHandler extends RuleTypeHandler {
         this.tag = "irregular";
         this.can_create_rules = false;
 
-     //   attachIrregularSolverLogic(this);
+        attachIrregularSolverLogic(this);
     }
 
     defaultRules() {
