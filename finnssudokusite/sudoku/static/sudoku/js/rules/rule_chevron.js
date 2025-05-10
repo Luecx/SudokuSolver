@@ -90,6 +90,11 @@ export class ChevronHandler extends RuleTypeHandler {
         return `<p>Chevrons point to the cell with the larger number.</p>`;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Chevron Sudoku</b>, each chevron points toward the cell with the <b>higher digit</b>.";
+    }
+
+
     render(rule, ctx) {
         const region = rule.fields.region;
         if (!region) return;

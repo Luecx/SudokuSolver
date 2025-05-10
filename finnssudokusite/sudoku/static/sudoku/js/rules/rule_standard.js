@@ -29,6 +29,11 @@ export class StandardRuleHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Standard Sudoku</b>, every row, column, and 3×3 box must contain the digits <b>1</b> to <b>9</b> exactly once.";
+    }
+
+
     // === IMPORTANT: override renderAll() ===
     renderAll(ctx) {
         if (!this.enabled) return;

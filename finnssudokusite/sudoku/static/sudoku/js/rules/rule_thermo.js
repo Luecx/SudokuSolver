@@ -38,6 +38,11 @@ export class ThermometerHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Thermometer Sudoku</b>, digits must <b>strictly increase</b> along each <b>gray thermometer</b> from the bulb to the tip.";
+    }
+
+
     render(rule, ctx) {
         if (!this.board) return;
 

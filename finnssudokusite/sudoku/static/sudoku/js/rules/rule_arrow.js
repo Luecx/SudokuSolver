@@ -69,6 +69,21 @@ export class ArrowHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        let desc = "In an <b>Arrow Sudoku</b>, the digits along the arrow path must sum to the value in the circle at the base.";
+        for (const rule of this.rules) {
+            const base = rule.fields.base;
+            if (base?.size() === 2) {
+                desc += " If the base has two cells, the <b>left or top cell is the tens digit</b> and the <b>right or bottom is the ones digit</b>.";
+                break;
+            }
+        }
+        return desc;
+    }
+
+
+
+
     render(rule, ctx) {
         if (!this.board) return;
 

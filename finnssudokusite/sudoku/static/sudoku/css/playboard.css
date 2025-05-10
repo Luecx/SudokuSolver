@@ -346,3 +346,10 @@ body {
 .dropdown-submenu:focus-within > .dropdown-menu {
 	display: block;
 }
+
+.rule-description {
+	margin-bottom: 1em;
+	padding: 0.5em;
+	border-left: 3px solid #aaa;
+	background: #f8f9fa;
+}

@@ -53,6 +53,19 @@ export class XVRuleHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        let desc = "In an <b>XV Sudoku</b>, an <b>X</b> between two cells means they sum to <b>10</b>, and a <b>V</b> means they sum to <b>5</b>.";
+
+        if (this.fields?.allDotsGiven) {
+            desc += " All valid X and V pairs are shown — if there's no symbol, the sum is neither 5 nor 10.";
+        } else {
+            desc += " Symbols may be placed selectively — a missing symbol does not imply anything.";
+        }
+
+        return desc;
+    }
+
+
     render(rule, ctx) {
         const region = rule.fields.region;
 

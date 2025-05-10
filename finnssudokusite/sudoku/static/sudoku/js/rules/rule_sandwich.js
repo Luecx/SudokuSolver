@@ -48,6 +48,10 @@ export class SandwichHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Sandwich Sudoku</b>, the digits between <b>1</b> and <b>9</b> in a marked row or column must sum to the given total. The <b>1</b> and <b>9</b> act as the ends of the sandwich and are not included in the sum.";
+    }
+
     render(rule, ctx) {
         const region = rule.fields.region;
         const sum = rule.fields.sum;

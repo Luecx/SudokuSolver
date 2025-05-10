@@ -37,6 +37,10 @@ export class WhisperHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Whisper Sudoku</b>, adjacent digits on each <b>teal whisper line</b> must differ by at least <b>5</b>.";
+    }
+
     render(rule, ctx) {
         if (!this.board) return;
 

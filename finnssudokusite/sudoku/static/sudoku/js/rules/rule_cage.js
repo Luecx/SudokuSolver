@@ -90,9 +90,19 @@ export class CageHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-        Inside <b>cages</b>, the sum of the numbers must equal the specified value.
+        Inside <b>cages</b>, the sum of the numbers must equal the specified value in the top left corner of the cage.
         `;
     }
+    getDescriptionPlayHTML() {
+        let desc = "In a <b>Cage Sudoku</b>, digits inside a cage must sum to the value shown in the top-left corner of the cage.";
+        if (this.fields?.NumberCanRepeat) {
+            desc += " In this puzzle, <b>digits may repeat</b> within a cage if they appear in different cells.";
+        } else {
+            desc += " Digits <b>must not repeat</b> within a cage.";
+        }
+        return desc;
+    }
+
 
     render(rule, ctx) {
         const region = rule.fields.region;

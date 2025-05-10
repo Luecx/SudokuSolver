@@ -55,6 +55,17 @@ export class KropkiHandler extends RuleTypeHandler {
     `;
     }
 
+    getDescriptionPlayHTML() {
+        let desc = "In a <b>Kropki Sudoku</b>, a <b>white dot</b> means two digits are consecutive, and a <b>black dot</b> means one digit is double the other.";
+        if (this.fields?.allDotsGiven) {
+            desc += " All valid pairs are marked, so if there's no dot between two adjacent cells, neither condition applies.";
+        } else {
+            desc += " Only some dots are given; the absence of a dot does not imply anything.";
+        }
+        return desc;
+    }
+
+
 
     render(rule, ctx) {
         const region = rule.fields.region;

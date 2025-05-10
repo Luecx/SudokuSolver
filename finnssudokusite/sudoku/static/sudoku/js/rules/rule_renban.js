@@ -38,6 +38,10 @@ export class RenbanHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Renban Sudoku</b>, the digits on each <b>purple renban line</b> must form a consecutive set, in any order.";
+    }
+
     render(rule, ctx) {
         if (!this.board) return;
 

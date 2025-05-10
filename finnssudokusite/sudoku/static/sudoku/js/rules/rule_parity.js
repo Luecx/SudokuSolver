@@ -38,6 +38,10 @@ export class ParityHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Parity Sudoku</b>, adjacent digits along each <b>green parity line</b> must alternate between odd and even.";
+    }
+
     render(rule, ctx) {
         if (!this.board) return;
 

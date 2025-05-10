@@ -33,6 +33,9 @@ export class RuleTypeHandler {
     getDescriptionHTML() {
         return "";
     }
+    getDescriptionPlayHTML() {
+        return "";
+    }
 
     // ===== Initialization Helpers =====
     initializeGlobalFields() {

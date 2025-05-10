@@ -28,6 +28,10 @@ export class MagicSquareHandler extends RuleTypeHandler {
         ];
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Magic Square Sudoku</b>, every <b>gray 3×3 square</b> must have all its rows, columns, and diagonals sum to the same total.";
+    }
+
     getRuleWarnings(rule) {
         let warnings = []
 

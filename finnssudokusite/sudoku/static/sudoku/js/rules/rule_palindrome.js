@@ -42,6 +42,10 @@ export class PalindromeHandler extends RuleTypeHandler {
         `;
     }
 
+    getDescriptionPlayHTML() {
+        return "In a <b>Palindrome Sudoku</b>, digits along each <b>blue palindrome line</b> must read the same forward and backward.";
+    }
+
     render(rule, ctx) {
         if (!this.board) return;
 
