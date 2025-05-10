@@ -244,7 +244,7 @@ export class CreatorRuleManager {
         removeBtn.className = "border-0 bg-transparent ms-2 d-flex align-items-center justify-content-center";
         removeBtn.style.width = "2rem";
         removeBtn.style.height = "2rem";
-        removeBtn.innerHTML = `<i class="fas fa-times"></i>`;
+        removeBtn.innerHTML = `<i class="fa fa-times"></i>`;
         removeBtn.addEventListener("click", () => {
             handler.disable();
         });

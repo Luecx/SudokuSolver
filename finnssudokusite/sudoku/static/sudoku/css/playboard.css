@@ -13,7 +13,6 @@ body {
 	font-style: normal;
 }
 /* macht die Buttons Quadratisch */
-
 .btn-square {
 	display: flex;
 	align-items: center;
