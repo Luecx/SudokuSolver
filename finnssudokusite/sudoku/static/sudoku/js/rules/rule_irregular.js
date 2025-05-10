@@ -3,10 +3,10 @@ import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { attachIrregularSolverLogic} from "./rule_irregular_solver.js";
 
-export class IrregularHandler extends RuleTypeHandler {
+export class IrregularRegionsHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Irregular", board);
-        this.tag = "irregular";
+        super("Irregular Regions", board);
+        this.tag = "irregularregions";
         this.can_create_rules = false;
 
         this.regionKeys = [
@@ -117,7 +117,8 @@ export class IrregularHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-        Inside <b>cages</b>, the sum of the numbers must equal the specified value.
+            In <b>Irregular Region Sudoku</b> standard Sudoku rules apply. Additionally, the grid is divided into irregularly shaped regions 
+            instead of standard 3x3 boxes. Each of these irregular regions must also contain all digits from 1 to 9 exactly once.
         `;
     }
 

@@ -1,22 +1,22 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import { attachChevronRuleSolverLogic } from "./rule_chevron_solver.js";
+import { attachChevronSolverLogic } from "./rule_chevron_solver.js";
 
 export class ChevronHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Chevron Rule", board);
+        super("Chevron", board);
         this.tag = "chevron";
         this.can_create_rules = false;
 
-        attachChevronRuleSolverLogic(this);
+        attachChevronSolverLogic(this);
     }
 
     defaultRules() {
         return [
-            { label: "Up Chevron Rule", symbol: "up", fields: {} },
-            { label: "Down Chevron Rule", symbol: "down", fields: {} },
-            { label: "Right Chevron Rule", symbol: "right", fields: {} },
-            { label: "Left Chevron Rule", symbol: "left", fields: {} },
+            { label: "Up Chevron", symbol: "up", fields: {} },
+            { label: "Down Chevron", symbol: "down", fields: {} },
+            { label: "Right Chevron", symbol: "right", fields: {} },
+            { label: "Left Chevron", symbol: "left", fields: {} },
         ];
     }
 
