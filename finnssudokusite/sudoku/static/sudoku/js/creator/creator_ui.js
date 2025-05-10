@@ -42,6 +42,32 @@ class Creator {
 
         btn.addEventListener("click", async (e) => {
             e.preventDefault();
+
+            // === SHOW LOADING BAR ===
+            const loadingBox = this.get("upload-loading-box");
+            const loadingText = this.get("upload-progress-text");
+
+            if (loadingBox && loadingText) {
+                loadingBox.style.display = "block";
+                loadingText.textContent = "Encoding Sudoku as JSON... 🔐";
+
+                const steps = [
+                    "Compressing clues... 🤏",
+                    "Assigning digital ink... 🖋️",
+                    "Finalizing metadata... 📁",
+                    "Uploading to puzzle vault... 🧠",
+                ];
+
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < steps.length) {
+                        loadingText.textContent = steps[i++];
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 800); // ~3 seconds total
+            }
+
             const json = this.board.saveBoard();
             const payload = {
                 title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",
@@ -58,14 +84,21 @@ class Creator {
                     body: JSON.stringify(payload),
                 });
                 const data = await response.json();
+
                 alert(data.status === "success"
                     ? `Sudoku saved! ID: ${data.sudoku_id}`
                     : `Error saving sudoku: ${data.message}`);
             } catch (err) {
                 console.error("Save error:", err);
                 alert("Unexpected error while saving.");
+            } finally {
+                // === HIDE LOADING BAR ===
+                if (loadingBox) loadingBox.style.display = "none";
             }
         });
+
+        const box = document.getElementById("upload-loading-box");
+        if (box) box.style.display = "none";
 
         const nameInput = document.querySelector("input[name='sudoku_name']");
         if (nameInput) {
@@ -262,9 +295,24 @@ class Creator {
         const hasExactlyOneSolution = this.solutionsRef.length === 1;
         const isNameValid = name.length > 0;
 
+        // Update icon states
+        this.updateStatusIcon("status-name", isNameValid);
+        this.updateStatusIcon("status-solution", hasExactlyOneSolution);
+        this.updateStatusIcon("status-unique", hasExactlyOneSolution); // for now same
+
+        // Enable submit if all conditions met
         btn.disabled = !(hasExactlyOneSolution && isNameValid);
     }
 
+
+    updateStatusIcon(id, isValid) {
+        const el = document.querySelector(`#${id} i`);
+        if (!el) return;
+
+        el.classList.remove("fa-check", "fa-times", "text-success", "text-danger");
+        el.classList.add(isValid ? "fa-check" : "fa-times");
+        el.classList.add(isValid ? "text-success" : "text-danger");
+    }
 
     disableSubmit() {
         const btn = this.get("submit-sudoku-btn");
