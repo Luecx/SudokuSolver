@@ -181,18 +181,62 @@
 					</div>
 				
 				</div>
-				
-				<!--	PUBLISH	-->
+
+				<!-- PUBLISH -->
 				<div id="nav-Publish" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Publish-tab" tabindex="0">
-					<div id="publish-info"></div>
-					<form>
-						<input type="text" class="form-control mb-3" name="sudoku_name" placeholder="Enter Sudoku name...">
-						<button id="submit-sudoku-btn" class="btn btn-primary" data-bs-toggle="modal"
-								data-bs-target="#modalSave">Save
+					<form id="sudoku-publish-form">
+
+						<!-- Name Input -->
+						<input type="text" class="form-control mb-2" name="sudoku_name" id="sudoku-name-input" placeholder="Enter Sudoku name...">
+
+						<!-- Top Separator -->
+						<hr class="my-3">
+
+						<!-- Status Icons -->
+						<div class="d-flex justify-content-around align-items-center text-center mb-3">
+							<div id="status-name">
+								<i class="fas fa-times text-danger fa-lg"></i><br>
+								<small class="text-muted">Name Provided</small>
+							</div>
+							<div id="status-solution">
+								<i class="fas fa-times text-danger fa-lg"></i><br>
+								<small class="text-muted">Unique Solution</small>
+							</div>
+							<div id="status-unique">
+								<i class="fas fa-times text-danger fa-lg"></i><br>
+								<small class="text-muted">Unique Puzzle</small>
+							</div>
+						</div>
+
+						<!-- Check Uniqueness Button -->
+						<button type="button" id="check-uniqueness-btn" class="btn btn-outline-secondary w-100 mb-3">
+							<i class="fas fa-magic me-1"></i> Check Uniqueness
 						</button>
+
+						<!-- Mid Separator -->
+						<hr class="my-3">
+
+						<!-- Submit Button -->
+						<button type="button" id="submit-sudoku-btn" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalSave">
+							<i class="fas fa-upload me-1"></i> Save Sudoku
+						</button>
+
+						<!-- Visual Upload Box -->
+						<div id="upload-loading-box" class="mt-4" style="display: none;">
+							<div class="progress mb-2" role="progressbar" aria-label="Upload in progress" style="height: 28px;">
+								<div class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 100%;">
+									Uploading Sudoku...
+								</div>
+							</div>
+							<div class="text-center text-muted small" id="upload-progress-text">
+								Preparing board payload... 📦
+							</div>
+						</div>
+
 					</form>
 				</div>
-			
+
+
 			</div>
 		</div>
 	</div>

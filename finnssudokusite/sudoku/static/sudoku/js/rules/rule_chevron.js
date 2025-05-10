@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { attachChevronRuleSolverLogic } from "./rule_chevron_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 // Helper function to draw chevrons
 function drawChevron(ctx, x, y, direction = 'down') {
@@ -79,7 +80,7 @@ export class ChevronHandler extends RuleTypeHandler {
                 key: "region",
                 type: "region",
                 regionType: RegionType.EDGES,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label:  "Chevron Symbol"
             }
         ];
@@ -88,6 +89,11 @@ export class ChevronHandler extends RuleTypeHandler {
     getDescriptionHTML() {
         return `<p>Chevrons point to the cell with the larger number.</p>`;
     }
+
+    getDescriptionPlayHTML() {
+        return "In a <b>Chevron Sudoku</b>, each chevron points toward the cell with the <b>higher digit</b>.";
+    }
+
 
     render(rule, ctx) {
         const region = rule.fields.region;

@@ -36,6 +36,14 @@ class Sudoku(models.Model):
     # Puzzle content
     puzzle          = models.BinaryField(null=True, blank=True)
     is_public       = models.BooleanField(default=True)
+    # field to support uniqueness checking
+    canonical_hash = models.CharField(
+        max_length=64,
+        unique=True,
+        db_index=True,
+        null=True,
+        blank=True
+    )
 
     # Tags (types/features)
     tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")  # related_name = access all sudokus of a tag

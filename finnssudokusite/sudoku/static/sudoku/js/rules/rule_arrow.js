@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
 import { attachArrowSolverLogic} from "./rule_arrow_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ArrowHandler extends RuleTypeHandler {
     constructor(board) {
@@ -22,8 +23,8 @@ export class ArrowHandler extends RuleTypeHandler {
 
     getSpecificRuleScheme() {
         return [
-            { key: "base", type: "region", regionType: RegionType.CELLS, selectionMode: "MULTIPLE", label: "Arrow Base Cells" },
-            { key: "path", type: "region", regionType: RegionType.CELLS, selectionMode: "MULTIPLE", label: "Arrow Path Cells" },
+            { key: "base", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Arrow Base Cells" },
+            { key: "path", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Arrow Path Cells" },
         ];
     }
 
@@ -67,6 +68,21 @@ export class ArrowHandler extends RuleTypeHandler {
         In an Arrow Sudoku, the digits along the path of the arrow sum to the digit in the circle at the base.
         `;
     }
+
+    getDescriptionPlayHTML() {
+        let desc = "In an <b>Arrow Sudoku</b>, the digits along the arrow path must sum to the value in the circle at the base.";
+        for (const rule of this.rules) {
+            const base = rule.fields.base;
+            if (base?.size() === 2) {
+                desc += " If the base has two cells, the <b>left or top cell is the tens digit</b> and the <b>right or bottom is the ones digit</b>.";
+                break;
+            }
+        }
+        return desc;
+    }
+
+
+
 
     render(rule, ctx) {
         if (!this.board) return;

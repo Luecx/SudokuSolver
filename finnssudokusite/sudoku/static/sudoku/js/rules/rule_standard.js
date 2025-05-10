@@ -1,5 +1,6 @@
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachStandardSolverLogic} from "./rule_standard_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class StandardRuleHandler extends RuleTypeHandler {
     constructor(board) {
@@ -27,6 +28,11 @@ export class StandardRuleHandler extends RuleTypeHandler {
             In <b>Standard Sudoku</b>, each row, each column, and each 3×3 block must contain the numbers <b>1</b> to <b>9</b> exactly once, without repetition.
         `;
     }
+
+    getDescriptionPlayHTML() {
+        return "In a <b>Standard Sudoku</b>, every row, column, and 3×3 box must contain the digits <b>1</b> to <b>9</b> exactly once.";
+    }
+
 
     // === IMPORTANT: override renderAll() ===
     renderAll(ctx) {

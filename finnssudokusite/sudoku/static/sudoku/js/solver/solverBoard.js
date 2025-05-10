@@ -183,7 +183,7 @@ export class SolverBoard {
                     const count = cell.candidates.count();
                     const quality = count - 2 * cell.ruleCount;
 
-                    if (count <= 2) return cell.pos;
+                    if (count < 2) return cell.pos;
 
                     if (quality < bestQuality) {
                         best = cell;
@@ -248,7 +248,7 @@ export class SolverBoard {
             if (cell.value !== NO_NUMBER) continue;
 
             for (const n of cands.clone()) {
-                console.log(`Trying ${cell.pos.r},${cell.pos.c} = ${n} (${cands.count()} candidates)`);
+                // console.log(`Trying ${cell.pos.r},${cell.pos.c} = ${n} (${cands.count()} candidates)`);
 
                 if (!board.setCell(new CellIdx(r, c), n)) {
                     cands.disallow(n);
@@ -314,7 +314,7 @@ export class SolverBoard {
             }
 
             const pos = this.getNextCell();
-            // console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
+            console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
             if (!pos) return true;
 
             const toTry = Array.from(this.getCell(pos).candidates);

@@ -34,6 +34,7 @@ export class PlayBoard {
         new InputGrid(this.keyboard);
 
         this.setupThemeMenu();
+        this.renderRuleDescriptions();
     }
 
     setupThemeMenu() {
@@ -59,6 +60,26 @@ export class PlayBoard {
             });
         });
     }
+
+    renderRuleDescriptions() {
+        const container = document.getElementById("rules-description");
+        if (!container) return;
+
+        container.innerHTML = ""; // Clear existing content
+
+        for (const handler of this.board.getAllHandlers()) {
+            if (handler.enabled) {
+                const html = handler.getDescriptionPlayHTML();
+                if (html) {
+                    const wrapper = document.createElement("div");
+                    wrapper.classList.add("rule-description");
+                    wrapper.innerHTML = html;
+                    container.appendChild(wrapper);
+                }
+            }
+        }
+    }
+
 }
 
 // Initialization

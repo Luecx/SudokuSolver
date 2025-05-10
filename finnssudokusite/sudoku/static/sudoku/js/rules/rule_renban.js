@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import {attachRenbanSolverLogic} from "./rule_renban_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class RenbanHandler extends RuleTypeHandler {
     constructor(board) {
@@ -25,7 +26,7 @@ export class RenbanHandler extends RuleTypeHandler {
                 key: "path",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Renban Path"
             }
         ];
@@ -35,6 +36,10 @@ export class RenbanHandler extends RuleTypeHandler {
         return `
         Along a <b>renban line</b>, the digits form a consecutive sequence, in any order.
         `;
+    }
+
+    getDescriptionPlayHTML() {
+        return "In a <b>Renban Sudoku</b>, the digits on each <b>purple renban line</b> must form a consecutive set, in any order.";
     }
 
     render(rule, ctx) {

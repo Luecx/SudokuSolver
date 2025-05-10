@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { attachCageSolverLogic} from "./rule_cage_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class CageHandler extends RuleTypeHandler {
     constructor(board) {
@@ -73,7 +74,7 @@ export class CageHandler extends RuleTypeHandler {
                 key: "region",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Cage Region"
             },
             {
@@ -89,9 +90,19 @@ export class CageHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-        Inside <b>cages</b>, the sum of the numbers must equal the specified value.
+        Inside <b>cages</b>, the sum of the numbers must equal the specified value in the top left corner of the cage.
         `;
     }
+    getDescriptionPlayHTML() {
+        let desc = "In a <b>Cage Sudoku</b>, digits inside a cage must sum to the value shown in the top-left corner of the cage.";
+        if (this.fields?.NumberCanRepeat) {
+            desc += " In this puzzle, <b>digits may repeat</b> within a cage if they appear in different cells.";
+        } else {
+            desc += " Digits <b>must not repeat</b> within a cage.";
+        }
+        return desc;
+    }
+
 
     render(rule, ctx) {
         const region = rule.fields.region;

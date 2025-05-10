@@ -1,6 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { attachWhisperSolverLogic } from "./rule_whisper_solver.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class WhisperHandler extends RuleTypeHandler {
     constructor(board) {
@@ -24,7 +25,7 @@ export class WhisperHandler extends RuleTypeHandler {
                 key: "path",
                 type: "region",
                 regionType: RegionType.CELLS,
-                selectionMode: "MULTIPLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Whisper Line Path"
             }
         ];
@@ -34,6 +35,10 @@ export class WhisperHandler extends RuleTypeHandler {
         return `
         Along a <b>whisper line</b>, adjacent digits must differ by at least 5.
         `;
+    }
+
+    getDescriptionPlayHTML() {
+        return "In a <b>Whisper Sudoku</b>, adjacent digits on each <b>teal whisper line</b> must differ by at least <b>5</b>.";
     }
 
     render(rule, ctx) {

@@ -30,6 +30,8 @@ export class MouseSelector {
         const key = this.getKeyFromEvent(e);
         if (!key) return;
 
+        console.log(e.shiftKey)
+
         this._mouseDown = true;
         this._mouseDownPos = { x: e.clientX, y: e.clientY };
         this._isDragging = false;
@@ -38,6 +40,8 @@ export class MouseSelector {
         this._shouldClear = this.mode === SelectionMode.MULTIPLE
             ? !(e.shiftKey || e.ctrlKey)
             : true;
+
+        console.log("Mouse down", this._shouldClear);
 
         this.onStartSelection?.();
     }
