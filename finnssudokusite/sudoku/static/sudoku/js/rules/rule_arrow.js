@@ -77,7 +77,7 @@ export class ArrowHandler extends RuleTypeHandler {
         if (!this.board) return;
 
         const s = this.board.getCellSizeCTX();
-        this._setupStyle(ctx);
+        this._setupStyle(ctx, s);
 
         const base = rule.fields.base;
         const path = rule.fields.path;
@@ -106,9 +106,9 @@ export class ArrowHandler extends RuleTypeHandler {
         }
     }
 
-    _setupStyle(ctx) {
+    _setupStyle(ctx, cellSizeCtx) {
         ctx.save();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = cellSizeCtx / 40;
         ctx.strokeStyle = "rgba(100, 100, 100, 0.4)";
         ctx.fillStyle = "transparent";
         ctx.lineJoin = "round";
