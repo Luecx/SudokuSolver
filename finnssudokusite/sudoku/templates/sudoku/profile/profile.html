@@ -1,6 +1,13 @@
 {% extends "sudoku/base.html" %}
 {% load form_filters %}
+{% load static %}
 {% block content %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'sudoku/css/badges.css' %}">
+{% endblock %}
+
+
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-lg-10">

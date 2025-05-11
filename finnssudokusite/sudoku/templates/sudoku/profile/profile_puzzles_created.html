@@ -41,7 +41,7 @@
       <td>{{ puzzle.average_time|humantime }}</td>
       <td>
         {% for tag in puzzle.tags.all %}
-        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+        <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
         {% endfor %}
       </td>
     </tr>

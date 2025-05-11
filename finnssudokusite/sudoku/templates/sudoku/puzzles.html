@@ -1,8 +1,13 @@
 {% extends 'sudoku/base.html' %}
 {% load formatting star_rating %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}Sudoku Puzzles{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'sudoku/css/badges.css' %}">
+{% endblock %}
 
 {% block content %}
 <h2 class="text-center mt-4 mb-3">{% trans "All Published Sudoku Puzzles" %}</h2>
@@ -62,7 +67,7 @@
             <td>{{ s.average_time|humantime }}</td>
             <td>
                 {% for tag in s.tags.all %}
-                <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                    <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
                 {% endfor %}
             </td>
             </tr>
