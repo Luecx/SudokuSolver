@@ -3,6 +3,7 @@ import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../game/input_keyboard.js";
 import { InputMode } from "../game/input_constants.js";
+import { CellIdx } from "../region/CellIdx.js";
 
 class Creator {
     constructor() {
@@ -17,6 +18,8 @@ class Creator {
 
         this.board = createBoard(container);
         this.board.initBoard();
+        let json = '{"fixedCells":[],"rules":[{"type":"Standard Sudoku","fields":{},"rules":[]},{"type":"Arrow","fields":{},"rules":[{"id":"1746986002490-d9w1","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":0},{"__type__":"CellIdx","r":2,"c":1}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":0},{"__type__":"CellIdx","r":3,"c":1},{"__type__":"CellIdx","r":3,"c":2},{"__type__":"CellIdx","r":4,"c":3}]}}},{"id":"1746986015426-mxm9","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":3},{"__type__":"CellIdx","r":2,"c":4}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":4},{"__type__":"CellIdx","r":3,"c":3},{"__type__":"CellIdx","r":4,"c":2},{"__type__":"CellIdx","r":5,"c":2}]}}},{"id":"1746986061300-4jud","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":5}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":5},{"__type__":"CellIdx","r":4,"c":5},{"__type__":"CellIdx","r":5,"c":5}]}}},{"id":"1746986069450-tj4u","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":6}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":5},{"__type__":"CellIdx","r":7,"c":5}]}}},{"id":"1746986078355-w4om","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":7},{"__type__":"CellIdx","r":5,"c":8}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":7},{"__type__":"CellIdx","r":7,"c":8},{"__type__":"CellIdx","r":8,"c":8},{"__type__":"CellIdx","r":8,"c":7},{"__type__":"CellIdx","r":8,"c":6},{"__type__":"CellIdx","r":8,"c":5},{"__type__":"CellIdx","r":8,"c":4},{"__type__":"CellIdx","r":8,"c":3},{"__type__":"CellIdx","r":8,"c":2},{"__type__":"CellIdx","r":8,"c":1},{"__type__":"CellIdx","r":8,"c":0},{"__type__":"CellIdx","r":7,"c":0}]}}},{"id":"1746986092942-q8m4","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":0}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":1},{"__type__":"CellIdx","r":4,"c":1}]}}},{"id":"1746986101814-muua","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":1}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":2},{"__type__":"CellIdx","r":6,"c":3},{"__type__":"CellIdx","r":6,"c":4}]}}},{"id":"1746986114118-asc1","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":4}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":3},{"__type__":"CellIdx","r":7,"c":2}]}}},{"id":"1746986126099-4dpv","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":6},{"__type__":"CellIdx","r":2,"c":7}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":8},{"__type__":"CellIdx","r":1,"c":8}]}}},{"id":"1746986135239-k7t4","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":6}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":6},{"__type__":"CellIdx","r":0,"c":5}]}}},{"id":"1746986144984-0xxy","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":6}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":5},{"__type__":"CellIdx","r":1,"c":4},{"__type__":"CellIdx","r":1,"c":3}]}}}]}]}'
+        this.board.loadBoard(json)
         this.keyboard = new InputKeyboard(this.board, [InputMode.NumberFixed]);
         this.rule_manager = new CreatorRuleManager(this.board);
 
@@ -31,6 +34,9 @@ class Creator {
         this.initAnalysisButtons();
         this.registerBoardChangeListeners();
         this.renderActiveTags();
+
+
+
     }
 
     get(id) {
@@ -216,6 +222,100 @@ class Creator {
         this.keyboard.setEnabled(false);
 
         setTimeout(() => {
+
+            // solution, try each and make sure the board still works
+            const solution = [
+                [8, 1, 4, 9, 7, 6, 2, 5, 3],
+                [3, 9, 6, 2, 1, 5, 8, 4, 7],
+                [2, 5, 7, 3, 4, 8, 1, 6, 9],
+                [6, 7, 5, 8, 9, 1, 3, 2, 4],
+                [1, 3, 9, 7, 2, 4, 6, 8, 5],
+                [4, 2, 8, 5, 6, 3, 9, 7, 1],
+                [5, 8, 2, 1, 3, 7, 4, 9, 6],
+                [9, 6, 1, 4, 5, 2, 7, 3, 8],
+                [7, 4, 3, 6, 8, 9, 5, 1, 2]
+            ];
+
+            // // create to a map holding (row, col) -> value
+            // const cellMap = new Map(); // Map<CellIdx, number>
+            // for (let r = 0; r < 9; r++) {
+            //     for (let c = 0; c < 9; c++) {
+            //         const idx = new CellIdx(r, c);
+            //         cellMap.set(idx, solution[r][c]);
+            //     }
+            // }
+            // // shuffle
+            // // Step 1: Collect all entries into an array
+            // const shuffledEntries = Array.from(cellMap.entries());
+            //
+            // // Step 2: Shuffle using Fisher-Yates
+            // for (let i = shuffledEntries.length - 1; i > 0; i--) {
+            //     const j = Math.floor(Math.random() * (i + 1));
+            //     [shuffledEntries[i], shuffledEntries[j]] = [shuffledEntries[j], shuffledEntries[i]];
+            // }
+            //
+            // // Fill and verify the solution incrementally
+            // let step = 0;
+            // for (const [idx, value] of shuffledEntries) {
+            //     const result = solverboard.setCell(idx, value);
+            //     console.log(`solverboard.setCell(new CellIdx(${idx.r}, ${idx.c}), ${value})`)
+            //     if (!result) {
+            //         console.warn(`Setting ${value} at (${idx.r}, ${idx.c}) failed at step ${step}`);
+            //         break;
+            //     }
+            //
+            //     // Check that every unset cell still includes its correct value as candidate
+            //     let valid = true;
+            //     for (let r = 0; r < 9; r++) {
+            //         for (let c = 0; c < 9; c++) {
+            //             const pos = new CellIdx(r, c);
+            //             const cell = solverboard.getCell(pos);
+            //             if (cell.value !== 0) continue;
+            //
+            //             const correct = solution[r][c];
+            //             if (!cell.getCandidates().test(correct)) {
+            //                 console.warn(`Candidate check failed at (${r}, ${c}): expected ${correct} to still be a candidate`);
+            //                 valid = false;
+            //                 break;
+            //             }
+            //         }
+            //         if (!valid) break;
+            //     }
+            //
+            //     if (!valid) {
+            //         console.warn(`Aborted after step ${step}: candidate constraint violated`);
+            //         break;
+            //     }
+            //
+            //     step++;
+            // }
+
+            // solverboard.setCell(new CellIdx(8, 2), 3)
+            // solverboard.setCell(new CellIdx(7, 8), 8)
+            // solverboard.setCell(new CellIdx(2, 2), 7)
+            // solverboard.setCell(new CellIdx(0, 8), 3)
+            // solverboard.setCell(new CellIdx(8, 6), 5)
+            // solverboard.setCell(new CellIdx(1, 0), 3)
+            // solverboard.setCell(new CellIdx(1, 7), 4)
+            // solverboard.setCell(new CellIdx(8, 7), 1)
+            // solverboard.setCell(new CellIdx(6, 2), 2)
+            // solverboard.setCell(new CellIdx(4, 8), 5)
+            // solverboard.setCell(new CellIdx(3, 4), 9)
+            // solverboard.setCell(new CellIdx(4, 0), 1)
+            //
+            // console.log(solverboard.toString(true));
+            //
+            // solverboard.setCell(new CellIdx(3, 5), 1)
+            //
+            // console.log(solverboard.toString(true));
+
+
+
+
+
+
+            //
+
             const { solutions, stats } = solverboard.solve(17, 16384);
 
             if (solutions.length === 0 && !stats.interrupted) {

@@ -231,66 +231,69 @@ export class SolverBoard {
      *              This does not modify the original board's candidates.
      */
     solveComplete() {
-        const all_solutions = new Map();
+        // const all_solutions = new Map();
+        //
+        // const board = this.clone();                 // solving board
+        // const board_nums_to_check = this.clone();   // candidate tracker board
+        //
+        // // Randomized iteration over all cell positions
+        // const shuffledPositions = [...Array(this.size * this.size).keys()]
+        //     .map(i => ({ r: Math.floor(i / this.size), c: i % this.size }))
+        //     .sort(() => Math.random() - 0.5);
+        //
+        // for (const { r, c } of shuffledPositions) {
+        //     const cell  = board.grid[r][c];
+        //     const cands = board_nums_to_check.grid[r][c].candidates;
+        //
+        //     if (cell.value !== NO_NUMBER) continue;
+        //
+        //     for (const n of cands.clone()) {
+        //         // console.log(`Trying ${cell.pos.r},${cell.pos.c} = ${n} (${cands.count()} candidates)`);
+        //
+        //         if (!board.setCell(new CellIdx(r, c), n)) {
+        //             cands.disallow(n);
+        //             cell.candidates.disallow(n);
+        //             continue;
+        //         }
+        //
+        //         const { solutions, stats } = board.solve(1, 128);
+        //
+        //         if (solutions.length > 0) {
+        //             for (const sol of solutions) {
+        //                 let skipped = 0;
+        //
+        //                 for (let r_ = 0; r_ < this.size; r_++) {
+        //                     for (let c_ = 0; c_ < this.size; c_++) {
+        //                         const value = sol.grid[r_][c_].value;
+        //                         const cell_check = board_nums_to_check.grid[r_][c_];
+        //                         if (cell_check.candidates.test(value)) {
+        //                             cell_check.candidates.disallow(value);
+        //                             skipped++;
+        //                         }
+        //                     }
+        //                 }
+        //
+        //                 console.log(`→ Solution found. Skipping ${skipped} candidate(s) due to known placements.`);
+        //
+        //                 const key = sol.toString();
+        //                 if (!all_solutions.has(key)) {
+        //                     all_solutions.set(key, sol);
+        //                 }
+        //             }
+        //         } else if (!stats.interrupted) {
+        //             console.log(`→ Candidate ${n} at (${r},${c}) eliminated – no solution and not interrupted.`);
+        //             cell.candidates.disallow(n);
+        //             cands.disallow(n);
+        //         }
+        //
+        //         board.stackPop(); // reset board state
+        //     }
+        // }
+        //
+        // return Array.from(all_solutions.values());
 
-        const board = this.clone();                 // solving board
-        const board_nums_to_check = this.clone();   // candidate tracker board
+        return [];
 
-        // Randomized iteration over all cell positions
-        const shuffledPositions = [...Array(this.size * this.size).keys()]
-            .map(i => ({ r: Math.floor(i / this.size), c: i % this.size }))
-            .sort(() => Math.random() - 0.5);
-
-        for (const { r, c } of shuffledPositions) {
-            const cell  = board.grid[r][c];
-            const cands = board_nums_to_check.grid[r][c].candidates;
-
-            if (cell.value !== NO_NUMBER) continue;
-
-            for (const n of cands.clone()) {
-                // console.log(`Trying ${cell.pos.r},${cell.pos.c} = ${n} (${cands.count()} candidates)`);
-
-                if (!board.setCell(new CellIdx(r, c), n)) {
-                    cands.disallow(n);
-                    cell.candidates.disallow(n);
-                    continue;
-                }
-
-                const { solutions, stats } = board.solve(1, 128);
-
-                if (solutions.length > 0) {
-                    for (const sol of solutions) {
-                        let skipped = 0;
-
-                        for (let r_ = 0; r_ < this.size; r_++) {
-                            for (let c_ = 0; c_ < this.size; c_++) {
-                                const value = sol.grid[r_][c_].value;
-                                const cell_check = board_nums_to_check.grid[r_][c_];
-                                if (cell_check.candidates.test(value)) {
-                                    cell_check.candidates.disallow(value);
-                                    skipped++;
-                                }
-                            }
-                        }
-
-                        console.log(`→ Solution found. Skipping ${skipped} candidate(s) due to known placements.`);
-
-                        const key = sol.toString();
-                        if (!all_solutions.has(key)) {
-                            all_solutions.set(key, sol);
-                        }
-                    }
-                } else if (!stats.interrupted) {
-                    console.log(`→ Candidate ${n} at (${r},${c}) eliminated – no solution and not interrupted.`);
-                    cell.candidates.disallow(n);
-                    cands.disallow(n);
-                }
-
-                board.stackPop(); // reset board state
-            }
-        }
-
-        return Array.from(all_solutions.values());
     }
 
 
@@ -314,7 +317,7 @@ export class SolverBoard {
             }
 
             const pos = this.getNextCell();
-            console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
+            // console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
             if (!pos) return true;
 
             const toTry = Array.from(this.getCell(pos).candidates);

@@ -1,5 +1,6 @@
 import { NO_NUMBER } from "../number/number.js";
 import { NumberSet } from "../number/number_set.js";
+import {CellIdx} from "../region/CellIdx.js";
 
 export function attachArrowSolverLogic(instance) {
 
@@ -23,7 +24,7 @@ export function attachArrowSolverLogic(instance) {
         if (base.items.length === 1) {
             let cell = board.getCell(base.items[0]);
             if (cell.value !== NO_NUMBER) return false;
-            cell.candidates = (NumberSet.greaterEqThan(lb, board.size));
+            cell.onlyAllowCandidates(NumberSet.greaterEqThan(lb, board.size));
         } else {
             let cell1 = board.getCell(base.items[0]);
             let cell2 = board.getCell(base.items[1]);
@@ -83,10 +84,9 @@ export function attachArrowSolverLogic(instance) {
         // now we need to determine the possible numbers in the path
         let [lb_path, ub_path] = bounds_path(board, path);
 
-        // go through each non empty cell in the path
+        // go through each empty cell in the path
         for (let idx of board.empty(path).items) {
             let cell = board.getCell(idx);
-
             // compute the lb and ub of the remaining cells
             let lb_rest = lb_path - cell.getCandidates().lowest();
             let ub_rest = ub_path - cell.getCandidates().highest();
@@ -98,7 +98,6 @@ export function attachArrowSolverLogic(instance) {
             _up = Math.min(_up, 9);
 
             let mask = NumberSet.greaterEqThan(_lb, 9).and(NumberSet.lessEqThan(_up, 9));
-
             changed |= cell.onlyAllowCandidates(mask);
         }
         return changed;
@@ -111,6 +110,7 @@ export function attachArrowSolverLogic(instance) {
             const base = rule.fields?.base
             const path = rule.fields?.path
             if (!base || !path || base.items.length === 0 || path.items.length === 0) continue;
+
 
             // check if the changed cell is in the base or path
             if (base.has(changedCell.pos) || path.has(changedCell.pos)) {

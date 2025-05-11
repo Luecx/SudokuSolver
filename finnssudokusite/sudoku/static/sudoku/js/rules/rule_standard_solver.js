@@ -30,7 +30,7 @@ export function attachStandardSolverLogic(instance) {
             for (let bc = 0; bc < BOARD_SIZE; bc += 3)
                 if (hiddenSingles(board.getBlock(br, bc))) changed = true;
 
-        // if (pointing(board)) changed = true;
+        if (pointing(board)) changed = true;
         // if (claiming(board)) changed = true;
         // if (nakedPairs(board)) changed = true;
         // if (xWing(board)) changed = true;
@@ -69,16 +69,10 @@ function hiddenSingles(unit) {
     const seenTwice = new NumberSet();
 
     for (const c of unit) {
-        if (c.value !== NO_NUMBER) {
-            seenOnce.orEq(NumberSet.fromNumber(c.value));
-        } else {
-            seenTwice.orEq(seenOnce.and(c.candidates));
-            seenOnce.orEq(c.candidates);
-        }
+        seenTwice.orEq(seenOnce.and(c.getCandidates()));
+        seenOnce.orEq(c.getCandidates());
     }
-
     const unique = seenOnce.and(seenTwice.not());
-
     for (const c of unit) {
         if (c.value === NO_NUMBER) {
             const pick = c.candidates.and(unique);
@@ -90,6 +84,7 @@ function hiddenSingles(unit) {
 
 function pointing(board) {
     let changed = false;
+
     for (let br = 0; br < BOARD_SIZE; br += 3) {
         for (let bc = 0; bc < BOARD_SIZE; bc += 3) {
             const block = board.getBlock(br, bc);

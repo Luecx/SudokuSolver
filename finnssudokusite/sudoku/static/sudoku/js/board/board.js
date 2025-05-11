@@ -168,7 +168,6 @@ export function createBoard(container) {
     }
 
     function loadBoard(json) {
-
         let dat = deserializeObject(json);
         console.log("loading board", dat);
         console.log(json);
