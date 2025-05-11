@@ -1,7 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
-import { attachArrowSolverLogic} from "./rule_arrow_solver.js";
+import { attachArrowSolverLogic } from "./rule_arrow_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ArrowHandler extends RuleTypeHandler {
@@ -29,30 +29,22 @@ export class ArrowHandler extends RuleTypeHandler {
     }
 
     getRuleWarnings(rule) {
-        let warnings = []
-        // check overlap
+        let warnings = [];
         const base = rule.fields.base;
         const path = rule.fields.path;
+
         if (base && path && base.intersection(path).size > 0) {
             warnings.push("Base and path cells overlap.");
         }
-
-        // check if base is empty
         if (!base || base.size() === 0) {
             warnings.push("Base cells are empty.");
         }
-
-        // check if path is empty
         if (!path || path.size() === 0) {
             warnings.push("Path cells are empty.");
         }
-
-        // if base has more than 2 cells
         if (base && base.size() > 2) {
             warnings.push("Base cells should be 1 or 2.");
         }
-
-        // if base has 2 cells, they must be adjacent and have same row
         if (base && base.size() === 2) {
             const cells = base.items;
             if (cells[0].r !== cells[1].r && cells[0].c !== cells[1].c) {
@@ -81,20 +73,30 @@ export class ArrowHandler extends RuleTypeHandler {
         return desc;
     }
 
-
-
-
     render(rule, ctx) {
         if (!this.board) return;
 
-        const s = this.board.getCellSize();
-        this._setupStyle(ctx);
+        const s = this.board.getCellSizeCTX();
+        this._setupStyle(ctx, s);
 
         const base = rule.fields.base;
         const path = rule.fields.path;
 
         const baseCenters = this._renderBase(ctx, base);
-        const pathInfo = this._renderPath(ctx, path);
+
+        let pathInfo;
+        let directionFromBase = null;
+
+        if (baseCenters.length === 1) {
+            directionFromBase = baseCenters[0];
+        } else if (baseCenters.length === 2) {
+            directionFromBase = {
+                x: 0.5 * (baseCenters[0].x + baseCenters[1].x),
+                y: 0.5 * (baseCenters[0].y + baseCenters[1].y),
+            };
+        }
+
+        pathInfo = this._renderPath(ctx, path, directionFromBase);
 
         if (baseCenters.length > 0 && pathInfo.start) {
             this._connectBaseToPath(ctx, baseCenters, pathInfo.start, s);
@@ -104,16 +106,16 @@ export class ArrowHandler extends RuleTypeHandler {
         }
     }
 
-    _setupStyle(ctx) {
+    _setupStyle(ctx, cellSizeCtx) {
         ctx.save();
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = "rgba(100, 100, 100, 0.8)";
+        ctx.lineWidth = cellSizeCtx / 40;
+        ctx.strokeStyle = "rgba(100, 100, 100, 0.4)";
         ctx.fillStyle = "transparent";
         ctx.lineJoin = "round";
     }
 
     _renderBase(ctx, base) {
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const half = s / 2;
         const radius = s * 0.45;
         const baseCenters = [];
@@ -121,18 +123,18 @@ export class ArrowHandler extends RuleTypeHandler {
         if (!base || base.items.length === 0) return baseCenters;
 
         for (const { r, c } of base.items) {
-            const { x, y } = this.board.getCellTopLeft(r, c);
+            const { x, y } = this.board.getCellTopLeftCTX(r, c);
             baseCenters.push({ x: x + half, y: y + half });
         }
 
         if (base.items.length === 1) {
-            const { x, y } = this.board.getCellTopLeft(base.items[0].r, base.items[0].c);
+            const { x, y } = this.board.getCellTopLeftCTX(base.items[0].r, base.items[0].c);
             ctx.beginPath();
             ctx.arc(x + half, y + half, radius, 0, 2 * Math.PI);
             ctx.stroke();
         } else if (base.items.length === 2) {
-            const p1 = this.board.getCellTopLeft(base.items[0].r, base.items[0].c);
-            const p2 = this.board.getCellTopLeft(base.items[1].r, base.items[1].c);
+            const p1 = this.board.getCellTopLeftCTX(base.items[0].r, base.items[0].c);
+            const p2 = this.board.getCellTopLeftCTX(base.items[1].r, base.items[1].c);
 
             const center1 = { x: p1.x + half, y: p1.y + half };
             const center2 = { x: p2.x + half, y: p2.y + half };
@@ -148,9 +150,9 @@ export class ArrowHandler extends RuleTypeHandler {
             ctx.beginPath();
             ctx.moveTo(0, -radius);
             ctx.lineTo(length, -radius);
-            ctx.arc(length, 0, radius, -Math.PI/2, Math.PI/2);
+            ctx.arc(length, 0, radius, -Math.PI / 2, Math.PI / 2);
             ctx.lineTo(0, radius);
-            ctx.arc(0, 0, radius, Math.PI/2, -Math.PI/2);
+            ctx.arc(0, 0, radius, Math.PI / 2, -Math.PI / 2);
             ctx.closePath();
             ctx.stroke();
 
@@ -160,13 +162,13 @@ export class ArrowHandler extends RuleTypeHandler {
         return baseCenters;
     }
 
-    _renderPath(ctx, path) {
+    _renderPath(ctx, path, fallbackDirection = null) {
         if (!path || path.items.length === 0) return { start: null, end: null, prev: null };
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const half = s / 2;
 
-        const { x, y } = this.board.getCellTopLeft(path.items[0].r, path.items[0].c);
+        const { x, y } = this.board.getCellTopLeftCTX(path.items[0].r, path.items[0].c);
         const start = { x: x + half, y: y + half };
 
         ctx.beginPath();
@@ -175,19 +177,22 @@ export class ArrowHandler extends RuleTypeHandler {
         let prev = start;
         let end = start;
 
-        for (let i = 1; i < path.items.length; i++) {
-            const { r, c } = path.items[i];
-            const pt = this.board.getCellTopLeft(r, c);
-            const mid = { x: pt.x + half, y: pt.y + half };
-            ctx.lineTo(mid.x, mid.y);
-            prev = end;
-            end = mid;
+        if (path.items.length === 1 && fallbackDirection) {
+            prev = fallbackDirection;
+        } else {
+            for (let i = 1; i < path.items.length; i++) {
+                const { r, c } = path.items[i];
+                const pt = this.board.getCellTopLeftCTX(r, c);
+                const mid = { x: pt.x + half, y: pt.y + half };
+                ctx.lineTo(mid.x, mid.y);
+                prev = end;
+                end = mid;
+            }
         }
         ctx.stroke();
 
         return { start, end, prev };
     }
-
 
     _connectBaseToPath(ctx, baseCenters, pathStart, cellSize) {
         const radius = cellSize * 0.45;
@@ -251,7 +256,7 @@ export class ArrowHandler extends RuleTypeHandler {
     }
 
     _drawArrowhead(ctx, prev, end, cellSize) {
-        const size = cellSize * 0.15; // Arrowhead size
+        const size = cellSize * 0.15;
 
         const dx = end.x - prev.x;
         const dy = end.y - prev.y;
@@ -270,5 +275,4 @@ export class ArrowHandler extends RuleTypeHandler {
         );
         ctx.stroke();
     }
-
 }

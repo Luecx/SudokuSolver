@@ -47,7 +47,7 @@ export class WhisperHandler extends RuleTypeHandler {
         const path = rule.fields.path;
         if (!path || path.items.length < 2) return;
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const half = s / 2;
 
         ctx.save();
@@ -56,13 +56,13 @@ export class WhisperHandler extends RuleTypeHandler {
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
 
-        const start = this.board.getCellTopLeft(path.items[0].r, path.items[0].c);
+        const start = this.board.getCellTopLeftCTX(path.items[0].r, path.items[0].c);
         ctx.beginPath();
         ctx.moveTo(start.x + half, start.y + half);
 
         for (let i = 1; i < path.items.length; i++) {
             const { r, c } = path.items[i];
-            const pt = this.board.getCellTopLeft(r, c);
+            const pt = this.board.getCellTopLeftCTX(r, c);
             ctx.lineTo(pt.x + half, pt.y + half);
         }
 

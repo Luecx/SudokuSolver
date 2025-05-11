@@ -72,11 +72,11 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
         ctx.lineWidth = 2;
 
         const gridSize = 9;
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
 
         if (this.fields.diagonal) {
-            const { x: xStart, y: yStart } = this.board.getCellTopLeft(0, 0);
-            const { x: xEnd, y: yEnd } = this.board.getCellTopLeft(gridSize, gridSize);
+            const { x: xStart, y: yStart } = this.board.getCellTopLeftCTX(0, 0);
+            const { x: xEnd, y: yEnd } = this.board.getCellTopLeftCTX(gridSize, gridSize);
             ctx.beginPath();
             ctx.moveTo(xStart, yStart);
             ctx.lineTo(xEnd, yEnd);
@@ -84,8 +84,8 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
         }
 
         if (this.fields.antiDiagonal) {
-            const { x: xStart, y: yStart } = this.board.getCellTopLeft(0, gridSize);
-            const { x: xEnd, y: yEnd } = this.board.getCellTopLeft(gridSize, 0);
+            const { x: xStart, y: yStart } = this.board.getCellTopLeftCTX(0, gridSize);
+            const { x: xEnd, y: yEnd } = this.board.getCellTopLeftCTX(gridSize, 0);
             ctx.beginPath();
             ctx.moveTo(xStart, yStart);
             ctx.lineTo(xEnd, yEnd);

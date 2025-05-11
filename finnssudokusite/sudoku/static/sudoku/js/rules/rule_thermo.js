@@ -49,13 +49,13 @@ export class ThermometerHandler extends RuleTypeHandler {
         const path = rule.fields.path;
         if (!path || path.items.length < 2) return;
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const half = s / 2;
         const lineWidth = s * 0.15;
         const bulbRadius = lineWidth * 2; // bulb twice as big as stem
 
         const points = path.items.map(({ r, c }) => {
-            const { x, y } = this.board.getCellTopLeft(r, c);
+            const { x, y } = this.board.getCellTopLeftCTX(r, c);
             return { x: x + half, y: y + half };
         });
 

@@ -72,7 +72,7 @@ export class MagicSquareHandler extends RuleTypeHandler {
         const region = rule.fields.region;
         if (!region || region.items.length === 0) return;
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
 
         // Determine if it's a proper 3x3 square
@@ -88,7 +88,7 @@ export class MagicSquareHandler extends RuleTypeHandler {
         ctx.fillStyle = is3x3 ? "rgba(100, 100, 100, 0.1)" : "rgba(255, 0, 0, 0.1)";
 
         for (const cell of cells) {
-            const topLeft = this.board.getCellTopLeft(cell.y, cell.x);
+            const topLeft = this.board.getCellTopLeftCTX(cell.y, cell.x);
             ctx.fillRect(topLeft.x, topLeft.y, s, s);
         }
 

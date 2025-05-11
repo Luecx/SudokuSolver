@@ -109,7 +109,7 @@ export class CageHandler extends RuleTypeHandler {
 
         if (!rule || !region) return;
         
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const insetPx = 5;
         const inset = insetPx / s;
     
@@ -128,7 +128,7 @@ export class CageHandler extends RuleTypeHandler {
         for (const loop of loops) {
             ctx.beginPath();
             loop.forEach((pt, i) => {
-                const topLeft = this.board.getCellTopLeft(pt.x, pt.y);
+                const topLeft = this.board.getCellTopLeftCTX(pt.x, pt.y);
                 const x = topLeft.x;
                 const y = topLeft.y;
                 if (i === 0) ctx.moveTo(x, y);
@@ -149,7 +149,7 @@ export class CageHandler extends RuleTypeHandler {
 
         // Position top left
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
-        const topLeft = this.board.getCellTopLeft(firstPoint.r, firstPoint.c);
+        const topLeft = this.board.getCellTopLeftCTX(firstPoint.r, firstPoint.c);
         const boxWidth = s * 0.20;
         const boxHeight = s * 0.20;
         const paddingX = s * 0.03;

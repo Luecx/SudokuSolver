@@ -45,9 +45,10 @@ export function createBoard(container) {
 
         // grid related functions
         getCellTopLeft          : (r, c) => renderer.getCellTopLeft(r, c),
-        getCellCorners          : (r, c) => renderer.getCellCorners(r, c),
+        getCellTopLeftCTX       : (r, c) => renderer.getCellTopLeftCTX(r, c),
         getPadding              : () => renderer.getPadding(),
         getCellSize             : () => renderer.getCellSize(),
+        getCellSizeCTX          : () => renderer.getCellSizeCTX(),
         getCanvasContext        : () => renderer.getContext(),
 
         getAllHandlers          : () => ruleManager.getAllHandlers(),

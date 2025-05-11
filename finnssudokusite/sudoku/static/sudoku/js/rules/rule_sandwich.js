@@ -58,7 +58,7 @@ export class SandwichHandler extends RuleTypeHandler {
 
         if (!region || sum == null) return;
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const offsetDist = s * 0.3; // 30% offset from grid boundary
 
         for (const item of region.items) {
@@ -71,12 +71,12 @@ export class SandwichHandler extends RuleTypeHandler {
 
             if (!isNaN(item.row) && item.row != null) {
                 // Row sandwich
-                const cell = this.board.getCellTopLeft(item.row, 0);
+                const cell = this.board.getCellTopLeftCTX(item.row, 0);
                 x = cell.x - offsetDist;
                 y = cell.y + s / 2;
             } else if (!isNaN(item.col) && item.col != null) {
                 // Column sandwich
-                const cell = this.board.getCellTopLeft(0, item.col);
+                const cell = this.board.getCellTopLeftCTX(0, item.col);
                 x = cell.x + s / 2;
                 y = cell.y - offsetDist;
             } else {

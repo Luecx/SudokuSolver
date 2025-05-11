@@ -16,15 +16,13 @@
 {% block container %}
 <div class="fullwindow">
 	<div class="grid-container">
-		<div class="left-pane-wrapper">
-			<div class="left-pane my_box_style">
-				<div class="board-container w-100 justify-content-start"></div>
-			</div>
+		<div class="left-pane my_box_style">
+			<div class="board-container"></div>
 		</div>
 		<div class="right-pane">
 			<div class="block-part no-block-in-Portrait-Mode" data-block="top"></div>
-			<div class="block-part block-content my_box_style justify-content-start" data-block="middle">
-				<div class="timer mb-3" id="timer">0:00:00</div>
+			<div class="block-part right-pane-middle-content my_box_style justify-content-start" data-block="middle">
+				<div class="timer" id="timer">0:00:00</div>
 				<div class="button-grid">
 					<button id="btn-gear" class="btn btn-secondary btn-square"
 							data-bs-toggle="dropdown" aria-expanded="false">

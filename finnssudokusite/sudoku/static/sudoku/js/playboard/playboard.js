@@ -51,7 +51,7 @@ export class PlayBoard {
             if (!backgrounds[id]) return;
             document.body.style.backgroundImage = backgrounds[id];
 
-            document.querySelectorAll(".block-content").forEach(bg => bg.classList.toggle("my_box_style", id === "classic"));
+            document.querySelectorAll(".right-pane-middle-content").forEach(bg => bg.classList.toggle("my_box_style", id === "classic"));
             document.querySelectorAll(".block-part").forEach(part => {
                 const type = part.getAttribute("data-block");
                 part.classList.toggle("block-top", id !== "classic" && type === "top");

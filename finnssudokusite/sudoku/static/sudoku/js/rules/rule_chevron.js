@@ -50,12 +50,12 @@ export class ChevronHandler extends RuleTypeHandler {
         const region = rule.fields.region;
         if (!region) return;
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
 
         for (const edge of region.items) {
             const { r1, c1, r2, c2 } = edge;
-            const a = this.board.getCellTopLeft(r1, c1);
-            const b = this.board.getCellTopLeft(r2, c2);
+            const a = this.board.getCellTopLeftCTX(r1, c1);
+            const b = this.board.getCellTopLeftCTX(r2, c2);
 
             const cx = (a.x + b.x + s) / 2;
             const cy = (a.y + b.y + s) / 2;

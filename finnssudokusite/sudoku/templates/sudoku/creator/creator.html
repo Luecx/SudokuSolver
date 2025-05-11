@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="{% static 'sudoku/css/tab_analyse.css' %}">
 
 <style>
+	html, body {
+	min-height: 100dvh;overflow: hidden;}
 	/* Tabs oben sollen nicht scrollen */
 	#nav-tab {
 		flex-shrink: 0;
@@ -22,6 +24,7 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 0;
+		overflow: auto;
 	}
 	
 	#ruleDropdown {
@@ -29,82 +32,72 @@
 		overflow-y: auto;
 	}
 	
-	.grid-container {
-		display: grid;
-		width: 100%;
-		height: 100%;
-		gap: 1rem;
-		overflow: hidden;
-	}
 	
-	.left-pane-wrapper {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
-		position: relative;
-	}
 	
-	.left-pane {
-		aspect-ratio: 1 / 1;
-		width: min(100%, calc(100dvh - 60px - 2rem)); /* Korrekte Berechnung */
-		max-height: 100%; /* Wichtig! */
-		max-width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	
-	.right-pane {
-	}
-	
-	/* Landscape: 2 Spalten */
-	@media (min-aspect-ratio: 1/1) {
-		.grid-container {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 450px);
+	@media (min-aspect-ratio: 1/1) { /* Landscape */
+		.fullwindow {
+			height: 100dvh;
+			display: flex;
+			flex-direction: column;
 		}
-		
-		.right-pane {
-			width: 450px;
+		.grid-container { /* Landscape */
+			width: 100%;
 			height: 100%;
-			overflow: auto;
+			overflow: hidden;
+			flex: 1 1 auto;
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: flex-start;
+			gap: 1rem;
 		}
-		
-		.left-pane {
+		.left-pane { /* Landscape */
 			width: min(100%, calc(100dvh - 60px - 2rem));
-			max-height: 100%;
+			aspect-ratio: 1 / 1;
 			max-width: 100%;
-		}
-	}
-	
-	/* Portrait: 2 Zeilen */
-	@media (max-aspect-ratio: 1/1) {
-		.grid-container {
-			grid-template-rows: minmax(0, 1fr) 300px;
-		}
-		
-		.left-pane-wrapper {
+			max-height: 100%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 100%;
-			height: min(100vw - 2rem, 100dvh - 60px - 2rem - 300px);
 		}
-		
-		.left-pane {
-			aspect-ratio: 1 / 1;
-			width: min(100vw - 2rem, 100dvh - 60px - 2rem - 300px);
-			height: auto;
-			max-width: 100%;
-			max-height: 100%;
-		}
-		
-		.right-pane {
-			height: 300px;
-			width: 100%;
+		.right-pane { /* Landscape */
+			width: 450px;
+			height: min(100%, calc(100dvh - 60px - 2rem));
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
 		}
 	}
+	/*	PORTRAIT MODUS	*/
+	@media (max-aspect-ratio: 1/1) {/*	PORTRAIT MODUS	*/
+		.grid-container {/*	PORTRAIT MODUS	*/
+			display: grid;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			grid-template-rows: auto 1fr; /* Oben automatisch, unten Rest */
+			gap: 3px;
+			justify-items: center;
+		}
+		.left-pane {/*	PORTRAIT MODUS	*/
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			aspect-ratio: 1 / 1;
+			width: min(100vw - 2rem, 100dvh - 60px - 2rem - 300px); /* 300px ist die mindesthöhe */
+			max-width: 100%;
+			max-height: 100%;
+			/* Höhe wird durch aspect-ratio & width bestimmt */
+		}
+		.right-pane {/*	PORTRAIT MODUS	*/
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			align-self: stretch; /* optional, default bei Grid */
+		}
+	}
+
 
 </style>
 {% endblock %}
@@ -113,12 +106,10 @@
 <div class="fullwindow">
 	
 	<div class="grid-container">
-		<div class="left-pane-wrapper">
 			<div class="left-pane my_box_style">
 				<div class="board-container">
 				</div>
 			</div>
-		</div>
 		<div class="right-pane my_box_style">
 			<nav>
 				<div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
@@ -144,7 +135,7 @@
 				<!--	CREATOR	-->
 				<div id="nav-Create" class="tab-pane fade show active" role="tabpanel"
 					 aria-labelledby="nav-Create-tab" tabindex="0">
-					<h2 class="text-center mt-4">{% trans "Create Your Sudoku" %}</h2>
+					<h2 class="text-center mt-2">{% trans "Create Your Sudoku" %}</h2>
 					
 					<div class="position-relative">
 						<input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..."
@@ -153,7 +144,7 @@
 							style="z-index: 1000;"></ul>
 					</div>
 					
-					<div class="mt-4 flex-fill overflow-auto">
+					<div class="mt-2 flex-fill overflow-auto">
 						<div id="accordionContainer" class="accordion w-100 flex-fill"></div>
 					</div>
 				</div>
@@ -172,7 +163,7 @@
 									<i class="fas fa-forward"></i>
 								</button>
 								<button id="clear-analysis-btn" class="btn btn-danger square-btn" data-bs-toggle="tooltip" title="Clear Results">
-									<i class="fas fa-times"></i>
+									<i class="fa fa-times"></i>
 								</button>
 								<button id="debug-analysis-btn" class="btn btn-secondary square-btn" data-bs-toggle="tooltip" title="Debug">
 									<i class="fa-solid fa-wrench"></i>
@@ -214,15 +205,15 @@
 						<!-- Status Icons -->
 						<div class="d-flex justify-content-around align-items-center text-center mb-3">
 							<div id="status-name">
-								<i class="fas fa-times text-danger fa-lg"></i><br>
+								<i class="fa fa-times text-danger fa-lg"></i><br>
 								<small class="text-muted">Name Provided</small>
 							</div>
 							<div id="status-solution">
-								<i class="fas fa-times text-danger fa-lg"></i><br>
+								<i class="fa fa-times text-danger fa-lg"></i><br>
 								<small class="text-muted">Unique Solution</small>
 							</div>
 							<div id="status-unique">
-								<i class="fas fa-times text-danger fa-lg"></i><br>
+								<i class="fa fa-times text-danger fa-lg"></i><br>
 								<small class="text-muted">Unique Puzzle</small>
 							</div>
 						</div>
