@@ -146,6 +146,7 @@ export class BoardNumberLayer {
 
         const cellSize = this.board.getCellSize();
 
+        // --- Value rendering ---
         if (cell.hasValue()) {
             valueLayer.textContent = cell.value;
             valueLayer.style.width = `${cellSize}px`;
@@ -153,51 +154,99 @@ export class BoardNumberLayer {
             valueLayer.style.fontSize = `${cellSize * 0.8}px`;
             valueLayer.classList.add(cell.fixed ? "fixed" : "editable");
 
-            // Apply coloring
-            if (cell.fixed) {
-                valueLayer.style.color = "black";
-            } else {
-                valueLayer.style.color = this.useSolutionStyle ? "green" : "blue";
-            }
+            valueLayer.style.color = cell.fixed
+                ? "black"
+                : (this.useSolutionStyle ? "green" : "blue");
         }
 
-        // Fill 3x3 grid with ordinary candidates
-        const candidateOrder = [1,2,3,4,5,6,7,8,9];
+        // --- Candidate layout constants ---
+        const paddingRatio = 0.15;
+        const innerSize = cellSize * (1 - 2 * paddingRatio); // 70% of cell
+        const candidateSize = innerSize / 3; // each of the 3x3 cells
+
+        // --- Candidate layout grid container ---
+        Object.assign(candidateLayer.style, {
+            position: "absolute",
+            top: `${cellSize * paddingRatio}px`,
+            left: `${cellSize * paddingRatio}px`,
+            width: `${innerSize}px`,
+            height: `${innerSize}px`,
+            display: "grid",
+            gridTemplateColumns: `repeat(3, ${candidateSize}px)`,
+            gridTemplateRows: `repeat(3, ${candidateSize}px)`,
+            gap: "0px",
+            pointerEvents: "none",
+            boxSizing: "border-box",
+        });
+
+        // --- Create 3×3 candidates ---
+        const candidateOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         const candidateColor = this.useSolutionStyle ? "red" : "#222";
         for (let n of candidateOrder) {
             const candidate = document.createElement("div");
             candidate.className = "candidate-cell";
-            candidate.style.fontSize = `${cellSize * 0.2}px`;
-            candidate.style.width = `${cellSize / 3}px`;
-            candidate.style.height = `${cellSize / 3}px`;
+            candidate.style.width = `${candidateSize}px`;
+            candidate.style.height = `${candidateSize}px`;
+            candidate.style.display = "flex";
+            candidate.style.justifyContent = "center";
+            candidate.style.alignItems = "center";
+            candidate.style.fontSize = `${candidateSize * 0.9}px`;
             candidate.style.color = candidateColor;
 
             if (cell.ordinaryCandidates.includes(n)) {
                 candidate.textContent = n;
             }
+
             candidateLayer.appendChild(candidate);
         }
-        candidateLayer.style.display = "grid";
 
+        // --- Centered candidates (as text block) ---
         if (cell.centeredCandidates.length > 0) {
+            const count = cell.centeredCandidates.length;
+
+            // Mapping from count → scale (relative to baseSize)
+            const fontScales = [
+                1.0, // 1 candidate
+                1.0, // 2
+                1.0, // 3
+                0.95, // 4
+                0.90, // 5
+                0.85, // 6
+                0.80, // 7
+                0.75, // 8
+                0.7, // 9
+            ];
+
+            const baseSize = candidateSize * 0.9;
+            const scale = fontScales[Math.min(count - 1, fontScales.length - 1)];
+            const fontSize = baseSize * scale;
+
             centeredCandidateLayer.textContent = cell.centeredCandidates.sort().join("");
-            centeredCandidateLayer.style.fontSize = `${cellSize * 0.2}px`;
+            centeredCandidateLayer.style.fontSize = `${fontSize}px`;
             centeredCandidateLayer.style.width = `${cellSize}px`;
             centeredCandidateLayer.style.height = `${cellSize}px`;
             centeredCandidateLayer.style.display = "flex";
+            centeredCandidateLayer.style.alignItems = "center";
+            centeredCandidateLayer.style.justifyContent = "center";
             centeredCandidateLayer.style.color = candidateColor;
         } else {
             centeredCandidateLayer.style.display = "none";
         }
+
     }
+
 
     computeBackground(colors) {
         if (!colors || colors.length === 0) return "transparent";
         if (colors.length === 1) return colors[0];
 
         const slice = 360 / colors.length;
-        return `conic-gradient(${colors.map((c, i) => `${c} ${slice * i}deg ${slice * (i + 1)}deg`).join(", ")})`;
+        const offset = 38; // Adjust this value to control starting angle
+        return `conic-gradient(from ${offset}deg, ${colors.map((c, i) =>
+            `${c} ${slice * i}deg ${slice * (i + 1)}deg`
+        ).join(", ")})`;
     }
+
 
     // --- Single cell operations ---
     setValue(idx, value, fixed = false) {

@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="{% static 'sudoku/css/rulemanager.css' %}">
 <link rel="stylesheet" href="{% static 'sudoku/css/accordion.css' %}">
 <link rel="stylesheet" href="{% static 'sudoku/css/tab_analyse.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/tab_submit.css' %}">
 
 <style>
 	html, body {
@@ -247,20 +248,19 @@
 
 						<!-- Visual Upload Box -->
 						<div id="upload-loading-box" class="mt-4" style="display: none;">
-							<div class="progress mb-2" role="progressbar" aria-label="Upload in progress" style="height: 28px;">
-								<div class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 100%;">
+							<div class="progress mb-2" role="progressbar" style="height: 28px;">
+								<div id="upload-progress-bar"
+									 class="progress-bar progress-bar-striped progress-bar-animated"
+									 style="width: 0%; background-color: gold;">
 									Uploading Sudoku...
 								</div>
 							</div>
-							<div class="text-center text-muted small" id="upload-progress-text">
-								Preparing board payload... 📦
+							<div id="upload-progress-text" class="text-center text-muted small">
+								Preparing...
 							</div>
 						</div>
-
 					</form>
 				</div>
-
-
 			</div>
 		</div>
 	</div>
