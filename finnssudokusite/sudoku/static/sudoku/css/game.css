@@ -1,0 +1,439 @@
+body {
+	background-image: none;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	min-height: 100vh;
+}
+
+.timer {
+	font-family: "JetBrains Mono", monospace;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+}
+/* macht die Buttons Quadratisch */
+.btn-square {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 0;
+	aspect-ratio: 1 / 1;
+	font-size: 1.8rem;
+}
+
+@media (min-aspect-ratio: 1/1) {   /* Landscape */
+	.grid-container {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: center;
+		gap: 1rem;
+		box-sizing: border-box;
+		max-width: 100vw; /* optional, falls nötig */
+	}
+	
+	.left-pane {
+		width: min(100%, calc(100dvh - 60px - 2rem));
+		max-width: 100%;
+		max-height: 100%;
+		aspect-ratio: 1 / 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.right-pane {
+		width: 300px;
+		min-width: 300px;
+		max-width: 300px;
+		/* Höhe ergibt sich automatisch aus dem Inhalt */
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		overflow: hidden;
+	}
+	
+	.button-grid {
+		flex: 1;
+		height: calc(501px - 5.4rem); /* 501px Gesamt-Höhe minus Timer */
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: repeat(6, 1fr);
+		gap: 0.25rem; /* Möglichst klein für exaktes Seitenverhältnis */
+		box-sizing: border-box;
+		grid-template-areas:
+			"gear rules plus minus"
+			"undo redo clear eye"
+			"seven eight nine ."
+			"four five six ."
+			"one two three ."
+			"number top center color";
+	}
+	
+	.timer {
+		height: 3rem;
+		font-size: 2rem;
+		margin-bottom: 0.5rem;
+		background-color: #7FBCFF;
+		border: #0d6efd solid 1px;
+		width: 100%;
+		text-align: center;
+		min-height: 3rem;
+		max-height: 3rem;
+		box-sizing: border-box;
+	}
+	
+	.right-pane-middle-content {
+		flex: 1;
+		min-width: 0;
+		overflow: auto;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column; /* Korrektur: row → column */
+		box-sizing: border-box;
+	}
+	
+	.btn-square {
+		width: 100%;
+	}
+}
+
+@media (max-aspect-ratio: 1/1) {  /* Portrait */
+	.grid-container {
+		display: flex;              /* <- von grid auf flex ändern */
+		flex-direction: column;
+		align-items: center;        /* <- zentriert die Panes */
+		gap: 3px;
+	}
+	
+	.left-pane {
+		aspect-ratio: 1 / 1;
+		width: min(100vw - 2rem, 100dvh - 60px - 2rem - 200px);
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		
+	}
+	.right-pane {
+		width: auto;
+		height: 200px;
+		max-width: 420px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: row;
+		min-height: 0;
+	}
+	.button-grid {
+		flex: 1;
+		display: grid;
+		grid-template-rows: repeat(3, 1fr);
+		grid-auto-columns: 1fr;
+		gap: 0.5rem;
+		height: calc(100% - 2.6rem);
+		min-width: 0;
+		box-sizing: border-box;
+		max-width: 420px;
+		grid-template-areas:
+			"seven eight nine plus minus gear rules"
+			"four five six eye undo redo clear"
+			"one two three number top center color";
+	}
+	
+	.right-pane-middle-content {
+		flex: 1;
+		min-height: 0;  /* ← erlaubt dem Kind-Element Scrollen */
+		overflow: auto; /* ← falls nötig, lieber Scroll statt Abschneiden */
+		padding: 0 1rem 1rem;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+	}
+	
+	.no-block-in-Portrait-Mode { display: none;}
+	
+	.timer {
+		height: 1rem;
+		font-size: 1rem;
+		margin: 0.2rem 0 0.4rem 0;
+	}
+	.btn-square {
+		height: 100%;
+	}
+}
+
+/*
+@media (min-aspect-ratio: 2/1) { !* Sonderfall-Styles hier *!
+	.grid-container {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: center;    !* Zentriert die Panes horizontal *!
+		gap: 1rem;
+		width: 100vw;               !* Optional: nimmt die volle Breite *!
+		box-sizing: border-box;
+	}
+	
+	.left-pane {
+		width: min(100%, calc(100dvh - 60px - 2rem));
+		max-width: 100%;
+		max-height: 100%;
+		aspect-ratio: 1 / 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.right-pane {
+		width: auto;                !* <- auto statt 100% *!
+		height: 246px;
+		max-width: 420px;           !* <- maximal so breit wie nötig (anpassen!) *!
+		overflow: hidden;
+		display: flex;
+		flex-direction: row;
+		min-height: 0;
+	}
+	
+	.button-grid {
+		flex: 1;
+		display: grid;
+		grid-template-rows: repeat(3, 1fr);
+		grid-auto-columns: 1fr;
+		gap: 0.5rem;
+		height: calc(100% - 2.6rem);
+		min-width: 0;
+		box-sizing: border-box;
+		max-width: 420px;
+		grid-template-areas:
+			"seven eight nine plus minus gear rules"
+			"four five six eye undo redo clear"
+			"one two three number top center color";
+	}
+	
+	.timer {
+		height: 3rem;
+		font-size: 2rem;
+		margin-bottom: 0.5rem;
+		background-color: #7FBCFF;
+		border: #0d6efd solid 1px;
+		width: 200px;
+		text-align: center;
+		min-height: 3rem;
+		max-height: 3rem;
+		box-sizing: border-box;
+	}
+	
+	.right-pane-middle-content {
+		flex: 1;
+		min-width: 0;
+		overflow: auto;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column; !* Korrektur: row → column *!
+		box-sizing: border-box;
+	}
+	
+	.btn-square {
+		width: 100%;
+	}
+}
+*/
+
+.my_board_box {
+	background: white;
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	box-sizing: border-box;
+}
+
+.my_white_box {
+	background-color: white;
+	border: 1px solid #dee2e6;   /* Bootstrap border color */
+	border-radius: 0.25rem;      /* Bootstrap border radius */
+	width: 100%;                 /* Volle Breite */
+	overflow-y: auto;
+}
+
+
+/* === Grid Areas === */
+#btn-gear { grid-area: gear; }
+
+#btn-rules { grid-area: rules; }
+
+#btn-undo { grid-area: undo; }
+
+#btn-redo { grid-area: redo; }
+
+#btn-clear { grid-area: clear; }
+
+#btn-one { grid-area: one; }
+
+#btn-two { grid-area: two; }
+
+#btn-three { grid-area: three; }
+
+#btn-four { grid-area: four; }
+
+#btn-five { grid-area: five; }
+
+#btn-six { grid-area: six; }
+
+#btn-seven { grid-area: seven; }
+
+#btn-eight { grid-area: eight; }
+
+#btn-nine { grid-area: nine; }
+
+#btn-colorMode { grid-area: color; }
+
+#btn-numberMode { grid-area: number; }
+
+#btn-topMode { grid-area: top; }
+
+#btn-centerMode { grid-area: center; }
+
+#btn-minus { grid-area: minus; }
+
+#btn-plus { grid-area: plus; }
+
+#btn-toggleEye { grid-area: eye; }
+
+#btn-zero { grid-area: zero; }
+
+/* Erzeugt weiße button */
+.btn-custom-white {
+	color: #212529;
+	background-color: #fff;
+	border: 1px solid #dee2e6;
+	transition: background-color 0.15s, box-shadow 0.15s;
+	box-shadow: none;
+}
+
+.btn-custom-white:hover,
+.btn-custom-white:focus {
+	color: #212529;
+	background-color: #e7f1ff;
+	border-color: #86b7fe;
+	outline: 0;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+}
+
+/* Standardfarben mit 0.5 Alpha */
+.btn-color-1 { background-color: rgba(230, 25, 75, 0.5);}
+
+.btn-color-2 { background-color: rgba(60, 180, 75, 0.5); }
+
+.btn-color-3 { background-color: rgba(255, 225, 25, 0.5); }
+
+.btn-color-4 { background-color: rgba(67, 99, 216, 0.5); }
+
+.btn-color-5 { background-color: rgba(245, 130, 49, 0.5); }
+
+.btn-color-6 { background-color: rgba(145, 30, 180, 0.5); }
+
+.btn-color-7 { background-color: rgba(70, 240, 240, 0.5); }
+
+.btn-color-8 { background-color: rgba(240, 50, 230, 0.5); }
+
+.btn-color-9 { background-color: rgba(188, 246, 12, 0.5); }
+
+/* Hover: Alpha auf 1 */
+.btn-color-1:hover,
+.btn-selected-1 { background-color: rgba(230, 25, 75, 1);}
+
+.btn-color-2:hover,
+.btn-selected-2 { background-color: rgba(60, 180, 75, 1); }
+
+.btn-color-3:hover,
+.btn-selected-3 { background-color: rgba(255, 225, 25, 1); }
+
+.btn-color-4:hover,
+.btn-selected-4 { background-color: rgba(67, 99, 216, 1); }
+
+.btn-color-5:hover,
+.btn-selected-5 { background-color: rgba(245, 130, 49, 1); }
+
+.btn-color-6:hover,
+.btn-selected-6 { background-color: rgba(145, 30, 180, 1); }
+
+.btn-color-7:hover,
+.btn-selected-7 { background-color: rgba(70, 240, 240, 1); }
+
+.btn-color-8:hover,
+.btn-selected-8 { background-color: rgba(240, 50, 230, 1); }
+
+.btn-color-9:hover,
+.btn-selected-9 { background-color: rgba(188, 246, 12, 1); }
+
+/* === Bootstrap-like Hover / Focus for All Buttons === */
+.btn-square:hover,
+.btn-square:focus {
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	border-color: #86b7fe;
+}
+
+.btn-hovered {
+	background-color: #e7f1ff !important;
+	border-color: #86b7fe !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-selected {
+	border-color: #86b7fe !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* === Suppress persistent outline glow after focus === */
+.btn-square:focus:not(:focus-visible) {
+	outline: none;
+	box-shadow: none;
+}
+
+/* === Layout Details === */
+
+.block-top {
+	background: url("../img/game/block-top.png") top center no-repeat;
+	background-size: 100% auto;
+	height: 40px;
+	min-height: 30px;
+	width: 100%;
+}
+
+.block-middle {
+	background: url("../img/game/block-content.png") top center repeat-y;
+	background-size: 100% auto;
+	width: 100%;
+}
+
+.block-bottom {
+	background: url("../img/game/block-bottom.png") bottom center no-repeat;
+	background-size: 100% auto;
+	height: 20px;
+	min-height: 20px;
+	width: 100%;
+}
+
+.dropdown-submenu > .dropdown-menu {
+	display: none;
+	position: absolute;
+	left: 100%;
+	top: 0;
+	margin-top: 0;
+}
+
+.dropdown-submenu:hover > .dropdown-menu,
+.dropdown-submenu:focus-within > .dropdown-menu {
+	display: block;
+}
+
+.rule-description {
+	margin-bottom: 1em;
+	padding: 0.5em;
+	border-left: 3px solid #aaa;
+	background: #f8f9fa;
+}

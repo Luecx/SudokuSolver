@@ -1,8 +1,8 @@
 import { createBoard } from "../board/board.js";
 import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { getCSRFToken } from "../csrf/csrf.js";
-import { InputKeyboard } from "../playboard/input_keyboard.js";
-import { InputMode } from "../playboard/input_constants.js";
+import { InputKeyboard } from "../game/input_keyboard.js";
+import { InputMode } from "../game/input_constants.js";
 
 class Creator {
     constructor() {
