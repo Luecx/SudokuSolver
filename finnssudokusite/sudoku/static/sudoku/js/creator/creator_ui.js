@@ -255,24 +255,41 @@ class Creator {
             return;
         }
 
-        const solverboard = this.board.getSolverBoard();
+        const solverboard   = this.board.getSolverBoard();
         this.clearAnalysisUI();
         this.renderAlert("warning", "Analyzing...", "");
 
-        let nodeCount = 0;
-        const loadingText = () => this.get("loading-text");
-        const interval = setInterval(() => {
-            nodeCount += Math.floor(Math.random() * 100 + 20);
-            if (loadingText()) loadingText().textContent = `${nodeCount} nodes processed...`;
-        }, 100);
+        const progressBar   = document.querySelector(".progress-bar");
+        const loadingTextEl = this.get("loading-text");
 
-        const solutions = await new Promise(resolve => {
-            setTimeout(() => resolve(solverboard.solveComplete()), 50);
-        });
+        // progressCallback now BOTH updates currentProgress *and* the UI
+        const progressCallback = async (count) => {
+            // calculate %
+            const fraction = Math.min(count / 81, 1);
+            const percent  = Math.floor(fraction * 100);
 
-        clearInterval(interval);
+            // update bar
+            if (progressBar) {
+                progressBar.style.width   = `${percent}%`;
+                progressBar.textContent   = `${percent}%`;
+            }
+
+            // update text
+            if (loadingTextEl) {
+                loadingTextEl.textContent = `${count} / 81 nodes processed...`;
+            }
+
+            // yield so browser can repaint immediately
+            await new Promise(resolve => setTimeout(resolve, 0));
+        };
+
+        // kick off the solve — each time it calls `progressCallback`,
+        // you’ll see the bar and text move in real time
+        const solutions = await solverboard.solveComplete(progressCallback);
+
+        // once done, show the result
         this.completeAnalysisDone = true;
-        this.solutionsRef = solutions;
+        this.solutionsRef        = solutions;
 
         if (solutions.length === 1) {
             this.renderAlert("success", "1 solution", "<p>✅ Exactly one solution found.</p>");
@@ -284,9 +301,10 @@ class Creator {
 
         this.displaySolutions(solverboard, solutions);
         this.get("clear-analysis-btn").disabled = false;
-        this.get("toggle-definite").disabled = false;
+        this.get("toggle-definite").disabled  = false;
         this.get("toggle-uncertain").disabled = false;
     }
+
 
     initAnalysisButtons() {
         const normalBtn = this.get("start-normal-analysis-btn");
