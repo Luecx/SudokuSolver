@@ -157,8 +157,6 @@ export class SolverBoard {
             for (const rule of this.rules) {
                 changed ||= rule.candidatesChanged(this);
             }
-            console.log("board after processing rules");
-            console.log(this.toString(true));
         }
     }
 
