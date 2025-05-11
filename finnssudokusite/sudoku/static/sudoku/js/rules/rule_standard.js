@@ -47,13 +47,13 @@ export class StandardRuleHandler extends RuleTypeHandler {
         ctx.lineWidth = 2;
 
         const gridSize = 9;
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
 
         // Bold horizontal lines at rows 3 and 6
         for (let row = 3; row < gridSize; row += 3) {
-            const { y } = this.board.getCellTopLeft(row, 0);
-            const { x: xStart } = this.board.getCellTopLeft(0, 0);
-            const { x: xEnd } = this.board.getCellTopLeft(0, gridSize);
+            const { y } = this.board.getCellTopLeftCTX(row, 0);
+            const { x: xStart } = this.board.getCellTopLeftCTX(0, 0);
+            const { x: xEnd } = this.board.getCellTopLeftCTX(0, gridSize);
             ctx.beginPath();
             ctx.moveTo(xStart, y);
             ctx.lineTo(xEnd, y);
@@ -62,9 +62,9 @@ export class StandardRuleHandler extends RuleTypeHandler {
 
         // Bold vertical lines at columns 3 and 6
         for (let col = 3; col < gridSize; col += 3) {
-            const { x } = this.board.getCellTopLeft(0, col);
-            const { y: yStart } = this.board.getCellTopLeft(0, 0);
-            const { y: yEnd } = this.board.getCellTopLeft(gridSize, 0);
+            const { x } = this.board.getCellTopLeftCTX(0, col);
+            const { y: yStart } = this.board.getCellTopLeftCTX(0, 0);
+            const { y: yEnd } = this.board.getCellTopLeftCTX(gridSize, 0);
             ctx.beginPath();
             ctx.moveTo(x, yStart);
             ctx.lineTo(x, yEnd);

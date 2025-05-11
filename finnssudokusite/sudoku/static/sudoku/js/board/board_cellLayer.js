@@ -148,8 +148,8 @@ export class CellLayer {
     _renderSelection(ctx) {
         if (!this.config || this.config.target !== RegionType.CELLS) return;
 
-        const cellSize = this.board.getCellSize();
-        const insetPx  = 3;
+        const cellSize = this.board.getCellSizeCTX();
+        const insetPx  = cellSize / 20;
         const inset    = insetPx / cellSize;
 
         const cells = this.selected_region.values().map(({ r, c }) => ({ x: c, y: r }));
@@ -157,13 +157,13 @@ export class CellLayer {
 
         ctx.save();
         ctx.strokeStyle = "rgba(0, 120, 255, 0.6)";
-        ctx.lineWidth = 6;
+        ctx.lineWidth = insetPx * 2;
         ctx.lineJoin = "round";
 
         for (const loop of loops) {
             ctx.beginPath();
             loop.forEach((pt, i) => {
-                const topLeft = this.board.getCellTopLeft(pt.x, pt.y);
+                const topLeft = this.board.getCellTopLeftCTX(pt.x, pt.y);
                 const x = topLeft.x;
                 const y = topLeft.y;
                 if (i === 0) ctx.moveTo(x, y);

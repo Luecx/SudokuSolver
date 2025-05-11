@@ -48,7 +48,7 @@ export class ParityHandler extends RuleTypeHandler {
         const path = rule.fields.path;
         if (!path || path.items.length < 2) return; // Need at least 2 cells to draw
 
-        const s = this.board.getCellSize();
+        const s = this.board.getCellSizeCTX();
         const half = s / 2;
 
         ctx.save();
@@ -57,13 +57,13 @@ export class ParityHandler extends RuleTypeHandler {
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
 
-        const { x, y } = this.board.getCellTopLeft(path.items[0].r, path.items[0].c);
+        const { x, y } = this.board.getCellTopLeftCTX(path.items[0].r, path.items[0].c);
         ctx.beginPath();
         ctx.moveTo(x + half, y + half);
 
         for (let i = 1; i < path.items.length; i++) {
             const { r, c } = path.items[i];
-            const pt = this.board.getCellTopLeft(r, c);
+            const pt = this.board.getCellTopLeftCTX(r, c);
             ctx.lineTo(pt.x + half, pt.y + half);
         }
 
