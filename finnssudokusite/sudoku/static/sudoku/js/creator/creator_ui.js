@@ -1,8 +1,8 @@
 import { createBoard } from "../board/board.js";
 import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { getCSRFToken } from "../csrf/csrf.js";
-import { InputKeyboard } from "../playboard/input_keyboard.js";
-import { InputMode } from "../playboard/input_constants.js";
+import { InputKeyboard } from "../game/input_keyboard.js";
+import { InputMode } from "../game/input_constants.js";
 
 class Creator {
     constructor() {
@@ -43,59 +43,98 @@ class Creator {
         btn.addEventListener("click", async (e) => {
             e.preventDefault();
 
-            // === SHOW LOADING BAR ===
             const loadingBox = this.get("upload-loading-box");
             const loadingText = this.get("upload-progress-text");
+            const progressBar = this.get("upload-progress-bar");
 
-            if (loadingBox && loadingText) {
-                loadingBox.style.display = "block";
-                loadingText.textContent = "Encoding Sudoku as JSON... 🔐";
+            console.log(loadingBox, loadingText, progressBar)
 
-                const steps = [
-                    "Compressing clues... 🤏",
-                    "Assigning digital ink... 🖋️",
-                    "Finalizing metadata... 📁",
-                    "Uploading to puzzle vault... 🧠",
-                ];
+            if (!loadingBox || !loadingText || !progressBar) return;
 
-                let i = 0;
-                const interval = setInterval(() => {
-                    if (i < steps.length) {
-                        loadingText.textContent = steps[i++];
-                    } else {
-                        clearInterval(interval);
-                    }
-                }, 800); // ~3 seconds total
-            }
+            // Reset visual state
+            progressBar.style.width = "0%";
+            progressBar.style.backgroundColor = "gold";
+            progressBar.textContent = "Uploading Sudoku...";
+            loadingBox.style.display = "block";
+            loadingText.textContent = "Encoding Sudoku as JSON...";
 
-            const json = this.board.saveBoard();
+            const steps = [
+                "Compressing clues...",
+                "Assigning digital ink...",
+                "Finalizing metadata...",
+                "Uploading to server...",
+            ];
+
+            let serverSuccess = null;
+            let serverDone = false;
+
             const payload = {
                 title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",
-                board: json,
+                board: this.board.saveBoard(),
             };
 
-            try {
-                const response = await fetch("/save-sudoku/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCSRFToken(),
-                    },
-                    body: JSON.stringify(payload),
+            // Start upload in parallel
+            fetch("/save-sudoku/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                body: JSON.stringify(payload),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    serverSuccess = data.status === "success";
+                })
+                .catch(err => {
+                    console.error("Save error:", err);
+                    serverSuccess = false;
+                })
+                .finally(() => {
+                    serverDone = true;
                 });
-                const data = await response.json();
 
-                alert(data.status === "success"
-                    ? `Sudoku saved! ID: ${data.sudoku_id}`
-                    : `Error saving sudoku: ${data.message}`);
-            } catch (err) {
-                console.error("Save error:", err);
-                alert("Unexpected error while saving.");
-            } finally {
-                // === HIDE LOADING BAR ===
-                if (loadingBox) loadingBox.style.display = "none";
-            }
+            // Animate bar and text
+            const duration = 2000;
+            const start = performance.now();
+            let progress = 0;
+
+            const animate = (now) => {
+                const elapsed = now - start;
+                const timeProgress = Math.min(elapsed / duration, 1);
+
+                // If server not done: clamp at 99%
+                if (!serverDone && timeProgress >= 1) {
+                    progress = 0.99;
+                } else {
+                    progress = timeProgress;
+                }
+
+                progressBar.style.width = `${progress * 100}%`;
+
+                const stepIndex = Math.floor(progress * steps.length);
+                if (stepIndex < steps.length) {
+                    loadingText.textContent = steps[stepIndex];
+                }
+
+                if (progress < 1 || !serverDone) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Animation done & server done
+                    progressBar.style.width = "100%";
+                    progressBar.style.backgroundColor = serverSuccess ? "green" : "red";
+                    progressBar.textContent = serverSuccess
+                        ? "Upload complete"
+                        : "Upload failed";
+                    loadingText.textContent = serverSuccess
+                        ? "Your Sudoku was saved successfully."
+                        : "An error occurred during upload.";
+                }
+            };
+
+            requestAnimationFrame(animate);
         });
+
 
         const box = document.getElementById("upload-loading-box");
         if (box) box.style.display = "none";
@@ -302,6 +341,7 @@ class Creator {
 
         // Enable submit if all conditions met
         btn.disabled = !(hasExactlyOneSolution && isNameValid);
+        btn.disabled = false;
     }
 
 

@@ -101,11 +101,7 @@ export class BoardNumberLayer {
             div.className = "cell-content";
             div.dataset.r = cell.idx.r;
             div.dataset.c = cell.idx.c;
-            div.style.width = `${cellSize}px`;
-            div.style.height = `${cellSize}px`;
-            div.style.position = "absolute";
-            div.style.left = `${cell.idx.c * cellSize}px`;
-            div.style.top = `${cell.idx.r * cellSize}px`;
+            div.style.gridArea = `${cell.idx.r + 1} / ${cell.idx.c + 1}`;
 
             const valueLayer = document.createElement("div");
             valueLayer.className = "value-layer";
@@ -125,10 +121,10 @@ export class BoardNumberLayer {
             cell.centeredCandidateLayer = centeredCandidateLayer;
 
             this.grid.appendChild(div);
-
             this.updateCell(cell);
         }
     }
+
 
     updateCell(cell) {
         if (!cell.element) return;
@@ -137,67 +133,74 @@ export class BoardNumberLayer {
         const candidateLayer = cell.candidateLayer;
         const centeredCandidateLayer = cell.centeredCandidateLayer;
 
+        // --- Hintergrund aktualisieren ---
         cell.element.style.background = this.computeBackground(cell.colors);
+        cell.element.classList.toggle("multi-color-background", cell.colors.length > 1);
 
+        // --- Reset Inhalt & Klassen ---
         valueLayer.textContent = "";
-        valueLayer.classList.remove("fixed", "editable");
+        valueLayer.classList.remove("fixed", "editable", "solution-style");
         candidateLayer.innerHTML = "";
         centeredCandidateLayer.textContent = "";
+        centeredCandidateLayer.className = "centered-candidate-layer"; // reset size class
 
         const cellSize = this.board.getCellSize();
 
+        // --- Zahlenwert ---
         if (cell.hasValue()) {
-            valueLayer.textContent = cell.value;
-            valueLayer.style.width = `${cellSize}px`;
-            valueLayer.style.height = `${cellSize}px`;
-            valueLayer.style.fontSize = `${cellSize * 0.8}px`;
+            valueLayer.textContent    = cell.value;
+            valueLayer.style.fontSize = cellSize * 0.8 + "px"
             valueLayer.classList.add(cell.fixed ? "fixed" : "editable");
-
-            // Apply coloring
-            if (cell.fixed) {
-                valueLayer.style.color = "black";
-            } else {
-                valueLayer.style.color = this.useSolutionStyle ? "green" : "blue";
+            if (!cell.fixed && this.useSolutionStyle) {
+                valueLayer.classList.add("solution-style");
             }
         }
 
-        // Fill 3x3 grid with ordinary candidates
-        const candidateOrder = [1,2,3,4,5,6,7,8,9];
+        // --- Kandidaten (3×3) ---
+        const candidateOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         const candidateColor = this.useSolutionStyle ? "red" : "#222";
+
+        const candidateSize = (cellSize * 0.7) / 3;
+
         for (let n of candidateOrder) {
             const candidate = document.createElement("div");
             candidate.className = "candidate-cell";
-            candidate.style.fontSize = `${cellSize * 0.2}px`;
-            candidate.style.width = `${cellSize / 3}px`;
-            candidate.style.height = `${cellSize / 3}px`;
+            candidate.style.fontSize = `${candidateSize * 0.7}px`; // behalten für pixelpräzise Darstellung
             candidate.style.color = candidateColor;
 
             if (cell.ordinaryCandidates.includes(n)) {
                 candidate.textContent = n;
             }
+
             candidateLayer.appendChild(candidate);
         }
-        candidateLayer.style.display = "grid";
 
+        // --- Centered Candidates ---
         if (cell.centeredCandidates.length > 0) {
+            const count = Math.min(cell.centeredCandidates.length, 9);
+            centeredCandidateLayer.classList.add(`cc-size-${count}`);
             centeredCandidateLayer.textContent = cell.centeredCandidates.sort().join("");
-            centeredCandidateLayer.style.fontSize = `${cellSize * 0.2}px`;
-            centeredCandidateLayer.style.width = `${cellSize}px`;
-            centeredCandidateLayer.style.height = `${cellSize}px`;
-            centeredCandidateLayer.style.display = "flex";
-            centeredCandidateLayer.style.color = candidateColor;
         } else {
             centeredCandidateLayer.style.display = "none";
+            return;
         }
+
+        // Wieder anzeigen, falls vorher versteckt
+        centeredCandidateLayer.style.display = "flex";
     }
+
 
     computeBackground(colors) {
         if (!colors || colors.length === 0) return "transparent";
         if (colors.length === 1) return colors[0];
 
         const slice = 360 / colors.length;
-        return `conic-gradient(${colors.map((c, i) => `${c} ${slice * i}deg ${slice * (i + 1)}deg`).join(", ")})`;
+        const offset = 38; // Adjust this value to control starting angle
+        return `conic-gradient(from ${offset}deg, ${colors.map((c, i) =>
+            `${c} ${slice * i}deg ${slice * (i + 1)}deg`
+        ).join(", ")})`;
     }
+
 
     // --- Single cell operations ---
     setValue(idx, value, fixed = false) {
@@ -427,24 +430,24 @@ export class BoardNumberLayer {
 
     show() {
         if (this.grid) {
-            this.grid.style.display = "block";
+            this.grid.classList.remove("hidden");
         }
     }
 
     hide() {
         if (this.grid) {
-            this.grid.style.display = "none";
+            this.grid.classList.add("hidden");
         }
     }
 
     toggleVisibility() {
         if (this.grid) {
-            this.grid.style.display = this.grid.style.display === "none" ? "block" : "none";
+            this.grid.classList.toggle("hidden");
         }
     }
 
     isVisible() {
-        return this.grid && this.grid.style.display !== "none";
+        return this.grid && !this.grid.classList.contains("hidden");
     }
 
     saveFixedCells() {

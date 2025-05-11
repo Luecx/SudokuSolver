@@ -21,8 +21,8 @@ import zlib
 
 # === General Views === #
 
-def auswahl_view(request):
-    return render(request, 'sudoku/auswahl.html')
+def game_selection_view(request):
+    return render(request, 'sudoku/game_selection.html')
 
 def index(request):
     """Main landing page showing all Sudoku puzzles and user stats if logged in."""
@@ -40,9 +40,9 @@ def index(request):
         'user_stats': user_stats,
     })
 
-def playboard(request):
-    """Renders the general Sudoku playboard page."""
-    return render(request, "sudoku/playboard.html")
+def game(request):
+    """Renders the general Sudoku game page."""
+    return render(request, "sudoku/game.html")
 
 def puzzles_view(request):
     """Lists all available Sudoku puzzles."""
@@ -100,7 +100,7 @@ def play_sudoku(request, sudoku_id):
     except Exception:
         raise Http404("Invalid puzzle data.")
 
-    return render(request, "sudoku/playboard.html", {
+    return render(request, "sudoku/game.html", {
         "puzzle_data_json": json.dumps({
             "id": sudoku.id,
             "title": sudoku.title,

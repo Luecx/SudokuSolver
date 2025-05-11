@@ -5,55 +5,7 @@
 {% block title %}Choose{% endblock %}
 
 {% block extra_css %}
-<style>
-	.sudoku-grid {
-		display: grid;
-		grid-template-columns: repeat(9, 1fr);
-		grid-template-rows: repeat(9, 1fr);
-		gap: 1px;
-		border: 1px solid darkgray;
-		width: 100%; /* <-- Volle Breite der Card */
-		aspect-ratio: 1 / 1; /* <-- Macht das Grid quadratisch */
-		margin: 0 auto;
-		background: darkgray;
-	}
-	
-	.sudoku-cell {
-		background: white;
-		width: 100%; /* Füllt die Grid-Zelle aus */
-		height: 100%; /* Füllt die Grid-Zelle aus */
-		box-sizing: border-box;
-	}
-
-	.my_green 		{color: white; background-color: green;}
-	.my_green:hover {color: white;background-color: #005400;}
-	.my_gold 		{color: black; background-color: gold;}
-	.my_gold:hover 	{color: white;background-color: goldenrod;}
-	.my_red 		{color: white; background-color: firebrick;}
-	.my_red:hover 	{color: white;background-color: darkred;}
-	.my_violet 		{color: white; background-color: darkviolet;}
-	.my_violet:hover	{color: white;background-color: #540090;}
-	.my_black 		{color: white; background-color: black;}
-	.my_black:hover {color: white;background-color: dimgray;}
-	
-	.grid-container {
-		display: grid;
-		gap: 1rem;
-		grid-template-columns: repeat(5, 1fr);
-	}
-	
-	@media (max-width: 1200px) {
-		.grid-container {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-	
-	@media (max-width: 768px) {
-		.grid-container {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-</style>
+<link rel="stylesheet" href="{% static 'sudoku/css/game_selection.css' %}">
 {% endblock %}
 
 
@@ -83,7 +35,7 @@
 				
 				<h5 class="card-title mt-3">Name</h5>
 				<p class="card-text">TAGS</p>
-				<a href="{% url 'playboard' %}" class="btn my_green w-100 ">{% trans "Play" %}</a>
+				<a href="{% url 'game' %}" class="btn my_green w-100 ">{% trans "Play" %}</a>
 			</div>
 		</div>
 	
@@ -110,7 +62,7 @@
 				
 				<h5 class="card-title mt-3">Name</h5>
 				<p class="card-text">TAGS</p>
-				<a href="{% url 'playboard' %}" class="btn my_gold w-100 ">{% trans "Play" %}</a>
+				<a href="{% url 'game' %}" class="btn my_gold w-100 ">{% trans "Play" %}</a>
 			</div>
 		</div>
 	
@@ -137,7 +89,7 @@
 				
 				<h5 class="card-title mt-3">Name</h5>
 				<p class="card-text">TAGS</p>
-				<a href="{% url 'playboard' %}" class="btn my_red w-100 ">{% trans "Play" %}</a>
+				<a href="{% url 'game' %}" class="btn my_red w-100 ">{% trans "Play" %}</a>
 			</div>
 		</div>
 	
@@ -164,7 +116,7 @@
 				
 				<h5 class="card-title mt-3">Name</h5>
 				<p class="card-text">TAGS</p>
-				<a href="{% url 'playboard' %}" class="btn my_violet w-100 ">{% trans "Play" %}</a>
+				<a href="{% url 'game' %}" class="btn my_violet w-100 ">{% trans "Play" %}</a>
 			</div>
 		</div>
 	
@@ -191,7 +143,7 @@
 				
 				<h5 class="card-title mt-3">Name</h5>
 				<p class="card-text">TAGS</p>
-				<a href="{% url 'playboard' %}" class="btn my_black w-100 ">{% trans "Play" %}</a>
+				<a href="{% url 'game' %}" class="btn my_black w-100 ">{% trans "Play" %}</a>
 			</div>
 		</div>
 	

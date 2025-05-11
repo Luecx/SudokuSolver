@@ -2,12 +2,10 @@
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    /* max-width: 600px; */
     margin: auto;
     overflow: visible;
 }
 
-/* The main canvas */
 #board-canvas {
     position: absolute;
     top: 0;
@@ -18,7 +16,6 @@
     pointer-events: none;
 }
 
-/* The div that holds the cells */
 #sudoku-board {
     position: absolute;
     top: 0;
@@ -29,9 +26,8 @@
     grid-template-rows: repeat(9, 1fr);
     width: 100%;
     height: 100%;
-    pointer-events: none; /* enable per-cell later */
+    pointer-events: none;
 }
-
 
 .cell-layer {
     display: grid;
@@ -40,12 +36,13 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    z-index: 4; /* adjust above hints if needed */
+    z-index: 4;
     pointer-events: auto;
     cursor: default;
 }
 
-.hint-layer {
+.hint-layer,
+.rc-layer {
     position: absolute;
     top: 0;
     left: 0;
@@ -55,10 +52,7 @@
     pointer-events: auto;
 }
 
-
-/* Individual cells */
 .cell {
-    /*background-color: #fff;*/
     background-color: transparent;
     box-sizing: border-box;
     margin: 0;
@@ -72,32 +66,18 @@
     color: #000;
     user-select: none;
     transition: background-color 0.2s;
-    pointer-events: auto; /* turned on via classes */
+    pointer-events: auto;
     cursor: default;
 }
 
-
-.cell.clickable,
-.cell.selectable {
-    pointer-events: auto;
-}
-
-/* Visual feedback */
 .cell.clickable:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
-
-.cell.selectable:not(.clickable):hover {
+.cell.selectable:hover {
     background-color: rgba(0, 0, 0, 0.03);
 }
+.cell.selected { }
 
-/* When a cell is selected */
-.cell.selected {
-    /*outline: 2px solid #3399ff;*/
-    /*box-shadow: 0 0 5px #3399ff;*/
-}
-
-/* Hint dots (edges/corners) */
 .hint-dot {
     position: absolute;
     background-color: #7FBCFF;
@@ -110,25 +90,12 @@
     transition: transform 0.2s ease;
     z-index: 10;
 }
-
 .hint-dot:hover {
     transform: translate(-50%, -50%) scale(1.4);
 }
-
 .hint-dot.selected {
     background: #3399ff;
     box-shadow: 0 0 5px #3399ff;
-}
-
-
-.rc-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5; /* same as hint-layer */
-    pointer-events: auto;
 }
 
 .hint-rc-label {
@@ -147,127 +114,82 @@
     cursor: pointer;
     pointer-events: auto;
     white-space: nowrap;
-    z-index: 11; /* above hint dots */
+    z-index: 11;
     transition: color 0.2s ease, transform 0.2s ease;
 }
-
-
 .hint-rc-label:hover {
     background-color: #eef6ff;
-    border-color: #3399ff;
 }
-
 .hint-rc-label.selected {
     background-color: #cce6ff;
-    border-color: #3399ff;
     color: #000;
 }
 
-
-.cell-content {
-    box-sizing: border-box;
-}
-.cell-content div {
-    font-size: 0.7em;
-}
-
-.board-content-container {
+.board-content-container,
+.content-layer {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
 }
 
 .cell-content {
-    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     user-select: none;
-}
-
-.cell-content.fixed {
-    color: black;
-    font-size: 2em;
-}
-
-.cell-content.editable {
-    color: blue;
-    font-size: 2em;
-}
-
-.candidate-grid {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    align-items: center;
-    justify-items: center;
-}
-
-.candidate-cell {
-    font-size: 0.5em;
-}
-
-.content-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-}
-
-.cell-content {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
-    user-select: none;
+    filter: blur(0.4px);
+}
+
+.cell-content.multi-color-background {
+    transition: background 0.3s ease;
 }
 
 .value-layer {
     font-weight: 400;
-    font-size: 2em;
     text-align: center;
     pointer-events: none;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-
 .value-layer.fixed {
     color: black;
 }
-
 .value-layer.editable {
     color: blue;
+}
+.value-layer.editable.solution-style {
+    color: green;
 }
 
 .candidate-layer {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    aspect-ratio: 1 / 1;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    align-items: center;
-    justify-items: center;
-    font-weight: 200;
-    color: gray;
-    /*font-size: 0.5em;*/
+    grid-template-columns: repeat(3, 33.33%);
+    grid-template-rows: repeat(3, 33.33%);
     pointer-events: none;
 }
 
 .candidate-cell {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 200;
 }
 
 .centered-candidate-layer {
@@ -285,4 +207,18 @@
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.cc-size-1  { font-size: 1.0em; }
+.cc-size-2  { font-size: 1.0em; }
+.cc-size-3  { font-size: 1.0em; }
+.cc-size-4  { font-size: 0.95em; }
+.cc-size-5  { font-size: 0.9em; }
+.cc-size-6  { font-size: 0.85em; }
+.cc-size-7  { font-size: 0.8em; }
+.cc-size-8  { font-size: 0.75em; }
+.cc-size-9  { font-size: 0.7em; }
+
+.hidden {
+    display: none !important;
 }
