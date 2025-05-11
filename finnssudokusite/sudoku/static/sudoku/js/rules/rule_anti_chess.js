@@ -7,7 +7,7 @@ import {attachAntiChessSolverLogic} from "./rule_anti_chess_solver.js";
 export class AntiChessRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("Anti-Chess", board);
-        this.tag = "antichess";
+        this.tag = "Anti-Chess";
         this.can_create_rules = false;
 
         attachAntiChessSolverLogic(this);
