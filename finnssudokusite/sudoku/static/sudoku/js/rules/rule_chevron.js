@@ -6,7 +6,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class ChevronHandler extends RuleTypeHandler {
     constructor(board) {
         super("Chevron", board);
-        this.tag = "chevron";
+        this.tag = "Chevron";
         this.can_create_rules = false;
 
         attachChevronSolverLogic(this);
