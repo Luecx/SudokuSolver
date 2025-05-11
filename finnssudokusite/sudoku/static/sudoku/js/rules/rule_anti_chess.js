@@ -47,11 +47,45 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             },
             {
                 key: "sums",
-                type: "number",
+                type: "string",
                 default: "",
                 label: "Forbidden Cage Sums (comma-separated)"
             }
         ]; 
+    }
+
+    getRuleWarnings(rule) {
+        const warnings = [];
+        const sums = rule.fields?.sums;
+
+        if (sums == null || sums === '')
+            return warnings;
+
+        const trimmed = sums.trim();
+        if (trimmed === '') {
+            warnings.push("'sums' cannot be empty");
+            return warnings;
+        }
+
+        if (!trimmed.includes(',')) {
+            if (isNaN(Number(trimmed)))
+                warnings.push(`'${trimmed}' is not a valid number`);
+            return warnings;
+        }
+
+        const parts = trimmed.split(',');
+        if (parts.length > 18)
+            warnings.push(`Too many numbers: maximum allowed is ${18}`);
+        
+        const invalidParts = parts.filter(part => {
+            const num = part.trim();
+            return num === '' || isNaN(Number(num));
+        });
+
+        if (invalidParts.length > 0)
+            warnings.push(`Invalid numbers: ${invalidParts.join(', ')}`);
+
+        return warnings;
     }
 
     getDescriptionHTML() {
@@ -107,7 +141,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             
         ctx.save();
         ctx.strokeStyle = rule.label == "Anti-Knight" ? "rgb(81, 157, 187)" : "rgb(125, 196, 62)";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.lineJoin = "round";  // Ensures smooth connection of line segments
         ctx.lineCap = "round";   // Ensures smooth caps at the ends
             
@@ -126,7 +160,76 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             ctx.closePath();
             ctx.stroke();
         }
+
+        // Position top left
+
+        if(region.size() === 0) 
+        {
+            // important to do otherwise syntax error when calculating firstPoint
+            ctx.restore();
+            return;
+        }
+
+        const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
+        const topLeft = this.board.getCellTopLeftCTX(firstPoint.r, firstPoint.c);
+        const boxWidth = s * 0.20;
+        const boxHeight = s * 0.20;
+        const paddingX = s * 0.03;
+        const paddingY = s * 0.05;
+
+        const rectX = topLeft.x + paddingX;
+        const rectY = topLeft.y + paddingY;
         
+        ctx.fillStyle = "white";
+        ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
+
+        const forbiddenSumsText = this.getForbiddenSums(rule).join(", ");
+
+        if (forbiddenSumsText) {
+            ctx.setLineDash([]); // reset dashed lines before strikethrough
+            ctx.fillStyle = "black";
+            ctx.font = `${s * 0.21}px sans-serif`;
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+
+            const textX = rectX + s * 0.02;
+            const textY = rectY + s * 0.01;
+
+            // Get text metrics before drawing text
+            const textMetrics = ctx.measureText(forbiddenSumsText);
+            // calculate a vertical position
+            const middleY = textY + (textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent) / 1.75;
+
+            ctx.fillText(forbiddenSumsText, textX, textY);
+
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(textX, middleY);
+            ctx.lineTo(textX + textMetrics.width, middleY);
+            ctx.stroke();
+        }
+
         ctx.restore();
+    }
+
+    getForbiddenSums(rule) {
+        if (!rule?.fields) return [];
+
+        const sumsInput = rule.fields.sums;
+        
+        if (sumsInput == null) return [];
+        if (sumsInput.trim() === '') return [];
+
+        return sumsInput
+            .split(',')
+            .map(part => {
+                const trimmed = part.trim();
+                return trimmed === '' ? NaN : Number(trimmed);
+            })
+            .filter(num => {
+                return !isNaN(num) && Number.isInteger(num);
+            })
+            .slice(0, 18); // take only the first 18 numbers
     }
 }

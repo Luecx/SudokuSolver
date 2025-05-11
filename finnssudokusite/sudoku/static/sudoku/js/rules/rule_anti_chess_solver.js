@@ -137,11 +137,23 @@ function inBounds(r, c, size) {
 }
 
 function getForbiddenSums(rule) {
-    const forbiddenSumsText = rule.fields?.sums;
+    if (!rule?.fields) return [];
+
+    const sumsInput = rule.fields.sums;
     
-    return forbiddenSumsText 
-        ? forbiddenSumsText.split(',').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num))
-        : [];
+    if (sumsInput == null) return [];
+    if (sumsInput.trim() === '') return [];
+
+    return sumsInput
+        .split(',')
+        .map(part => {
+            const trimmed = part.trim();
+            return trimmed === '' ? NaN : Number(trimmed);
+        })
+        .filter(num => {
+            return !isNaN(num) && Number.isInteger(num);
+        })
+        .slice(0, 18); // take only the first 18 numbers
 }
 
 function checkCagePlausibility(rule, board) {
