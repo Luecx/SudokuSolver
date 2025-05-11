@@ -86,9 +86,6 @@ export class RCIdx {
      * @returns {CellIdx[]}
      */
     attachedCells(board_size) {
-        console.log("attached cells of RCIdx", this.toString());
-        console.log("isRow", this.isRow());
-        console.log("isCol", this.isCol());
         const cells = [];
         if (this.#valid(this.row) && this.#valid(this.col)) {
             cells.push(new CellIdx(this.row, this.col));

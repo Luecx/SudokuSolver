@@ -101,11 +101,7 @@ export class BoardNumberLayer {
             div.className = "cell-content";
             div.dataset.r = cell.idx.r;
             div.dataset.c = cell.idx.c;
-            div.style.width = `${cellSize}px`;
-            div.style.height = `${cellSize}px`;
-            div.style.position = "absolute";
-            div.style.left = `${cell.idx.c * cellSize}px`;
-            div.style.top = `${cell.idx.r * cellSize}px`;
+            div.style.gridArea = `${cell.idx.r + 1} / ${cell.idx.c + 1}`;
 
             const valueLayer = document.createElement("div");
             valueLayer.className = "value-layer";
@@ -125,10 +121,10 @@ export class BoardNumberLayer {
             cell.centeredCandidateLayer = centeredCandidateLayer;
 
             this.grid.appendChild(div);
-
             this.updateCell(cell);
         }
     }
+
 
     updateCell(cell) {
         if (!cell.element) return;
@@ -137,60 +133,39 @@ export class BoardNumberLayer {
         const candidateLayer = cell.candidateLayer;
         const centeredCandidateLayer = cell.centeredCandidateLayer;
 
+        // --- Hintergrund aktualisieren ---
         cell.element.style.background = this.computeBackground(cell.colors);
+        cell.element.classList.toggle("multi-color-background", cell.colors.length > 1);
 
+        // --- Reset Inhalt & Klassen ---
         valueLayer.textContent = "";
-        valueLayer.classList.remove("fixed", "editable");
+        valueLayer.classList.remove("fixed", "editable", "solution-style");
         candidateLayer.innerHTML = "";
         centeredCandidateLayer.textContent = "";
+        centeredCandidateLayer.className = "centered-candidate-layer"; // reset size class
 
         const cellSize = this.board.getCellSize();
 
-        // --- Value rendering ---
+        // --- Zahlenwert ---
         if (cell.hasValue()) {
-            valueLayer.textContent = cell.value;
-            valueLayer.style.width = `${cellSize}px`;
-            valueLayer.style.height = `${cellSize}px`;
-            valueLayer.style.fontSize = `${cellSize * 0.8}px`;
+            valueLayer.textContent    = cell.value;
+            valueLayer.style.fontSize = cellSize * 0.8 + "px"
             valueLayer.classList.add(cell.fixed ? "fixed" : "editable");
-
-            valueLayer.style.color = cell.fixed
-                ? "black"
-                : (this.useSolutionStyle ? "green" : "blue");
+            if (!cell.fixed && this.useSolutionStyle) {
+                valueLayer.classList.add("solution-style");
+            }
         }
 
-        // --- Candidate layout constants ---
-        const paddingRatio = 0.15;
-        const innerSize = cellSize * (1 - 2 * paddingRatio); // 70% of cell
-        const candidateSize = innerSize / 3; // each of the 3x3 cells
-
-        // --- Candidate layout grid container ---
-        Object.assign(candidateLayer.style, {
-            position: "absolute",
-            top: `${cellSize * paddingRatio}px`,
-            left: `${cellSize * paddingRatio}px`,
-            width: `${innerSize}px`,
-            height: `${innerSize}px`,
-            display: "grid",
-            gridTemplateColumns: `repeat(3, ${candidateSize}px)`,
-            gridTemplateRows: `repeat(3, ${candidateSize}px)`,
-            gap: "0px",
-            pointerEvents: "none",
-            boxSizing: "border-box",
-        });
-
-        // --- Create 3×3 candidates ---
+        // --- Kandidaten (3×3) ---
         const candidateOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         const candidateColor = this.useSolutionStyle ? "red" : "#222";
+
+        const candidateSize = (cellSize * 0.7) / 3;
+
         for (let n of candidateOrder) {
             const candidate = document.createElement("div");
             candidate.className = "candidate-cell";
-            candidate.style.width = `${candidateSize}px`;
-            candidate.style.height = `${candidateSize}px`;
-            candidate.style.display = "flex";
-            candidate.style.justifyContent = "center";
-            candidate.style.alignItems = "center";
-            candidate.style.fontSize = `${candidateSize * 0.9}px`;
+            candidate.style.fontSize = `${candidateSize * 0.7}px`; // behalten für pixelpräzise Darstellung
             candidate.style.color = candidateColor;
 
             if (cell.ordinaryCandidates.includes(n)) {
@@ -200,39 +175,18 @@ export class BoardNumberLayer {
             candidateLayer.appendChild(candidate);
         }
 
-        // --- Centered candidates (as text block) ---
+        // --- Centered Candidates ---
         if (cell.centeredCandidates.length > 0) {
-            const count = cell.centeredCandidates.length;
-
-            // Mapping from count → scale (relative to baseSize)
-            const fontScales = [
-                1.0, // 1 candidate
-                1.0, // 2
-                1.0, // 3
-                0.95, // 4
-                0.90, // 5
-                0.85, // 6
-                0.80, // 7
-                0.75, // 8
-                0.7, // 9
-            ];
-
-            const baseSize = candidateSize * 0.9;
-            const scale = fontScales[Math.min(count - 1, fontScales.length - 1)];
-            const fontSize = baseSize * scale;
-
+            const count = Math.min(cell.centeredCandidates.length, 9);
+            centeredCandidateLayer.classList.add(`cc-size-${count}`);
             centeredCandidateLayer.textContent = cell.centeredCandidates.sort().join("");
-            centeredCandidateLayer.style.fontSize = `${fontSize}px`;
-            centeredCandidateLayer.style.width = `${cellSize}px`;
-            centeredCandidateLayer.style.height = `${cellSize}px`;
-            centeredCandidateLayer.style.display = "flex";
-            centeredCandidateLayer.style.alignItems = "center";
-            centeredCandidateLayer.style.justifyContent = "center";
-            centeredCandidateLayer.style.color = candidateColor;
         } else {
             centeredCandidateLayer.style.display = "none";
+            return;
         }
 
+        // Wieder anzeigen, falls vorher versteckt
+        centeredCandidateLayer.style.display = "flex";
     }
 
 
@@ -476,24 +430,24 @@ export class BoardNumberLayer {
 
     show() {
         if (this.grid) {
-            this.grid.style.display = "block";
+            this.grid.classList.remove("hidden");
         }
     }
 
     hide() {
         if (this.grid) {
-            this.grid.style.display = "none";
+            this.grid.classList.add("hidden");
         }
     }
 
     toggleVisibility() {
         if (this.grid) {
-            this.grid.style.display = this.grid.style.display === "none" ? "block" : "none";
+            this.grid.classList.toggle("hidden");
         }
     }
 
     isVisible() {
-        return this.grid && this.grid.style.display !== "none";
+        return this.grid && !this.grid.classList.contains("hidden");
     }
 
     saveFixedCells() {

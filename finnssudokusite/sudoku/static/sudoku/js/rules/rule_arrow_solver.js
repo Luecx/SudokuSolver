@@ -22,7 +22,8 @@ export function attachArrowSolverLogic(instance) {
         // next, we need to differentiate between the amount of base cells
         if (base.items.length === 1) {
             let cell = board.getCell(base.items[0]);
-            cell.onlyAllowCandidates(NumberSet.greaterThan(lb, board.size));
+            if (cell.value !== NO_NUMBER) return false;
+            cell.candidates = (NumberSet.greaterThan(lb, board.size));
         } else {
             let cell1 = board.getCell(base.items[0]);
             let cell2 = board.getCell(base.items[1]);
