@@ -1,0 +1,76 @@
+.badge-Kropki {
+    background-color: #6f42c1; /* purple */
+    color: white;
+}
+
+.badge-XV {
+    background-color: #0dcaf0; /* cyan */
+    color: black;
+}
+
+.badge-Standard {
+    background-color: #adb5bd; /* gray */
+    color: black;
+}
+
+.badge-Diagonal {
+    background-color: #20c997; /* teal */
+    color: black;
+}
+
+.badge-Sandwich {
+    background-color: #ffc107; /* yellow */
+    color: black;
+}
+
+.badge-Arrow {
+    background-color: #0d6efd; /* blue */
+    color: white;
+}
+
+.badge-Parity {
+    background-color: #6610f2; /* violet */
+    color: white;
+}
+
+.badge-Palindrome {
+    background-color: #fd7e14; /* orange */
+    color: black;
+}
+
+.badge-Thermo {
+    background-color: #e83e8c; /* pink */
+    color: white;
+}
+
+.badge-Renban {
+    background-color: #198754; /* green */
+    color: white;
+}
+
+.badge-Whisper {
+    background-color: #6c757d; /* secondary gray */
+    color: white;
+}
+
+.badge-Killer {
+    background-color: #dc3545; /* red */
+    color: white;
+}
+
+.badge-Chevron {
+    background-color: #f8f9fa; /* light */
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.badge-Anti-Chess {
+    background-color: #343a40; /* dark */
+    color: white;
+}
+
+.badge-Magic\ Square {
+    background-color: #1982c4; /* deep blue */
+    color: white;
+}
+

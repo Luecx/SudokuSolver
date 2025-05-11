@@ -5,7 +5,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class ChessRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("Anti-Chess", board);
-        this.tag = "anti_chess";
+        this.tag = "Anti-Chess";
         this.can_create_rules = false;
 
         attachChessSolverLogic(this);

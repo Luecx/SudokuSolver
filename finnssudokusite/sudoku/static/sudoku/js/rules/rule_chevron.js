@@ -55,7 +55,7 @@ function drawChevron(ctx, x, y, direction = 'down') {
 export class ChevronHandler extends RuleTypeHandler {
     constructor(board) {
         super("Chevron Rule", board);
-        this.tag = "chevron";
+        this.tag = "Chevron";
         this.can_create_rules = false;
 
         attachChevronRuleSolverLogic(this);

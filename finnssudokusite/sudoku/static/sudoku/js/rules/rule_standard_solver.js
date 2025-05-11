@@ -30,8 +30,8 @@ export function attachStandardSolverLogic(instance) {
             for (let bc = 0; bc < BOARD_SIZE; bc += 3)
                 if (hiddenSingles(board.getBlock(br, bc))) changed = true;
 
-        if (pointing(board)) changed = true;
-        if (claiming(board)) changed = true;
+        // if (pointing(board)) changed = true;
+        // if (claiming(board)) changed = true;
         // if (nakedPairs(board)) changed = true;
         // if (xWing(board)) changed = true;
         // if (swordfish(board)) changed = true;

@@ -6,7 +6,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class RenbanHandler extends RuleTypeHandler {
     constructor(board) {
         super("Renban", board);
-        this.tag = "renban";
+        this.tag = "Renban";
         this.can_create_rules = true;
 
         attachRenbanSolverLogic(this);
