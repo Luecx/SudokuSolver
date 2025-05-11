@@ -30,6 +30,7 @@ class Creator {
         this.initSaveButton();
         this.initAnalysisButtons();
         this.registerBoardChangeListeners();
+        this.renderActiveTags();
     }
 
     get(id) {
@@ -371,7 +372,30 @@ class Creator {
         ];
 
         events.forEach(event => {
-            this.board.onEvent(event, () => this.disableSubmit());
+            this.board.onEvent(event, () => {
+                this.disableSubmit();
+                this.renderActiveTags();
+            });
+        });
+
+    }
+
+    renderActiveTags() {
+        const container = this.get("active-tags-container");
+        container.innerHTML = "";
+
+        const handlers = this.board.getAllHandlers();
+        handlers.forEach(handler => {
+            if (!handler.enabled) return;
+
+            const tagName = handler.tag;
+            if (!tagName) return;
+
+            const badge = document.createElement("span");
+            badge.className = `badge me-1 mb-1 p-2 badge-${tagName}`;
+            // badge.className = 'badge'
+            badge.textContent = tagName;
+            container.appendChild(badge);
         });
     }
 

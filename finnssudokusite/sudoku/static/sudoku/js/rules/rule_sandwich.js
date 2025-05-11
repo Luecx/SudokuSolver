@@ -7,7 +7,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class SandwichHandler extends RuleTypeHandler {
     constructor(board) {
         super("Sandwich", board);
-        this.tag = "sandwich";
+        this.tag = "Sandwich";
         this.can_create_rules = true; // allow user to add sandwiches manually
 
         attachSandwichSolverLogic(this);

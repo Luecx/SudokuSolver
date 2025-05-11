@@ -7,7 +7,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class CageHandler extends RuleTypeHandler {
     constructor(board) {
         super("Cage", board);
-        this.tag = "cage";
+        this.tag = "Killer";
         this.can_create_rules = true;
 
         attachCageSolverLogic(this);

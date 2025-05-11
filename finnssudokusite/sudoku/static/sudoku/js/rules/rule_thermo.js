@@ -6,7 +6,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class ThermometerHandler extends RuleTypeHandler {
     constructor(board) {
         super("Thermometer", board);
-        this.tag = "thermometer";
+        this.tag = "Thermo";
         this.can_create_rules = true;
 
         attachThermometerSolverLogic(this);

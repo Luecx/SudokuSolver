@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{% static 'sudoku/css/creator_tabCreate.css' %}">
 <link rel="stylesheet" href="{% static 'sudoku/css/creator_tabAnalyse.css' %}">
 <link rel="stylesheet" href="{% static 'sudoku/css/creator_tabSubmit.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/badges.css' %}">
 
 {% endblock %}
 
@@ -110,6 +111,7 @@
 
 						<!-- Name Input -->
 						<input type="text" class="form-control mb-2" name="sudoku_name" id="sudoku-name-input" placeholder="Enter Sudoku name...">
+						<div id="active-tags-container" class="mt-2"></div>
 
 						<!-- Top Separator -->
 						<hr class="my-3">

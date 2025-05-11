@@ -6,7 +6,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class WhisperHandler extends RuleTypeHandler {
     constructor(board) {
         super("Whisper", board);
-        this.tag = "whisper";
+        this.tag = "Whisper";
         this.can_create_rules = true;
         attachWhisperSolverLogic(this);
     }

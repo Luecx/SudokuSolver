@@ -6,7 +6,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class ParityHandler extends RuleTypeHandler {
     constructor(board) {
         super("Parity", board);
-        this.tag = "parity";
+        this.tag = "Parity";
         this.can_create_rules = true;
 
         attachParitySolverLogic(this);
