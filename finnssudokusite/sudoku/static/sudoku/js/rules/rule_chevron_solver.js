@@ -1,7 +1,7 @@
 import { NO_NUMBER } from "../number/number.js";
 import { NumberSet } from "../number/number_set.js";
 
-export function attachChevronRuleSolverLogic(instance) {
+export function attachChevronSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
         if (changedCell.value === NO_NUMBER) return false;
         let changed = false;
