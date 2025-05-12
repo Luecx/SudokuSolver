@@ -1,5 +1,6 @@
 import { NumberSet } from '../number/number_set.js';
 import { NO_NUMBER } from '../number/number.js';
+import { hiddenSingles } from './rule_standard_solver.js';
 import * as SolverUtils from '../solver/solverUtil.js';
 
 export function attachExtraRegionsSolverLogic(instance) {
@@ -50,32 +51,18 @@ export function attachExtraRegionsSolverLogic(instance) {
 
 function groupIsPlausible(group) {
     let seen = new NumberSet();
-    seen.clear();
+    seen.mask = 0;
+    let combined = new NumberSet();
     
     for (const c of group) {
-        if (c.value === NO_NUMBER) continue;
-        if (seen.test(c.value)) return false; // duplicate found
-        seen.allow(c.value);
-    }
-    
-    return true;
-}
-
-function hiddenSingles(unit) {
-    let changed = false;
-    const seenOnce = new NumberSet();
-    const seenTwice = new NumberSet();
-
-    for (const c of unit) {
-        seenTwice.orEq(seenOnce.and(c.getCandidates()));
-        seenOnce.orEq(c.getCandidates());
-    }
-    const unique = seenOnce.and(seenTwice.not());
-    for (const c of unit) {
-        if (c.value === NO_NUMBER) {
-            const pick = c.candidates.and(unique);
-            if (pick.count() === 1 && c.removeCandidates(pick.not())) changed = true;
+        if (c.value !== NO_NUMBER) {
+            if (seen.test(c.value)) return false;
+            seen.allow(c.value);
+            combined.orEq(NumberSet.fromNumber(c.value));
+        } else {
+            combined.orEq(c.candidates);
         }
     }
-    return changed;
+    
+    return combined.count() >= group.length;
 }
