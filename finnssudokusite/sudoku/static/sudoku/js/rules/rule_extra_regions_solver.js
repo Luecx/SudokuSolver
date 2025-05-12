@@ -1,5 +1,6 @@
 import { NumberSet } from '../number/number_set.js';
 import { NO_NUMBER } from '../number/number.js';
+import * as SolverUtils from '../solver/solverUtil.js';
 
 export function attachExtraRegionsSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
@@ -10,15 +11,12 @@ export function attachExtraRegionsSolverLogic(instance) {
         
         for (const rule of instance.rules) {
             const region = rule.fields?.region;
-            if (!region) continue;
+            if (!region || !region.has(changedCell.pos)) continue;
 
-            if (region.has(changedCell.pos)) {
-                // remove the candidate from all cells in this extra region
-                for (const pos of region.items) {
-                    const cell = board.getCell({r: pos.r, c: pos.c});
-                    if (cell.value === NO_NUMBER && cell.removeCandidates(rm)) 
-                        changed = true;
-                }
+            // remove the candidate from all cells in this extra region
+            for (const pos of region.items) {
+                const cell = board.getCell({r: pos.r, c: pos.c});
+                if (cell.value === NO_NUMBER && cell.removeCandidates(rm)) changed = true;
             }
         }
         
@@ -27,14 +25,13 @@ export function attachExtraRegionsSolverLogic(instance) {
 
     instance.candidatesChanged = function (board) {
         let changed = false;
-
+        
         for (const rule of instance.rules) {
             const region = rule.fields?.region;
             if (!region) continue;
-            const cells = region.items.map(pos => board.getCell({r: pos.r, c: pos.c}));            
-            if (cells.length >= 2 && hiddenSingles(cells)) changed = true;           
+            if (hiddenSingles(SolverUtils.cells(region, board))) changed = true;           
         }
-
+        
         return changed;
     };
 
@@ -42,9 +39,7 @@ export function attachExtraRegionsSolverLogic(instance) {
         for (const rule of instance.rules) {
             const region = rule.fields?.region;
             if (!region) continue;
-            
-            const cells = region.items.map(pos => board.getCell({r: pos.r, c: pos.c}));    
-            if (!groupIsPlausible(cells)) return false;
+            if (!groupIsPlausible(SolverUtils.cells(region, board))) return false;
         }
         
         return true;
@@ -55,20 +50,15 @@ export function attachExtraRegionsSolverLogic(instance) {
 
 function groupIsPlausible(group) {
     let seen = new NumberSet();
-    seen.mask = 0;
-    let combined = new NumberSet();
+    seen.clear();
     
     for (const c of group) {
-        if (c.value !== NO_NUMBER) {
-            if (seen.test(c.value)) return false;  // duplicate found
-            seen.allow(c.value);
-            combined.orEq(NumberSet.fromNumber(c.value));
-        } else {
-            combined.orEq(c.candidates);
-        }
+        if (c.value === NO_NUMBER) continue;
+        if (seen.test(c.value)) return false; // duplicate found
+        seen.allow(c.value);
     }
     
-    return combined.count() >= group.length;
+    return true;
 }
 
 function hiddenSingles(unit) {
