@@ -7,8 +7,8 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class MagicSquareHandler extends RuleTypeHandler {
     constructor(board) {
-        super("MagicSquare", board);
-        this.tag = "Magic Square";
+        super("Magic Square", board);
+        this.tag = "Magic-Square";
         this.can_create_rules = true;
 
         attachMagicSquareSolverLogic(this);

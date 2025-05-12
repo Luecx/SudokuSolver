@@ -7,7 +7,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class IrregularRegionsHandler extends RuleTypeHandler {
     constructor(board) {
         super("Irregular Regions", board);
-        this.tag = "irregularregions";
+        this.tag = "Irregular-Regions";
         this.can_create_rules = false;
 
         this.regionKeys = [

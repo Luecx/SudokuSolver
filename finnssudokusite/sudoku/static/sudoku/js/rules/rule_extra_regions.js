@@ -7,7 +7,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 export class ExtraRegionsHandler extends RuleTypeHandler {
     constructor(board) {
         super("Extra Regions", board);
-        this.tag = "extraregions";
+        this.tag = "Extra-Regions";
         this.can_create_rules = true;
         
         this.usedColors = new Set();

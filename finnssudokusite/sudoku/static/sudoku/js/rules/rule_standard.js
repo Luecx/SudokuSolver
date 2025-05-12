@@ -4,7 +4,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class StandardRuleHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Standard Sudoku", board);
+        super("Standard", board);
         this.tag = "Standard";
         this.can_create_rules = false;
 

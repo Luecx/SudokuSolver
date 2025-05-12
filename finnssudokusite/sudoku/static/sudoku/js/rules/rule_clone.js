@@ -7,7 +7,7 @@ import * as CloneSolver from "./rule_clone_solver.js";
 export class CloneHandler extends RuleTypeHandler {
     constructor(board) {
         super("Clone", board);
-        this.tag = "clone";
+        this.tag = "Clone";
         this.can_create_rules = true;
         this.usedColors = new Set();
 

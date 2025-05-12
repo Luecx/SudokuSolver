@@ -69,8 +69,22 @@
     color: white;
 }
 
-.badge-Magic\ Square {
+.badge-Magic-Square {
     background-color: #1982c4; /* deep blue */
     color: white;
 }
 
+.badge-Clone {
+    background-color: #a996ba; /* blue violet */
+    color: white;
+}
+
+.badge-Extra-Regions {
+    background-color: #17a2b8; /* pastel pruple */
+    color: white;
+}
+
+.badge-Irregular-Regions {
+    background-color: #6f8ab7; /* shadow blue */
+    color: white;
+}

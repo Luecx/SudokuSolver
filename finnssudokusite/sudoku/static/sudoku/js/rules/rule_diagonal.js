@@ -3,7 +3,7 @@ import { attachDiagonalSolverLogic} from "./rule_diagonal_solver.js";
 
 export class DiagonalRuleHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Diagonal Sudoku", board);
+        super("Diagonal", board);
         this.tag = "Diagonal";
         this.can_create_rules = false;
 

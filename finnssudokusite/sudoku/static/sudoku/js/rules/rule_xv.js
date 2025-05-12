@@ -5,7 +5,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class XVRuleHandler extends RuleTypeHandler {
     constructor(board) {
-        super("XV Rule", board);
+        super("XV", board);
         this.tag = "XV";
         this.can_create_rules = false;
 
