@@ -46,9 +46,8 @@ export class Region {
      * Finds the index of an item by value.
      * @param {*} idx - The item to search for.
      * @returns {number} Index in the list, or -1.
-     * @private
      */
-    _findIndex(idx) {
+    findIndex(idx) {
         return this.items.findIndex(item => item.equals(idx));
     }
 
@@ -70,7 +69,7 @@ export class Region {
      * @param {*} idx
      */
     remove(idx) {
-        const i = this._findIndex(idx);
+        const i = this.findIndex(idx);
         if (i !== -1) {
             this.items.splice(i, 1);
         }
@@ -82,7 +81,7 @@ export class Region {
      * @returns {boolean}
      */
     has(idx) {
-        return this._findIndex(idx) !== -1;
+        return this.findIndex(idx) !== -1;
     }
 
     /** Clears all items from the region. */

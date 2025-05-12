@@ -115,16 +115,10 @@ function hiddenSingles(unit) {
     const seenTwice = new NumberSet();
 
     for (const c of unit) {
-        if (c.value !== NO_NUMBER) {
-            seenOnce.orEq(NumberSet.fromNumber(c.value));
-        } else {
-            seenTwice.orEq(seenOnce.and(c.candidates));
-            seenOnce.orEq(c.candidates);
-        }
+        seenTwice.orEq(seenOnce.and(c.getCandidates()));
+        seenOnce.orEq(c.getCandidates());
     }
-
     const unique = seenOnce.and(seenTwice.not());
-
     for (const c of unit) {
         if (c.value === NO_NUMBER) {
             const pick = c.candidates.and(unique);
