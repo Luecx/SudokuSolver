@@ -132,11 +132,7 @@ export function attachAntiChessSolverLogic(instance) {
 
 // helper functions
 
-function inBounds(r, c, size) {
-    return r >= 0 && r < size && c >= 0 && c < size;
-}
-
-function getForbiddenSums(rule) {
+export function getForbiddenSums(rule) {
     if (!rule?.fields) return [];
 
     const sumsInput = rule.fields.sums;
@@ -154,6 +150,10 @@ function getForbiddenSums(rule) {
             return !isNaN(num) && Number.isInteger(num);
         })
         .slice(0, 18); // take only the first 18 numbers
+}
+
+function inBounds(r, c, size) {
+    return r >= 0 && r < size && c >= 0 && c < size;
 }
 
 function checkCagePlausibility(rule, board) {

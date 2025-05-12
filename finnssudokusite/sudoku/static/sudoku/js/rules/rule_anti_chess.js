@@ -2,7 +2,7 @@ import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { RegionType } from "../region/RegionType.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
-import {attachAntiChessSolverLogic} from "./rule_anti_chess_solver.js";
+import * as AntiChessSolver from "./rule_anti_chess_solver.js";
 
 export class AntiChessRuleHandler extends RuleTypeHandler {
     constructor(board) {
@@ -10,7 +10,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         this.tag = "Anti-Chess";
         this.can_create_rules = false;
 
-        attachAntiChessSolverLogic(this);
+        AntiChessSolver.attachAntiChessSolverLogic(this);
     }
 
     defaultRules() {
@@ -183,7 +183,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         ctx.fillStyle = "white";
         ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
 
-        const forbiddenSumsText = this.getForbiddenSums(rule).join(", ");
+        const forbiddenSumsText = AntiChessSolver.getForbiddenSums(rule).join(", ");
 
         if (forbiddenSumsText) {
             ctx.setLineDash([]); // reset dashed lines before strikethrough
@@ -211,25 +211,5 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         }
 
         ctx.restore();
-    }
-
-    getForbiddenSums(rule) {
-        if (!rule?.fields) return [];
-
-        const sumsInput = rule.fields.sums;
-        
-        if (sumsInput == null) return [];
-        if (sumsInput.trim() === '') return [];
-
-        return sumsInput
-            .split(',')
-            .map(part => {
-                const trimmed = part.trim();
-                return trimmed === '' ? NaN : Number(trimmed);
-            })
-            .filter(num => {
-                return !isNaN(num) && Number.isInteger(num);
-            })
-            .slice(0, 18); // take only the first 18 numbers
     }
 }

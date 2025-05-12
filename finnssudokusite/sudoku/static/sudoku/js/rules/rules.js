@@ -14,6 +14,8 @@ import { ChevronHandler } from "./rule_chevron.js";
 import { AntiChessRuleHandler } from "./rule_anti_chess.js";
 import { MagicSquareHandler } from "./rule_magic_square.js";
 import { IrregularRegionsHandler } from "./rule_irregular_regions.js";
+import { ExtraRegionsHandler } from "./rule_extra_regions.js";
+import { CloneHandler } from "./rule_clone.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -34,5 +36,7 @@ export function createAllRuleHandlers(board) {
         new AntiChessRuleHandler(board),
         new MagicSquareHandler(board),
         new IrregularRegionsHandler(board),
+        new ExtraRegionsHandler(board),
+        new CloneHandler(board)
     ];
 }
