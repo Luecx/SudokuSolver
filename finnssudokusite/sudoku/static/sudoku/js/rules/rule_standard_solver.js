@@ -42,28 +42,33 @@ export function attachStandardSolverLogic(instance) {
 
     instance.checkPlausibility = function (board) {
         const groups = [...board.rows, ...board.cols, ...board.blocks];
-        for (const group of groups) {
-            let seen = new NumberSet();
-            seen.mask = 0;
-            let combined = new NumberSet();
-            for (const c of group) {
-                if (c.value !== NO_NUMBER) {
-                    if (seen.test(c.value)) return false;
-                    seen.allow(c.value);
-                    combined.orEq(NumberSet.fromNumber(c.value));
-                } else {
-                    combined.orEq(c.candidates);
-                }
-            }
-            if (combined.raw() !== NumberSet.all().raw()) return false;
-        }
+        for (const group of groups) 
+            if (!groupIsPlausible(group)) return false;
         return true;
     };
 }
 
+export function groupIsPlausible(group) {
+    let seen = new NumberSet();
+    seen.mask = 0;
+    let combined = new NumberSet();
+    
+    for (const c of group) {
+        if (c.value !== NO_NUMBER) {
+            if (seen.test(c.value)) return false;
+            seen.allow(c.value);
+            combined.orEq(NumberSet.fromNumber(c.value));
+        } else {
+            combined.orEq(c.candidates);
+        }
+    }
+    
+    return combined.raw() === NumberSet.all().raw();
+}
+
 /* === Advanced Rule Techniques === */
 
-function hiddenSingles(unit) {
+export function hiddenSingles(unit) {
     let changed = false;
     const seenOnce = new NumberSet();
     const seenTwice = new NumberSet();
