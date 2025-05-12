@@ -172,28 +172,43 @@ export class SolverBoard {
         );
     }
 
-    getNextCell() {
-        let best = null;
-        let bestQuality = Infinity;
+    getNextCell(impactSums = new Map()) {
+        // 1. Gather all empty cells
+        const empties = this.grid.flat().filter(cell => cell.value === NO_NUMBER);
 
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                const cell = this.grid[r][c];
-                if (cell.value === NO_NUMBER) {
-                    const count = cell.candidates.count();
-                    const quality = count - 2 * cell.ruleCount;
+        let minCount = Infinity;
+        let bestCells = [];
 
-                    if (count < 2) return cell.pos;
-
-                    if (quality < bestQuality) {
-                        best = cell;
-                        bestQuality = quality;
-                    }
-                }
+        for (const cell of empties) {
+            const count = cell.candidates.count();
+            if (count < minCount) {
+                minCount = count;
+                bestCells = [cell];
+            } else if (count === minCount) {
+                bestCells.push(cell);
             }
         }
 
-        return best?.pos || null;
+        // Among those, select by max impact
+        let bestImpact = -Infinity;
+        let impactTied = [];
+
+        for (const cell of bestCells) {
+            const key = cell.pos.toString();
+            const impact = impactSums.get(key) ?? 0;
+
+            if (impact > bestImpact) {
+                bestImpact = impact;
+                impactTied = [cell];
+            } else if (impact === bestImpact) {
+                impactTied.push(cell);
+            }
+        }
+
+        if (impactTied.length === 0) return null;
+        const chosen = impactTied[Math.floor(Math.random() * impactTied.length)];
+        return chosen.pos;
+
     }
 
     /**
@@ -238,6 +253,10 @@ export class SolverBoard {
         const board = this.clone();
         const board_nums_to_check = this.clone();
 
+        const result = this.buildImpactMapWithSums();
+        let impactSums = result.impactSums;
+        let impactMap = result.impactMap;
+
         // shuffle positions once
         const shuffledPositions = [...Array(this.size * this.size).keys()]
             .map(i => ({ r: Math.floor(i / this.size), c: i % this.size }))
@@ -262,7 +281,7 @@ export class SolverBoard {
                     continue;
                 }
 
-                const { solutions, stats } = board.solve(1, 128);
+                const { solutions, stats } = board.solve(1, 512, impactSums, impactMap);
 
                 if (solutions.length > 0) {
                     for (const sol of solutions) {
@@ -301,13 +320,98 @@ export class SolverBoard {
     }
 
 
+    buildImpactMapWithSums() {
+        const impactMap = new Map();
+        const impactSums = new Map();
+
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
+                const cell = this.grid[r][c];
+                if (cell.value !== NO_NUMBER) continue;
+
+                const idx = new CellIdx(r, c);
+                const key = idx.toString();
+                const innerMap = new Map();
+                let totalImpact = 0;
+
+                for (const num of cell.candidates) {
+                    const boardCopy = this.clone();
+                    const success = boardCopy.setCell(idx, num);
+
+                    if (!success) {
+                        innerMap.set(num, Infinity);
+                        continue;
+                    }
+
+                    const before = this.grid.flat().map(c => c.candidates.clone());
+                    const after = boardCopy.grid.flat().map(c => c.candidates);
+                    let changed = 0;
+
+                    for (let i = 0; i < before.length; i++) {
+                        if (!before[i].equals(after[i])) changed++;
+                    }
+
+                    innerMap.set(num, changed);
+                    totalImpact += changed;
+                }
+
+                impactMap.set(key, innerMap);
+                impactSums.set(key, totalImpact);
+            }
+        }
+
+        return { impactMap, impactSums };
+    }
 
 
-    solve(maxSolutions = 1, maxNodes = 1024) {
+
+
+    // Fisher–Yates shuffle helper
+    shuffleArray(arr){
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    };
+
+    // Returns the candidates for a given position in random order
+    getRandomCandidates(pos, impactMap = null) {
+        const cell = this.getCell(pos);
+        const candidates = Array.from(cell.candidates);
+
+        if (!impactMap) {
+            return this.shuffleArray(candidates);
+        }
+
+        const key = pos.toString();
+        const impacts = impactMap.get(key);
+
+        if (!impacts) {
+            return this.shuffleArray(candidates);
+        }
+
+        return candidates.sort((a, b) => {
+            const impactA = impacts.get(a) ?? 0;
+            const impactB = impacts.get(b) ?? 0;
+            return impactB - impactA;
+        });
+    }
+
+
+    solve(maxSolutions = 1, maxNodes = 1024, impactSums = undefined, impactMap = undefined) {
+        if (!impactSums || !impactMap) {
+            const result = this.buildImpactMapWithSums();
+            impactSums = result.impactSums;
+            impactMap = result.impactMap;
+        }
+
         const solutions = [];
         let nodeCount = 0;
         let interrupted = false;
         const start = performance.now();
+
+        this.showRuleCount();
 
         const backtrack = () => {
             if (++nodeCount > maxNodes) {
@@ -317,16 +421,16 @@ export class SolverBoard {
 
             if (this.isSolved()) {
                 solutions.push(this.clone());
-                if (solutions.length >= maxSolutions) return false;
-                return true;
+                return solutions.length < maxSolutions;
             }
 
-            const pos = this.getNextCell();
-            // console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
+            const pos = this.getNextCell(impactSums);
             if (!pos) return true;
 
-            const toTry = Array.from(this.getCell(pos).candidates);
-            for (const n of toTry) {
+            if (nodeCount < 10)
+                console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
+
+            for (const n of this.getRandomCandidates(pos, impactMap)) {
                 if (this.setCell(pos, n)) {
                     const keepGoing = backtrack();
                     this.stackPop();
@@ -343,8 +447,8 @@ export class SolverBoard {
         const stats = new SolverStats(solutions.length, nodeCount, end - start, interrupted);
         stats.print();
         return { solutions, stats };
-
     }
+
 
 
     clone() {
