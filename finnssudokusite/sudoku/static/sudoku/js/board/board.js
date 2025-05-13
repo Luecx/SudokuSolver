@@ -138,6 +138,11 @@ export function createBoard(container) {
             solutionLayer._generate(cellSize, usedSize, offset);
         }
 
+        this.onEvent("ev_rule_added"   , () => this.triggerRender());
+        this.onEvent("ev_rule_removed" , () => this.triggerRender());
+        this.onEvent("ev_rule_changed" , () => this.triggerRender());
+        this.onEvent("ev_rule_reset"   , () => this.triggerRender());
+
         window.addEventListener("resize", resizeAndRebuild);
         resizeAndRebuild();
     }
