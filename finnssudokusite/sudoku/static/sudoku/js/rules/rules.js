@@ -17,6 +17,7 @@ import { IrregularRegionsHandler } from "./rule_irregular_regions.js";
 import { ExtraRegionsHandler } from "./rule_extra_regions.js";
 import { CloneHandler } from "./rule_clone.js";
 import { CustomSumHandler } from "./rule_custom_sum.js";
+import { DiagonalSumHandler } from "./rule_diag_sum.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -40,5 +41,6 @@ export function createAllRuleHandlers(board) {
         new ExtraRegionsHandler(board),
         new CloneHandler(board),
         new CustomSumHandler(board),
+        new DiagonalSumHandler(board)
     ];
 }

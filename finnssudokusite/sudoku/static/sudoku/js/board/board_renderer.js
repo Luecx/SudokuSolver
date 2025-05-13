@@ -7,11 +7,12 @@ export class BoardRenderer {
 
         // Map: name → { fn, layer }
         this.drawLayers = new Map();
+        this.dpr = window.devicePixelRatio || 1;
     }
 
     setup(container) {
         const size = Math.floor(Math.min(container.clientWidth, container.clientHeight));
-        const dpr = window.devicePixelRatio || 1;
+        const dpr = this.dpr;
 
         this.canvas.width = size * dpr;
         this.canvas.height = size * dpr;
@@ -115,5 +116,9 @@ export class BoardRenderer {
 
     getGridOffset() {
         return this.gridOffset;
+    }
+
+    getDPR() {
+        return this.dpr;
     }
 }

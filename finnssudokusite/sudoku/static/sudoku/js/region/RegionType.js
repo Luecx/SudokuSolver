@@ -20,4 +20,7 @@ export const RegionType = {
 
     /** Region composed of RCIdx items (entire rows or columns or wildcard combinations) */
     ROWCOL: "rowcol",
+
+    /** Region composed of DiagonalIdx items (either diagonal or antidiagonal) */
+    DIAGONAL: "diagonal",
 };

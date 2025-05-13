@@ -9,21 +9,21 @@ import { BoardNumberLayer } from "./board_numberLayer.js";
 import { serializeObject, deserializeObject } from "../util/jsonify.js";
 import { CellIdx } from "../region/CellIdx.js";
 import { NO_NUMBER } from "../number/number.js";
+import { HintDiagLayer } from "./board_hintDiagLayer.js";
 
 export function createBoard(container) {
     const gridSize = 9;
-    const paddingRatio = 0.06;
+    const paddingRatio = 0.07;
 
     // --- Create DOM elements ---
     const canvas = document.createElement("canvas");
     canvas.id = "board-canvas";
 
-    const grid = document.createElement("div");
-    grid.className = "board-grid";
-    grid.id = "sudoku-board";
+    // const grid = document.createElement("div");
+    // grid.className = "board-grid";
+    // grid.id = "sudoku-board";
 
     container.appendChild(canvas);
-    container.appendChild(grid);
 
     // --- Continue with standard setup ---
     const ruleManager        = new RuleManager();
@@ -33,8 +33,9 @@ export function createBoard(container) {
     const solutionLayer      = new BoardNumberLayer(container, renderer);
     const hintLayer          = new HintDotLayer(container, renderer);
     const hintRCLayer        = new HintRCLayer(container, renderer);
+    const hintDiagLayer      = new HintDiagLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);
-    const selectionManager   = new SelectionManager(grid, ruleManager, renderer);
+    const selectionManager   = new SelectionManager(ruleManager, renderer);
 
     solutionLayer.useSolutionStyle = true;
 
@@ -50,6 +51,8 @@ export function createBoard(container) {
         getCellSize             : () => renderer.getCellSize(),
         getCellSizeCTX          : () => renderer.getCellSizeCTX(),
         getCanvasContext        : () => renderer.getContext(),
+        getGridSize             : () => gridSize,
+        getDPR                  : () => renderer.getDPR(),
 
         getAllHandlers          : () => ruleManager.getAllHandlers(),
 
@@ -121,15 +124,15 @@ export function createBoard(container) {
         cellLayer,
         hintLayer,
         hintRCLayer,
+        hintDiagLayer,
         contentLayer: numberLayer,
 
     };
 
     function initBoard() {
-        grid.classList.add("board");
-
         hintLayer.init(board);
         hintRCLayer.init(board);
+        hintDiagLayer.init(board);
         cellLayer.init(board);
         numberLayer.init(board);
         solutionLayer.init(board);
@@ -145,6 +148,7 @@ export function createBoard(container) {
             cellLayer._generate(cellSize, usedSize, offset);
             hintLayer.update();
             hintRCLayer.update();
+            hintDiagLayer.update();
             board.render();
             numberLayer._generate(cellSize, usedSize, offset);
             solutionLayer._generate(cellSize, usedSize, offset);

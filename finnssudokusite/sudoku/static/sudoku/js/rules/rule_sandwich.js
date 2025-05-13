@@ -27,7 +27,7 @@ export class SandwichHandler extends RuleTypeHandler {
                 key: "region",
                 type: "region",
                 regionType: RegionType.ROWCOL, // <--- your RCIdx type
-                selectionMode: "SINGLE",
+                selectionMode: SelectionMode.MULTIPLE,
                 label: "Row/Column"
             },
             {
