@@ -26,8 +26,7 @@ export function attachAntiChessSolverLogic(instance) {
             const movePattern = rule.label === "Anti-King" ? KING_PATTERN : KNIGHT_PATTERN;
             
             // check cage constraints if there's a region defined
-            if (region && region.size() > 0 && checkCage(rule, board))
-                changed = true;
+            if (region && region.size() > 0 && checkCage(rule, board)) changed = true;
             // no need to check for anti-rules if the cell is empty
             if (changedCell.value === NO_NUMBER) continue;
             // determine if we should apply the rule to this cell
@@ -51,8 +50,7 @@ export function attachAntiChessSolverLogic(instance) {
                     
                 if (shouldApplyConstraint && neighborCell.value === NO_NUMBER) {
                     // remove the changed cell's value from neighbor's candidates
-                    if (neighborCell.removeCandidate(changedCell.value))
-                        changed = true;       
+                    if (neighborCell.removeCandidate(changedCell.value)) changed = true;       
                 }
             }
         }
@@ -80,48 +78,31 @@ export function attachAntiChessSolverLogic(instance) {
             const region = rule.fields?.region;
             const movePattern = rule.label === "Anti-King" ? KING_PATTERN : KNIGHT_PATTERN;
 
-            let cellsToCheck = [];
-            if (region && region.size() > 0) {
-                // only check cells in the region
-                cellsToCheck = region.items.map(pos => ({
-                    pos,
-                    cell: board.getCell(pos)
-                })).filter(item => item.cell.value !== NO_NUMBER);
-            } else {
-                // check all cells on the board
-                for (let r = 0; r < size; r++) {
-                    for (let c = 0; c < size; c++) {
-                        const pos = { r, c };
-                        const cell = board.getCell(pos);
-                        if (cell.value !== NO_NUMBER)
-                            cellsToCheck.push({ pos, cell });
-                    }
-                }
-            }
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const cell = board.getCell({r: r, c: c});
+                    if (cell.value === NO_NUMBER) continue;
 
-            // check constraints for all collected cells
-            for (const { pos, cell } of cellsToCheck) {
-                const { r, c } = pos;
-                const value = cell.value;
-                
-                if (value === NO_NUMBER) continue;
-
-                for (const [dr, dc] of movePattern) {
-                    const nr = r + dr;
-                    const nc = c + dc;
-
-                    if (!inBounds(nr, nc, size))
-                        continue;
-
-                    const neighborPos = new CellIdx(nr, nc);
+                    // skip if cell is not in the region
+                    if (region && region.size() > 0 && !region.has(cell)) continue; 
                     
-                    // only check within region if one is specified
-                    if (region && region.size() > 0 && !region.has(neighborPos))
-                        continue;
-                        
-                    const neighborCell = board.getCell(neighborPos);
-                    if (neighborCell.value !== NO_NUMBER && neighborCell.value === value)
-                        return false; // found same value at knight/king distance
+                    for (const [dr, dc] of movePattern) {
+                        const nr = r + dr;
+                        const nc = c + dc;
+
+                        if (!inBounds(nr, nc, size))
+                            continue;
+
+                        const neighborPos = new CellIdx(nr, nc);
+
+                        // skip if neighbor is not in the region
+                        if (region && region.size() > 0 && !region.has(neighborPos)) continue;
+                            
+                        const neighborCell = board.getCell(neighborPos);
+
+                        if (neighborCell.value !== NO_NUMBER && neighborCell.value === cell.value)
+                            return false; // found same value at knight/king distance
+                    }
                 }
             }
         }
