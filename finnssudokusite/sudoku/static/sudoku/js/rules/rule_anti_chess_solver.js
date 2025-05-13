@@ -31,7 +31,7 @@ export function attachAntiChessSolverLogic(instance) {
             if (changedCell.value === NO_NUMBER) continue;
             // determine if we should apply the rule to this cell
             // skip if region exists, has elements, and doesn't contain the changed cell
-            if (region && region.size() > 0 && !region.has(changedCell))
+            if (region && region.size() > 0 && !region.has(changedCell.pos))
                 continue;
             
             // remove the value of the changed cell from candidates of cells that are a move away
@@ -46,7 +46,7 @@ export function attachAntiChessSolverLogic(instance) {
                 // determine if this neighbor should have constraints applied:
                 // - if region doesn't exist or is empty, apply to all cells
                 // - if region exists and has elements, only apply to cells in that region
-                const shouldApplyConstraint = !region || region.size() === 0 || region.has(neighborCell);
+                const shouldApplyConstraint = !region || region.size() === 0 || region.has(neighborCell.pos);
                     
                 if (shouldApplyConstraint && neighborCell.value === NO_NUMBER) {
                     // remove the changed cell's value from neighbor's candidates
@@ -84,7 +84,7 @@ export function attachAntiChessSolverLogic(instance) {
                     if (cell.value === NO_NUMBER) continue;
 
                     // skip if cell is not in the region
-                    if (region && region.size() > 0 && !region.has(cell)) continue; 
+                    if (region && region.size() > 0 && !region.has(cell.pos)) continue; 
                     
                     for (const [dr, dc] of movePattern) {
                         const nr = r + dr;
@@ -94,8 +94,6 @@ export function attachAntiChessSolverLogic(instance) {
                             continue;
 
                         const neighborPos = new CellIdx(nr, nc);
-
-                        // skip if neighbor is not in the region
                         if (region && region.size() > 0 && !region.has(neighborPos)) continue;
                             
                         const neighborCell = board.getCell(neighborPos);

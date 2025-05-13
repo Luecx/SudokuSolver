@@ -43,7 +43,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
                 key: "NumberCanRepeat",
                 type: "boolean",
                 label: `Numbers can repeat within a cage`,
-                default: false
+                default: true
             },
             {
                 key: "sums",
