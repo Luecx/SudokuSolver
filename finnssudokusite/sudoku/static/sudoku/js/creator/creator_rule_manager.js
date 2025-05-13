@@ -5,13 +5,6 @@ import { RegionSelectorOption } from "./option_region.js";
 import { createSelectionConfig } from "../board/board_selectionConfig.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 import { Region } from "../region/Region.js";
-import { BooleanOption } from "./option_bool.js";
-import { NumberOption } from "./option_number.js";
-import { StringOption } from "./option_string.js";
-import { RegionSelectorOption } from "./option_region.js";
-import { createSelectionConfig } from "../board/board_selectionConfig.js";
-import { SelectionMode } from "../board/board_selectionEnums.js";
-import { Region } from "../region/Region.js";
 
 export class CreatorRuleManager {
     constructor(board) {
@@ -28,7 +21,7 @@ export class CreatorRuleManager {
         this.addedRules = new Set();
         this.activeRegionSelector = null;
         this.ruleWarnings = new Map();   // rule.id -> warning string (or null)
-        this.handlerWarnings = new Map(); // handler.name -> boolean
+        this.handlerWarnings = new Map(); // handler.name -> warning string (or null)
 
         this._setupInputFiltering();
         this._attachGlobalListeners();
@@ -96,12 +89,16 @@ export class CreatorRuleManager {
 
             const warnings = handler.getWarnings?.() || [];
             for (const { rule, warnings: ruleWarnings } of warnings) {
-                if (ruleWarnings.length > 0) {
+                if (ruleWarnings.length <= 0) continue;
+                
+                if (!rule)
+                    this.handlerWarnings.set(handler.name, ruleWarnings.join("; "));
+                else 
                     this.ruleWarnings.set(rule.id, ruleWarnings.join("; "));
-                }
             }
-            const anyWarnings = handler.rules.some(rule => this.ruleWarnings.has(rule.id));
-            this.handlerWarnings.set(handler.name, anyWarnings);
+
+            if(handler.rules.some(rule => this.ruleWarnings.has(rule.id)))
+                this.handlerWarnings.set(handler.name, "Some rules have warnings");            
         }
 
         for (const handler of Object.values(this.ruleHandlers)) {
@@ -144,27 +141,32 @@ export class CreatorRuleManager {
     }
 
     _updateHandlerWarningIcon(handler) {
-        const hasWarning = this.handlerWarnings.get(handler.name) || false;
+        const warning = this.handlerWarnings.get(handler.name) || null;
         const wrapper = document.getElementById(`rule-${handler.name.replace(/\s+/g, "-")}`);
         const header = wrapper?.querySelector(".accordion-header");
         if (!header) return;
 
         let icon = header.querySelector(".handler-warning-icon");
-        if (!hasWarning && icon) {
+        if (!warning && icon) {
             icon.remove();
             return;
         }
-        if (hasWarning && !icon) {
+
+        if (warning && !icon) {
             icon = document.createElement("i");
             icon.className = "fa fa-exclamation-triangle text-warning handler-warning-icon ms-2";
             icon.style.cursor = "pointer";
             icon.setAttribute("data-bs-toggle", "tooltip");
-            icon.setAttribute("title", "Some rules have warnings");
+            icon.setAttribute("title", warning);
             const labelWrapper = header.querySelector(".accordion-button .fw-bold")?.parentNode;
             if (labelWrapper) {
                 labelWrapper.appendChild(icon);
                 new bootstrap.Tooltip(icon);
             }
+        }
+        if (warning && icon) {
+            icon.setAttribute("title", warning);
+            icon.setAttribute("data-bs-original-title", warning);
         }
     }
 

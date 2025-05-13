@@ -29,16 +29,22 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
         return [];
     }
 
-    getRuleWarnings(region) {
+    getGeneralWarnings() {
         let warnings = [];
 
-       if (!region) {
-            warnings.push("Irregular region is empty");
-            return warnings;
-        }
-        
-        if (region.items.length !== 9) {
-            warnings.push(`Region must have 9 cells`);
+        for (const key of this.regionKeys) {
+            const region = this.fields?.[key];
+
+            if (!region) {
+                warnings.push(`Regions are empty`);
+                break;
+            }
+
+            if (region.items.length !== 9) 
+            {
+                warnings.push(`Regions must have exactly 9 cells`);
+                break;
+            }
         }
 
         return warnings;
