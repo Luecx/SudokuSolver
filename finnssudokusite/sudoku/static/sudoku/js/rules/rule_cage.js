@@ -30,7 +30,7 @@ export class CageHandler extends RuleTypeHandler {
             return warnings;
         }
         // if cage sum is too large ( > 9 * number of cells in cage)
-        let cage_sum = rule.fields.index;
+        let cage_sum = rule.fields.sum;
         if (cage_sum > 9 * cage_region.size()) {
             warnings.push("Cage sum is too large");
         }
@@ -78,7 +78,7 @@ export class CageHandler extends RuleTypeHandler {
                 label: "Cage Region"
             },
             {
-                key: "index",
+                key: "sum",
                 type: "number",
                 min: 1,
                 max: 999,
@@ -163,11 +163,11 @@ export class CageHandler extends RuleTypeHandler {
         ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
 
         // Draw index text
-        const index = rule.fields.index;
+        const targetSum = rule.fields.sum;
         ctx.fillStyle = "black";
         ctx.font = `${s * 0.16}px sans-serif`; // Larger font
         ctx.textBaseline = "top";
-        ctx.fillText(index.toString(), rectX + s * 0.02, rectY + s * 0.01);
+        ctx.fillText(targetSum.toString(), rectX + s * 0.02, rectY + s * 0.01);
 
         ctx.restore();
     }
