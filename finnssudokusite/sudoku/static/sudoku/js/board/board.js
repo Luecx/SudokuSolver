@@ -1,7 +1,7 @@
 import { RuleManager } from "./board_ruleManager.js";
 import { BoardRenderer } from "./board_renderer.js";
 import { SelectionManager } from "./board_selectionManager.js";
-import { HintDotLayer } from "./board_hintLayer.js";
+import { HintEdgeLayer } from "./board_hintEdgeLayer.js";
 import { HintRCLayer } from "./board_hintRCLayer.js";
 import { CellLayer } from "./board_cellLayer.js";
 import { EventManager } from "./board_eventManager.js";
@@ -27,7 +27,7 @@ export function createBoard(container) {
     const renderer           = new BoardRenderer(canvas, gridSize, paddingRatio);
     const numberLayer        = new BoardNumberLayer(container, renderer);
     const solutionLayer      = new BoardNumberLayer(container, renderer);
-    const hintLayer          = new HintDotLayer(container, renderer);
+    const hintLayer          = new HintEdgeLayer(container, renderer);
     const hintRCLayer        = new HintRCLayer(container, renderer);
     const hintDiagLayer      = new HintDiagLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);

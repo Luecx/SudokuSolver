@@ -22,7 +22,7 @@ export class HintDiagLayer {
         this.board = board;
 
         this.diagLayer = document.createElement("div");
-        this.diagLayer.className = "diag-layer";
+        this.diagLayer.className = "hint-diag-layer layer";
         this.container.appendChild(this.diagLayer);
 
         this.selector = new MouseSelector({

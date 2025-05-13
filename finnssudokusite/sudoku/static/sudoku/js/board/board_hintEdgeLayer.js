@@ -1,9 +1,10 @@
+
 import { RegionType } from "../region/RegionType.js";
 import { Region, RegionClassMap } from "../region/Region.js";
 import { MouseSelector } from "../util/mouse_selector.js";
 import { SelectionMode } from "./board_selectionEnums.js";
 
-export class HintDotLayer {
+export class HintEdgeLayer {
     constructor(container, renderer) {
         this.container = container;
         this.renderer = renderer;
@@ -24,7 +25,7 @@ export class HintDotLayer {
         this.board = board;
 
         this.hintLayer = document.createElement("div");
-        this.hintLayer.className = "hint-layer";
+        this.hintLayer.className = "hint-edge-layer layer";
         this.container.appendChild(this.hintLayer);
 
         this.selector = new MouseSelector({
@@ -182,6 +183,7 @@ export class HintDotLayer {
         const dot = document.createElement("div");
         dot.className = "hint-dot";
         dot.dataset.key = idx.toString();
+
         dot.style.left = `${cx}px`;
         dot.style.top = `${cy}px`;
         if (this.selected_region.has(idx)) {

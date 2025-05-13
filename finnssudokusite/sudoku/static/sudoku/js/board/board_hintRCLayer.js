@@ -22,7 +22,7 @@ export class HintRCLayer {
         this.board = board;
 
         this.rcLayer = document.createElement("div");
-        this.rcLayer.className = "rc-layer";
+        this.rcLayer.className = "hint-rowcol-layer layer";
         this.container.appendChild(this.rcLayer);
 
         this.selector = new MouseSelector({
