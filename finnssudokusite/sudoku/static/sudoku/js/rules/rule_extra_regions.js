@@ -59,14 +59,18 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-            In <b>Extra Region Sudoku</b> the regions must follow these rules:
+            Regions must follow these rules:
             <ul>
                 <li>Can be any shape and anywhere.</li>
                 <li>Must contain all numbers from 1 to 9 exactly once.</li>
                 <li>Have between 2 and 9 cells.</li>
-                <li>Can overlap with each other and the regular Sudoku grid.</li>
+                <li>Can overlap with each other.</li>
             </ul>
         `;
+    }
+
+    getDescriptionPlayHTML() {
+        return ` In <b>Extra Regions</b> the regions must contain <b>all numbers</b> from 1 to 9 exactly <b>once</b>.`;
     }
 
     render(rule, ctx) {

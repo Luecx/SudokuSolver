@@ -1,5 +1,5 @@
 import { NO_NUMBER } from "../number/number.js";
-import { NumberSet } from "../number/number_set.js";
+import * as SolverUtil from "../solver/solverUtil.js";
 
 export function attachCageSolverLogic(instance) {
     instance.numberChanged = function (board, changedCell) {
@@ -30,9 +30,9 @@ export function attachCageSolverLogic(instance) {
 
 // ----------- Helpers Below ------------
 
-function checkCage(instance, rule, board) {
+export function checkCage(instance, rule, board) {
     const region = rule.fields?.region;
-    const targetSum = rule.fields?.index;
+    const targetSum = rule.fields?.sum;
     const allowRepeats = instance.fields?.NumberCanRepeat ?? false;
     if (!region || typeof region.size !== "function" || region.size() === 0) return false;
 
@@ -124,14 +124,13 @@ function upperBound(N, sum, allowRepeats, minC, size) {
     return 0;
 }
 
-function checkCagePlausibility(instance, rule, board) {
+export function checkCagePlausibility(instance, rule, board) {
     const region = rule.fields?.region;
-    const targetSum = rule.fields?.index;
+    const targetSum = rule.fields?.sum;
     const allowRepeats = instance.fields?.NumberCanRepeat ?? false;
     if (!region || typeof region.size !== "function" || region.size() === 0) return true;
 
-    const cells = region.items.map(pos => board.getCell(pos));
-    const filled = cells.filter(c => c.value !== NO_NUMBER);
+    const filled = SolverUtil.cells(region, board).filter(c => c.value !== NO_NUMBER);
     const values = filled.map(c => c.value);
 
     const sum = values.reduce((s, v) => s + v, 0);
