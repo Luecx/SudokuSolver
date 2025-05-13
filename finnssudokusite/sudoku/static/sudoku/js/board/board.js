@@ -1,7 +1,7 @@
 import { RuleManager } from "./board_ruleManager.js";
 import { BoardRenderer } from "./board_renderer.js";
 import { SelectionManager } from "./board_selectionManager.js";
-import { HintDotLayer } from "./board_hintLayer.js";
+import { HintEdgeLayer } from "./board_hintEdgeLayer.js";
 import { HintRCLayer } from "./board_hintRCLayer.js";
 import { CellLayer } from "./board_cellLayer.js";
 import { EventManager } from "./board_eventManager.js";
@@ -19,10 +19,6 @@ export function createBoard(container) {
     const canvas = document.createElement("canvas");
     canvas.id = "board-canvas";
 
-    // const grid = document.createElement("div");
-    // grid.className = "board-grid";
-    // grid.id = "sudoku-board";
-
     container.appendChild(canvas);
 
     // --- Continue with standard setup ---
@@ -31,7 +27,7 @@ export function createBoard(container) {
     const renderer           = new BoardRenderer(canvas, gridSize, paddingRatio);
     const numberLayer        = new BoardNumberLayer(container, renderer);
     const solutionLayer      = new BoardNumberLayer(container, renderer);
-    const hintLayer          = new HintDotLayer(container, renderer);
+    const hintLayer          = new HintEdgeLayer(container, renderer);
     const hintRCLayer        = new HintRCLayer(container, renderer);
     const hintDiagLayer      = new HintDiagLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);
@@ -69,8 +65,6 @@ export function createBoard(container) {
         removeRenderCall        : name => renderer.removeRenderCall(name),
 
         // exporting and importing
-        getRulesJSON            : () => ruleManager.serializeRules(),
-        loadRulesJSON           : json => ruleManager.deserializeRules(json),
         getTags                 : () => ruleManager.getTags(),
 
         // edge hints
@@ -82,16 +76,6 @@ export function createBoard(container) {
         getSolverBoard          : () => numberLayer.getSolverBoard(),
 
         // ───  CONTENT-LAYER APIs ────────────────────────────────────────
-        // single-cell
-        // setValue:       (idx,value,fixed=false)    => numberLayer.setValue(idx,value,fixed),
-        // setCandidate:   (idx,c,centered=false)     => numberLayer.setCandidate(idx,c,centered),
-        // unsetCandidate: (idx,c,centered=false)     => numberLayer.unsetCandidate(idx,c,centered),
-        // toggleCandidate:(idx,c,centered=false)     => numberLayer.toggleCandidate(idx,c,centered),
-        // setColor:       (idx,col)                  => numberLayer.setColor(idx,col),
-        // unsetColor:     (idx,col)                  => numberLayer.unsetColor(idx,col),
-        // toggleColor:    (idx,col,force=false)      => numberLayer.toggleColor(idx,col,force),
-
-        // region‐wide
         setValues:       (region,val,fixed=false)  => {numberLayer.setValues(region,val,fixed);
                                                        eventManager.emit("ev_number_changed", region)},
         unsetValues:     (region,               )  => {numberLayer.unsetValues(region);
@@ -154,6 +138,11 @@ export function createBoard(container) {
             solutionLayer._generate(cellSize, usedSize, offset);
         }
 
+        this.onEvent("ev_rule_added"   , () => this.triggerRender());
+        this.onEvent("ev_rule_removed" , () => this.triggerRender());
+        this.onEvent("ev_rule_changed" , () => this.triggerRender());
+        this.onEvent("ev_rule_reset"   , () => this.triggerRender());
+
         window.addEventListener("resize", resizeAndRebuild);
         resizeAndRebuild();
     }
@@ -173,8 +162,6 @@ export function createBoard(container) {
 
     function loadBoard(json) {
         let dat = deserializeObject(json);
-        console.log("loading board", dat);
-        console.log(json);
 
         this.resetBoard();
         if (dat.fixedCells) {
@@ -189,8 +176,6 @@ export function createBoard(container) {
     }
 
     function showSolution(initial, solution) {
-        console.log("showing solution");
-
         // 1. Hide the normal layer, show the solution layer
         numberLayer.hide();
         solutionLayer.show();

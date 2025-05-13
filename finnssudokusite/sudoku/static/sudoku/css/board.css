@@ -1,3 +1,30 @@
+
+
+.number-layer       {z-index: 15;}
+.hint-diag-layer    {z-index: 12;}
+.hint-rowcol-layer  {z-index: 11;}
+.hint-edge-layer    {z-index: 10;}
+.bg-layer           {z-index: 4;}
+
+
+.layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+
+
+
+
+
+
+
+
+
 .board-container {
     position: relative;
     width: 100%;
@@ -41,17 +68,6 @@
     cursor: default;
 }
 
-.hint-layer,
-.rc-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5;
-    pointer-events: auto;
-}
-
 .cell {
     background-color: transparent;
     box-sizing: border-box;
@@ -81,8 +97,8 @@
 .hint-dot {
     position: absolute;
     background-color: #7FBCFF;
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
@@ -126,16 +142,12 @@
 }
 
 .board-content-container,
-.content-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+.number-layer {
     pointer-events: none;
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
+    z-index: 20;
 }
 
 .cell-content {

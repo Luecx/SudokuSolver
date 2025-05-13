@@ -45,7 +45,7 @@ export class BoardNumberLayer {
         this.board = board;
 
         this.grid = document.createElement("div");
-        this.grid.className = "content-layer";
+        this.grid.className = "number-layer layer";
         Object.assign(this.grid.style, {
             position: "absolute",
             pointerEvents: "none",

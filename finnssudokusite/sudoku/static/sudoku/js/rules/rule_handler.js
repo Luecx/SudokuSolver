@@ -16,11 +16,6 @@ export class RuleTypeHandler {
 
         this.board.addRenderCall(this.name, this.renderAll.bind(this), render_prio);
 
-        this.board.onEvent("ev_rule_added"   , () => this.board.triggerRender());
-        this.board.onEvent("ev_rule_removed" , () => this.board.triggerRender());
-        this.board.onEvent("ev_rule_changed" , () => this.board.triggerRender());
-        this.board.onEvent("ev_rule_reset"   , () => this.board.triggerRender());
-
         this.reset(); // initialize with default state
     }
 
