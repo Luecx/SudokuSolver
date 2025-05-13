@@ -19,10 +19,6 @@ export function createBoard(container) {
     const canvas = document.createElement("canvas");
     canvas.id = "board-canvas";
 
-    // const grid = document.createElement("div");
-    // grid.className = "board-grid";
-    // grid.id = "sudoku-board";
-
     container.appendChild(canvas);
 
     // --- Continue with standard setup ---
@@ -69,8 +65,6 @@ export function createBoard(container) {
         removeRenderCall        : name => renderer.removeRenderCall(name),
 
         // exporting and importing
-        getRulesJSON            : () => ruleManager.serializeRules(),
-        loadRulesJSON           : json => ruleManager.deserializeRules(json),
         getTags                 : () => ruleManager.getTags(),
 
         // edge hints
@@ -82,16 +76,6 @@ export function createBoard(container) {
         getSolverBoard          : () => numberLayer.getSolverBoard(),
 
         // ───  CONTENT-LAYER APIs ────────────────────────────────────────
-        // single-cell
-        // setValue:       (idx,value,fixed=false)    => numberLayer.setValue(idx,value,fixed),
-        // setCandidate:   (idx,c,centered=false)     => numberLayer.setCandidate(idx,c,centered),
-        // unsetCandidate: (idx,c,centered=false)     => numberLayer.unsetCandidate(idx,c,centered),
-        // toggleCandidate:(idx,c,centered=false)     => numberLayer.toggleCandidate(idx,c,centered),
-        // setColor:       (idx,col)                  => numberLayer.setColor(idx,col),
-        // unsetColor:     (idx,col)                  => numberLayer.unsetColor(idx,col),
-        // toggleColor:    (idx,col,force=false)      => numberLayer.toggleColor(idx,col,force),
-
-        // region‐wide
         setValues:       (region,val,fixed=false)  => {numberLayer.setValues(region,val,fixed);
                                                        eventManager.emit("ev_number_changed", region)},
         unsetValues:     (region,               )  => {numberLayer.unsetValues(region);
@@ -173,8 +157,6 @@ export function createBoard(container) {
 
     function loadBoard(json) {
         let dat = deserializeObject(json);
-        console.log("loading board", dat);
-        console.log(json);
 
         this.resetBoard();
         if (dat.fixedCells) {
@@ -189,8 +171,6 @@ export function createBoard(container) {
     }
 
     function showSolution(initial, solution) {
-        console.log("showing solution");
-
         // 1. Hide the normal layer, show the solution layer
         numberLayer.hide();
         solutionLayer.show();
