@@ -61,15 +61,17 @@ export class CloneHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-            In <b>Clone Sudoku</b> the regions must follow these rules:
+            The <b>clones</b> must follow these rules:
             <ul>
                 <li>Can be any shape and anywhere.</li>
-                <li>Must contain all numbers from 1 to 9 exactly once.</li>
-                <li>Have between 1 and 9 cells.</li>
                 <li>Can overlap with each other and the regular Sudoku grid.</li>
-                <li>Regions that are the same (clones) must have the exact same numbers in the same positions.</li>
+                <li>Clones must have the same numbers in the same positions.</li>
             </ul>
         `;
+    }
+
+    getDescriptionPlayHTML() {
+        return `In a <b>Clone Sudoku</b> clones with the same shape must have <b>matching</b> numbers.`; 
     }
 
     render(rule, ctx) {

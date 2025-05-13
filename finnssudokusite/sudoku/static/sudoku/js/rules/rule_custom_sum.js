@@ -49,14 +49,12 @@ export class CustomSumHandler extends RuleTypeHandler {
     }
 
     getDescriptionHTML() {
-        return `<p>The values inside the cells that allign with the line must sum um to the target sum.</p>`;
+        return `The values inside the cells that allign with the line must sum up to the target sum.`;
     }
 
     getDescriptionPlayHTML() {
-        return `<p>
-                The values inside the cells that the line crosses must sum up to the target sum. 
-                The value on the line is their target sum
-            </p>`;
+        return `In <b>Custom Sum Sudoku</b> the numbers in cells crossed by a line must add up to 
+                the <b>target sum</b> shown on that line. Lines of the <b>same color</b> share the same target sum.`;
     }
 
     render(rule, ctx) {

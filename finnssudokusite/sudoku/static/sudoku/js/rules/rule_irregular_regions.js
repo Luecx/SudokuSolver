@@ -118,6 +118,17 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
+            Irregular regions must follow these rules:
+            <ul>
+                <li>Can be any shape and anywhere.</li>
+                <li>Must have exactly 9 cells.</li>
+                <li>Cannot overlap with each other.</li>
+            </ul>
+        `;
+    }
+
+    getDescriptionPlayHTML() {
+        return `
             In <b>Irregular Region Sudoku</b> standard Sudoku rules apply. Additionally, the grid is divided into irregularly shaped regions 
             instead of standard 3x3 boxes. Each of these irregular regions must also contain all digits from 1 to 9 exactly once.
         `;
