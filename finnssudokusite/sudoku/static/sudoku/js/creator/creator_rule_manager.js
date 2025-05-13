@@ -5,6 +5,13 @@ import { RegionSelectorOption } from "./option_region.js";
 import { createSelectionConfig } from "../board/board_selectionConfig.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 import { Region } from "../region/Region.js";
+import { BooleanOption } from "./option_bool.js";
+import { NumberOption } from "./option_number.js";
+import { StringOption } from "./option_string.js";
+import { RegionSelectorOption } from "./option_region.js";
+import { createSelectionConfig } from "../board/board_selectionConfig.js";
+import { SelectionMode } from "../board/board_selectionEnums.js";
+import { Region } from "../region/Region.js";
 
 export class CreatorRuleManager {
     constructor(board) {
