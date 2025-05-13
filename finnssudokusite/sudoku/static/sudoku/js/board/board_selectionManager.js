@@ -3,8 +3,7 @@ import { RegionType } from "../region/RegionType.js";
 import { createSelectionConfig } from "./board_selectionConfig.js";
 
 export class SelectionManager {
-    constructor(grid) {
-        this.grid = grid;
+    constructor() {
         this.board = null;
 
         this.selectionConfig = null;
@@ -40,6 +39,9 @@ export class SelectionManager {
         if (target === RegionType.ROWCOL) {
             return this.board.hintRCLayer.selected_region;
         }
+        if (target === RegionType.DIAGONAL) {
+            return this.board.hintDiagLayer.selected_region;
+        }
         return null;
     }
     
@@ -58,6 +60,9 @@ export class SelectionManager {
         if (target === RegionType.ROWCOL && region.type === RegionType.ROWCOL) {
             this.board.hintRCLayer.selected_region = region;
         }
+        if (target === RegionType.DIAGONAL && region.type === RegionType.ROWCOL) {
+            this.board.hintDiagLayer.selected_region = region;
+        }
     }
 
     /**
@@ -70,16 +75,18 @@ export class SelectionManager {
         if (this.selectionConfig && this.selectionConfig.target !== RegionType.NONE) {
             // emit an event which stops the current selection
             this.board.emitEvent("ev_selection_ended",
-                this.selectionConfig.target === RegionType.CELLS   ? this.board.cellLayer.selected_region :
-                this.selectionConfig.target === RegionType.EDGES   ? this.board.hintLayer.selected_region :
-                this.selectionConfig.target === RegionType.CORNERS ? this.board.hintLayer.selected_region :
-                this.selectionConfig.target === RegionType.ROWCOL  ? this.board.hintRCLayer.selected_region : null
+                this.selectionConfig.target === RegionType.CELLS    ? this.board.cellLayer.selected_region :
+                this.selectionConfig.target === RegionType.EDGES    ? this.board.hintLayer.selected_region :
+                this.selectionConfig.target === RegionType.CORNERS  ? this.board.hintLayer.selected_region :
+                this.selectionConfig.target === RegionType.ROWCOL   ? this.board.hintRCLayer.selected_region :
+                this.selectionConfig.target === RegionType.DIAGONAL ? this.board.hintDiagLayer.selected_region  : null
             );
 
             // close the selector
             this.board.cellLayer.hide();
             this.board.hintLayer.hide();
             this.board.hintRCLayer.hide();
+            this.board.hintDiagLayer.hide();
         }
 
         // save the current config if it exists to allow reverting.
@@ -99,10 +106,18 @@ export class SelectionManager {
             || target === RegionType.CORNERS;
 
         const isRC = target === RegionType.ROWCOL;
+        const isDiag = target === RegionType.DIAGONAL
 
-        this.board.cellLayer.grid.style.pointerEvents = (!isHint && !isRC) ? "auto" : "none";
-        this.board.hintLayer.hintLayer.style.pointerEvents = isHint ? "auto" : "none";
-        this.board.hintRCLayer.rcLayer.style.pointerEvents = isRC ? "auto" : "none";
+
+        this.board.cellLayer.grid.style.pointerEvents        = "none";
+        this.board.hintLayer.hintLayer.style.pointerEvents   = "none";
+        this.board.hintRCLayer.rcLayer.style.pointerEvents   = "none";
+        this.board.hintDiagLayer.diagLayer.style.pointerEvents = "none";
+
+        if (isRC)        this.board.hintRCLayer.rcLayer.style.pointerEvents = "auto";
+        else if (isDiag) this.board.hintDiagLayer.diagLayer.style.pointerEvents = "auto";
+        else if (isHint) this.board.hintLayer.hintLayer.style.pointerEvents = "auto";
+        else             this.board.cellLayer.grid.style.pointerEvents = "auto";
 
         if (target === RegionType.CELLS) {
             this.board.cellLayer.show(config);
@@ -123,6 +138,13 @@ export class SelectionManager {
             this.board.emitEvent("ev_selection_started", config);
         } else {
             this.board.hintRCLayer.hide();
+        }
+
+        if (isDiag) {
+            this.board.hintDiagLayer.show(config);
+            this.board.emitEvent("ev_selection_started", config);
+        } else {
+            this.board.hintDiagLayer.hide();
         }
     }
 

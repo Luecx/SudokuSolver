@@ -24,6 +24,7 @@
  * ev_rule_changed                  - [ RuleHandler, Rule ]
  * ev_rule_reset                    - [ RuleHandler, Rule ]
  * ev_rule_validity_changed         - [ RuleHandler, Rule ]
+ * ev_rule_general_changed          - [ RuleHandler ]
  *
  * ev_number_changed                - [ Region ]
  * ev_color_changed                 - [ Region ]

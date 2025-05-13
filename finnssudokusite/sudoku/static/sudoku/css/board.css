@@ -222,3 +222,45 @@
 .hidden {
     display: none !important;
 }
+
+
+.diag-layer {
+    position: absolute;
+    pointer-events: auto;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+.hint-diag-label {
+    position: absolute;
+    width: 24px;   /* or dynamically set via JS */
+    height: 24px;  /* same as width */
+    pointer-events: all;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.1em;
+    background-color: rgba(255, 255, 255, 0.0);
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+
+    transform: translate(-100%, -100%); /* anchors bottom-right to base point */
+}
+
+.hint-diag-label:hover {
+    background-color: #d0eaff;
+    font-weight: bold;
+}
+
+.hint-diag-label i::before {
+    width: 100%;
+    height: 100%;
+    display: block;
+    line-height: 1;
+    text-align: center;
+}
