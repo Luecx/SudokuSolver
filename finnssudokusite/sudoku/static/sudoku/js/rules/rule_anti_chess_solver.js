@@ -1,5 +1,6 @@
 import { NO_NUMBER } from "../number/number.js";
 import { CellIdx } from "../region/CellIdx.js";
+import * as SolverUtils from "../solver/solverUtil.js";
 
 // Move patterns for Anti-Knight and Anti-King rules
 const KNIGHT_PATTERN = [
@@ -24,7 +25,8 @@ export function attachAntiChessSolverLogic(instance) {
 
             const region = rule.fields?.region;
             const movePattern = rule.label === "Anti-King" ? KING_PATTERN : KNIGHT_PATTERN;
-            
+            const forbiddenSums = getForbiddenSums(rule);
+
             // check cage constraints if there's a region defined
             if (region && region.size() > 0 && checkCage(rule, board)) changed = true;
             // no need to check for anti-rules if the cell is empty
@@ -43,14 +45,25 @@ export function attachAntiChessSolverLogic(instance) {
                     continue;
 
                 const neighborCell = board.getCell({ r: nr, c: nc });  
+                if (neighborCell.value !== NO_NUMBER) continue; // if filled, skip
+
                 // determine if this neighbor should have constraints applied:
                 // - if region doesn't exist or is empty, apply to all cells
-                // - if region exists and has elements, only apply to cells in that region
+                // - if region exists and has elements, only apply to cells in that region   
                 const shouldApplyConstraint = !region || region.size() === 0 || region.has(neighborCell.pos);
-                    
-                if (shouldApplyConstraint && neighborCell.value === NO_NUMBER) {
-                    // remove the changed cell's value from neighbor's candidates
-                    if (neighborCell.removeCandidate(changedCell.value)) changed = true;       
+                if (!shouldApplyConstraint) continue; // skip if contraint is not met
+                                 
+                // remove the changed cell's value from neighbor's candidates
+                if (neighborCell.removeCandidate(changedCell.value)) changed = true;       
+                
+                if (forbiddenSums.length === 0) continue;
+
+                // remove candidates that might sum up to the forbidden sums
+                for (const d of neighborCell.candidates) {
+                    if (forbiddenSums.includes(changedCell.value + d)) {
+                        neighborCell.candidates.disallow(d);
+                        changed = true;
+                    }
                 }
             }
         }
@@ -58,9 +71,7 @@ export function attachAntiChessSolverLogic(instance) {
         return changed;
     };
 
-    instance.candidatesChanged = function (board) {
-        // no need to check for anti-rules here
-        
+    instance.candidatesChanged = function (board) {        
         let changed = false;
         for (const rule of instance.rules)
             if (rule.fields?.enabled && checkCage(rule, board)) changed = true; 
@@ -74,7 +85,8 @@ export function attachAntiChessSolverLogic(instance) {
         for (const rule of instance.rules) {
             if (!rule.fields?.enabled) continue;
             if (!checkCagePlausibility(rule, board)) return false;
-
+            
+            const forbiddenSums = getForbiddenSums(rule);
             const region = rule.fields?.region;
             const movePattern = rule.label === "Anti-King" ? KING_PATTERN : KNIGHT_PATTERN;
 
@@ -97,9 +109,12 @@ export function attachAntiChessSolverLogic(instance) {
                         if (region && region.size() > 0 && !region.has(neighborPos)) continue;
                             
                         const neighborCell = board.getCell(neighborPos);
+                        if (neighborCell.value === NO_NUMBER) continue;
 
-                        if (neighborCell.value !== NO_NUMBER && neighborCell.value === cell.value)
-                            return false; // found same value at knight/king distance
+                        // if neighbor cell has the same value as the current cell, return false
+                        if (neighborCell.value === cell.value) return false;
+                        // if neighbor cell plus current cell's value is in the forbidden sums, return false
+                        if (forbiddenSums.includes(cell.value + neighborCell.value)) return false;               
                     }
                 }
             }
@@ -138,41 +153,33 @@ function inBounds(r, c, size) {
 function checkCagePlausibility(rule, board) {
     const region = rule.fields?.region;
     const allowRepeats = rule.fields?.NumberCanRepeat ?? false;
-    const forbiddenSums = getForbiddenSums(rule);
+
+    if (allowRepeats) return true;
     
     // if region doesn't exist, has no size function, or is empty, no cage constraints to check
-    if (!region || typeof region.size !== "function" || region.size() === 0) {
-        return true;
-    }
+    if (!region || typeof region.size !== "function" || region.size() === 0) return true;
 
-    const cells = region.items.map(pos => board.getCell(pos));
-    const filled = cells.filter(c => c.value !== NO_NUMBER);
+    const filled = SolverUtils.cells(region, board).filter(c => c.value !== NO_NUMBER);
     const values = filled.map(c => c.value);
-
-    const sum = values.reduce((s, v) => s + v, 0);
     
-    // check for forbidden sums if the cage is complete
-    if (filled.length === region.size() && forbiddenSums.length > 0 && forbiddenSums.includes(sum))
-        return false;
     // if repeats are not allowed but we have repeats, it's not plausible
-    if (!allowRepeats && new Set(values).size < values.length)
-        return false;
+    if (new Set(values).size < values.length) return false;
 
     return true;
 }
 
 function checkCage(rule, board) {
     const region = rule.fields?.region;
-    const forbiddenSums = getForbiddenSums(rule);
     const allowRepeats = rule.fields?.NumberCanRepeat ?? false;
    
     // if region doesn't exist, has no size function, or is empty, no cage constraints to apply
     if (!region || typeof region.size !== "function" || region.size() === 0) return false;
     
-    const cells = region.items.map(pos => board.getCell(pos));
+    if (allowRepeats) return false;
+
+    const cells = SolverUtils.cells(region, board);
     const filled = cells.filter(c => c.value !== NO_NUMBER);
     const usedValues = new Set(filled.map(c => c.value));
-    const filledSum = filled.reduce((s, c) => s + c.value, 0);
     const remainingCells = cells.filter(c => c.value === NO_NUMBER);
    
     // if all cells are filled, no candidates to modify
@@ -180,24 +187,15 @@ function checkCage(rule, board) {
    
     let changed = false;
     for (const cell of remainingCells) {
-        const prev = cell.candidates.raw();
         for (let d = 1; d <= board.size; ++d) {
             if (!cell.candidates.test(d)) continue;
             
             // check if value is already used and repeats aren't allowed
             if (!allowRepeats && usedValues.has(d)) {
                 cell.candidates.disallow(d);
-                continue;
-            }
-            // check if adding this value would result in a forbidden sum
-            // only check if the cage would be filled completely with this value
-            if (remainingCells.length === 1 && forbiddenSums.includes(filledSum + d)) {
-                cell.candidates.disallow(d);
-                continue;
+                changed = true;
             }
         }
-
-        if (cell.candidates.raw() !== prev) changed = true;
     }
 
     return changed;
