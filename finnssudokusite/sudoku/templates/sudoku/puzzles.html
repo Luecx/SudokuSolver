@@ -11,39 +11,43 @@
 
 {% block content %}
 <h2 class="text-center mt-4 mb-3">{% trans "All Published Sudoku Puzzles" %}</h2>
-{% if sudokus %}
-    <div class="table-responsive" style="min-height: 400px;">
-        <table class="table table-striped table-hover align-middle small" id="allPuzzlesTable">
-            <thead>
-            <tr>
-                <th onclick="sortAllTable(0)">{% trans "Name" %} <span class="sort-indicator"></span></th>
-                <th onclick="sortAllTable(1)">{% trans "Creator" %} <span class="sort-indicator"></span></th>
-                <th onclick="sortAllTable(2)">{% trans "Solved / Attempts" %} <span class="sort-indicator"></span></th>
-                <th onclick="sortAllTable(3)">{% trans "Rating" %} <span class="sort-indicator"></span></th>
-                <th onclick="sortAllTable(4)">{% trans "Avg Time" %} <span class="sort-indicator"></span></th>
-                <th>
-                    <div class="dropdown">
-                        <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{% trans "Tags" %}</span>
-                        <ul class="dropdown-menu p-2" id="allTagFilterMenu" style="max-height: 200px; overflow-y: auto;">
-                            {% for tag in all_tags %}
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input all-tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="filterAllByTags()">
-                                    <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for s in sudokus %}
-            <tr data-tags="{{ s.tags.all|join:',' }}"
-                data-name="{{ s.title|lower }}"
-                data-creator="{{ s.created_by.username|default_if_none:"
-            " }}"
+
+<form method="get" class="mb-3">
+    <input type="text" name="q" class="form-control" placeholder="Search by puzzle name..." value="{{ query }}">
+</form>
+
+{% if page_obj %}
+<div class="table-responsive" style="min-height: 400px;">
+    <table class="table table-striped table-hover align-middle small" id="allPuzzlesTable">
+        <thead>
+        <tr>
+            <th onclick="sortAllTable(0)">{% trans "Name" %} <span class="sort-indicator"></span></th>
+            <th onclick="sortAllTable(1)">{% trans "Creator" %} <span class="sort-indicator"></span></th>
+            <th onclick="sortAllTable(2)">{% trans "Solved / Attempts" %} <span class="sort-indicator"></span></th>
+            <th onclick="sortAllTable(3)">{% trans "Rating" %} <span class="sort-indicator"></span></th>
+            <th onclick="sortAllTable(4)">{% trans "Avg Time" %} <span class="sort-indicator"></span></th>
+            <th>
+                <div class="dropdown">
+                    <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{% trans "Tags" %}</span>
+                    <ul class="dropdown-menu p-2" id="allTagFilterMenu" style="max-height: 200px; overflow-y: auto;">
+                        {% for tag in all_tags %}
+                        <li>
+                            <div class="form-check">
+                                <input class="form-check-input all-tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="filterAllByTags()">
+                                <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for s in page_obj %}
+        <tr data-tags="{{ s.tag_names|join:',' }}"
+            data-name="{{ s.title|lower }}"
+            data-creator="{{ s.created_by.username|default_if_none:' ' }}"
             data-solves="{{ s.solves }}"
             data-attempts="{{ s.attempts }}"
             data-rating="{{ s.average_rating|default:0 }}"
@@ -67,17 +71,46 @@
             <td>{{ s.average_time|humantime }}</td>
             <td>
                 {% for tag in s.tags.all %}
-                    <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
+                <span class="badge me-1 mb-1 p-1 badge-{{ tag.name|lower }}">{{ tag.name }}</span>
                 {% endfor %}
             </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-  {% else %}
-    <p class="text-muted text-center">{% trans "No puzzles available." %}</p>
-  {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination controls -->
+<nav class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+        </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% else %}
+<p class="text-muted text-center">{% trans "No puzzles available." %}</p>
+{% endif %}
 {% endblock %}
 
 {% block extra_scripts %}
@@ -149,5 +182,4 @@
         });
     }
 </script>
-
 {% endblock %}

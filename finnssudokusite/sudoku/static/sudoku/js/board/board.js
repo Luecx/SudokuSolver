@@ -17,7 +17,7 @@ export function createBoard(container) {
 
     // --- Create DOM elements ---
     const canvas = document.createElement("canvas");
-    canvas.id = "board-canvas";
+    canvas.className = "layer board-canvas";
 
     container.appendChild(canvas);
 
@@ -154,6 +154,24 @@ export function createBoard(container) {
     }
 
     function saveBoard() {
+        // const ctx = this.getCanvasContext();
+        // const canvas = ctx.canvas;
+        //
+        // for (let i = 0; i <= 10; i++) {
+        //     const quality = i / 10;
+        //
+        //     canvas.toBlob(blob => {
+        //         console.log(`Quality ${quality.toFixed(1)}: Size in bytes = ${blob.size}`);
+        //
+        //         const link = document.createElement('a');
+        //         link.href = URL.createObjectURL(blob);
+        //         link.download = `sudoku_q${quality.toFixed(1)}.webp`;
+        //         document.body.appendChild(link);
+        //         link.click();
+        //         document.body.removeChild(link);
+        //     }, 'image/webp', quality);
+        // }
+
         return serializeObject({
             fixedCells: numberLayer.saveFixedCells(),
             rules: ruleManager.saveRules()

@@ -93,7 +93,7 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
 
         for (const loop of loops) {
             loop.forEach((pt, i) => {
-                const topLeft = this.board.getCellTopLeft(pt.x, pt.y);
+                const topLeft = this.board.getCellTopLeftCTX(pt.x, pt.y);
                 const x = topLeft.x;
                 const y = topLeft.y;
                 if (i === 0) ctx.moveTo(x, y);

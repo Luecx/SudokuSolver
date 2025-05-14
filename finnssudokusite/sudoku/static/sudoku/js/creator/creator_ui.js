@@ -54,8 +54,6 @@ class Creator {
             const loadingText = this.get("upload-progress-text");
             const progressBar = this.get("upload-progress-bar");
 
-            console.log(loadingBox, loadingText, progressBar)
-
             if (!loadingBox || !loadingText || !progressBar) return;
 
             // Reset visual state
@@ -75,9 +73,13 @@ class Creator {
             let serverSuccess = null;
             let serverDone = false;
 
+            console.log(this.board.getTags());
+
             const payload = {
                 title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",
                 board: this.board.saveBoard(),
+                solution: null,
+                tags: this.board.getTags()
             };
 
             // Start upload in parallel
