@@ -47,16 +47,20 @@ def game(request):
 
 def puzzles_view(request):
     query = request.GET.get("q", "").strip()
+    tag_names = request.GET.getlist("tags")  # List of selected tags
+
     sudokus = Sudoku.objects.filter(is_public=True).select_related("created_by").prefetch_related("tags")
 
     if query:
         sudokus = sudokus.filter(title__icontains=query)
 
-    paginator = Paginator(sudokus, 20)
+    if tag_names:
+        sudokus = sudokus.filter(tags__name__in=tag_names).distinct()
+
+    paginator = Paginator(sudokus, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    # Add tag names as a list of strings to each Sudoku object
     for sudoku in page_obj:
         sudoku.tag_names = [tag.name for tag in sudoku.tags.all()]
 
@@ -64,7 +68,8 @@ def puzzles_view(request):
     return render(request, 'sudoku/puzzles.html', {
         "page_obj": page_obj,
         "query": query,
-        "all_tags": all_tags
+        "selected_tags": tag_names,
+        "all_tags": all_tags,
     })
 
 def leaderboard(request):

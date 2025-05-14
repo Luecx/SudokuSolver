@@ -12,9 +12,30 @@
 {% block content %}
 <h2 class="text-center mt-4 mb-3">{% trans "All Published Sudoku Puzzles" %}</h2>
 
-<form method="get" class="mb-3">
-    <input type="text" name="q" class="form-control" placeholder="Search by puzzle name..." value="{{ query }}">
+<form method="get" class="mb-4">
+    <label class="form-label fw-semibold">Search puzzles:</label>
+    <div class="input-group">
+        <!-- Text input -->
+        <input type="text" name="q" class="form-control" placeholder="Search by puzzle name..." value="{{ query }}">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            Tags
+            <span class="visually-hidden">Toggle Dropdown</span>
+        </button>
+        <div class="dropdown-menu p-3" style="min-width: 250px; max-height: 250px; overflow-y: auto;">
+            {% for tag in all_tags %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="tags" value="{{ tag.name }}"
+                       id="tag-{{ tag.name }}" {% if tag.name in selected_tags %}checked{% endif %}>
+                <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit button -->
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
 </form>
+
 
 {% if page_obj %}
 <div class="table-responsive" style="min-height: 400px;">
@@ -26,21 +47,7 @@
             <th onclick="sortAllTable(2)">{% trans "Solved / Attempts" %} <span class="sort-indicator"></span></th>
             <th onclick="sortAllTable(3)">{% trans "Rating" %} <span class="sort-indicator"></span></th>
             <th onclick="sortAllTable(4)">{% trans "Avg Time" %} <span class="sort-indicator"></span></th>
-            <th>
-                <div class="dropdown">
-                    <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{% trans "Tags" %}</span>
-                    <ul class="dropdown-menu p-2" id="allTagFilterMenu" style="max-height: 200px; overflow-y: auto;">
-                        {% for tag in all_tags %}
-                        <li>
-                            <div class="form-check">
-                                <input class="form-check-input all-tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="filterAllByTags()">
-                                <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </th>
+            <th>{% trans "Tags" %}</th>
         </tr>
         </thead>
         <tbody>
@@ -71,7 +78,7 @@
             <td>{{ s.average_time|humantime }}</td>
             <td>
                 {% for tag in s.tags.all %}
-                <span class="badge me-1 mb-1 p-1 badge-{{ tag.name|lower }}">{{ tag.name }}</span>
+                <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
                 {% endfor %}
             </td>
         </tr>
@@ -80,30 +87,28 @@
     </table>
 </div>
 
-<!-- Pagination controls -->
+<!-- Pagination -->
 <nav class="mt-3">
     <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+            <a class="page-link" href="?q={{ query }}{% for t in selected_tags %}&tags={{ t }}{% endfor %}&page={{ page_obj.previous_page_number }}">&laquo;</a>
         </li>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
         {% if page_obj.number == num %}
-        <li class="page-item active">
-            <span class="page-link">{{ num }}</span>
-        </li>
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
         <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+            <a class="page-link" href="?q={{ query }}{% for t in selected_tags %}&tags={{ t }}{% endfor %}&page={{ num }}">{{ num }}</a>
         </li>
         {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?q={{ query }}&page={{ page_obj.next_page_number }}">&raquo;</a>
+            <a class="page-link" href="?q={{ query }}{% for t in selected_tags %}&tags={{ t }}{% endfor %}&page={{ page_obj.next_page_number }}">&raquo;</a>
         </li>
         {% endif %}
     </ul>
@@ -132,30 +137,16 @@
 
         rows.sort((a, b) => {
             let valA, valB;
-
             switch (colIndex) {
-                case 0:
-                    valA = a.dataset.name;
-                    valB = b.dataset.name;
-                    break;
-                case 1:
-                    valA = a.dataset.creator;
-                    valB = b.dataset.creator;
-                    break;
+                case 0: valA = a.dataset.name; valB = b.dataset.name; break;
+                case 1: valA = a.dataset.creator; valB = b.dataset.creator; break;
                 case 2:
                     valA = parseFloat(a.dataset.solves) / Math.max(1, parseFloat(a.dataset.attempts));
                     valB = parseFloat(b.dataset.solves) / Math.max(1, parseFloat(b.dataset.attempts));
                     break;
-                case 3:
-                    valA = parseFloat(a.dataset.rating);
-                    valB = parseFloat(b.dataset.rating);
-                    break;
-                case 4:
-                    valA = parseFloat(a.dataset.avgtime);
-                    valB = parseFloat(b.dataset.avgtime);
-                    break;
-                default:
-                    return 0;
+                case 3: valA = parseFloat(a.dataset.rating); valB = parseFloat(b.dataset.rating); break;
+                case 4: valA = parseFloat(a.dataset.avgtime); valB = parseFloat(b.dataset.avgtime); break;
+                default: return 0;
             }
 
             if (typeof valA === 'string') {
@@ -169,17 +160,6 @@
         table.querySelector(`thead tr th:nth-child(${colIndex + 1}) .sort-indicator`).innerText = arrow;
 
         rows.forEach(row => tbody.appendChild(row));
-    }
-
-    function filterAllByTags() {
-        const activeTags = Array.from(document.querySelectorAll(".all-tag-filter:checked")).map(el => el.value.toLowerCase());
-        const rows = document.querySelectorAll("#allPuzzlesTable tbody tr");
-
-        rows.forEach(row => {
-            const rowTags = row.getAttribute("data-tags").toLowerCase();
-            const shouldShow = activeTags.every(tag => rowTags.includes(tag));
-            row.style.display = (activeTags.length === 0 || shouldShow) ? "" : "none";
-        });
     }
 </script>
 {% endblock %}
