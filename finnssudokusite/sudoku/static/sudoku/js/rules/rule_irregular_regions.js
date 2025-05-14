@@ -241,7 +241,7 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
 
     drawCollisionX(ctx, cell) {
         const { r, c } = cell;
-        const topLeft = this.board.getCellTopLeft(r, c);
+        const topLeft = this.board.getCellTopLeftCTX(r, c);
         const cellSize = this.board.getCellSize();
         
         const x = topLeft.x;

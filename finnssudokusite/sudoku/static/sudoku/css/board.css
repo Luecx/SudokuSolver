@@ -1,11 +1,11 @@
 
 
 .number-layer       {z-index: 15;}
+.board-canvas       {z-index: 13;}
 .hint-diag-layer    {z-index: 12;}
 .hint-rowcol-layer  {z-index: 11;}
 .hint-edge-layer    {z-index: 10;}
 .bg-layer           {z-index: 4;}
-
 
 .layer {
     position: absolute;
@@ -16,14 +16,9 @@
     pointer-events: auto;
 }
 
-
-
-
-
-
-
-
-
+.board-canvas {
+    pointer-events: none; !important;
+}
 
 .board-container {
     position: relative;
@@ -33,38 +28,10 @@
     overflow: visible;
 }
 
-#board-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 12;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-#sudoku-board {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+.bg-layer {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.cell-layer {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: repeat(9, 1fr);
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 4;
-    pointer-events: auto;
     cursor: default;
 }
 
@@ -104,7 +71,6 @@
     pointer-events: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
-    z-index: 10;
 }
 .hint-dot:hover {
     transform: translate(-50%, -50%) scale(1.4);
@@ -130,7 +96,6 @@
     cursor: pointer;
     pointer-events: auto;
     white-space: nowrap;
-    z-index: 11;
     transition: color 0.2s ease, transform 0.2s ease;
 }
 .hint-rc-label:hover {
@@ -141,13 +106,11 @@
     color: #000;
 }
 
-.board-content-container,
 .number-layer {
     pointer-events: none;
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
-    z-index: 20;
 }
 
 .cell-content {
@@ -233,15 +196,6 @@
 
 .hidden {
     display: none !important;
-}
-
-
-.diag-layer {
-    position: absolute;
-    pointer-events: auto;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
 }
 
 .hint-diag-label {

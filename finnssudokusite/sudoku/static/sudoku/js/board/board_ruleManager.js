@@ -48,8 +48,8 @@ export class RuleManager {
 
     getTags() {
         return this.getAllHandlers()
-            .filter(h => h.rules?.length)
-            .map(h => ({ name: h.tag }));
+            .filter(h => h.enabled)
+            .map(h => h.tag);
     }
 
     getEdgeHints() {

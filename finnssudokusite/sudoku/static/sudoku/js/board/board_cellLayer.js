@@ -22,7 +22,7 @@ export class CellLayer {
         this.board = board;
 
         this.grid = document.createElement("div");
-        this.grid.className = "cell-layer";
+        this.grid.className = "layer bg-layer";
         Object.assign(this.grid.style, {
             position: "absolute",
             pointerEvents: "auto",

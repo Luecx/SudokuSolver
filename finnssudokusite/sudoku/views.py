@@ -9,7 +9,9 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.timezone import make_aware, is_naive
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.db.models import Count
+from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from datetime import datetime, timezone
@@ -18,7 +20,6 @@ from .forms import UserRegisterForm
 from .util.leaderboard import compute_leaderboard_scores
 import json
 import zlib
-
 # === General Views === #
 
 def game_selection_view(request):
@@ -45,9 +46,26 @@ def game(request):
     return render(request, "sudoku/game.html")
 
 def puzzles_view(request):
-    """Lists all available Sudoku puzzles."""
-    sudokus = Sudoku.objects.all().select_related("created_by")
-    return render(request, 'sudoku/puzzles.html', {'sudokus': sudokus})
+    query = request.GET.get("q", "").strip()
+    sudokus = Sudoku.objects.filter(is_public=True).select_related("created_by").prefetch_related("tags")
+
+    if query:
+        sudokus = sudokus.filter(title__icontains=query)
+
+    paginator = Paginator(sudokus, 20)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # Add tag names as a list of strings to each Sudoku object
+    for sudoku in page_obj:
+        sudoku.tag_names = [tag.name for tag in sudoku.tags.all()]
+
+    all_tags = Tag.objects.all()
+    return render(request, 'sudoku/puzzles.html', {
+        "page_obj": page_obj,
+        "query": query,
+        "all_tags": all_tags
+    })
 
 def leaderboard(request):
     """Displays the leaderboard."""
@@ -67,15 +85,17 @@ def save_sudoku(request):
     try:
         data = json.loads(request.body)
         title = data.get("title", "Untitled Sudoku")
-        board_object = data.get("board", {})  # Full board object
+        board_object = data.get("board", {})
+        tag_names = data.get("tags", [])
 
         if not board_object:
             return JsonResponse({"status": "error", "message": "No board data provided."}, status=400)
 
-        # Compress board data into binary
+        # Compress board data
         board_json = json.dumps(board_object)
         board_zip = zlib.compress(board_json.encode('utf-8'))
 
+        # Create Sudoku
         sudoku = Sudoku.objects.create(
             title=title,
             puzzle=board_zip,
@@ -83,7 +103,13 @@ def save_sudoku(request):
             is_public=True,
         )
 
+        # Attach tags (create if missing)
+        for tag_name in tag_names:
+            tag_obj, _ = Tag.objects.get_or_create(name=tag_name)
+            sudoku.tags.add(tag_obj)
+
         return JsonResponse({"status": "success", "sudoku_id": sudoku.id})
+
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
