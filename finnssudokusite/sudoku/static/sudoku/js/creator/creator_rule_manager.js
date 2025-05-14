@@ -3,7 +3,6 @@ import { NumberOption } from "./option_number.js";
 import { StringOption } from "./option_string.js";
 import { RegionSelectorOption } from "./option_region.js";
 import { createSelectionConfig } from "../board/board_selectionConfig.js";
-import { SelectionMode } from "../board/board_selectionEnums.js";
 import { Region } from "../region/Region.js";
 
 export class CreatorRuleManager {
@@ -21,7 +20,7 @@ export class CreatorRuleManager {
         this.addedRules = new Set();
         this.activeRegionSelector = null;
         this.ruleWarnings = new Map();   // rule.id -> warning string (or null)
-        this.handlerWarnings = new Map(); // handler.name -> boolean
+        this.handlerWarnings = new Map(); // handler.name -> warning string (or null)
 
         this._setupInputFiltering();
         this._attachGlobalListeners();
@@ -76,7 +75,6 @@ export class CreatorRuleManager {
             this.removeRule(handler.name);
             this._refreshWarnings();
         });
-
     }
 
     _refreshWarnings() {
@@ -89,12 +87,16 @@ export class CreatorRuleManager {
 
             const warnings = handler.getWarnings?.() || [];
             for (const { rule, warnings: ruleWarnings } of warnings) {
-                if (ruleWarnings.length > 0) {
+                if (ruleWarnings.length <= 0) continue;
+                
+                if (!rule)
+                    this.handlerWarnings.set(handler.name, ruleWarnings.join("; "));
+                else 
                     this.ruleWarnings.set(rule.id, ruleWarnings.join("; "));
-                }
             }
-            const anyWarnings = handler.rules.some(rule => this.ruleWarnings.has(rule.id));
-            this.handlerWarnings.set(handler.name, anyWarnings);
+
+            if(handler.rules.some(rule => this.ruleWarnings.has(rule.id)))
+                this.handlerWarnings.set(handler.name, "Some rules have warnings");            
         }
 
         for (const handler of Object.values(this.ruleHandlers)) {
@@ -108,7 +110,6 @@ export class CreatorRuleManager {
 
 
     _updateRuleWarningIcon(handler, rule) {
-
         const warning = this.ruleWarnings.get(rule.id) || null;
         const card = document.getElementById(`rule-${handler.name}-${rule.id}`);
         if (!card) return;
@@ -137,27 +138,32 @@ export class CreatorRuleManager {
     }
 
     _updateHandlerWarningIcon(handler) {
-        const hasWarning = this.handlerWarnings.get(handler.name) || false;
+        const warning = this.handlerWarnings.get(handler.name) || null;
         const wrapper = document.getElementById(`rule-${handler.name.replace(/\s+/g, "-")}`);
         const header = wrapper?.querySelector(".accordion-header");
         if (!header) return;
 
         let icon = header.querySelector(".handler-warning-icon");
-        if (!hasWarning && icon) {
+        if (!warning && icon) {
             icon.remove();
             return;
         }
-        if (hasWarning && !icon) {
+
+        if (warning && !icon) {
             icon = document.createElement("i");
             icon.className = "fa fa-exclamation-triangle text-warning handler-warning-icon ms-2";
             icon.style.cursor = "pointer";
             icon.setAttribute("data-bs-toggle", "tooltip");
-            icon.setAttribute("title", "Some rules have warnings");
+            icon.setAttribute("title", warning);
             const labelWrapper = header.querySelector(".accordion-button .fw-bold")?.parentNode;
             if (labelWrapper) {
                 labelWrapper.appendChild(icon);
                 new bootstrap.Tooltip(icon);
             }
+        }
+        if (warning && icon) {
+            icon.setAttribute("title", warning);
+            icon.setAttribute("data-bs-original-title", warning);
         }
     }
 
@@ -210,12 +216,15 @@ export class CreatorRuleManager {
 
         const header = document.createElement("h2");
         header.className = "accordion-header d-flex justify-content-between align-items-center";
+        header.id = `heading-${id}`;
 
         const toggleBtn = document.createElement("button");
-        toggleBtn.className = "accordion-button collapsed py-2 d-flex align-items-center gap-2 flex-grow-1";
+        toggleBtn.className = "accordion-button py-2 d-flex align-items-center gap-2 flex-grow-1";
         toggleBtn.type = "button";
         toggleBtn.dataset.bsToggle = "collapse";
         toggleBtn.dataset.bsTarget = `#collapse-${id}`;
+        toggleBtn.setAttribute("aria-expanded", "true"); // Initially expanded
+        toggleBtn.setAttribute("aria-controls", `collapse-${id}`);
 
         const labelWrapper = document.createElement("div");
         labelWrapper.className = "d-flex align-items-center gap-2";
@@ -253,8 +262,10 @@ export class CreatorRuleManager {
         header.appendChild(removeBtn);
 
         const collapse = document.createElement("div");
-        collapse.className = "accordion-collapse collapse";
+        collapse.className = "accordion-collapse collapse show"; // 'show' makes it initially visible
         collapse.id = `collapse-${id}`;
+        collapse.setAttribute("aria-labelledby", `heading-${id}`);
+        collapse.dataset.bsParent = "#accordionContainer"; // this makes other items collapse when one is opened
 
         const body = document.createElement("div");
         body.className = "accordion-body d-flex flex-column gap-2";
@@ -290,6 +301,14 @@ export class CreatorRuleManager {
         if (descriptionHTML) {
             new bootstrap.Tooltip(toggleBtn.querySelector("i"));
         }
+
+        // collapse all other accordion items when new rule is added
+        const allCollapses = this.accordionEl.querySelectorAll('.accordion-collapse');
+        allCollapses.forEach(item => {
+            if (item.id !== `collapse-${id}`) {
+                bootstrap.Collapse.getOrCreateInstance(item).hide();
+            }
+        });
     }
 
     _getInstanceList(handler) {
@@ -371,13 +390,13 @@ export class CreatorRuleManager {
                 const observer = new MutationObserver((mutations, observerInstance) => {
                     for (const mutation of mutations) {
                         for (const node of mutation.removedNodes) {
-                            if (node.contains(selector.element)) {
-                                if (this.activeRegionSelector === selector) {
-                                    selector.stop();
-                                    this.activeRegionSelector = null;
-                                }
-                                observerInstance.disconnect();
+                            if (!node.contains(selector.element)) continue;
+
+                            if (this.activeRegionSelector === selector) {
+                                selector.stop();
+                                this.activeRegionSelector = null;
                             }
+                            observerInstance.disconnect();
                         }
                     }
                 });
@@ -405,7 +424,8 @@ export class CreatorRuleManager {
         labelWrapper.className = "d-flex align-items-center gap-2";
 
         const arrowIcon = document.createElement("i");
-        arrowIcon.className = "fas fa-chevron-right fa-fw transition-icon";
+        arrowIcon.className = "fas fa-fw transition-icon";
+        arrowIcon.classList.add(handler.can_create_rules ? "fa-chevron-down" : "fa-chevron-right");
         arrowIcon.style.width = "1rem"; // Optional manual width for perfect alignment
 
         const iconWrapper = document.createElement("span");
@@ -442,6 +462,14 @@ export class CreatorRuleManager {
             if (opt) content.appendChild(opt.element);
         });
 
+        if (handler.can_create_rules) {
+            setTimeout(() => {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }, 10);
+
+            this._collapseOtherCards(container, card);
+        }
+
         // Toggle logic
         header.addEventListener("click", (e) => {
             if (e.target.closest("button")) return;
@@ -453,6 +481,11 @@ export class CreatorRuleManager {
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
                 arrowIcon.classList.replace("fa-chevron-right", "fa-chevron-down");
+
+                if (!handler.can_create_rules)
+                    return;
+
+                this._collapseOtherCards(container, card);
             }
         });
 
@@ -468,11 +501,23 @@ export class CreatorRuleManager {
         container.appendChild(card);
     }
 
+    _collapseOtherCards(container, card) {
+        const allCards = container.querySelectorAll(".rule-instance-card ");
+        allCards.forEach(otherCard => {
+            if (otherCard === card) return; // dont' collapse this card
 
+            const otherContent = otherCard.querySelector(".rule-collapse-content");
+            if (otherContent) {
+                otherContent.style.maxHeight = "0";
+                const otherArrowIcon = otherCard.querySelector(".fas");
+                if (otherArrowIcon)
+                    otherArrowIcon.classList.replace("fa-chevron-down", "fa-chevron-right");
+            }
+        });
+    }
 
     removeRule(ruleName) {
         this.addedRules.delete(ruleName);
         this._updateDropdown(this.inputEl.value.trim());
     }
-
 }

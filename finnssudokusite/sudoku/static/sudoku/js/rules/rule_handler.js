@@ -159,16 +159,19 @@ export class RuleTypeHandler {
 
     getWarnings() {
         const warnings = [];
+        
+        const generalWarnings = this.getGeneralWarnings();
+        if (generalWarnings.length > 0){
+            warnings.push({ rule: null, warnings: generalWarnings})
+        }
+
         for (const rule of this.rules) {
             const ruleWarnings = this.getRuleWarnings(rule);
-            const generalWarnings = this.getGeneralWarnings();
             if (ruleWarnings.length > 0) {
                 warnings.push({ rule: rule, warnings: ruleWarnings });
             }
-            if (generalWarnings.length > 0){
-                warnings.push({ rule: null, warnings: generalWarnings})
-            }
         }
+
         return warnings;
     }
 
