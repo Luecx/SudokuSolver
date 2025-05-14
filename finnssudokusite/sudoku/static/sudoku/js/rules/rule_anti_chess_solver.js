@@ -50,8 +50,7 @@ export function attachAntiChessSolverLogic(instance) {
                 // determine if this neighbor should have constraints applied:
                 // - if region doesn't exist or is empty, apply to all cells
                 // - if region exists and has elements, only apply to cells in that region   
-                const shouldApplyConstraint = !region || region.size() === 0 || region.has(neighborCell.pos);
-                if (!shouldApplyConstraint) continue; // skip if contraint is not met
+                if (region && region.size() > 0 && !region.has(neighborCell.pos)) continue; // skip if contraint is not met
                                  
                 // remove the changed cell's value from neighbor's candidates
                 if (neighborCell.removeCandidate(changedCell.value)) changed = true;       
