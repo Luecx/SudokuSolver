@@ -265,7 +265,7 @@ export class CreatorRuleManager {
         collapse.className = "accordion-collapse collapse show"; // 'show' makes it initially visible
         collapse.id = `collapse-${id}`;
         collapse.setAttribute("aria-labelledby", `heading-${id}`);
-        collapse.dataset.bsParent = "#accordionContainer"; // This makes other items collapse
+        collapse.dataset.bsParent = "#accordionContainer"; // this makes other items collapse when one is opened
 
         const body = document.createElement("div");
         body.className = "accordion-body d-flex flex-column gap-2";
@@ -298,12 +298,11 @@ export class CreatorRuleManager {
         wrapper.appendChild(collapse);
         this.accordionEl.appendChild(wrapper);
 
-        // Initialize tooltip if description exists
         if (descriptionHTML) {
             new bootstrap.Tooltip(toggleBtn.querySelector("i"));
         }
 
-        // Collapse all other accordion items
+        // collapse all other accordion items when new rule is added
         const allCollapses = this.accordionEl.querySelectorAll('.accordion-collapse');
         allCollapses.forEach(item => {
             if (item.id !== `collapse-${id}`) {
@@ -425,7 +424,8 @@ export class CreatorRuleManager {
         labelWrapper.className = "d-flex align-items-center gap-2";
 
         const arrowIcon = document.createElement("i");
-        arrowIcon.className = "fas fa-chevron-right fa-fw transition-icon";
+        arrowIcon.className = "fas fa-fw transition-icon";
+        arrowIcon.classList.add(handler.can_create_rules ? "fa-chevron-down" : "fa-chevron-right");
         arrowIcon.style.width = "1rem"; // Optional manual width for perfect alignment
 
         const iconWrapper = document.createElement("span");
@@ -462,6 +462,14 @@ export class CreatorRuleManager {
             if (opt) content.appendChild(opt.element);
         });
 
+        if (handler.can_create_rules) {
+            setTimeout(() => {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }, 10);
+
+            this._collapseOtherCards(container, card);
+        }
+
         // Toggle logic
         header.addEventListener("click", (e) => {
             if (e.target.closest("button")) return;
@@ -473,6 +481,11 @@ export class CreatorRuleManager {
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
                 arrowIcon.classList.replace("fa-chevron-right", "fa-chevron-down");
+
+                if (!handler.can_create_rules)
+                    return;
+
+                this._collapseOtherCards(container, card);
             }
         });
 
@@ -486,6 +499,21 @@ export class CreatorRuleManager {
         card.appendChild(header);
         card.appendChild(content);
         container.appendChild(card);
+    }
+
+    _collapseOtherCards(container, card) {
+        const allCards = container.querySelectorAll(".rule-instance-card ");
+        allCards.forEach(otherCard => {
+            if (otherCard === card) return; // dont' collapse this card
+
+            const otherContent = otherCard.querySelector(".rule-collapse-content");
+            if (otherContent) {
+                otherContent.style.maxHeight = "0";
+                const otherArrowIcon = otherCard.querySelector(".fas");
+                if (otherArrowIcon)
+                    otherArrowIcon.classList.replace("fa-chevron-down", "fa-chevron-right");
+            }
+        });
     }
 
     removeRule(ruleName) {
