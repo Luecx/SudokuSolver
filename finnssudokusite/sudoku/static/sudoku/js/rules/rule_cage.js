@@ -107,7 +107,7 @@ export class CageHandler extends RuleTypeHandler {
     render(rule, ctx) {
         const region = rule.fields.region;
 
-        if (!rule || !region) return;
+        if (!rule || !region || region.size() === 0) return;
         
         const s = this.board.getCellSizeCTX();
         const insetPx = 5;
@@ -139,13 +139,6 @@ export class CageHandler extends RuleTypeHandler {
         }
     
         // Draw the index inside the cage
-
-        if(region.size() === 0) 
-        {
-            // important to do otherwise syntax error when calculating firstPoint
-            ctx.restore();
-            return;
-        }
 
         // Position top left
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
