@@ -3,7 +3,6 @@ import { NumberOption } from "./option_number.js";
 import { StringOption } from "./option_string.js";
 import { RegionSelectorOption } from "./option_region.js";
 import { createSelectionConfig } from "../board/board_selectionConfig.js";
-import { SelectionMode } from "../board/board_selectionEnums.js";
 import { Region } from "../region/Region.js";
 
 export class CreatorRuleManager {
@@ -76,7 +75,6 @@ export class CreatorRuleManager {
             this.removeRule(handler.name);
             this._refreshWarnings();
         });
-
     }
 
     _refreshWarnings() {
@@ -112,7 +110,6 @@ export class CreatorRuleManager {
 
 
     _updateRuleWarningIcon(handler, rule) {
-
         const warning = this.ruleWarnings.get(rule.id) || null;
         const card = document.getElementById(`rule-${handler.name}-${rule.id}`);
         if (!card) return;
@@ -219,12 +216,15 @@ export class CreatorRuleManager {
 
         const header = document.createElement("h2");
         header.className = "accordion-header d-flex justify-content-between align-items-center";
+        header.id = `heading-${id}`;
 
         const toggleBtn = document.createElement("button");
-        toggleBtn.className = "accordion-button collapsed py-2 d-flex align-items-center gap-2 flex-grow-1";
+        toggleBtn.className = "accordion-button py-2 d-flex align-items-center gap-2 flex-grow-1";
         toggleBtn.type = "button";
         toggleBtn.dataset.bsToggle = "collapse";
         toggleBtn.dataset.bsTarget = `#collapse-${id}`;
+        toggleBtn.setAttribute("aria-expanded", "true"); // Initially expanded
+        toggleBtn.setAttribute("aria-controls", `collapse-${id}`);
 
         const labelWrapper = document.createElement("div");
         labelWrapper.className = "d-flex align-items-center gap-2";
@@ -262,8 +262,10 @@ export class CreatorRuleManager {
         header.appendChild(removeBtn);
 
         const collapse = document.createElement("div");
-        collapse.className = "accordion-collapse collapse";
+        collapse.className = "accordion-collapse collapse show"; // 'show' makes it initially visible
         collapse.id = `collapse-${id}`;
+        collapse.setAttribute("aria-labelledby", `heading-${id}`);
+        collapse.dataset.bsParent = "#accordionContainer"; // This makes other items collapse
 
         const body = document.createElement("div");
         body.className = "accordion-body d-flex flex-column gap-2";
@@ -296,9 +298,18 @@ export class CreatorRuleManager {
         wrapper.appendChild(collapse);
         this.accordionEl.appendChild(wrapper);
 
+        // Initialize tooltip if description exists
         if (descriptionHTML) {
             new bootstrap.Tooltip(toggleBtn.querySelector("i"));
         }
+
+        // Collapse all other accordion items
+        const allCollapses = this.accordionEl.querySelectorAll('.accordion-collapse');
+        allCollapses.forEach(item => {
+            if (item.id !== `collapse-${id}`) {
+                bootstrap.Collapse.getOrCreateInstance(item).hide();
+            }
+        });
     }
 
     _getInstanceList(handler) {
@@ -380,13 +391,13 @@ export class CreatorRuleManager {
                 const observer = new MutationObserver((mutations, observerInstance) => {
                     for (const mutation of mutations) {
                         for (const node of mutation.removedNodes) {
-                            if (node.contains(selector.element)) {
-                                if (this.activeRegionSelector === selector) {
-                                    selector.stop();
-                                    this.activeRegionSelector = null;
-                                }
-                                observerInstance.disconnect();
+                            if (!node.contains(selector.element)) continue;
+
+                            if (this.activeRegionSelector === selector) {
+                                selector.stop();
+                                this.activeRegionSelector = null;
                             }
+                            observerInstance.disconnect();
                         }
                     }
                 });
@@ -477,11 +488,8 @@ export class CreatorRuleManager {
         container.appendChild(card);
     }
 
-
-
     removeRule(ruleName) {
         this.addedRules.delete(ruleName);
         this._updateDropdown(this.inputEl.value.trim());
     }
-
 }
