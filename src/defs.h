@@ -1,13 +1,17 @@
 #pragma once
 
-
 #include <cstdint>
+#include <ostream>
 
-// Basic typedefs using smaller types.
-using Row        = int;        // Values 0–8
-using Col        = int;        // Values 0–8
-using Number     = int8_t;     // Displayed numbers: 1–9
-using Candidate  = int8_t;     // Candidate value: 1–9
+namespace sudoku {
 
-constexpr Row    BOARD_SIZE = 9;
-constexpr Number EMPTY      = 0; // 0 means unsolved; solved cells hold 1–9.
+    // Type aliases for Sudoku concepts
+    using Size      = int;          // board size
+    using Row       = int;          // Valid values: 0–8
+    using Col       = int;          // Valid values: 0–8
+    using Number    = int8_t;       // Solved numbers: 1–9
+    using Candidate = int8_t;       // Candidate values: 1–9
+
+    constexpr Number EMPTY = 0;     // Unsolved cells are marked with 0
+    constexpr Size   MAX_SIZE = 63; // max board size
+} // namespace sudoku
