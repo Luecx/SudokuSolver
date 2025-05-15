@@ -1,7 +1,10 @@
 #pragma once
+
 #include <string>
 #include <vector>
+
 #include "../defs.h"
+#include "../json.h"
 #include "CellIdx.h"
 
 namespace sudoku {
@@ -14,24 +17,8 @@ struct DiagonalIdx {
 
     DiagonalIdx(DiagonalType type, int index) : type(type), index(index) {}
 
-    std::string to_string() const {
-        std::string t = type == DiagonalType::MAIN ? "main" : "anti";
-        return t + ":" + std::to_string(index);
-    }
-
     bool operator==(const DiagonalIdx& other) const {
         return type == other.type && index == other.index;
-    }
-
-    DiagonalIdx copy() const {
-        return *this;
-    }
-
-    static DiagonalIdx from_string(const std::string& key) {
-        auto sep = key.find(':');
-        std::string type_str = key.substr(0, sep);
-        int idx = std::stoi(key.substr(sep + 1));
-        return DiagonalIdx(type_str == "main" ? DiagonalType::MAIN : DiagonalType::ANTI, idx);
     }
 
     std::vector<CellIdx> attached_cells(int board_size) const {
@@ -51,10 +38,17 @@ struct DiagonalIdx {
         }
         return cells;
     }
-};
 
-inline std::ostream& operator<<(std::ostream& os, const DiagonalIdx& idx) {
-    return os << idx.to_string();
-}
+    static DiagonalIdx from_json(JSON& node) {
+        const auto type_str = node["type"].get<std::string>();
+        DiagonalType type = (type_str == "main") ? DiagonalType::MAIN : DiagonalType::ANTI;
+        return {type, static_cast<int>(node["index"].get<double>())};
+    }
+
+
+    friend std::ostream& operator<<(std::ostream& os, const DiagonalIdx& idx) {
+        return os << (idx.type == DiagonalType::MAIN ? "main" : "anti") << ":" << idx.index;
+    }
+};
 
 } // namespace sudoku

@@ -74,6 +74,8 @@ class Creator {
             let serverDone = false;
 
             console.log(this.board.getTags());
+            let json = this.board.saveBoard();
+            console.log(json);
 
             const payload = {
                 title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",

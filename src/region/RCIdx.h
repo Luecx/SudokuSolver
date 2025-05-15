@@ -1,8 +1,10 @@
 #pragma once
+
 #include <string>
 #include <vector>
-#include <sstream>
+
 #include "../defs.h"
+#include "../json.h"
 #include "CellIdx.h"
 
 namespace sudoku {
@@ -13,28 +15,8 @@ struct RCIdx {
 
     RCIdx(Row r, Col c) : row(r), col(c) {}
 
-    std::string to_string() const {
-        std::string rs = (row >= 0) ? std::to_string(row) : "x";
-        std::string cs = (col >= 0) ? std::to_string(col) : "x";
-        return rs + "," + cs;
-    }
-
     bool operator==(const RCIdx& other) const {
         return row == other.row && col == other.col;
-    }
-
-    RCIdx copy() const {
-        return *this;
-    }
-
-    static RCIdx from_string(const std::string& key) {
-        std::string rstr, cstr;
-        std::istringstream ss(key);
-        std::getline(ss, rstr, ',');
-        std::getline(ss, cstr);
-        int r = (rstr == "x") ? -1 : std::stoi(rstr);
-        int c = (cstr == "x") ? -1 : std::stoi(cstr);
-        return RCIdx(r, c);
     }
 
     bool is_row() const {
@@ -62,11 +44,21 @@ struct RCIdx {
         }
         return result;
     }
+
+    static RCIdx from_json(JSON& node) {
+        return {
+            static_cast<Row>(node["row"].get<double>()),
+            static_cast<Col>(node["col"].get<double>())
+        };
+    }
+
+
+    friend std::ostream& operator<<(std::ostream& os, const RCIdx& idx) {
+        if (idx.row >= 0) os << idx.row; else os << 'x';
+        os << ',';
+        if (idx.col >= 0) os << idx.col; else os << 'x';
+        return os;
+    }
 };
-
-inline std::ostream& operator<<(std::ostream& os, const RCIdx& idx) {
-    return os << idx.to_string();
-}
-
 
 } // namespace sudoku

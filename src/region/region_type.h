@@ -15,12 +15,12 @@ enum RegionType : int {
 
 inline std::string to_string(RegionType type) {
     switch (type) {
-        case REGION_CELLS: return "cells";
-        case REGION_EDGES: return "edges";
-        case REGION_CORNERS: return "corners";
-        case REGION_ROWCOL: return "rowcol";
-        case REGION_DIAGONAL: return "diagonal";
-        default: return "none";
+        case REGION_CELLS: return "CellRegion";
+        case REGION_EDGES: return "EdgeRegion";
+        case REGION_CORNERS: return "CornerRegion";
+        case REGION_ROWCOL: return "RCRegion";
+        case REGION_DIAGONAL: return "DiagonalRegion";
+        default: return "invalid";
     }
 }
 

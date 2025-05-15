@@ -95,6 +95,32 @@ public:
         return os;
     }
 
+    static Region from_json(const JSON& node) {
+        if (!node.is_object()) throw std::runtime_error("Region must be an object");
+        if (node["__type__"].get<std::string>() != "Region")
+            throw std::runtime_error("Invalid type tag for Region");
+
+        std::string type_str = node["type"].get<std::string>();
+        if (type_str != region_type_map<IdxT>::str)
+            throw std::runtime_error("Region type mismatch: expected '" +
+                std::string(region_type_map<IdxT>::str) + "', got '" + type_str + "'");
+
+        Region out;
+        const auto& items = node["items"].get<JSON::array>();
+        for (const auto& item : items) {
+            if (!item.is_object())
+                throw std::runtime_error("Region item must be object");
+
+            const auto& inner_type = item["__type__"].get<std::string>();
+            if (inner_type != region_type_map<IdxT>::item_str)
+                throw std::runtime_error("Item type mismatch: expected '" +
+                    std::string(region_type_map<IdxT>::item_str) + "', got '" + inner_type + "'");
+
+            out.add(IdxT::from_json(const_cast<JSON&>(item))); // const_cast because your from_json takes non-const
+        }
+        return out;
+    }
+
 private:
     std::vector<IdxT> indices_;
 

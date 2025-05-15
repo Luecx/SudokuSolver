@@ -3,6 +3,7 @@
 #include <vector>
 #include "../defs.h"
 #include "CellIdx.h"
+#include "../json.h"
 
 namespace sudoku {
 
@@ -12,24 +13,8 @@ struct CornerIdx {
 
     constexpr CornerIdx(Row r, Col c) : r(r), c(c) {}
 
-    std::string to_string() const {
-        return std::to_string(r) + "," + std::to_string(c);
-    }
-
     bool operator==(const CornerIdx& other) const {
         return r == other.r && c == other.c;
-    }
-
-    CornerIdx copy() const {
-        return *this;
-    }
-
-    static CornerIdx from_string(const std::string& key) {
-        int r, c;
-        char sep;
-        std::istringstream ss(key);
-        ss >> r >> sep >> c;
-        return CornerIdx(r, c);
     }
 
     std::vector<CellIdx> attached_cells() const {
@@ -40,10 +25,18 @@ struct CornerIdx {
             CellIdx(r + 1, c + 1)
         };
     }
-};
 
-inline std::ostream& operator<<(std::ostream& os, const CornerIdx& idx) {
-    return os << idx.to_string();
-}
+    static CornerIdx from_json(JSON& node) {
+        return {
+            static_cast<Row>(node["r"].get<double>()),
+            static_cast<Col>(node["c"].get<double>())
+        };
+    }
+
+
+    friend std::ostream& operator<<(std::ostream& os, const CornerIdx& idx) {
+        return os << idx.r << "," << idx.c;
+    }
+};
 
 } // namespace sudoku
