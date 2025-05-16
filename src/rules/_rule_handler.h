@@ -1,10 +1,16 @@
 #pragma once
 
 #include "../region/region.h"
+#include "../region/CellIdx.h"
+#include "../impact_map.h"
 
+namespace sudoku {
 struct RuleHandler {
-    bool number_changed();
-    bool candidates_changed();
-    bool valid();
+    virtual bool number_changed(CellIdx pos) = 0;
+    virtual bool candidates_changed() = 0;
+    virtual bool valid() = 0;
+    virtual void update_impact(ImpactMap& impact_map) = 0;
 };
+}
+
 

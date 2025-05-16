@@ -1,135 +1,212 @@
+/**
+ * @file Region.h
+ * @brief Definition of the Region class template for holding index-based constraint regions.
+ *
+ * This file is part of the SudokuSolver project, developed for the Sudoku Website.
+ * The Region class wraps collections of index objects (e.g. CellIdx, EdgeIdx) and
+ * provides utilities for set operations, JSON parsing, and cell expansion.
+ *
+ * @date 2025-05-16
+ * @author Finn Eggers
+ */
+
 #pragma once
-#include <vector>
-#include <string>
+
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
-#include <algorithm>
+#include <string>
+#include <vector>
 #include "../defs.h"
-#include "region_type.h"
-#include "region_type_map.h"
+#include "../json/json.h"
+#include "CellIdx.h"
+#include "CornerIdx.h"
+#include "DiagonalIdx.h"
+#include "EdgeIdx.h"
+#include "RCIdx.h"
 
 namespace sudoku {
 
-template <typename IdxT>
+/**
+ * @class Region
+ * @brief Represents a typed collection of index objects (CellIdx, EdgeIdx, etc.).
+ *
+ * Provides set-like behavior, JSON parsing, and conversion to covered cells.
+ *
+ * @tparam IdxT Type of index (e.g., CellIdx, EdgeIdx, etc.).
+ */
+template<typename IdxT>
 class Region {
 public:
     using value_type = IdxT;
 
+    /**
+     * @brief Default constructor.
+     */
     Region() = default;
 
-    RegionType type() const { return region_type_map<IdxT>::value; }
-    size_t size() const { return indices_.size(); }
-    void clear() { indices_.clear(); }
+    /**
+     * @brief Returns the number of indices in the region.
+     * @return Number of elements.
+     */
+    size_t size() const { return items_.size(); }
 
-    void add(const IdxT& idx) {
+    /**
+     * @brief Clears the region.
+     */
+    void clear() { items_.clear(); }
+
+    /**
+     * @brief Adds an index to the region if not already present.
+     * @param idx The index to add.
+     */
+    void add(const IdxT &idx) {
         if (!has(idx))
-            indices_.push_back(idx);
+            items_.push_back(idx);
     }
 
-    bool has(const IdxT& idx) const {
-        return std::find(indices_.begin(), indices_.end(), idx) != indices_.end();
-    }
+    /**
+     * @brief Checks if a given index exists in the region.
+     * @param idx The index to search for.
+     * @return True if present.
+     */
+    bool has(const IdxT &idx) const { return std::find(items_.begin(), items_.end(), idx) != items_.end(); }
 
-    Region copy() const {
-        Region r;
-        r.indices_ = indices_;
-        return r;
-    }
-
-    Region union_with(const Region& other) const {
-        Region result = copy();
-        for (const auto& idx : other.indices_) {
+    /**
+     * @brief Returns a new region that is the union of this and another.
+     * @param other The other region.
+     * @return Resulting union region.
+     */
+    Region operator|(const Region &other) const {
+        Region result = *this;
+        for (const auto &idx: other.items_) {
             result.add(idx);
         }
         return result;
     }
 
-    Region intersection_with(const Region& other) const {
+    /**
+     * @brief Returns a new region that is the intersection of this and another.
+     * @param other The other region.
+     * @return Resulting intersection region.
+     */
+    Region operator&(const Region &other) const {
         Region result;
-        for (const auto& idx : indices_) {
+        for (const auto &idx: items_) {
             if (other.has(idx))
-                result.indices_.push_back(idx);
+                result.items_.push_back(idx);
         }
         return result;
     }
 
-    Region difference_with(const Region& other) const {
+    /**
+     * @brief Returns a new region with elements from this but not in the other.
+     * @param other The other region.
+     * @return Resulting difference region.
+     */
+    Region operator-(const Region &other) const {
         Region result;
-        for (const auto& idx : indices_) {
+        for (const auto &idx: items_) {
             if (!other.has(idx))
-                result.indices_.push_back(idx);
+                result.items_.push_back(idx);
         }
         return result;
     }
 
+    /**
+     * @brief Returns all cells covered by the region.
+     * @param board_size Size of the Sudoku board (default: 9).
+     * @return Vector of covered CellIdx entries.
+     */
     std::vector<CellIdx> attached_cells(int board_size = 9) const {
         std::vector<CellIdx> out;
-        for (const auto& idx : indices_) {
+        for (const auto &idx: items_) {
             auto cells = call_attached_cells(idx, board_size);
             out.insert(out.end(), cells.begin(), cells.end());
         }
         return out;
     }
 
+    /**
+     * @brief Serializes the region to a string (semicolon-separated).
+     * @return String representation.
+     */
     std::string to_string() const {
         std::stringstream ss;
-        for (size_t i = 0; i < indices_.size(); ++i) {
-            ss << indices_[i].to_string();
-            if (i + 1 < indices_.size()) ss << ";";
+        for (size_t i = 0; i < items_.size(); ++i) {
+            ss << items_[i].to_string();
+            if (i + 1 < items_.size())
+                ss << ";";
         }
         return ss.str();
     }
 
-    const std::vector<IdxT>& items() const { return indices_; }
+    /**
+     * @brief Returns reference to the contained items.
+     * @return Const reference to vector of index elements.
+     */
+    const std::vector<IdxT> &items() const { return items_; }
 
-    template <typename U>
-    friend std::ostream& operator<<(std::ostream& os, const Region<U>& region) {
-        os << sudoku::to_string(region.type()) << " { ";
-        const auto& items = region.items();
-        for (size_t i = 0; i < items.size(); ++i) {
-            os << items[i];
-            if (i + 1 < items.size())
-                os << "; ";
-        }
-        os << " }";
-        return os;
-    }
+    /**
+     * @brief Parses a Region from JSON, validating type information.
+     *
+     * Expected format:
+     * {
+     *   "__type__": "Region",
+     *   "type": "<IdxT::region_type_name>",
+     *   "items": [ { "__type__": ..., ... }, ... ]
+     * }
+     *
+     * @param node JSON node.
+     * @return Parsed Region.
+     * @throws std::runtime_error on validation failure.
+     */
+    static Region from_json(const JSON &node) {
+        if (!node.is_object())
+            throw std::runtime_error("Region must be a JSON object");
 
-    static Region from_json(const JSON& node) {
-        if (!node.is_object()) throw std::runtime_error("Region must be an object");
-        if (node["__type__"].get<std::string>() != "Region")
-            throw std::runtime_error("Invalid type tag for Region");
-
-        std::string type_str = node["type"].get<std::string>();
-        if (type_str != region_type_map<IdxT>::str)
-            throw std::runtime_error("Region type mismatch: expected '" +
-                std::string(region_type_map<IdxT>::str) + "', got '" + type_str + "'");
+        const std::string region_type_tag = node["__type__"].get<std::string>();
+        if (region_type_tag != "Region")
+            throw std::runtime_error("Invalid region tag: expected '__type__' == 'Region'");
 
         Region out;
-        const auto& items = node["items"].get<JSON::array>();
-        for (const auto& item : items) {
+        const auto &items = node["items"].get<JSON::array>();
+        for (const auto &item: items) {
             if (!item.is_object())
                 throw std::runtime_error("Region item must be object");
 
-            const auto& inner_type = item["__type__"].get<std::string>();
-            if (inner_type != region_type_map<IdxT>::item_str)
-                throw std::runtime_error("Item type mismatch: expected '" +
-                    std::string(region_type_map<IdxT>::item_str) + "', got '" + inner_type + "'");
-
-            out.add(IdxT::from_json(const_cast<JSON&>(item))); // const_cast because your from_json takes non-const
+            const std::string inner_type = item["__type__"].get<std::string>();
+            out.add(IdxT::from_json(const_cast<JSON &>(item))); // const_cast OK for interface
         }
         return out;
     }
 
+
 private:
-    std::vector<IdxT> indices_;
+    std::vector<IdxT> items_;
 
     // Dispatch for different attached_cells() signatures
-    static std::vector<CellIdx> call_attached_cells(const CellIdx& idx, int)           { return idx.attached_cells(); }
-    static std::vector<CellIdx> call_attached_cells(const EdgeIdx& idx, int)           { return idx.attached_cells(); }
-    static std::vector<CellIdx> call_attached_cells(const CornerIdx& idx, int)         { return idx.attached_cells(); }
-    static std::vector<CellIdx> call_attached_cells(const RCIdx& idx, int n)           { return idx.attached_cells(n); }
-    static std::vector<CellIdx> call_attached_cells(const DiagonalIdx& idx, int n)     { return idx.attached_cells(n); }
+    static std::vector<CellIdx> call_attached_cells(const CellIdx &idx, int) { return idx.attached_cells(); }
+    static std::vector<CellIdx> call_attached_cells(const EdgeIdx &idx, int) { return idx.attached_cells(); }
+    static std::vector<CellIdx> call_attached_cells(const CornerIdx &idx, int) { return idx.attached_cells(); }
+    static std::vector<CellIdx> call_attached_cells(const RCIdx &idx, int n) { return idx.attached_cells(n); }
+    static std::vector<CellIdx> call_attached_cells(const DiagonalIdx &idx, int n) { return idx.attached_cells(n); }
 };
+
+/**
+     * @brief Stream output in the form "type { a; b; c }"
+ */
+template<typename U>
+inline std::ostream &operator<<(std::ostream &os, const Region<U> &region) {
+    os << " { ";
+    const auto &items = region.items();
+    for (size_t i = 0; i < items.size(); ++i) {
+        os << items[i];
+        if (i + 1 < items.size())
+            os << "; ";
+    }
+    os << " }";
+    return os;
+}
 
 } // namespace sudoku

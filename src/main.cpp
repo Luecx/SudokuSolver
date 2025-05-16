@@ -6,9 +6,10 @@
 //#include "board.h"
 //#include "rules/include.h"
 //#include "position.h"
+#include "board/board.h"
+#include "json/json.h"
 #include "number_set.h"
 #include "region/region.h"
-#include "json.h"
 
 using namespace sudoku;
 
@@ -319,6 +320,13 @@ int main() {
         std::cout << node <<std::endl;
         auto reg = Region<EdgeIdx>::from_json(node);
         std::cout << reg << std::endl;
+
+        Board board{9};
+        std::cout << board << std::endl;
+        SolverStats stats;
+        auto solutions = board.solve(1, 1024, &stats);
+        std::cout << stats << std::endl;
+        std::cout << solutions[0] << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Parse error: " << e.what() << "\n";
     }
