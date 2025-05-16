@@ -55,4 +55,6 @@ constexpr Number EMPTY = 0;
 */
 constexpr Size MAX_SIZE = 63;
 
+class Board;
+
 } // namespace sudoku
