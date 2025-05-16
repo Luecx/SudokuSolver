@@ -6,7 +6,8 @@
 #include "../region/region.h"
 
 namespace sudoku {
-struct RuleHandler {
+class RuleHandler {
+public:
     RuleHandler(Board *board) : board_(board) {}
     virtual ~RuleHandler() = default;
 

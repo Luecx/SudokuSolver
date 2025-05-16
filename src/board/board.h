@@ -59,19 +59,19 @@ public:
    /**
     * @brief Access an entire row by index.
     */
-   const std::vector<Cell>& get_row(Row r) const;
+    std::vector<Cell*> get_row(Row r) ;
 
    /**
     * @brief Access an entire column by index.
     */
-   const std::vector<Cell>& get_col(Col c) const;
+    std::vector<Cell*> get_col(Col c) ;
 
    /**
     * @brief Access the block that contains cell (r, c).
     *
     * Only valid if the board size is a square number (e.g., 9).
     */
-   const std::vector<Cell>& get_block(Row r, Col c) const;
+   std::vector<Cell*> get_block(Row r, Col c) ;
 
    /**
     * @brief Add a rule handler to the board.

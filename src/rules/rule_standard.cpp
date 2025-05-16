@@ -1,0 +1,146 @@
+#include "rule_standard.h"
+#include "../board/board.h"
+
+namespace sudoku {
+
+bool hidden_singles(std::vector<Cell*> unit) {
+    bool changed = false;
+    NumberSet seen_once(unit[0]->max_number);
+    NumberSet seen_twice(unit[0]->max_number);
+
+    for (const auto &c: unit)
+        if (!c->is_solved()) {
+            seen_twice = seen_twice | (seen_once & c->get_candidates());
+            seen_once = seen_once | c->get_candidates();
+        }
+
+    NumberSet unique = seen_once & ~seen_twice;
+
+    for (auto &c: unit)
+        if (!c->is_solved()) {
+            NumberSet pick = c->get_candidates() & unique;
+            if (pick.count() == 1)
+                changed = c->remove_candidates(~pick) || changed;
+        }
+
+    return changed;
+}
+
+bool pointing(Board *board) {
+    bool changed = false;
+    const int block_size = board->block_size();
+    const int board_size = board->size();
+
+    for (int br = 0; br < board_size; br += block_size)
+        for (int bc = 0; bc < board_size; bc += block_size) {
+            auto block = board->get_block(br, bc);
+            for (Number d = 1; d <= board_size; d++) {
+                int row_mask = 0, col_mask = 0;
+                for (const auto &c: block)
+                    if (!c->is_solved() && c->get_candidates().test(d)) {
+                        row_mask |= 1 << (c->pos.r - br);
+                        col_mask |= 1 << (c->pos.c - bc);
+                    }
+
+                // check for row pointing
+                if (row_mask == 1 || row_mask == 2 || row_mask == 4) {
+                    int local = (row_mask == 1) ? 0 : (row_mask == 2) ? 1 : 2;
+                    int global = br + local;
+                    for (auto &peer: board->get_row(global))
+                        if (peer->pos.c / block_size != bc / block_size)
+                            changed = peer->remove_candidate(d) || changed;
+                }
+
+                // check for column pointing
+                if (col_mask == 1 || col_mask == 2 || col_mask == 4) {
+                    int local = (col_mask == 1) ? 0 : (col_mask == 2) ? 1 : 2;
+                    int global = bc + local;
+                    for (auto &peer: board->get_col(global))
+                        if (peer->pos.r / block_size != br / block_size)
+                            changed = peer->remove_candidate(d) || changed;
+                }
+            }
+        }
+
+    return changed;
+}
+
+bool RuleStandard::number_changed(CellIdx pos) { return false;
+    auto &cell = board_->get_cell(pos);
+    if (cell.value == 0)
+        return false;
+
+    bool changed = false;
+    NumberSet rm(cell.max_number, cell.value);
+
+    for (auto &c: board_->get_row(pos.r))
+        if (!c->is_solved())
+            changed = c->remove_candidates(rm) || changed;
+    for (auto &c: board_->get_col(pos.c))
+        if (!c->is_solved())
+            changed = c->remove_candidates(rm) || changed;
+    for (auto &c: board_->get_block(pos.r, pos.c))
+        if (!c->is_solved())
+            changed = c->remove_candidates(rm) || changed;
+
+    return changed;
+}
+
+bool RuleStandard::candidates_changed() { return false;
+    bool changed = false;
+    const int board_size = board_->size();
+
+    for (int i = 0; i < board_size; i++) {
+        auto row = board_->get_row(i);
+        auto col = board_->get_col(i);
+        changed = hidden_singles(row) || changed;
+        changed = hidden_singles(col) || changed;
+    }
+
+    const int block_size = board_->block_size();
+    for (int br = 0; br < board_size; br += block_size)
+        for (int bc = 0; bc < board_size; bc += block_size) {
+            auto block = board_->get_block(br, bc);
+            changed = hidden_singles(block) || changed;
+        }
+
+    return pointing(board_) || changed;
+}
+
+bool RuleStandard::valid() {
+    const int board_size = board_->size();
+    for (int i = 0; i < board_size; i++) {
+        if (!check_group(board_->get_row(i)))
+            return false;
+        if (!check_group(board_->get_col(i)))
+            return false;
+    }
+
+    const int block_size = board_->block_size();
+    for (int br = 0; br < board_size; br += block_size)
+        for (int bc = 0; bc < board_size; bc += block_size)
+            if (!check_group(board_->get_block(br, bc)))
+                return false;
+
+    return true;
+}
+
+bool RuleStandard::check_group(const std::vector<Cell*> unit) {
+    NumberSet seen(unit[0]->max_number);
+    NumberSet combined(unit[0]->max_number);
+
+    for (const auto &c: unit) {
+        if (c->is_solved()) {
+            if (seen.test(c->value))
+                return false;
+            seen.add(c->value);
+            combined = combined | NumberSet(c->max_number, c->value);
+        } else {
+            combined = combined | c->get_candidates();
+        }
+    }
+
+    return combined.raw() == NumberSet::full(unit[0]->max_number).raw();
+}
+
+} // namespace sudoku

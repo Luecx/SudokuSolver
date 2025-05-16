@@ -54,25 +54,20 @@ Cell& Board::get_cell(const CellIdx& idx) {
     return grid_.at(idx.r).at(idx.c);
 }
 
-const std::vector<Cell>& Board::get_row(Row r) const {
-    return grid_.at(r);
+std::vector<Cell*> Board::get_row(Row r)  {
+    return rows_.at(r);
 }
 
-const std::vector<Cell>& Board::get_col(Col c) const {
-    static std::vector<Cell> col_result;
-    col_result.clear();
-    col_result.reserve(board_size_);
-    for (Row r = 0; r < board_size_; ++r)
-        col_result.push_back(grid_[r][c]);
-    return col_result;
+std::vector<Cell*> Board::get_col(Col c)  {
+    return cols_.at(c);
 }
 
-const std::vector<Cell>& Board::get_block(Row r, Col c) const {
+std::vector<Cell*> Board::get_block(Row r, Col c)  {
     assert(block_size_ * block_size_ == board_size_);
     int block_row = r / block_size_;
     int block_col = c / block_size_;
     int block_index = block_row * block_size_ + block_col;
-    return *reinterpret_cast<const std::vector<Cell>*>(&blocks_.at(block_index));
+    return blocks_.at(block_index);
 }
 
 void Board::add_handler(std::shared_ptr<RuleHandler> handler) {
