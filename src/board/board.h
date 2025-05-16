@@ -46,6 +46,12 @@ public:
    explicit Board(int size);
 
    /**
+    * loads from json
+    * @param json
+    */
+   void from_json(JSON& json);
+
+   /**
     * @brief Access a specific cell by index.
     */
    Cell& get_cell(const CellIdx& idx);

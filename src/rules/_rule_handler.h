@@ -10,6 +10,7 @@ struct RuleHandler {
     virtual bool candidates_changed() = 0;
     virtual bool valid() = 0;
     virtual void update_impact(ImpactMap& impact_map) = 0;
+    virtual void from_json(JSON& json) = 0;
 };
 }
 

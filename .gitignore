@@ -48,3 +48,6 @@ ENV/
 *.db-journal
 *.db-wal
 *.db-shm
+
+SudokuSolver
+SudokuSolver.exe
