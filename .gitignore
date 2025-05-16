@@ -51,3 +51,6 @@ ENV/
 
 SudokuSolver
 SudokuSolver.exe
+
+cmake-build-debug/
+cmake-build-release/
