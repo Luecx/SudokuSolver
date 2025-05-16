@@ -50,5 +50,9 @@ ENV/
 *.db-wal
 *.db-shm
 
+# Object files
+*.o
+
+# Executable files
 SudokuSolver
 SudokuSolver.exe
