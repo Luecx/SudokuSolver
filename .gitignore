@@ -1,5 +1,6 @@
 # Build folders (CMake)
 cmake-build-*/
+build/
 
 # IDE files (CLion, PyCharm, etc.)
 **/.idea/
@@ -49,5 +50,9 @@ ENV/
 *.db-wal
 *.db-shm
 
+# Object files
+*.o
+
+# Executable files
 SudokuSolver
 SudokuSolver.exe
