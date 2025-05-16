@@ -1,5 +1,5 @@
 #include "board.h"
-// #include "../rules/standard.h"
+#include "../rules/rule_kropki.h"
 #include <stdexcept>
 
 namespace sudoku {
@@ -29,14 +29,14 @@ void Board::from_json(JSON& json) {
 
             std::shared_ptr<RuleHandler> handler;
 
-            // if (type == "Standard") {
-                // handler = std::make_shared<StandardHandler>();
-            // } else {
-            //     throw std::runtime_error("Unknown rule type: " + type);
-            // }
+            if (type == "Kropki") {
+                handler = std::make_shared<RuleKropki>(this);
+            } else {
+                 throw std::runtime_error("Unknown rule type: " + type);
+            }
 
-            // handler->from_json(rule_entry); // let handler parse fields and nested rules
-            // add_handler(handler);
+            handler->from_json(rule_entry); // let handler parse fields and nested rules
+            add_handler(handler);
         }
     }
 
