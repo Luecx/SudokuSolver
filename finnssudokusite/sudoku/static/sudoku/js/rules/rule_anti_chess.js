@@ -130,7 +130,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
     render(rule, ctx) {
         const region = rule.fields.region;
         
-        if (!rule || !region) return;
+        if (!rule || !region || region.size() === 0) return;
                 
         const s = this.board.getCellSize();
         const insetPx = 5;
@@ -162,13 +162,6 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         }
 
         // Position top left
-
-        if(region.size() === 0) 
-        {
-            // important to do otherwise syntax error when calculating firstPoint
-            ctx.restore();
-            return;
-        }
 
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
         const topLeft = this.board.getCellTopLeftCTX(firstPoint.r, firstPoint.c);
