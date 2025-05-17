@@ -72,6 +72,7 @@ std::vector<Cell*> Board::get_block(Row r, Col c)  {
 
 void Board::add_handler(std::shared_ptr<RuleHandler> handler) {
     handlers_.push_back(std::move(handler));
+    this->process_rule_candidates();
 }
 
 } // namespace sudoku

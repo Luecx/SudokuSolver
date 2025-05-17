@@ -5,14 +5,13 @@ namespace sudoku {
 
 bool hidden_singles(std::vector<Cell*> unit) {
     bool changed = false;
-    NumberSet seen_once(unit[0]->max_number);
+    NumberSet seen_once (unit[0]->max_number);
     NumberSet seen_twice(unit[0]->max_number);
 
-    for (const auto &c: unit)
-        if (!c->is_solved()) {
-            seen_twice = seen_twice | (seen_once & c->get_candidates());
-            seen_once = seen_once | c->get_candidates();
-        }
+    for (const auto &c: unit){
+        seen_twice |= (seen_once & c->candidates);
+        seen_once  |= c->candidates;
+    }
 
     NumberSet unique = seen_once & ~seen_twice;
 
@@ -20,7 +19,7 @@ bool hidden_singles(std::vector<Cell*> unit) {
         if (!c->is_solved()) {
             NumberSet pick = c->get_candidates() & unique;
             if (pick.count() == 1)
-                changed = c->remove_candidates(~pick) || changed;
+                changed |= c->remove_candidates(~pick);
         }
 
     return changed;
@@ -65,28 +64,25 @@ bool pointing(Board *board) {
     return changed;
 }
 
-bool RuleStandard::number_changed(CellIdx pos) { return false;
+bool RuleStandard::number_changed(CellIdx pos) {
     auto &cell = board_->get_cell(pos);
-    if (cell.value == 0)
-        return false;
-
     bool changed = false;
     NumberSet rm(cell.max_number, cell.value);
 
     for (auto &c: board_->get_row(pos.r))
         if (!c->is_solved())
-            changed = c->remove_candidates(rm) || changed;
+            changed |= c->remove_candidates(rm);
     for (auto &c: board_->get_col(pos.c))
         if (!c->is_solved())
-            changed = c->remove_candidates(rm) || changed;
+            changed |= c->remove_candidates(rm);
     for (auto &c: board_->get_block(pos.r, pos.c))
         if (!c->is_solved())
-            changed = c->remove_candidates(rm) || changed;
+            changed |= c->remove_candidates(rm);
 
     return changed;
 }
 
-bool RuleStandard::candidates_changed() { return false;
+bool RuleStandard::candidates_changed() {
     bool changed = false;
     const int board_size = board_->size();
 

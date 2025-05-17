@@ -160,14 +160,32 @@ public:
        return NumberSet(max_number_, bits_ | other.bits_);
    }
 
+   NumberSet operator|=(const NumberSet& other) {
+       assert(max_number_ == other.max_number_);
+       this->bits_ |= other.bits_;
+       return *this;
+   }
+
    NumberSet operator&(const NumberSet& other) const {
        assert(max_number_ == other.max_number_);
        return NumberSet(max_number_, bits_ & other.bits_);
    }
 
+   NumberSet operator&=(const NumberSet& other) {
+       assert(max_number_ == other.max_number_);
+       this->bits_ &= other.bits_;
+       return *this;
+   }
+
    NumberSet operator^(const NumberSet& other) const {
        assert(max_number_ == other.max_number_);
        return NumberSet(max_number_, bits_ ^ other.bits_);
+   }
+
+   NumberSet operator^=(const NumberSet& other) {
+       assert(max_number_ == other.max_number_);
+       this->bits_ ^= other.bits_;
+       return *this;
    }
 
    bool operator==(const NumberSet& other) const noexcept {
