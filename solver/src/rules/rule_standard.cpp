@@ -3,10 +3,15 @@
 
 namespace sudoku {
 
-bool RuleStandard::hidden_singles(std::vector<Cell *> unit) {
+// standard helpers
+
+bool hidden_singles(Board *board_, std::vector<Cell *> unit) {
     bool changed = false;
-    NumberSet seen_once(unit[0]->max_number);
-    NumberSet seen_twice(unit[0]->max_number);
+
+    const int board_size = board_->size();
+
+    NumberSet seen_once(board_size);
+    NumberSet seen_twice(board_size);
 
     for (const auto &c: unit) {
         seen_twice |= (seen_once & c->candidates);
@@ -25,14 +30,14 @@ bool RuleStandard::hidden_singles(std::vector<Cell *> unit) {
     return changed;
 }
 
-bool RuleStandard::pointing(Board *board) {
+bool pointing(Board *board_) {
     bool changed = false;
-    const int block_size = board->block_size();
-    const int board_size = board->size();
+    const int block_size = board_->block_size();
+    const int board_size = board_->size();
 
     for (int br = 0; br < board_size; br += block_size)
         for (int bc = 0; bc < board_size; bc += block_size) {
-            auto block = board->get_block(br, bc);
+            auto block = board_->get_block(br, bc);
             for (Number d = 1; d <= board_size; d++) {
                 int row_mask = 0, col_mask = 0;
                 for (const auto &c: block)
@@ -45,7 +50,7 @@ bool RuleStandard::pointing(Board *board) {
                 if (row_mask == 1 || row_mask == 2 || row_mask == 4) {
                     int local = (row_mask == 1) ? 0 : (row_mask == 2) ? 1 : 2;
                     int global = br + local;
-                    for (auto &peer: board->get_row(global))
+                    for (auto &peer: board_->get_row(global))
                         if (peer->pos.c / block_size != bc / block_size)
                             changed = peer->remove_candidate(d) || changed;
                 }
@@ -54,7 +59,7 @@ bool RuleStandard::pointing(Board *board) {
                 if (col_mask == 1 || col_mask == 2 || col_mask == 4) {
                     int local = (col_mask == 1) ? 0 : (col_mask == 2) ? 1 : 2;
                     int global = bc + local;
-                    for (auto &peer: board->get_col(global))
+                    for (auto &peer: board_->get_col(global))
                         if (peer->pos.r / block_size != br / block_size)
                             changed = peer->remove_candidate(d) || changed;
                 }
@@ -63,6 +68,8 @@ bool RuleStandard::pointing(Board *board) {
 
     return changed;
 }
+
+// RuleStandard methods
 
 bool RuleStandard::number_changed(CellIdx pos) {
     auto &cell = board_->get_cell(pos);
@@ -89,15 +96,15 @@ bool RuleStandard::candidates_changed() {
     for (int i = 0; i < board_size; i++) {
         auto row = board_->get_row(i);
         auto col = board_->get_col(i);
-        changed = hidden_singles(row) || changed;
-        changed = hidden_singles(col) || changed;
+        changed = hidden_singles(board_, row) || changed;
+        changed = hidden_singles(board_, col) || changed;
     }
 
     const int block_size = board_->block_size();
     for (int br = 0; br < board_size; br += block_size)
         for (int bc = 0; bc < board_size; bc += block_size) {
             auto block = board_->get_block(br, bc);
-            changed = hidden_singles(block) || changed;
+            changed = hidden_singles(board_, block) || changed;
         }
 
     return pointing(board_) || changed;
@@ -125,6 +132,7 @@ bool RuleStandard::check_group(const std::vector<Cell *> unit) {
     const int board_size = board_->size();
 
     NumberSet seen(board_size);
+    seen.clear();
     NumberSet combined(board_size);
 
     for (const auto &c: unit) {

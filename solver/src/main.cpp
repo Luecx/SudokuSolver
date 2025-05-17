@@ -15,9 +15,17 @@
 using namespace sudoku;
 
 int main() {
-    std::string txt = R"(
-        {"fixedCells":[{"r":1,"c":3,"value":8},{"r":1,"c":8,"value":7},{"r":2,"c":4,"value":2},{"r":3,"c":0,"value":8},{"r":3,"c":1,"value":4},{"r":3,"c":7,"value":2},{"r":4,"c":1,"value":2},{"r":4,"c":2,"value":5},{"r":4,"c":6,"value":1},{"r":4,"c":7,"value":8},{"r":5,"c":1,"value":3},{"r":5,"c":7,"value":5},{"r":5,"c":8,"value":4},{"r":6,"c":4,"value":5},{"r":6,"c":8,"value":1},{"r":7,"c":0,"value":4},{"r":7,"c":5,"value":9}],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Chevron","fields":{},"rules":[{"label":"Up Chevron","symbol":"up","fields":{"region":{"__type__":"Region","type":"edges","items":[{"__type__":"EdgeIdx","r1":0,"c1":0,"r2":1,"c2":0},{"__type__":"EdgeIdx","r1":0,"c1":1,"r2":1,"c2":1},{"__type__":"EdgeIdx","r1":0,"c1":4,"r2":1,"c2":4},{"__type__":"EdgeIdx","r1":6,"c1":3,"r2":7,"c2":3},{"__type__":"EdgeIdx","r1":7,"c1":4,"r2":8,"c2":4},{"__type__":"EdgeIdx","r1":7,"c1":6,"r2":8,"c2":6},{"__type__":"EdgeIdx","r1":5,"c1":2,"r2":6,"c2":2}]}}},{"label":"Down Chevron","symbol":"down","fields":{"region":{"__type__":"Region","type":"edges","items":[{"__type__":"EdgeIdx","r1":1,"c1":7,"r2":2,"c2":7},{"__type__":"EdgeIdx","r1":1,"c1":0,"r2":2,"c2":0},{"__type__":"EdgeIdx","r1":4,"c1":8,"r2":5,"c2":8},{"__type__":"EdgeIdx","r1":3,"c1":5,"r2":4,"c2":5},{"__type__":"EdgeIdx","r1":4,"c1":3,"r2":5,"c2":3},{"__type__":"EdgeIdx","r1":6,"c1":0,"r2":7,"c2":0},{"__type__":"EdgeIdx","r1":5,"c1":4,"r2":6,"c2":4}]}}},{"label":"Right Chevron","symbol":"right","fields":{"region":{"__type__":"Region","type":"edges","items":[{"__type__":"EdgeIdx","r1":4,"c1":3,"r2":4,"c2":4},{"__type__":"EdgeIdx","r1":8,"c1":6,"r2":8,"c2":7},{"__type__":"EdgeIdx","r1":6,"c1":6,"r2":6,"c2":7},{"__type__":"EdgeIdx","r1":5,"c1":4,"r2":5,"c2":5},{"__type__":"EdgeIdx","r1":3,"c1":6,"r2":3,"c2":7},{"__type__":"EdgeIdx","r1":0,"c1":4,"r2":0,"c2":5},{"__type__":"EdgeIdx","r1":0,"c1":2,"r2":0,"c2":3},{"__type__":"EdgeIdx","r1":2,"c1":1,"r2":2,"c2":2},{"__type__":"EdgeIdx","r1":4,"c1":0,"r2":4,"c2":1}]}}},{"label":"Left Chevron","symbol":"left","fields":{"region":{"__type__":"Region","type":"edges","items":[{"__type__":"EdgeIdx","r1":7,"c1":6,"r2":7,"c2":7},{"__type__":"EdgeIdx","r1":8,"c1":4,"r2":8,"c2":5},{"__type__":"EdgeIdx","r1":7,"c1":1,"r2":7,"c2":2},{"__type__":"EdgeIdx","r1":3,"c1":5,"r2":3,"c2":6},{"__type__":"EdgeIdx","r1":1,"c1":5,"r2":1,"c2":6},{"__type__":"EdgeIdx","r1":2,"c1":4,"r2":2,"c2":5},{"__type__":"EdgeIdx","r1":2,"c1":2,"r2":2,"c2":3},{"__type__":"EdgeIdx","r1":1,"c1":2,"r2":1,"c2":3},{"__type__":"EdgeIdx","r1":6,"c1":5,"r2":6,"c2":6}]}}}]}]}
-    )";
+    std::string txt;
+    {
+        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/extra-regions/extra-regions-1.json");
+        if (!file.is_open()) {
+            std::cerr << "Failed to open puzzle.json" << std::endl;
+            return 1;
+        }
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        txt = buffer.str();
+    }
 
     try {
         auto root = JSON::parse(txt);
@@ -72,9 +80,9 @@ const char *solve(const char *json, int max_solutions, int max_nodes) {
 
         out << stats; // Pretty-prints using operator<<
 
-        //return strdup(out.str().c_str());
+        // return strdup(out.str().c_str());
     } catch (const std::exception &e) {
-        //return strdup(std::string("ERROR: " + std::string(e.what()) + "\n").c_str());
+        // return strdup(std::string("ERROR: " + std::string(e.what()) + "\n").c_str());
     }
 }
 

@@ -5,21 +5,20 @@
 #include "_rule_handler.h"
 
 namespace sudoku {
-
-bool hidden_singles(Board *board_, std::vector<Cell *> unit);
-bool pointing(Board *board_);
-
-class RuleStandard : public RuleHandler {
+class RuleExtraRegions : public RuleHandler {
 public:
-    explicit RuleStandard(Board *board) : RuleHandler(board) {}
+    explicit RuleExtraRegions(Board *board) : RuleHandler(board) {}
 
     bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override {};
-    void from_json(JSON &json) override {};
+    void from_json(JSON &json) override;
 
 private:
+    std::vector<Region<CellIdx>> extra_regions_;
+    std::vector<std::vector<Cell *>> extra_region_units_;
+
     bool check_group(const std::vector<Cell *> unit);
 };
 } // namespace sudoku

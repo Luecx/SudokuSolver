@@ -27,6 +27,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleXV>(this);
             } else if (type == "Chevron") {
                 handler = std::make_shared<RuleChevron>(this);
+            } else if (type == "Extra Regions") {
+                handler = std::make_shared<RuleExtraRegions>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }

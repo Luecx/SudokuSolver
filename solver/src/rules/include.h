@@ -2,3 +2,4 @@
 #include "rule_xv.h"
 #include "rule_kropki.h"
 #include "rule_chevron.h"
+#include "rule_extra_regions.h"
