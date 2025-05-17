@@ -14,12 +14,12 @@ bool RuleKropki::number_changed(CellIdx pos) {
 
     // white dots
     for (const auto &edge: white_edges_.items()) {
+        Cell &a = board_->get_cell(pos);
+
         if (edge.r1 == pos.r && edge.c1 == pos.c) {
-            Cell &a = board_->get_cell(pos);
             Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
             changed |= apply_white_number(a, b);
         } else if (edge.r2 == pos.r && edge.c2 == pos.c) {
-            Cell &a = board_->get_cell(pos);
             Cell &b = board_->get_cell(CellIdx(edge.r1, edge.c1));
             changed |= apply_white_number(a, b);
         }
@@ -27,12 +27,12 @@ bool RuleKropki::number_changed(CellIdx pos) {
 
     // Process black dots
     for (const auto &edge: black_edges_.items()) {
+        Cell &a = board_->get_cell(pos);
+
         if (edge.r1 == pos.r && edge.c1 == pos.c) {
-            Cell &a = board_->get_cell(pos);
             Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
             changed |= apply_black_number(a, b);
         } else if (edge.r2 == pos.r && edge.c2 == pos.c) {
-            Cell &a = board_->get_cell(pos);
             Cell &b = board_->get_cell(CellIdx(edge.r1, edge.c1));
             changed |= apply_black_number(a, b);
         }
@@ -102,7 +102,7 @@ void RuleKropki::update_impact(ImpactMap &map) {
 }
 
 bool RuleKropki::apply_white_number(Cell &source, Cell &target) const {
-    if (!source.is_solved() || !target.is_solved())
+    if (!source.is_solved() || target.is_solved())
         return false;
 
     const int N = board_->size();
@@ -120,7 +120,7 @@ bool RuleKropki::apply_white_number(Cell &source, Cell &target) const {
 }
 
 bool RuleKropki::apply_black_number(Cell &source, Cell &target) const {
-    if (!source.is_solved() || !target.is_solved())
+    if (!source.is_solved() || target.is_solved())
         return false;
 
     const int N = board_->size();
@@ -196,7 +196,7 @@ bool RuleKropki::enforce_missing_dots() {
     for (const auto &edge: missing_dot_edges_.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
-
+        if (!a.is_solved() && !b.is_solved()) continue;
         changed |= remove_forbidden(a, b);
         changed |= remove_forbidden(b, a);
     }
@@ -219,10 +219,8 @@ bool RuleKropki::remove_forbidden(Cell &a, Cell &b) const {
         if (i == 2 * b.value || b.value == 2 * i)
             forbidden.add(i);
     }
-
-    NumberSet before = a.candidates;
-    a.remove_candidates(forbidden);
-    return a.candidates != before;
+    
+    return a.remove_candidates(forbidden);
 }
 
 void RuleKropki::from_json(JSON &json) {
