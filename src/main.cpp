@@ -16,7 +16,7 @@ using namespace sudoku;
 
 int main() {
     std::string txt = R"(
-        {"fixedCells":[{"r":0,"c":0,"value":9},{"r":0,"c":1,"value":1},{"r":0,"c":5,"value":3},{"r":0,"c":6,"value":5},{"r":0,"c":8,"value":2},{"r":1,"c":3,"value":4},{"r":1,"c":6,"value":3},{"r":2,"c":1,"value":8},{"r":3,"c":0,"value":3},{"r":3,"c":1,"value":4},{"r":3,"c":3,"value":7},{"r":3,"c":7,"value":6},{"r":4,"c":0,"value":8},{"r":4,"c":1,"value":2},{"r":4,"c":3,"value":1},{"r":5,"c":1,"value":6},{"r":5,"c":3,"value":9},{"r":5,"c":4,"value":4},{"r":5,"c":8,"value":1},{"r":6,"c":0,"value":5},{"r":6,"c":1,"value":9},{"r":6,"c":3,"value":6},{"r":6,"c":7,"value":1},{"r":7,"c":2,"value":4},{"r":7,"c":3,"value":3},{"r":7,"c":4,"value":1},{"r":7,"c":8,"value":5},{"r":8,"c":2,"value":8},{"r":8,"c":5,"value":9}],"rules":[{"type":"Standard","fields":{},"rules":[]}]}
+        {"fixedCells":[{"r":0,"c":1,"value":5},{"r":0,"c":3,"value":6},{"r":2,"c":0,"value":3},{"r":7,"c":0,"value":4}, {"r":6,"c":3,"value":7}],"rules":[{"type":"Kropki","fields":{"allDotsGiven":true},"rules":[{"label":"White Kropki Dots","color":"white","fields":{"region":{"__type__":"Region","type":"edges","items":[]}}},{"label":"Black Kropki Dots","color":"black","fields":{"region":{"__type__":"Region","type":"edges","items":[]}}}]},{"type":"Standard","fields":{},"rules":[]}]}
     )";
 
     try {
@@ -24,7 +24,6 @@ int main() {
 
         Board board{9};
         board.from_json(root);
-        board.add_handler(std::make_shared<RuleStandard>(&board));
         std::cout << board << std::endl;
 
         SolverStats stats;
@@ -33,6 +32,6 @@ int main() {
     } catch (const std::exception &e) {
         std::cerr << "Parse error: " << e.what() << "\n";
     }
-    
+
     return 0;
 }

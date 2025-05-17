@@ -181,6 +181,22 @@ public:
         return out;
     }
 
+    template<typename T>
+    static Region all(const int board_size) {
+        Region<T> all_;
+
+        for (Row r = 0; r < board_size; ++r) {
+            for (Col c = 0; c < board_size; ++c) {
+                if (r + 1 < board_size)
+                    all_.add(T(r, c, r + 1, c));
+                if (c + 1 < board_size)
+                    all_.add(T(r, c, r, c + 1));
+            }
+        }
+
+        return all_;
+    }
+
 
 private:
     std::vector<IdxT> items_;
@@ -194,7 +210,7 @@ private:
 };
 
 /**
-     * @brief Stream output in the form "type { a; b; c }"
+ * @brief Stream output in the form "type { a; b; c }"
  */
 template<typename U>
 inline std::ostream &operator<<(std::ostream &os, const Region<U> &region) {
