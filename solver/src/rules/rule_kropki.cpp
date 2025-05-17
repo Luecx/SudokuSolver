@@ -196,7 +196,8 @@ bool RuleKropki::enforce_missing_dots() {
     for (const auto &edge: missing_dot_edges_.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
-        if (!a.is_solved() && !b.is_solved()) continue;
+        if (!a.is_solved() && !b.is_solved())
+            continue;
         changed |= remove_forbidden(a, b);
         changed |= remove_forbidden(b, a);
     }
@@ -219,7 +220,7 @@ bool RuleKropki::remove_forbidden(Cell &a, Cell &b) const {
         if (i == 2 * b.value || b.value == 2 * i)
             forbidden.add(i);
     }
-    
+
     return a.remove_candidates(forbidden);
 }
 
@@ -253,19 +254,7 @@ void RuleKropki::from_json(JSON &json) {
     }
 
     combined_edges_ = white_edges_ | black_edges_;
-
-    // Build full edge region of all adjacent horizontal and vertical neighbors
-    Region<EdgeIdx> all_adjacent;
-    const int N = board_->size();
-    for (Row r = 0; r < N; ++r)
-        for (Col c = 0; c < N; ++c) {
-            if (r + 1 < N)
-                all_adjacent.add(EdgeIdx(r, c, r + 1, c));
-            if (c + 1 < N)
-                all_adjacent.add(EdgeIdx(r, c, r, c + 1));
-        }
-
-    missing_dot_edges_ = all_adjacent - combined_edges_;
+    missing_dot_edges_ = Region<EdgeIdx>::all(board_->size()) - combined_edges_;
 }
 
 } // namespace sudoku

@@ -181,18 +181,26 @@ public:
         return out;
     }
 
-    template<typename T>
     static Region all(const int board_size) {
-        Region<T> all_;
+        Region<IdxT> all_;
 
-        for (Row r = 0; r < board_size; ++r) {
+        for (Row r = 0; r < board_size; ++r)
             for (Col c = 0; c < board_size; ++c) {
-                if (r + 1 < board_size)
-                    all_.add(T(r, c, r + 1, c));
-                if (c + 1 < board_size)
-                    all_.add(T(r, c, r, c + 1));
+                if constexpr (std::is_same_v<IdxT, EdgeIdx>) {
+                    if (r + 1 < board_size)
+                        all_.add(IdxT(r, c, r + 1, c));
+                    if (c + 1 < board_size)
+                        all_.add(IdxT(r, c, r, c + 1));
+                } else if constexpr (std::is_same_v<IdxT, CornerIdx>) {
+                    all_.add(IdxT(r, c));
+                    all_.add(IdxT(r + 1, c));
+                    all_.add(IdxT(r, c + 1));
+                    all_.add(IdxT(r + 1, c + 1));
+                } else {
+                    throw std::runtime_error("Unsupported index type for Region");
+                }
             }
-        }
+
 
         return all_;
     }
