@@ -122,8 +122,10 @@ bool RuleStandard::valid() {
 }
 
 bool RuleStandard::check_group(const std::vector<Cell*> unit) {
-    NumberSet seen(unit[0]->max_number);
-    NumberSet combined(unit[0]->max_number);
+    const int board_size = board_->size();
+
+    NumberSet seen(board_size);
+    NumberSet combined(board_size);
 
     for (const auto &c: unit) {
         if (c->is_solved()) {
@@ -136,7 +138,7 @@ bool RuleStandard::check_group(const std::vector<Cell*> unit) {
         }
     }
 
-    return combined.raw() == NumberSet::full(unit[0]->max_number).raw();
+    return combined == NumberSet::full(board_size);
 }
 
 } // namespace sudoku

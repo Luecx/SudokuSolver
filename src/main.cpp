@@ -27,9 +27,9 @@ int main() {
         board.add_handler(std::make_shared<RuleStandard>(&board));
         std::cout << board << std::endl;
 
-        //SolverStats stats;
-        //auto sol = board.solve(1, 16384, &stats);
-        //std::cout << stats << std::endl;
+        SolverStats stats;
+        auto sol = board.solve(1, 16384, &stats);
+        std::cout << stats << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "Parse error: " << e.what() << "\n";
     }
