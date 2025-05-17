@@ -14,7 +14,7 @@ __pycache__/
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt
-Makefile
+src/makefile
 cmake_install.cmake
 CTestTestfile.cmake
 install_manifest.txt
