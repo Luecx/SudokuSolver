@@ -77,6 +77,16 @@ public:
        return {max_number, Number(0)};
    }
 
+    static NumberSet greaterThan(Number num, int max_number) {
+        assert(num >= 0 && num <= max_number);
+        return {max_number, compute_mask(max_number) & ~((uint64_t{1} << (num + 1)) - 1)};
+    }
+
+   static NumberSet lessThan(Number num, int max_number) {
+       assert(num >= 0 && num <= max_number);
+       return {max_number, (uint64_t{1} << num) - 1};
+   }
+
    // --- Modifiers ---
 
    void add(Number num) {

@@ -75,11 +75,10 @@ void RuleXV::from_json(JSON &json) {
         Region<EdgeIdx> region = Region<EdgeIdx>::from_json(rule["fields"]["region"]);
         std::string label = rule["label"].get<std::string>();
 
-        if (label == "X Rule") {
+        if (label == "X Rule")
             x_edges_ = x_edges_ | region;
-        } else if (label == "V Rule") {
+        else if (label == "V Rule")
             v_edges_ = v_edges_ | region;
-        }
     }
 
     combined_edges_ = x_edges_ | v_edges_;
