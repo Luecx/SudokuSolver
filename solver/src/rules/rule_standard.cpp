@@ -3,14 +3,14 @@
 
 namespace sudoku {
 
-bool hidden_singles(std::vector<Cell*> unit) {
+bool RuleStandard::hidden_singles(std::vector<Cell *> unit) {
     bool changed = false;
-    NumberSet seen_once (unit[0]->max_number);
+    NumberSet seen_once(unit[0]->max_number);
     NumberSet seen_twice(unit[0]->max_number);
 
-    for (const auto &c: unit){
+    for (const auto &c: unit) {
         seen_twice |= (seen_once & c->candidates);
-        seen_once  |= c->candidates;
+        seen_once |= c->candidates;
     }
 
     NumberSet unique = seen_once & ~seen_twice;
@@ -25,7 +25,7 @@ bool hidden_singles(std::vector<Cell*> unit) {
     return changed;
 }
 
-bool pointing(Board *board) {
+bool RuleStandard::pointing(Board *board) {
     bool changed = false;
     const int block_size = board->block_size();
     const int board_size = board->size();
@@ -121,7 +121,7 @@ bool RuleStandard::valid() {
     return true;
 }
 
-bool RuleStandard::check_group(const std::vector<Cell*> unit) {
+bool RuleStandard::check_group(const std::vector<Cell *> unit) {
     const int board_size = board_->size();
 
     NumberSet seen(board_size);

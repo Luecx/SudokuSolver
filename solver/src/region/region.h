@@ -196,6 +196,8 @@ public:
                     all_.add(IdxT(r + 1, c));
                     all_.add(IdxT(r, c + 1));
                     all_.add(IdxT(r + 1, c + 1));
+                } else if constexpr (std::is_same_v<IdxT, CellIdx>) {
+                    all_.add(IdxT(r, c));
                 } else {
                     throw std::runtime_error("Unsupported index type for Region");
                 }

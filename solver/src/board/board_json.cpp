@@ -1,17 +1,17 @@
-#include "board.h"
-#include "../rules/rule_kropki.h"
-#include "../rules/rule_standard.h"
 #include <stdexcept>
+#include "../rules/include.h"
+#include "board.h"
+
 
 namespace sudoku {
 
-void Board::from_json(JSON& json) {
+void Board::from_json(JSON &json) {
     if (!json.is_object())
         throw std::runtime_error("Board JSON must be an object");
 
     // --- Rules ---
     if (json["rules"].is_array()) {
-        for (JSON& rule_entry : json["rules"].get<JSON::array>()) {
+        for (JSON &rule_entry: json["rules"].get<JSON::array>()) {
             if (!rule_entry.is_object())
                 throw std::runtime_error("Each rule must be an object");
 
@@ -23,8 +23,10 @@ void Board::from_json(JSON& json) {
                 handler = std::make_shared<RuleStandard>(this);
             } else if (type == "Kropki") {
                 handler = std::make_shared<RuleKropki>(this);
+            } else if (type == "XV") {
+                handler = std::make_shared<RuleXV>(this);
             } else {
-                 throw std::runtime_error("Unknown rule type: " + type);
+                throw std::runtime_error("Unknown rule type: " + type);
             }
 
             handler->from_json(rule_entry); // let handler parse fields and nested rules
@@ -34,7 +36,7 @@ void Board::from_json(JSON& json) {
 
     // --- Fixed Cells ---
     if (json["fixedCells"].is_array()) {
-        for (const auto& cell_json : json["fixedCells"].get<JSON::array>()) {
+        for (const auto &cell_json: json["fixedCells"].get<JSON::array>()) {
             Row r = static_cast<Row>(cell_json["r"].get<double>());
             Col c = static_cast<Col>(cell_json["c"].get<double>());
             Number val = static_cast<Number>(cell_json["value"].get<double>());
