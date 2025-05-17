@@ -17,9 +17,9 @@ using namespace sudoku;
 int main() {
     std::string txt;
     {
-        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/extra-regions/extra-regions-1.json");
+        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/cages/cage-1.json");
         if (!file.is_open()) {
-            std::cerr << "Failed to open puzzle.json" << std::endl;
+            std::cerr << "Failed to open json" << std::endl;
             return 1;
         }
         std::stringstream buffer;
@@ -80,9 +80,9 @@ const char *solve(const char *json, int max_solutions, int max_nodes) {
 
         out << stats; // Pretty-prints using operator<<
 
-        // return strdup(out.str().c_str());
+        return strdup(out.str().c_str());
     } catch (const std::exception &e) {
-        // return strdup(std::string("ERROR: " + std::string(e.what()) + "\n").c_str());
+        return strdup(std::string("ERROR: " + std::string(e.what()) + "\n").c_str());
     }
 }
 
