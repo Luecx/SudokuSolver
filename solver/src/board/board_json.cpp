@@ -29,7 +29,7 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleChevron>(this);
             } else if (type == "Extra Regions") {
                 handler = std::make_shared<RuleExtraRegions>(this);
-            } else if (type == "Cage") {
+            } else if (type == "Cage" || type == "Custom Sum") {
                 handler = std::make_shared<RuleCage>(this);
             } else if (type == "Clone") {
                 handler = std::make_shared<RuleClone>(this);
