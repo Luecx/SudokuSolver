@@ -64,16 +64,15 @@ extern "C" {
             auto solutions = board.solve(max_solutions, max_nodes, &stats);
 
             for (size_t i = 0; i < solutions.size(); ++i) {
-                std::cout << "\nSOLUTION " << (i + 1) << ":\n";
+                std::cout << "\nSOLUTION " << (i + 1) << ":";
                 Board &sol = solutions[i];
                 int N = sol.size();
                 for (int r = 0; r < N; ++r) {
                     for (int c = 0; c < N; ++c) {
-                        if (c > 0) std::cout << ",";
-                        std::cout << sol.get_cell({r, c}).value;
+                        std::cout << (int)sol.get_cell({r, c}).value << ",";
                     }
-                    std::cout << "\n";
                 }
+                std::cout << "\n";
             }
 
             std::cout << stats; // Pretty-prints using operator<<

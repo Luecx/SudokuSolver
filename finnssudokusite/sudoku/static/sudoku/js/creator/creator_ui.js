@@ -4,6 +4,7 @@ import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../game/input_keyboard.js";
 import { InputMode } from "../game/input_constants.js";
 import { CellIdx } from "../region/CellIdx.js";
+import SolverEngine from "../cppsolver/solver.js";
 
 class Creator {
     constructor() {
@@ -224,6 +225,30 @@ class Creator {
         this.analysisUnlocked = false;
         this.completeAnalysisDone = false;
         this.keyboard.setEnabled(false);
+
+        // Step 3: Prepare your puzzle
+        const jsonString = this.board.saveBoard();
+        const maxSolutions = 1;
+        const maxNodes = 10000;
+
+
+        // const solver = SolverEngine();
+        // console.log(solver);
+        // solver.addMessageListener(msg => console.log("message: ", msg));
+        // solver.postMessage(["solve", jsonString, maxSolutions, maxNodes])
+        //
+
+        (async () => {
+            const Module = await SolverEngine();
+
+            // Add a listener to receive output from the solver
+            Module.addMessageListener((text) => {
+                console.log("[Solver output]:", text);
+            });
+
+            // Trigger a command
+            Module.postMessage("solve", jsonString, 17, 1000000);
+        })();
 
         setTimeout(() => {
 

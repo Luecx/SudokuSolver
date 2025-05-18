@@ -13,11 +13,12 @@ EMFLAGS := \
 	-std=c++23 \
 	-O3 \
 	-s WASM=1 \
+	-s EXPORT_ES6=1 \
 	-s MODULARIZE=1 \
-	-s EXPORT_NAME=createSolver \
+	-s EXPORT_NAME=SolverEngine \
 	-s EXPORTED_FUNCTIONS="['_solve','_solveComplete']" \
-	-s EXPORTED_RUNTIME_METHODS="['ccall','cwrap']" \
-  	--post-js post.js \
+	-s EXPORTED_RUNTIME_METHODS="['ccall']" \
+  	--pre-js pre.js \
 	--no-entry
 
 WASM_OUT := $(BUILD_DIR)/solver.js
