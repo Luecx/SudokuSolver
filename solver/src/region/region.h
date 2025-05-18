@@ -70,7 +70,20 @@ public:
      * @param idx The index to search for.
      * @return True if present.
      */
-    bool has(const IdxT &idx) const { return std::find(items_.begin(), items_.end(), idx) != items_.end(); }
+    bool has(const IdxT &idx) const { return find_index(idx) != -1; }
+
+    /**
+     * @brief Finds the index of a given element in the region.
+     * @param idx The index to search for.
+     * @return Index of the element, or -1 if not found.
+     */
+    int find_index(const IdxT &idx) const {
+        auto it = std::find(items_.begin(), items_.end(), idx);
+        if (it != items_.end())
+            return static_cast<int>(std::distance(items_.begin(), it));
+        else
+            return -1;
+    }
 
     /**
      * @brief Returns a new region that is the union of this and another.
@@ -139,6 +152,38 @@ public:
                 ss << ";";
         }
         return ss.str();
+    }
+
+    /**
+     * @brief Returns an iterator to the first element in the region.
+     * @return Iterator to the beginning.
+     */
+    typename std::vector<IdxT>::const_iterator begin() const {
+        return items_.begin();
+    }
+
+    /**
+     * @brief Returns an iterator to the element following the last element in the region.
+     * @return Iterator to the end.
+     */
+    typename std::vector<IdxT>::const_iterator end() const {
+        return items_.end();
+    }
+
+    /**
+     * @brief Returns a mutable iterator to the first element in the region.
+     * @return Mutable iterator to the beginning.
+     */
+    typename std::vector<IdxT>::iterator begin() {
+        return items_.begin();
+    }
+
+    /**
+     * @brief Returns a mutable iterator to the element following the last element in the region.
+     * @return Mutable iterator to the end.
+     */
+    typename std::vector<IdxT>::iterator end() {
+        return items_.end();
     }
 
     /**

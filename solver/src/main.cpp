@@ -17,7 +17,7 @@ using namespace sudoku;
 int main() {
     std::string txt;
     {
-        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/cages/cage-1.json");
+        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/clones/clone-1.json");
         if (!file.is_open()) {
             std::cerr << "Failed to open json" << std::endl;
             return 1;

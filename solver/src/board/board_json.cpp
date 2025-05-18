@@ -31,6 +31,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleExtraRegions>(this);
             } else if (type == "Cage") {
                 handler = std::make_shared<RuleCage>(this);
+            } else if (type == "Clone") {
+                handler = std::make_shared<RuleClone>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }

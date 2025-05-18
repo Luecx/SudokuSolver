@@ -4,11 +4,6 @@
 namespace sudoku {
 
 bool RuleXV::number_changed(CellIdx pos) {
-    Cell &cell = board_->get_cell(pos);
-    // if the cell is empty, no constraints to apply
-    if (!cell.is_solved())
-        return false;
-
     return enforce();
 }
 

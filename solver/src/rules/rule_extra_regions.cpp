@@ -7,10 +7,8 @@ namespace sudoku {
 
 bool RuleExtraRegions::number_changed(CellIdx pos) {
     Cell &cell = board_->get_cell(pos);
-    if (!cell.is_solved())
-        return false;
-
     bool changed = false;
+    
     NumberSet rm(cell.max_number, cell.value);
     for (const auto &region: extra_regions_) {
         if (!region.has(pos))
@@ -56,7 +54,6 @@ void RuleExtraRegions::from_json(JSON &json) {
         if (region.size() > 0) {
             extra_regions_.push_back(region);
             // create a unit for each region
-            // so you don't have to do it every time
             std::vector<Cell *> unit;
             for (const auto &c: region.items()) {
                 Cell &cell = board_->get_cell(c);

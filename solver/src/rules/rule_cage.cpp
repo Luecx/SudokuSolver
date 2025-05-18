@@ -3,7 +3,6 @@
 
 #include "../board/board.h"
 #include "rule_cage.h"
-#include "rule_standard.h"
 
 
 namespace sudoku {

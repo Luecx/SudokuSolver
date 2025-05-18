@@ -8,8 +8,6 @@
 namespace sudoku {
 
 bool RuleKropki::number_changed(CellIdx pos) {
-    if (!board_->get_cell(pos).is_solved())
-        return false;
     bool changed = false;
 
     // white dots

@@ -74,6 +74,7 @@ bool pointing(Board *board_) {
 bool RuleStandard::number_changed(CellIdx pos) {
     auto &cell = board_->get_cell(pos);
     bool changed = false;
+
     NumberSet rm(cell.max_number, cell.value);
 
     for (auto &c: board_->get_row(pos.r))

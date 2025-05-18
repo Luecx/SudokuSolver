@@ -4,3 +4,4 @@
 #include "rule_chevron.h"
 #include "rule_extra_regions.h"
 #include "rule_cage.h"
+#include "rule_clone.h"
