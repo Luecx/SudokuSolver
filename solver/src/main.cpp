@@ -14,10 +14,10 @@
 
 using namespace sudoku;
 
-int main() {
+int main(int argc, char* argv[]) {
     std::string txt;
     {
-        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/clones/clone-1.json");
+        std::ifstream file((std::string(argv[1])));
         if (!file.is_open()) {
             std::cerr << "Failed to open json" << std::endl;
             return 1;
