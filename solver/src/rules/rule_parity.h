@@ -4,12 +4,11 @@
 #include "../json/json.h"
 #include "_rule_handler.h"
 
-
 namespace sudoku {
 
-class RuleThermo : public RuleHandler {
+class RuleParity : public RuleHandler {
 public:
-    explicit RuleThermo(Board *board) : RuleHandler(board) {}
+    explicit RuleParity(Board *board) : RuleHandler(board) {}
 
     bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;
@@ -18,7 +17,9 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> thermo_paths_;
+    std::vector<Region<CellIdx>> parity_paths_;
+
+   bool enforceParityAlternation(const Region<CellIdx> &path);
 };
 
 } // namespace sudoku

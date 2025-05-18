@@ -6,8 +6,8 @@
 
 namespace sudoku {
 
-struct CageUnit {
-    std::vector<Cell *> cells;
+struct CagePair {
+    Region<CellIdx> region;
     int sum;
 };
 
@@ -25,11 +25,11 @@ private:
     bool number_can_repeat_ = false;
 
     std::vector<Region<CellIdx>> cages_;
-    std::vector<CageUnit> cage_units_;
-    std::vector<Cell *> remaining_cells;
+    std::vector<CagePair> cage_pair_;
+    Region<CellIdx> remaining_cells;
 
-    bool check_cage(CageUnit &unit);
-    bool check_group(const CageUnit &unit) const;
+    bool check_cage(CagePair &pair);
+    bool check_group(const CagePair &pair) const;
 
     int maxSum(int small, int N, int maxC) const;
     int minSum(int large, int N, int minC) const;

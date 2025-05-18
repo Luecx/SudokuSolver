@@ -41,6 +41,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RulePalindrome>(this);
             } else if (type == "Thermometer") {
                 handler = std::make_shared<RuleThermo>(this);
+            } else if (type == "Parity") {
+                handler = std::make_shared<RuleParity>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }

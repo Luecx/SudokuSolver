@@ -48,11 +48,13 @@ bool RuleThermo::number_changed(CellIdx pos) {
 bool RuleThermo::candidates_changed() {
     bool changed = false;
 
-    for (const auto &unit: thermo_units_) {
+    for (const auto &path: thermo_paths_) {
         int prev_value = 0;
 
-        for (size_t i = 0; i < unit.size(); ++i) {
-            Cell &cell = *unit[i];
+        const std::vector<CellIdx> &items = path.items();
+
+        for (size_t i = 0; i < items.size(); ++i) {
+            Cell &cell = board_->get_cell(items[i]);
 
             if (i == 0) {
                 // nothing to do for bulb
@@ -60,7 +62,7 @@ bool RuleThermo::candidates_changed() {
                 continue;
             }
 
-            Cell &prev_cell = *unit[i - 1];
+            Cell &prev_cell = board_->get_cell(items[i - 1]);
             if (prev_cell.is_solved()) {
                 prev_value = prev_cell.value;
             } else {
@@ -79,10 +81,12 @@ bool RuleThermo::candidates_changed() {
 }
 
 bool RuleThermo::valid() {
-    for (const auto &unit: thermo_units_) {
-        for (int i = 1; i < unit.size(); ++i) {
-            Cell &a = *unit[i - 1];
-            Cell &b = *unit[i];
+    for (const auto &path: thermo_paths_) {
+        const std::vector<CellIdx> &items = path.items();
+
+        for (int i = 1; i < items.size(); ++i) {
+            Cell &a = board_->get_cell(items[i - 1]);
+            Cell &b = board_->get_cell(items[i]);
 
             if (a.is_solved() && b.is_solved() && a.value >= b.value)
                 return false;
@@ -94,7 +98,6 @@ bool RuleThermo::valid() {
 
 void RuleThermo::from_json(JSON &json) {
     thermo_paths_.clear();
-    thermo_units_.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -106,16 +109,8 @@ void RuleThermo::from_json(JSON &json) {
             continue;
 
         Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
-        if (path.size() > 1) { // only accept paths with more than 1 cell
+        if (path.size() > 1) // only accept paths with more than 1 cell
             thermo_paths_.push_back(path);
-            // create a unit for each path
-            std::vector<Cell *> unit;
-            for (const auto &c: path.items()) {
-                Cell &cell = board_->get_cell(c);
-                unit.push_back(&cell);
-            }
-            thermo_units_.push_back(unit);
-        }
     }
 }
 

@@ -87,6 +87,16 @@ public:
        return {max_number, (uint64_t{1} << num) - 1};
    }
 
+   static NumberSet odd(int max_number) {
+       assert(max_number >= 1 && max_number <= MAX_SIZE);
+       return {max_number, compute_mask(max_number) & 0xAAAAAAAAAAAAAAAA};
+   }
+
+    static NumberSet even(int max_number) {
+         assert(max_number >= 1 && max_number <= MAX_SIZE);
+         return {max_number, compute_mask(max_number) & 0x5555555555555555};
+    }
+
    // --- Modifiers ---
 
    void add(Number num) {

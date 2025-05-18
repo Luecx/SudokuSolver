@@ -18,7 +18,6 @@ public:
 
 private:
     std::vector<Region<CellIdx>> clone_regions_;
-    std::vector<std::vector<Cell *>> clone_units_;
     std::vector<std::vector<int>> clone_groups_;
 
     bool isSameShape(const Region<CellIdx> &region1, const Region<CellIdx> &region2);
