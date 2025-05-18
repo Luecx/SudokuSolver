@@ -26,8 +26,9 @@ private:
 
     std::vector<Region<CellIdx>> cages_;
     std::vector<CageUnit> cage_units_;
+    std::vector<Cell *> remaining_cells;
 
-    bool check_cage(CageUnit &unit) const;
+    bool check_cage(CageUnit &unit);
     bool check_group(const CageUnit &unit) const;
 
     int maxSum(int small, int N, int maxC) const;

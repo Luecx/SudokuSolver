@@ -14,7 +14,7 @@
 
 using namespace sudoku;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     std::string txt;
     {
         std::ifstream file((std::string(argv[1])));
@@ -83,7 +83,6 @@ extern "C" {
         }
         std::cout << "FINISHED\n";
     }
-
     /**
      * @brief Alias for solve (no separate implementation).
      */

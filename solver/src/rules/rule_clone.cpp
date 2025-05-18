@@ -103,40 +103,39 @@ void RuleClone::from_json(JSON &json) {
         }
     }
 
-    clone_groups_ = findCloneGroups();
+    initCloneGroups();
 }
 
 // private member function
 
-// finds the index of the clones
-std::vector<std::vector<int>> RuleClone::findCloneGroups() {
-    std::vector<std::vector<int>> cloneGroups;
-    std::unordered_set<int> processed;
+void RuleClone::initCloneGroups() {
+    const int max_regions = clone_regions_.size();
+    NumberSet processed(max_regions);
 
     for (int i = 0; i < clone_regions_.size(); i++) {
         // skip if already processed
-        if (processed.count(i) > 0)
+        if (processed.test(i + 1)) // +1 because NumberSet is 1-based
             continue;
 
         const auto &region = clone_regions_[i];
         std::vector<int> clones = {i};
 
         for (int j = i + 1; j < clone_regions_.size(); j++) {
-            if (processed.count(j) > 0)
+            if (processed.test(j + 1)) // +1 because NumberSet is 1-based
                 continue;
 
             if (isSameShape(region, clone_regions_[j])) {
                 clones.push_back(j);
-                processed.insert(j);
+                processed.add(j + 1); // +1 because NumberSet is 1-based
             }
         }
 
-        processed.insert(i);
-        cloneGroups.push_back(clones);
+        processed.add(i + 1); // +1 because NumberSet is 1-based
+        clone_groups_.push_back(clones);
     }
 
     // sort cells within each region for easier comparison
-    for (const auto &group: cloneGroups) {
+    for (const auto &group: clone_groups_) {
         for (int regionIdx: group) {
             auto &region = clone_regions_[regionIdx];
 
@@ -149,8 +148,6 @@ std::vector<std::vector<int>> RuleClone::findCloneGroups() {
             });
         }
     }
-
-    return cloneGroups;
 }
 
 bool RuleClone::isSameShape(const Region<CellIdx> &region1, const Region<CellIdx> &region2) {
