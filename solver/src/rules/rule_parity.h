@@ -18,9 +18,8 @@ public:
 
 private:
     std::vector<Region<CellIdx>> parity_paths_;
-    std::vector<std::vector<Cell *>> parity_units_;
 
-   //bool enforeParityAlternation();
+   bool enforceParityAlternation(const Region<CellIdx> &path);
 };
 
 } // namespace sudoku

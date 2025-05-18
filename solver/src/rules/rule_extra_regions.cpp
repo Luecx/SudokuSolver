@@ -14,8 +14,8 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
         if (!region.has(pos))
             continue;
 
-        for (const auto &c: region.items()) {
-            Cell &target = board_->get_cell(c);
+        for (const auto &item: region.items()) {
+            Cell &target = board_->get_cell(item);
             if (!target.is_solved())
                 changed |= target.remove_candidates(rm);
         }
@@ -55,8 +55,8 @@ void RuleExtraRegions::from_json(JSON &json) {
             extra_regions_.push_back(region);
             // create a unit for each region
             std::vector<Cell *> unit;
-            for (const auto &c: region.items()) {
-                Cell &cell = board_->get_cell(c);
+            for (const auto &pos: region.items()) {
+                Cell &cell = board_->get_cell(pos);
                 unit.push_back(&cell);
             }
             extra_units_.push_back(unit);

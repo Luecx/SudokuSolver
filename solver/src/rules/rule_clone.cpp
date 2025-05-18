@@ -36,7 +36,7 @@ bool RuleClone::number_changed(CellIdx pos) {
                 continue;
 
             const auto &region = clone_regions_[region_idx];
-            const auto pos2 = region.items()[changed_item_idx];
+            const CellIdx& pos2 = region.items()[changed_item_idx];
             Cell &cell2 = board_->get_cell(pos2);
 
             changed |= cell2.only_allow_candidates(NumberSet(cell2.max_number, cell.value));
@@ -58,7 +58,7 @@ bool RuleClone::valid() {
             int value = -1;
 
             for (const int region_idx: group) {
-                const auto pos = clone_regions_[region_idx].items()[item_idx];
+                const CellIdx& pos = clone_regions_[region_idx].items()[item_idx];
                 Cell &cell = board_->get_cell(pos);
 
                 if (!cell.is_solved())
