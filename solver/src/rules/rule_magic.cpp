@@ -26,29 +26,31 @@ const std::array<std::array<int, 9>, 8> MAGIC_SQUARE_SOLUTIONS =
 
 bool RuleMagic::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &unit: magic_units_) {
-        initPossibleLayouts(unit);
+    for (const auto &region: magic_regions_) {
+        const std::vector<CellIdx> &items = region.items();
+
+        initPossibleLayouts(region);
         if (possible_layouts_.empty())
             continue;
-        changed |= applyCandidates(unit);
+        changed |= applyCandidates(region);
     }
     return changed;
 }
 
 bool RuleMagic::candidates_changed() {
     bool changed = false;
-    for (const auto &unit: magic_units_) {
-        initPossibleLayouts(unit);
+    for (const auto &region: magic_regions_) {
+        initPossibleLayouts(region);
         if (possible_layouts_.empty())
             continue;
-        changed |= applyCandidates(unit);
+        changed |= applyCandidates(region);
     }
     return changed;
 }
 
 bool RuleMagic::valid() {
-    for (const auto &unit: magic_units_) {
-        initPossibleLayouts(unit);
+    for (const auto &region: magic_regions_) {
+        initPossibleLayouts(region);
         if (possible_layouts_.empty())
             return false;
     }
@@ -57,7 +59,6 @@ bool RuleMagic::valid() {
 
 void RuleMagic::from_json(JSON &json) {
     magic_regions_.clear();
-    magic_units_.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -78,13 +79,6 @@ void RuleMagic::from_json(JSON &json) {
                       [](const CellIdx &a, const CellIdx &b) { return (a.r != b.r) ? (a.r < b.r) : (a.c < b.c); });
 
             magic_regions_.push_back(region);
-            // create a unit for each region
-            std::vector<Cell *> unit;
-            for (const auto &c: region.items()) {
-                Cell &cell = board_->get_cell(c);
-                unit.push_back(&cell);
-            }
-            magic_units_.push_back(unit);
         }
     }
 }
@@ -106,39 +100,43 @@ bool RuleMagic::is3x3Square(const Region<CellIdx> &region) {
     return rows.size() == 3 && cols.size() == 3;
 }
 
-bool RuleMagic::isValidLayout(const std::vector<Cell *> &unit, const std::array<int, 9> &layout) {
-    for (int i = 0; i < unit.size(); i++) {
-        const Cell *cell = unit[i];
-        if (cell->value != 0 && cell->value != layout[i])
+bool RuleMagic::isValidLayout(const Region<CellIdx> &region, const std::array<int, 9> &layout) {
+    const std::vector<CellIdx> &items = region.items();
+
+    for (int i = 0; i < items.size(); i++) {
+        const Cell &cell = board_->get_cell(items[i]);
+        if (cell.value != 0 && cell.value != layout[i])
             return false;
     }
 
     return true;
 }
 
-void RuleMagic::initPossibleLayouts(const std::vector<Cell *> &unit) {
+void RuleMagic::initPossibleLayouts(const Region<CellIdx> &region) {
     possible_layouts_.clear();
     for (const auto &layout: MAGIC_SQUARE_SOLUTIONS)
-        if (isValidLayout(unit, layout))
+        if (isValidLayout(region, layout))
             possible_layouts_.push_back(layout);
 }
 
-bool RuleMagic::applyCandidates(const std::vector<Cell *> &unit) {
+bool RuleMagic::applyCandidates(const Region<CellIdx> &region) {
     bool changed = false;
 
-    for (int i = 0; i < unit.size(); i++) {
-        Cell *cell = unit[i];
-        if (cell->is_solved())
+    const std::vector<CellIdx> &items = region.items();
+
+    for (int i = 0; i < items.size(); i++) {
+        Cell &cell = board_->get_cell(items[i]);
+        if (cell.is_solved())
             continue;
 
-        NumberSet allowed(cell->max_number);
+        NumberSet allowed(cell.max_number);
         for (const auto &layout: possible_layouts_)
             allowed.add(layout[i]);
 
         // remove candidates that are not in the layout
-        for (int j = 1; j <= cell->max_number; j++)
-            if (cell->candidates.test(j) && !allowed.test(j))
-                changed |= cell->remove_candidate(j);
+        for (int j = 1; j <= cell.max_number; j++)
+            if (cell.candidates.test(j) && !allowed.test(j))
+                changed |= cell.remove_candidate(j);
     }
 
     return changed;

@@ -9,13 +9,15 @@ namespace sudoku {
 bool RulePalindrome::number_changed(CellIdx pos) {
     bool changed = false;
 
-    for (auto &unit: palindrome_units_) {
-        const int unit_size = unit.size();
+    for (auto &path: palindrome_paths_) {
+        const std::vector<CellIdx> &items = path.items();
+
+        const int unit_size = items.size();
         const int half = unit_size / 2;
 
         for (int i = 0; i < half; ++i) {
-            Cell &a = *unit[i];
-            Cell &b = *unit[unit_size - i - 1];
+            Cell &a = board_->get_cell(items[i]);
+            Cell &b = board_->get_cell(items[unit_size - i - 1]);
 
             changed |= enforce_symmetry(a, b);
             changed |= enforce_symmetry(b, a);
@@ -27,13 +29,15 @@ bool RulePalindrome::number_changed(CellIdx pos) {
 
 bool RulePalindrome::candidates_changed() {
     bool changed = false;
-    for (auto &unit: palindrome_units_) {
-        const int unit_size = unit.size();
+    for (auto &path: palindrome_paths_) {
+        const std::vector<CellIdx> &items = path.items();
+
+        const int unit_size = items.size();
         const int half = unit_size / 2;
 
         for (int i = 0; i < half; ++i) {
-            Cell &a = *unit[i];
-            Cell &b = *unit[unit_size - i - 1];
+            Cell &a = board_->get_cell(items[i]);
+            Cell &b = board_->get_cell(items[unit_size - i - 1]);
 
             NumberSet intersection = a.candidates & b.candidates;
             changed |= a.only_allow_candidates(intersection);
@@ -45,13 +49,15 @@ bool RulePalindrome::candidates_changed() {
 }
 
 bool RulePalindrome::valid() {
-    for (auto &unit: palindrome_units_) {
-        const int unit_size = unit.size();
+    for (auto &path: palindrome_paths_) {
+        const std::vector<CellIdx> &items = path.items();
+
+        const int unit_size = items.size();
         const int half = unit_size / 2;
 
         for (int i = 0; i < half; ++i) {
-            Cell &a = *unit[i];
-            Cell &b = *unit[unit_size - i - 1];
+            Cell &a = board_->get_cell(items[i]);
+            Cell &b = board_->get_cell(items[unit_size - i - 1]);
             // if both cell values arent the same, then false
             if (a.is_solved() && b.is_solved() && a.value != b.value)
                 return false;
@@ -61,7 +67,7 @@ bool RulePalindrome::valid() {
 }
 
 void RulePalindrome::from_json(JSON &json) {
-    palindrome_units_.clear();
+    palindrome_paths_.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -73,15 +79,8 @@ void RulePalindrome::from_json(JSON &json) {
             continue;
 
         Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
-        if (path.size() > 1) { // only accept paths with more than 1 cell
-            // create a unit for each path
-            std::vector<Cell *> unit;
-            for (const auto &c: path.items()) {
-                Cell &cell = board_->get_cell(c);
-                unit.push_back(&cell);
-            }
-            palindrome_units_.push_back(unit);
-        }
+        if (path.size() > 1) // only accept paths with more than 1 cell
+            palindrome_paths_.emplace_back(path);
     }
 }
 

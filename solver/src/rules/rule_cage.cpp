@@ -15,8 +15,8 @@ bool RuleCage::number_changed(CellIdx pos) {
         if (!region.has(pos))
             continue;
 
-        for (auto &unit: cage_units_)
-            changed |= check_cage(unit);
+        for (auto &pair: cage_pair_)
+            changed |= check_cage(pair);
         break; // regions can't overlap
     }
 
@@ -25,21 +25,21 @@ bool RuleCage::number_changed(CellIdx pos) {
 
 bool RuleCage::candidates_changed() {
     bool changed = false;
-    for (auto &unit: cage_units_)
-        changed |= check_cage(unit);
+    for (auto &pair: cage_pair_)
+        changed |= check_cage(pair);
     return changed;
 }
 
 bool RuleCage::valid() {
-    for (auto &unit: cage_units_)
-        if (!check_group(unit))
+    for (auto &pair: cage_pair_)
+        if (!check_group(pair))
             return false;
     return true;
 }
 
 void RuleCage::from_json(JSON &json) {
     cages_.clear();
-    cage_units_.clear();
+    cage_pair_.clear();
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("NumberCanRepeat"))
         number_can_repeat_ = json["fields"]["NumberCanRepeat"].get<bool>();
@@ -56,25 +56,19 @@ void RuleCage::from_json(JSON &json) {
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0) {
             cages_.push_back(region);
-            // create a unit for each region
-            std::vector<Cell *> cells;
-            for (const auto &c: region.items()) {
-                Cell &cell = board_->get_cell(c);
-                cells.push_back(&cell);
-            }
 
-            CageUnit cage_unit;
-            cage_unit.cells = cells;
-            cage_unit.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
+            CagePair cage_pair;
+            cage_pair.region = region;
+            cage_pair.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
 
-            cage_units_.push_back(cage_unit);
+            cage_pair_.push_back(cage_pair);
         }
     }
 }
 
 // private member functions
 
-bool RuleCage::check_cage(CageUnit &unit) {
+bool RuleCage::check_cage(CagePair &pair) {
     const int board_size = board_->size();
     remaining_cells.clear();
 
@@ -82,28 +76,32 @@ bool RuleCage::check_cage(CageUnit &unit) {
     int sum = 0;
     NumberSet seen_values(board_size);
 
-    for (auto *cell: unit.cells) {
-        if (cell->is_solved()) {
-            sum += cell->value;
+    for (const auto& item: pair.region) {
+        Cell &cell = board_->get_cell(item);
+
+        if (cell.is_solved()) {
+            sum += cell.value;
             filled_counts++;
 
-            if (!number_can_repeat_ && seen_values.test(cell->value)) {
+            if (!number_can_repeat_ && seen_values.test(cell.value)) {
                 return false;
             }
 
             if (!number_can_repeat_)
-                seen_values.add(cell->value);
+                seen_values.add(cell.value);
         } else {
-            remaining_cells.push_back(cell);
+            remaining_cells.add(cell.pos);
         }
     }
 
     Number min_candidate = board_size;
     Number max_candidate = 1;
 
-    for (auto *cell: remaining_cells) {
+    for (const auto& item: remaining_cells) {
+        Cell &cell = board_->get_cell(item);
+
         for (Number d = 1; d <= board_size; ++d) {
-            if (!cell->candidates.test(d))
+            if (!cell.candidates.test(d))
                 continue;
 
             min_candidate = std::min(min_candidate, d);
@@ -111,45 +109,49 @@ bool RuleCage::check_cage(CageUnit &unit) {
         }
     }
 
-    auto [min, max] = getSoftBounds(remaining_cells.size(), unit.sum - sum, min_candidate, max_candidate, board_size);
+    auto [min, max] = getSoftBounds(remaining_cells.size(), pair.sum - sum, min_candidate, max_candidate, board_size);
 
     bool changed = false;
-    for (auto *cell: remaining_cells) {
+    for (const auto& item: remaining_cells) {
+        Cell& cell = board_->get_cell(item);
+
         for (Number d = 1; d <= board_size; ++d) {
-            if (!cell->candidates.test(d))
+            if (!cell.candidates.test(d))
                 continue;
 
             if (!number_can_repeat_ && seen_values.test(d))
-                changed |= cell->remove_candidate(d);
+                changed |= cell.remove_candidate(d);
             else if (d < min || d > max)
-                changed |= cell->remove_candidate(d);
+                changed |= cell.remove_candidate(d);
         }
     }
 
     return changed;
 }
 
-bool RuleCage::check_group(const CageUnit &unit) const {
+bool RuleCage::check_group(const CagePair &pair) const {
     int filled_counts = 0;
     int sum = 0;
     sudoku::NumberSet seen_values(board_->size());
 
-    for (const auto *cell: unit.cells) {
-        if (cell->is_solved()) {
-            sum += cell->value;
+    for (const auto& item: pair.region) {
+        Cell &cell = board_->get_cell(item);
+
+        if (cell.is_solved()) {
+            sum += cell.value;
             filled_counts++;
 
-            if (!number_can_repeat_ && seen_values.test(cell->value)) {
+            if (!number_can_repeat_ && seen_values.test(cell.value)) {
                 return false; // number already seen, repetition not allowed
             }
 
             if (!number_can_repeat_)
-                seen_values.add(cell->value);
+                seen_values.add(cell.value);
         }
     }
 
     // if all cells in the cage are filled, check if sum matches target
-    if (filled_counts == unit.cells.size() && sum != unit.sum)
+    if (filled_counts == pair.region.size() && sum != pair.sum)
         return false;
 
     return true;

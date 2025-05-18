@@ -9,3 +9,4 @@
 #include "rule_magic.h"
 #include "rule_palindrome.h"
 #include "rule_thermo.h"
+#include "rule_parity.h"

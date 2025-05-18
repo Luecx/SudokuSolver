@@ -17,8 +17,8 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<std::vector<Cell *>> palindrome_units_;
+    std::vector<Region<CellIdx>> palindrome_paths_;
 
-    bool enforce_symmetry(Cell& a, Cell& b);
+    bool enforce_symmetry(Cell &a, Cell &b);
 };
 } // namespace sudoku

@@ -1,5 +1,4 @@
 #include <set>
-#include <unordered_set>
 #include <utility>
 
 #include "../board/board.h"
@@ -78,7 +77,6 @@ bool RuleClone::valid() {
 
 void RuleClone::from_json(JSON &json) {
     clone_regions_.clear();
-    clone_units_.clear();
     clone_groups_.clear();
 
     if (!json["rules"].is_array())
@@ -91,16 +89,8 @@ void RuleClone::from_json(JSON &json) {
             continue;
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
-        if (region.size() > 0) {
+        if (region.size() > 0)
             clone_regions_.push_back(region);
-            // create a unit for each region
-            std::vector<Cell *> cells;
-            for (const auto &c: region.items()) {
-                Cell &cell = board_->get_cell(c);
-                cells.push_back(&cell);
-            }
-            clone_units_.push_back(cells);
-        }
     }
 
     initCloneGroups();
