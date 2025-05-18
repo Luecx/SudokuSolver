@@ -1,6 +1,6 @@
 #include "rule_irregular.h"
-#include "../board/board.h"
 #include "rule_standard.h"
+#include "../board/board.h"
 
 
 namespace sudoku {

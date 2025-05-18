@@ -1,4 +1,3 @@
-#include <unordered_set>
 #include <utility>
 
 #include "../board/board.h"
@@ -40,6 +39,7 @@ bool RuleCage::valid() {
 
 void RuleCage::from_json(JSON &json) {
     cages_.clear();
+    cage_units_.clear();
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("NumberCanRepeat"))
         number_can_repeat_ = json["fields"]["NumberCanRepeat"].get<bool>();
@@ -74,22 +74,25 @@ void RuleCage::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleCage::check_cage(CageUnit &unit) const {
+bool RuleCage::check_cage(CageUnit &unit) {
     const int board_size = board_->size();
-    std::vector<Cell *> remaining_cells;
+    remaining_cells.clear();
 
     int filled_counts = 0;
     int sum = 0;
-    std::unordered_set<int> seen_values;
+    NumberSet seen_values(board_size);
 
     for (auto *cell: unit.cells) {
         if (cell->is_solved()) {
             sum += cell->value;
             filled_counts++;
 
-            if (!number_can_repeat_ && !seen_values.insert(cell->value).second) {
+            if (!number_can_repeat_ && seen_values.test(cell->value)) {
                 return false;
             }
+
+            if (!number_can_repeat_)
+                seen_values.add(cell->value);
         } else {
             remaining_cells.push_back(cell);
         }
@@ -116,7 +119,7 @@ bool RuleCage::check_cage(CageUnit &unit) const {
             if (!cell->candidates.test(d))
                 continue;
 
-            if (!number_can_repeat_ && seen_values.count(d))
+            if (!number_can_repeat_ && seen_values.test(d))
                 changed |= cell->remove_candidate(d);
             else if (d < min || d > max)
                 changed |= cell->remove_candidate(d);
@@ -129,18 +132,23 @@ bool RuleCage::check_cage(CageUnit &unit) const {
 bool RuleCage::check_group(const CageUnit &unit) const {
     int filled_counts = 0;
     int sum = 0;
-    std::unordered_set<int> seen_values;
+    sudoku::NumberSet seen_values(board_->size());
 
-    for (const auto *cell: unit.cells)
+    for (const auto *cell: unit.cells) {
         if (cell->is_solved()) {
             sum += cell->value;
             filled_counts++;
 
-            if (!number_can_repeat_ && !seen_values.insert(cell->value).second) {
-                return false;
+            if (!number_can_repeat_ && seen_values.test(cell->value)) {
+                return false; // number already seen, repetition not allowed
             }
-        }
 
+            if (!number_can_repeat_)
+                seen_values.add(cell->value);
+        }
+    }
+
+    // if all cells in the cage are filled, check if sum matches target
     if (filled_counts == unit.cells.size() && sum != unit.sum)
         return false;
 

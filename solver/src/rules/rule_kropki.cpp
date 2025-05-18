@@ -1,7 +1,6 @@
 #include "rule_kropki.h"
 #include <array>
 #include <cmath>
-#include <unordered_set>
 #include "../board/board.h"
 
 
