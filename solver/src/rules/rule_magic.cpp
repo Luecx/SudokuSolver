@@ -85,7 +85,6 @@ void RuleMagic::from_json(JSON &json) {
                 unit.push_back(&cell);
             }
             magic_units_.push_back(unit);
-            std::cout << "Magic region: " << region << std::endl;
         }
     }
 }

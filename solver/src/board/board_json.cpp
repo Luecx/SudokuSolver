@@ -37,6 +37,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleIrregular>(this);
             } else if (type == "Magic Square") {
                 handler = std::make_shared<RuleMagic>(this);
+            } else if (type == "Palindrome") {
+                handler = std::make_shared<RulePalindrome>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }
