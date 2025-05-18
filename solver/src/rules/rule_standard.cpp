@@ -81,9 +81,9 @@ bool is_group_valid(const std::vector<Cell *> unit) {
             if (seen.test(c->value))
                 return false;
             seen.add(c->value);
-            combined = combined | NumberSet(c->max_number, c->value);
+            combined |= NumberSet(c->max_number, c->value);
         } else {
-            combined = combined | c->get_candidates();
+            combined |= c->get_candidates();
         }
     }
 

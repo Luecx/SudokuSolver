@@ -1,0 +1,122 @@
+#include "rule_thermo.h"
+#include "../board/board.h"
+
+
+namespace sudoku {
+
+bool RuleThermo::number_changed(CellIdx pos) {
+    bool changed = false;
+    Cell &cell = board_->get_cell(pos);
+
+    for (const auto &path: thermo_paths_) {
+        const int idx = path.find_index(pos);
+        if (idx == -1)
+            continue;
+
+        const std::vector<CellIdx> &items = path.items();
+
+        int forward = idx;
+        while (++forward < path.size()) {
+            Cell &cell_ = board_->get_cell(items[forward]);
+            if (cell_.is_solved())
+                continue;
+
+            NumberSet mask = NumberSet::greaterThan(cell.value, cell_.max_number);
+            auto before = cell_.candidates;
+            cell_.candidates &= mask;
+            if (cell_.candidates != before)
+                changed = true;
+        }
+
+        int backward = idx;
+        while (--backward >= 0) {
+            Cell &cell_ = board_->get_cell(items[backward]);
+            if (cell_.is_solved())
+                continue;
+
+            NumberSet mask = NumberSet::lessThan(cell.value, cell_.max_number);
+            auto before = cell_.candidates;
+            cell_.candidates &= mask;
+            if (cell_.candidates != before)
+                changed = true;
+        }
+    }
+
+    return changed;
+}
+
+bool RuleThermo::candidates_changed() {
+    bool changed = false;
+
+    for (const auto &unit: thermo_units_) {
+        int prev_value = 0;
+
+        for (size_t i = 0; i < unit.size(); ++i) {
+            Cell &cell = *unit[i];
+
+            if (i == 0) {
+                // nothing to do for bulb
+                prev_value = cell.is_solved() ? cell.value : 0;
+                continue;
+            }
+
+            Cell &prev_cell = *unit[i - 1];
+            if (prev_cell.is_solved()) {
+                prev_value = prev_cell.value;
+            } else {
+                prev_value = prev_cell.candidates.lowest(); // fallback to lowest candidate
+            }
+
+            auto mask = NumberSet::greaterThan(prev_value, cell.max_number);
+            auto before = cell.candidates;
+            cell.candidates &= mask;
+            if (cell.candidates != before)
+                changed = true;
+        }
+    }
+
+    return changed;
+}
+
+bool RuleThermo::valid() {
+    for (const auto &unit: thermo_units_) {
+        for (int i = 1; i < unit.size(); ++i) {
+            Cell &a = *unit[i - 1];
+            Cell &b = *unit[i];
+
+            if (a.is_solved() && b.is_solved() && a.value >= b.value)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+void RuleThermo::from_json(JSON &json) {
+    thermo_paths_.clear();
+    thermo_units_.clear();
+
+    if (!json["rules"].is_array())
+        return;
+
+    for (const auto &rule: json["rules"].get<JSON::array>()) {
+        if (!rule["fields"].is_object())
+            continue;
+        if (!rule["fields"].get<JSON::object>().count("path"))
+            continue;
+
+        Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
+        if (path.size() > 1) { // only accept paths with more than 1 cell
+            thermo_paths_.push_back(path);
+            // create a unit for each path
+            std::vector<Cell *> unit;
+            for (const auto &c: path.items()) {
+                Cell &cell = board_->get_cell(c);
+                unit.push_back(&cell);
+            }
+            thermo_units_.push_back(unit);
+        }
+    }
+}
+
+} // namespace sudoku

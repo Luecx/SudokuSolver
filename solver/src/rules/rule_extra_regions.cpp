@@ -78,9 +78,9 @@ bool RuleExtraRegions::check_group(const std::vector<Cell *>& unit) {
             if (seen.test(c->value))
                 return false;
             seen.add(c->value);
-            combined = combined | NumberSet(c->max_number, c->value);
+            combined |= NumberSet(c->max_number, c->value);
         } else {
-            combined = combined | c->get_candidates();
+            combined |= c->get_candidates();
         }
     }
 
