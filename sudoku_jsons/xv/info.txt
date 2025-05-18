@@ -1,0 +1,6 @@
+xv + standard + all_symbols enabled
+
+all have 1 solution
+
+xv2 might have more
+
