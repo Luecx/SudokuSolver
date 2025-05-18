@@ -10,3 +10,4 @@
 #include "rule_palindrome.h"
 #include "rule_thermo.h"
 #include "rule_parity.h"
+#include "rule_diagonal.h"

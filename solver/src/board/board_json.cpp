@@ -43,7 +43,9 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleThermo>(this);
             } else if (type == "Parity") {
                 handler = std::make_shared<RuleParity>(this);
-            } else {
+            } else if (type == "Diagonal") {
+                handler = std::make_shared<RuleDiagonal>(this);
+            }else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }
 
