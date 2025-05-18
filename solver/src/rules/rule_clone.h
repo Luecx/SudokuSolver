@@ -22,6 +22,6 @@ private:
     std::vector<std::vector<int>> clone_groups_;
 
     bool isSameShape(const Region<CellIdx> &region1, const Region<CellIdx> &region2);
-    std::vector<std::vector<int>> findCloneGroups();
+    void initCloneGroups();
 };
 } // namespace sudoku

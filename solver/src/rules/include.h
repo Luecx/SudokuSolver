@@ -6,3 +6,4 @@
 #include "rule_cage.h"
 #include "rule_clone.h"
 #include "rule_irregular.h"
+#include "rule_magic.h"

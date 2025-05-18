@@ -3,9 +3,7 @@
 
 namespace sudoku {
 
-bool RuleXV::number_changed(CellIdx pos) {
-    return enforce();
-}
+bool RuleXV::number_changed(CellIdx pos) { return enforce(); }
 
 bool RuleXV::candidates_changed() { return enforce(); }
 

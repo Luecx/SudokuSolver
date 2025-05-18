@@ -3,9 +3,8 @@
 
 
 namespace sudoku {
-bool RuleChevron::number_changed(CellIdx pos) {
-    return enforce();
-}
+
+bool RuleChevron::number_changed(CellIdx pos) { return enforce(); }
 
 bool RuleChevron::candidates_changed() { return enforce(); }
 

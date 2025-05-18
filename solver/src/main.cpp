@@ -14,7 +14,7 @@
 
 using namespace sudoku;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     std::string txt;
     {
         std::ifstream file((std::string(argv[1])));
@@ -80,9 +80,9 @@ const char *solve(const char *json, int max_solutions, int max_nodes) {
 
         out << stats; // Pretty-prints using operator<<
 
-        //return strdup(out.str().c_str());
+        return strdup(out.str().c_str());
     } catch (const std::exception &e) {
-        //return strdup(std::string("ERROR: " + std::string(e.what()) + "\n").c_str());
+        return strdup(std::string("ERROR: " + std::string(e.what()) + "\n").c_str());
     }
 }
 
