@@ -4,6 +4,8 @@
 #include "../number_set.h"
 #include "_rule_handler.h"
 
+#include <array>
+
 namespace sudoku {
 
 class RuleMagic : public RuleHandler {
