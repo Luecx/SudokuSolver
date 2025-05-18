@@ -1,6 +1,6 @@
 #include "rule_extra_regions.h"
-#include "../board/board.h"
 #include "rule_standard.h"
+#include "../board/board.h"
 
 
 namespace sudoku {
@@ -26,13 +26,13 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
 
 bool RuleExtraRegions::candidates_changed() {
     bool changed = false;
-    for (auto &unit: extra_region_units_)
+    for (auto &unit: extra_units_)
         changed |= hidden_singles(board_, unit);
     return changed;
 }
 
 bool RuleExtraRegions::valid() {
-    for (auto &unit: extra_region_units_)
+    for (auto &unit: extra_units_)
         if (!check_group(unit))
             return false;
     return true;
@@ -59,7 +59,7 @@ void RuleExtraRegions::from_json(JSON &json) {
                 Cell &cell = board_->get_cell(c);
                 unit.push_back(&cell);
             }
-            extra_region_units_.push_back(unit);
+            extra_units_.push_back(unit);
         }
     }
 }

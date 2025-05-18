@@ -5,9 +5,9 @@
 #include "_rule_handler.h"
 
 namespace sudoku {
-class RuleExtraRegions : public RuleHandler {
+class RuleIrregular : public RuleHandler {
 public:
-    explicit RuleExtraRegions(Board *board) : RuleHandler(board) {}
+    explicit RuleIrregular(Board *board) : RuleHandler(board) {}
 
     bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;
@@ -16,9 +16,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> extra_regions_;
-    std::vector<std::vector<Cell *>> extra_units_;
-
-    bool check_group(const std::vector<Cell *> unit);
+    std::vector<Region<CellIdx>> irregular_regions_;
+    std::vector<std::vector<Cell *>> irregular_units_;
 };
 } // namespace sudoku

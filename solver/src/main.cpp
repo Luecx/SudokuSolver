@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
         std::cout << board << std::endl;
 
         SolverStats stats;
-        auto sol = board.solve(10, 16384, &stats);
+        auto sol = board.solve(17, 16384, &stats);
         std::cout << stats << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "Parse error: " << e.what() << "\n";
