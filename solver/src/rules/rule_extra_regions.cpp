@@ -66,7 +66,7 @@ void RuleExtraRegions::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleExtraRegions::check_group(const std::vector<Cell *> unit) {
+bool RuleExtraRegions::check_group(const std::vector<Cell *>& unit) {
     const int board_size = board_->size();
 
     NumberSet seen(board_size);

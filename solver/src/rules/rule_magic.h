@@ -19,5 +19,13 @@ public:
 private:
     std::vector<Region<CellIdx>> magic_regions_;
     std::vector<std::vector<Cell *>> magic_units_;
+    std::vector<std::array<int, 9>> possible_layouts_;
+
+    bool is3x3Square(const Region<CellIdx> &region);
+
+    bool isValidLayout(const std::vector<Cell *>& unit, const std::array<int, 9>& layout);
+    void initPossibleLayouts(const std::vector<Cell *> &unit);
+
+    bool applyCandidates(const std::vector<Cell *> &unit);
 };
 } // namespace sudoku

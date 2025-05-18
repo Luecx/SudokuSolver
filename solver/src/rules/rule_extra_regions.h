@@ -19,6 +19,6 @@ private:
     std::vector<Region<CellIdx>> extra_regions_;
     std::vector<std::vector<Cell *>> extra_units_;
 
-    bool check_group(const std::vector<Cell *> unit);
+    bool check_group(const std::vector<Cell *>& unit);
 };
 } // namespace sudoku
