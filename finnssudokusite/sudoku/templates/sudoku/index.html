@@ -68,7 +68,7 @@
 	</div>
 	<div class="row w-100 justify-content-center mb-5">
 		<div class="col-auto d-flex justify-content-center">
-			<a href="{% url 'puzzles' %}" class="link link--io my-text-btn">{% trans "CHOOSE A PUZZLE TO PLAY" %}</a>
+			<a href="{% url 'game_selection' %}" class="link link--io my-text-btn">{% trans "CHOOSE A PUZZLE TO PLAY" %}</a>
 			{% if not user.is_authenticated %}
 			<span class="mx-3">OR</span>
 			<a href="{% url 'login' %}" class="link link--io my-text-btn">{% trans "LOGIN" %}</a>

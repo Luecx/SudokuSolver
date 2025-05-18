@@ -18,16 +18,16 @@
 	box-sizing: border-box;
 }
 
-.my_green 		{color: white; background-color: green;}
-.my_green:hover {color: white;background-color: #005400;}
-.my_gold 		{color: black; background-color: gold;}
-.my_gold:hover 	{color: white;background-color: goldenrod;}
-.my_red 		{color: white; background-color: firebrick;}
-.my_red:hover 	{color: white;background-color: darkred;}
-.my_violet 		{color: white; background-color: darkviolet;}
-.my_violet:hover	{color: white;background-color: #540090;}
-.my_black 		{color: white; background-color: black;}
-.my_black:hover {color: white;background-color: dimgray;}
+.my_green   { color: black; background-color: rgba(0, 128, 0, 0.3); }
+.my_gold    { color: black; background-color: rgba(255, 215, 0, 0.3); }
+.my_red     { color: black; background-color: rgba(255, 0, 0, 0.3); }
+.my_violet  { color: black; background-color: rgba(238, 130, 238, 0.3); }
+.my_black   { color: black; background-color: rgba(0, 0, 0, 0.3); }
+.my_green:hover {color: white;background-color: green;}
+.my_gold:hover 	{color: black;background-color: gold;}
+.my_red:hover 	{color: black;background-color: red;}
+.my_violet:hover{color: black;background-color: violet;}
+.my_black:hover {color: white;background-color: black;}
 
 .grid-container {
 	display: grid;

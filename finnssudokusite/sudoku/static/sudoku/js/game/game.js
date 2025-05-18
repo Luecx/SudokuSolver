@@ -47,11 +47,26 @@ export class Game {
         };
 
         document.getElementById("theme-menu")?.addEventListener("click", (e) => {
-            const id = e.target.id;
-            if (!backgrounds[id]) return;
-            document.body.style.backgroundImage = backgrounds[id];
+            const link = e.target.closest("a");
+            if (!link) return;
 
-            document.querySelectorAll(".right-pane-middle-content").forEach(bg => bg.classList.toggle("my_box_style", id === "classic"));
+            const id = link.id;
+            if (!backgrounds.hasOwnProperty(id)) return;
+
+            // Alle Theme-Check-Icons unsichtbar machen
+            document.querySelectorAll('#theme-menu .bi-check-lg').forEach(icon => {
+                icon.classList.add('invisible');
+            });
+
+            // Icon beim aktuellen Menüpunkt sichtbar machen
+            const checkIcon = link.querySelector('.bi-check-lg');
+            if (checkIcon) checkIcon.classList.remove('invisible');
+
+            // Restliche Logik
+            document.body.style.backgroundImage = backgrounds[id];
+            document.querySelectorAll(".right-pane-middle-content").forEach(bg =>
+                bg.classList.toggle("my_box_style", id === "classic")
+            );
             document.querySelectorAll(".block-part").forEach(part => {
                 const type = part.getAttribute("data-block");
                 part.classList.toggle("block-top", id !== "classic" && type === "top");

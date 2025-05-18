@@ -3,28 +3,63 @@ body {
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	min-height: 100vh;
 }
-
-.timer {
-	font-family: "JetBrains Mono", monospace;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
 }
 /* macht die Buttons Quadratisch */
-.btn-square {
+.btn-square,
+.btn-number{
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
 	min-height: 0;
 	aspect-ratio: 1 / 1;
-	font-size: 1.8rem;
 }
 
-@media (min-aspect-ratio: 1/1) {   /* Landscape */
-	.grid-container {
+.left-pane {
+	position: relative; /* Wichtig für absolute Positionierung der Kinder */
+}
+
+.timer-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 2rem;
+	text-align: center;
+}
+
+.timer-container .timer {
+	pointer-events: auto;
+	text-align: center;
+	font-family: "JetBrains Mono", monospace;
+	font-weight: bold;
+	color: lightslategray;
+	justify-self: center;
+}
+.info-container {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: start;
+	justify-content: center;
+}
+.info-container .content_name,
+.info-container .content_creator {color: lightslategray;}
+.info-container .btn-link {color: lightslategray; text-decoration: none;}
+.info-container .btn-link:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+
+@media (min-aspect-ratio: 1/1) {
+	/* Landscape */
+	.grid-container { /* Landscape */
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
@@ -34,7 +69,7 @@ body {
 		max-width: 100vw; /* optional, falls nötig */
 	}
 	
-	.left-pane {
+	.left-pane { /* Landscape */
 		width: min(100%, calc(100dvh - 60px - 2rem));
 		max-width: 100%;
 		max-height: 100%;
@@ -44,7 +79,7 @@ body {
 		justify-content: center;
 	}
 	
-	.right-pane {
+	.right-pane { /* Landscape */
 		width: 300px;
 		min-width: 300px;
 		max-width: 300px;
@@ -55,213 +90,179 @@ body {
 		overflow: hidden;
 	}
 	
-	.button-grid {
-		flex: 1;
-		height: calc(501px - 5.4rem); /* 501px Gesamt-Höhe minus Timer */
-		width: 100%;
+	.grid-a {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: repeat(6, 1fr);
-		gap: 0.25rem; /* Möglichst klein für exaktes Seitenverhältnis */
-		box-sizing: border-box;
+		grid-template-rows: auto repeat(4, 1fr) auto;
+		gap: 0.5rem;
+		width: 100%;
 		grid-template-areas:
-			"gear rules plus minus"
-			"undo redo clear eye"
-			"seven eight nine ."
-			"four five six ."
-			"one two three ."
-			"number top center color";
+		"undo redo rules clear"
+		"content content content content"
+		"content content content content"
+		"content content content content"
+		"content content content content"
+		"number top center color";
 	}
 	
-	.timer {
-		height: 3rem;
-		font-size: 2rem;
-		margin-bottom: 0.5rem;
-		background-color: #7FBCFF;
-		border: #0d6efd solid 1px;
+	
+	.grid-b {  /* Gilt immer */
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-rows: repeat(3, minmax(0, 1fr));
+		gap: 0.5rem;
 		width: 100%;
-		text-align: center;
-		min-height: 3rem;
-		max-height: 3rem;
-		box-sizing: border-box;
-	}
-	
-	.right-pane-middle-content {
-		flex: 1;
-		min-width: 0;
-		overflow: auto;
-		padding: 1rem;
-		display: flex;
-		flex-direction: column; /* Korrektur: row → column */
-		box-sizing: border-box;
-	}
-	
-	.btn-square {
-		width: 100%;
-	}
-}
-
-@media (max-aspect-ratio: 1/1) {  /* Portrait */
-	.grid-container {
-		display: flex;              /* <- von grid auf flex ändern */
-		flex-direction: column;
-		align-items: center;        /* <- zentriert die Panes */
-		gap: 3px;
-	}
-	
-	.left-pane {
-		aspect-ratio: 1 / 1;
-		width: min(100vw - 2rem, 100dvh - 60px - 2rem - 200px);
 		height: auto;
-		max-width: 100%;
-		max-height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		
-	}
-	.right-pane {
-		width: auto;
-		height: 200px;
-		max-width: 420px;
-		overflow: hidden;
-		display: flex;
-		flex-direction: row;
-		min-height: 0;
-	}
-	.button-grid {
-		flex: 1;
-		display: grid;
-		grid-template-rows: repeat(3, 1fr);
-		grid-auto-columns: 1fr;
-		gap: 0.5rem;
-		height: calc(100% - 2.6rem);
-		min-width: 0;
-		box-sizing: border-box;
-		max-width: 420px;
 		grid-template-areas:
-			"seven eight nine plus minus gear rules"
-			"four five six eye undo redo clear"
-			"one two three number top center color";
+    		"one two three"
+			"four five six"
+			"seven eight nine";
 	}
-	
-	.right-pane-middle-content {
-		flex: 1;
-		min-height: 0;  /* ← erlaubt dem Kind-Element Scrollen */
-		overflow: auto; /* ← falls nötig, lieber Scroll statt Abschneiden */
-		padding: 0 1rem 1rem;
+	.grid-b-area {
+		grid-area: content;
 		display: flex;
-		flex-direction: column;
-		box-sizing: border-box;
-	}
-	
-	.no-block-in-Portrait-Mode { display: none;}
-	
-	.timer {
-		height: 1rem;
-		font-size: 1rem;
-		margin: 0.2rem 0 0.4rem 0;
-	}
-	.btn-square {
+		align-items: stretch;
+		justify-content: stretch;
 		height: 100%;
+		width: 100%;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
 	}
-}
-
-/*
-@media (min-aspect-ratio: 2/1) { !* Sonderfall-Styles hier *!
-	.grid-container {
-		display: flex;
-		flex-direction: row;
-		align-items: flex-start;
-		justify-content: center;    !* Zentriert die Panes horizontal *!
-		gap: 1rem;
-		width: 100vw;               !* Optional: nimmt die volle Breite *!
-		box-sizing: border-box;
-	}
-	
-	.left-pane {
-		width: min(100%, calc(100dvh - 60px - 2rem));
-		max-width: 100%;
-		max-height: 100%;
-		aspect-ratio: 1 / 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	
-	.right-pane {
-		width: auto;                !* <- auto statt 100% *!
-		height: 246px;
-		max-width: 420px;           !* <- maximal so breit wie nötig (anpassen!) *!
-		overflow: hidden;
-		display: flex;
-		flex-direction: row;
-		min-height: 0;
-	}
-	
-	.button-grid {
-		flex: 1;
-		display: grid;
-		grid-template-rows: repeat(3, 1fr);
-		grid-auto-columns: 1fr;
-		gap: 0.5rem;
-		height: calc(100% - 2.6rem);
-		min-width: 0;
-		box-sizing: border-box;
-		max-width: 420px;
-		grid-template-areas:
-			"seven eight nine plus minus gear rules"
-			"four five six eye undo redo clear"
-			"one two three number top center color";
-	}
-	
-	.timer {
-		height: 3rem;
-		font-size: 2rem;
-		margin-bottom: 0.5rem;
-		background-color: #7FBCFF;
-		border: #0d6efd solid 1px;
-		width: 200px;
-		text-align: center;
-		min-height: 3rem;
-		max-height: 3rem;
-		box-sizing: border-box;
-	}
-	
-	.right-pane-middle-content {
+	.right-pane-middle-content { /* Landscape */
 		flex: 1;
 		min-width: 0;
 		overflow: auto;
 		padding: 1rem;
 		display: flex;
-		flex-direction: column; !* Korrektur: row → column *!
+		flex-direction: column;
 		box-sizing: border-box;
 	}
 	
-	.btn-square {
+	.btn-square { /* Landscape */
 		width: 100%;
 	}
+	.grid-a .btn-square {font-size: 1.8rem;}
+	.grid-b .btn-square {font-size: 2rem;}
+	
+	.only_portrait {display: none;}
+	.only_landscape {display: block;}
+	.timer-container {font-size: 1rem;}
+	.info-container {font-size: 1rem; margin-bottom: 1rem;}
 }
-*/
 
-.my_board_box {
-	background: white;
-	border: 1px solid #ccc;
-	border-radius: 0.25rem;
-	box-sizing: border-box;
+@media (max-aspect-ratio: 1/1) { /* Portrait */
+	.grid-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: .3rem;
+		box-sizing: border-box;
+		padding: .5rem .1rem .1rem .1rem;
+		height: 100%;
+		overflow: hidden;
+	}
+	
+	.left-pane {
+		width: 100%;
+		aspect-ratio: 1 / 1;
+		max-width: calc(100vh - 60px - 2rem - 200px); /* bleibt im Viewport */
+		max-height: calc(100vw - 2rem); /* kein Überlauf bei sehr schmalen Geräten */
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+	}
+	.right-pane {
+		width: calc(100vw - 2rem);
+		max-width: calc(100vh - 60px - 2rem - 200px);
+		aspect-ratio: 3 / 2;
+		overflow-y: auto;
+		display: flex;
+		box-sizing: border-box;
+		flex-shrink: 1;
+		background-color: cornflowerblue;
+	}
+	
+	:root {
+		--g: 0.5rem;
+		/* Max-A-Fläche auf Basis Viewport: clamp(min, ideal, max) */
+		--a: clamp(40px, calc((100vw - 2rem - 5 * var(--g)) / 6), 80px);
+		--b: calc((4 * var(--a) + var(--g)) / 3);
+	}
+	
+	.mein-grid {
+		padding: 1rem;
+		display: grid;
+		width: 100%;
+		box-sizing: border-box;
+		grid-template-columns:
+        var(--a) var(--a)
+        var(--g)
+        var(--b) var(--b) var(--b);
+		grid-template-rows:
+        var(--a) var(--a) var(--a) var(--a)
+        var(--g) var(--g) var(--g);
+		gap: 0;
+		background: mediumseagreen;
+		max-width: 100%;
+	}
+	
+	.feld {
+		aspect-ratio: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		border-radius: 0.3rem;
+		font-size: 1rem;
+	}
+	
+	.a {
+		background: #b5d0ff;
+		border: 2px solid #3574d4;
+	}
+	
+	.b {
+		background: #ffd6b5;
+		border: 2px solid #ff9800;
+	}
+	
+	/* A-Felder: 2×4 */
+	.a1 { grid-column: 1; grid-row: 1; }
+	.a2 { grid-column: 2; grid-row: 1; }
+	.a3 { grid-column: 1; grid-row: 2; }
+	.a4 { grid-column: 2; grid-row: 2; }
+	.a5 { grid-column: 1; grid-row: 3; }
+	.a6 { grid-column: 2; grid-row: 3; }
+	.a7 { grid-column: 1; grid-row: 4; }
+	.a8 { grid-column: 2; grid-row: 4; }
+	
+	/* B-Block als 3x3 Grid */
+	.b-block {
+		grid-column: 4 / span 3;
+		grid-row: 1 / span 4;
+		display: grid;
+		grid-template-columns: repeat(3, var(--b));
+		grid-template-rows: repeat(3, var(--b));
+		gap: var(--g);
+		justify-content: start;
+		align-content: start;
+	}
+	
+	.only_portrait { display: block; }
+	.only_landscape { display: none; }
+	
+	.timer-container { top: -1.5rem; }
+	.dropdown .btn-link {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
 }
 
-.my_white_box {
-	background-color: white;
-	border: 1px solid #dee2e6;   /* Bootstrap border color */
-	border-radius: 0.25rem;      /* Bootstrap border radius */
-	width: 100%;                 /* Volle Breite */
-	overflow-y: auto;
-}
 
 
 /* === Grid Areas === */
-#btn-gear { grid-area: gear; }
 
 #btn-rules { grid-area: rules; }
 
@@ -297,13 +298,6 @@ body {
 
 #btn-centerMode { grid-area: center; }
 
-#btn-minus { grid-area: minus; }
-
-#btn-plus { grid-area: plus; }
-
-#btn-toggleEye { grid-area: eye; }
-
-#btn-zero { grid-area: zero; }
 
 /* Erzeugt weiße button */
 .btn-custom-white {
@@ -320,7 +314,7 @@ body {
 	background-color: #e7f1ff;
 	border-color: #86b7fe;
 	outline: 0;
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+	box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
 }
 
 /* Standardfarben mit 0.5 Alpha */
@@ -368,72 +362,4 @@ body {
 .btn-selected-8 { background-color: rgba(240, 50, 230, 1); }
 
 .btn-color-9:hover,
-.btn-selected-9 { background-color: rgba(188, 246, 12, 1); }
-
-/* === Bootstrap-like Hover / Focus for All Buttons === */
-.btn-square:hover,
-.btn-square:focus {
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-	border-color: #86b7fe;
-}
-
-.btn-hovered {
-	background-color: #e7f1ff !important;
-	border-color: #86b7fe !important;
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.btn-selected {
-	border-color: #86b7fe !important;
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* === Suppress persistent outline glow after focus === */
-.btn-square:focus:not(:focus-visible) {
-	outline: none;
-	box-shadow: none;
-}
-
-/* === Layout Details === */
-
-.block-top {
-	background: url("../img/game/block-top.png") top center no-repeat;
-	background-size: 100% auto;
-	height: 40px;
-	min-height: 30px;
-	width: 100%;
-}
-
-.block-middle {
-	background: url("../img/game/block-content.png") top center repeat-y;
-	background-size: 100% auto;
-	width: 100%;
-}
-
-.block-bottom {
-	background: url("../img/game/block-bottom.png") bottom center no-repeat;
-	background-size: 100% auto;
-	height: 20px;
-	min-height: 20px;
-	width: 100%;
-}
-
-.dropdown-submenu > .dropdown-menu {
-	display: none;
-	position: absolute;
-	left: 100%;
-	top: 0;
-	margin-top: 0;
-}
-
-.dropdown-submenu:hover > .dropdown-menu,
-.dropdown-submenu:focus-within > .dropdown-menu {
-	display: block;
-}
-
-.rule-description {
-	margin-bottom: 1em;
-	padding: 0.5em;
-	border-left: 3px solid #aaa;
-	background: #f8f9fa;
-}
+.btn-selected-
