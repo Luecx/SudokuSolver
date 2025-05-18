@@ -188,7 +188,6 @@ bool RuleKropki::enforce_missing_dots() {
         return false;
 
     bool changed = false;
-    const int N = board_->size();
 
     // process cells that have no dot between them
     for (const auto &edge: missing_dot_edges_.items()) {

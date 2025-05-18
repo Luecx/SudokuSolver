@@ -5,3 +5,4 @@
 #include "rule_extra_regions.h"
 #include "rule_cage.h"
 #include "rule_clone.h"
+#include "rule_irregular.h"

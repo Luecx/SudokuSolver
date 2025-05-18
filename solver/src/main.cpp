@@ -17,7 +17,7 @@ using namespace sudoku;
 int main() {
     std::string txt;
     {
-        std::ifstream file("C:/Users/semio/Downloads/sudoku_jsons/clones/clone-1.json");
+        std::ifstream file("C:/Users/semio/SudokuSolver/sudoku_jsons/irregular/irregular-1.json");
         if (!file.is_open()) {
             std::cerr << "Failed to open json" << std::endl;
             return 1;
@@ -35,7 +35,7 @@ int main() {
         std::cout << board << std::endl;
 
         SolverStats stats;
-        auto sol = board.solve(10, 16384, &stats);
+        auto sol = board.solve(17, 16384, &stats);
         std::cout << stats << std::endl;
     } catch (const std::exception &e) {
         std::cerr << "Parse error: " << e.what() << "\n";

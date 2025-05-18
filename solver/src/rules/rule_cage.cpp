@@ -127,8 +127,6 @@ bool RuleCage::check_cage(CageUnit &unit) const {
 }
 
 bool RuleCage::check_group(const CageUnit &unit) const {
-    const int board_size = board_->size();
-
     int filled_counts = 0;
     int sum = 0;
     std::unordered_set<int> seen_values;

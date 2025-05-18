@@ -69,6 +69,28 @@ bool pointing(Board *board_) {
     return changed;
 }
 
+bool is_group_valid(const std::vector<Cell *> unit) {
+    const int unit_size = unit.size();
+
+    NumberSet seen(unit_size);
+    seen.clear();
+    NumberSet combined(unit_size);
+
+    for (const auto &c: unit) {
+        if (c->is_solved()) {
+            if (seen.test(c->value))
+                return false;
+            seen.add(c->value);
+            combined = combined | NumberSet(c->max_number, c->value);
+        } else {
+            combined = combined | c->get_candidates();
+        }
+    }
+
+    return combined == NumberSet::full(unit_size);
+}
+
+
 // RuleStandard methods
 
 bool RuleStandard::number_changed(CellIdx pos) {
@@ -97,15 +119,15 @@ bool RuleStandard::candidates_changed() {
     for (int i = 0; i < board_size; i++) {
         auto row = board_->get_row(i);
         auto col = board_->get_col(i);
-        changed = hidden_singles(board_, row) || changed;
-        changed = hidden_singles(board_, col) || changed;
+        changed |= hidden_singles(board_, row);
+        changed |= hidden_singles(board_, col);
     }
 
     const int block_size = board_->block_size();
     for (int br = 0; br < board_size; br += block_size)
         for (int bc = 0; bc < board_size; bc += block_size) {
             auto block = board_->get_block(br, bc);
-            changed = hidden_singles(board_, block) || changed;
+            changed |= hidden_singles(board_, block);
         }
 
     return pointing(board_) || changed;
@@ -114,40 +136,19 @@ bool RuleStandard::candidates_changed() {
 bool RuleStandard::valid() {
     const int board_size = board_->size();
     for (int i = 0; i < board_size; i++) {
-        if (!check_group(board_->get_row(i)))
+        if (!is_group_valid(board_->get_row(i)))
             return false;
-        if (!check_group(board_->get_col(i)))
+        if (!is_group_valid(board_->get_col(i)))
             return false;
     }
 
     const int block_size = board_->block_size();
     for (int br = 0; br < board_size; br += block_size)
         for (int bc = 0; bc < board_size; bc += block_size)
-            if (!check_group(board_->get_block(br, bc)))
+            if (!is_group_valid(board_->get_block(br, bc)))
                 return false;
 
     return true;
-}
-
-bool RuleStandard::check_group(const std::vector<Cell *> unit) {
-    const int board_size = board_->size();
-
-    NumberSet seen(board_size);
-    seen.clear();
-    NumberSet combined(board_size);
-
-    for (const auto &c: unit) {
-        if (c->is_solved()) {
-            if (seen.test(c->value))
-                return false;
-            seen.add(c->value);
-            combined = combined | NumberSet(c->max_number, c->value);
-        } else {
-            combined = combined | c->get_candidates();
-        }
-    }
-
-    return combined == NumberSet::full(board_size);
 }
 
 } // namespace sudoku

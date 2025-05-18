@@ -9,6 +9,11 @@ namespace sudoku {
 bool hidden_singles(Board *board_, std::vector<Cell *> unit);
 bool pointing(Board *board_);
 
+/**
+ * @brief Check if a group contains all numbers from 1 to n.
+ */
+bool is_group_valid(const std::vector<Cell *> unit);
+
 class RuleStandard : public RuleHandler {
 public:
     explicit RuleStandard(Board *board) : RuleHandler(board) {}
@@ -20,6 +25,5 @@ public:
     void from_json(JSON &json) override {};
 
 private:
-    bool check_group(const std::vector<Cell *> unit);
 };
 } // namespace sudoku
