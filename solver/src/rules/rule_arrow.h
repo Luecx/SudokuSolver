@@ -29,8 +29,5 @@ private:
 
     std::pair<int, int> bounds_base(const Region<CellIdx> &base);
     std::pair<int, int> bounds_path(const Region<CellIdx> &path);
-
-    int lowerbound(const Region<CellIdx> &path);
-    int upperbound(const Region<CellIdx> &path);
 };
 } // namespace sudoku

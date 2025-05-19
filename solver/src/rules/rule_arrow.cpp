@@ -6,34 +6,26 @@
 
 namespace sudoku {
 
-// RuleCage methods
-
 bool RuleArrow::number_changed(CellIdx pos) {
     bool changed = false;
-
     for (auto &arrow_pair: arrow_pairs_) {
         const Region<CellIdx> &base = arrow_pair.base;
         const Region<CellIdx> &path = arrow_pair.arrow_path;
-
         // check if the changed cell is in the base or path
         if (!base.has(pos) && !path.has(pos))
             continue;
-
         changed |= determine_base_options(arrow_pair);
         changed |= determine_path_options(arrow_pair);
     }
-
     return changed;
 }
 
 bool RuleArrow::candidates_changed() {
     bool changed = false;
-
     for (auto &arrow_pair: arrow_pairs_) {
         changed |= determine_base_options(arrow_pair);
         changed |= determine_path_options(arrow_pair);
     }
-
     return changed;
 }
 
@@ -95,14 +87,15 @@ bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
     // we first need to estimate the possible range of numbers in the path
     auto [path_lb, path_ub] = bounds_path(path);
 
+    Cell &cell1 = board_->get_cell(base.items()[0]);
+
     // next, we need to differentiate between the amount of base cells
     if (base.size() == 1) {
-        Cell &cell = board_->get_cell(base.items()[0]);
-        if (cell.is_solved())
+        if (cell1.is_solved())
             return false;
-        changed |= cell.only_allow_candidates(NumberSet::greaterThan(path_lb, cell.max_number));
+        path_lb = std::clamp(path_lb, 1, cell1.max_number + 1);
+        changed |= cell1.only_allow_candidates(NumberSet::greaterEqThan(cell1.max_number, path_lb));
     } else {
-        Cell &cell1 = board_->get_cell(base.items()[0]);
         Cell &cell2 = board_->get_cell(base.items()[1]);
         if (cell1.is_solved() && cell2.is_solved())
             return false;
@@ -144,10 +137,10 @@ bool RuleArrow::determine_path_options(ArrowPair &arrow_pair) {
         int rest_lb = path_lb - cell.candidates.lowest();
         int rest_ub = path_ub - cell.candidates.highest();
 
-        int lb = std::max(base_lb - rest_lb, 1);
-        int ub = std::min(base_ub - rest_ub, cell.max_number - 1);
+        int lb = std::clamp(base_lb - rest_ub, 1, cell.max_number + 1);
+        int ub = std::clamp(base_ub - rest_lb, -1, cell.max_number - 1);
 
-        NumberSet mask = NumberSet::greaterThan(lb - 1, cell.max_number) & NumberSet::lessThan(ub + 1, cell.max_number);
+        NumberSet mask = NumberSet::greaterEqThan(cell.max_number, lb) & NumberSet::lessEqThan(cell.max_number, ub);
         changed |= cell.only_allow_candidates(mask);
     }
 
@@ -157,46 +150,34 @@ bool RuleArrow::determine_path_options(ArrowPair &arrow_pair) {
 std::pair<int, int> RuleArrow::bounds_base(const Region<CellIdx> &base) {
     int lb = 0;
     int ub = 0;
+    Cell &cell1 = board_->get_cell(base.items()[0]);
 
     // if there are two base cells, we need to determine the range of numbers
     if (base.size() == 2) {
-        Cell &cell1 = board_->get_cell(base.items()[0]);
         Cell &cell2 = board_->get_cell(base.items()[1]);
 
-        int cell1_lowest = cell1.is_solved() ? cell1.value : cell1.candidates.lowest();
-        int cell2_lowest = cell2.is_solved() ? cell2.value : cell2.candidates.lowest();
-        lb = cell1_lowest * 10 + cell2_lowest;
-
-        int cell1_highest = cell1.is_solved() ? cell1.value : cell1.candidates.highest();
-        int cell2_highest = cell2.is_solved() ? cell2.value : cell2.candidates.highest();
-        ub = cell1_highest * 10 + cell2_highest;
+        lb = cell1.candidates.lowest() * 10 + cell2.candidates.lowest();
+        ub = cell1.candidates.highest() * 10 + cell2.candidates.highest();
     } else {
-        Cell &cell = board_->get_cell(base.items()[0]);
-        lb = cell.is_solved() ? cell.value : cell.candidates.lowest();
-        ub = cell.is_solved() ? cell.value : cell.candidates.highest();
+        lb = cell1.candidates.lowest();
+        ub = cell1.candidates.highest();
     }
 
     return {lb, ub};
 }
 
-std::pair<int, int> RuleArrow::bounds_path(const Region<CellIdx> &path) { return {lowerbound(path), upperbound(path)}; }
+std::pair<int, int> RuleArrow::bounds_path(const Region<CellIdx> &path) {
+    int lb = 0;
+    int ub = 0;
 
-int RuleArrow::lowerbound(const Region<CellIdx> &path) {
-    int sum = 0;
     for (const auto &pos: path.items()) {
         Cell &cell = board_->get_cell(pos);
-        sum += cell.is_solved() ? cell.value : cell.candidates.lowest();
+        lb += cell.candidates.lowest();
+        ub += cell.candidates.highest();
     }
-    return std::min(sum, 99);
-}
 
-int RuleArrow::upperbound(const Region<CellIdx> &path) {
-    int sum = 0;
-    for (const auto &pos: path.items()) {
-        Cell &cell = board_->get_cell(pos);
-        sum += cell.is_solved() ? cell.value : cell.candidates.highest();
-    }
-    return std::min(sum, 99);
+    int max = board_->size() * 10 + board_->size();
+    return {std::min(lb, max), std::min(ub, max)};
 }
 
 } // namespace sudoku

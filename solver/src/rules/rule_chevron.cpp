@@ -177,11 +177,11 @@ bool RuleChevron::checkPair(Cell &cell, Cell &neighbor, std::string symbol) cons
 // helper
 
 bool RuleChevron::allowGreaterCandidates(Cell &cell, Number value) const {
-    return cell.only_allow_candidates(NumberSet::greaterThan(value, board_->size()));
+    return cell.only_allow_candidates(NumberSet::greaterThan(board_->size(), value));
 }
 
 bool RuleChevron::allowLessCandidates(Cell &cell, Number value) const {
-    return cell.only_allow_candidates(NumberSet::lessThan(value, board_->size()));
+    return cell.only_allow_candidates(NumberSet::lessThan(board_->size(), value));
 }
 
 } // namespace sudoku

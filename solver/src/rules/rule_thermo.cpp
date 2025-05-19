@@ -21,8 +21,8 @@ bool RuleThermo::number_changed(CellIdx pos) {
             if (cell_.is_solved())
                 continue;
 
-            NumberSet mask = NumberSet::greaterThan(cell.value, cell_.max_number);
-            changed |= cell_.only_allow_candidates(mask); 
+            NumberSet mask = NumberSet::greaterThan(cell_.max_number, cell.value);
+            changed |= cell_.only_allow_candidates(mask);
         }
 
         int backward = idx;
@@ -31,7 +31,7 @@ bool RuleThermo::number_changed(CellIdx pos) {
             if (cell_.is_solved())
                 continue;
 
-            NumberSet mask = NumberSet::lessThan(cell.value, cell_.max_number);
+            NumberSet mask = NumberSet::lessThan(cell_.max_number, cell.value);
             changed |= cell_.only_allow_candidates(mask);
         }
     }
@@ -63,7 +63,7 @@ bool RuleThermo::candidates_changed() {
                 prev_value = prev_cell.candidates.lowest(); // fallback to lowest candidate
             }
 
-            auto mask = NumberSet::greaterThan(prev_value, cell.max_number);
+            auto mask = NumberSet::greaterThan(cell.max_number, prev_value);
             changed |= cell.only_allow_candidates(mask);
         }
     }
