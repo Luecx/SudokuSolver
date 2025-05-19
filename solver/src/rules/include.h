@@ -15,3 +15,4 @@
 #include "rule_whisper.h"
 #include "rule_arrow.h"
 #include "rule_anti_chess.h"
+#include "rule_sandwich.h"

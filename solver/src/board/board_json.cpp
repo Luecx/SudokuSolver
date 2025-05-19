@@ -53,6 +53,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleArrow>(this);
             } else if (type == "Anti-Chess") {
                 handler = std::make_shared<RuleAntiChess>(this);
+            } else if (type == "Sandwich") {
+                handler = std::make_shared<RuleSandwich>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }

@@ -108,8 +108,14 @@ struct RCIdx {
         if (type_tag != "RCIdx")
             throw std::runtime_error("Invalid __type__ for RCIdx: expected 'RCIdx', got '" + type_tag + "'");
 
-        Row r = static_cast<Row>(node["row"].get<double>());
-        Col c = static_cast<Col>(node["col"].get<double>());
+        Row r = -1;
+        Col c = -1;
+
+        if (!node["row"].is_null())
+            r = static_cast<Row>(node["row"].get<double>());
+        if (!node["col"].is_null())
+            c = static_cast<Col>(node["col"].get<double>());
+
         return RCIdx(r, c);
     }
 

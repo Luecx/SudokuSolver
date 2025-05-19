@@ -53,6 +53,8 @@ void RuleCage::from_json(JSON &json) {
             continue;
         if (!rule["fields"].get<JSON::object>().count("region"))
             continue;
+        if (!rule["fields"].get<JSON::object>().count("sum"))
+            continue;
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0) {
