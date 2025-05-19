@@ -5,7 +5,6 @@ namespace sudoku {
 
 bool RuleSandwich::number_changed(CellIdx pos) {
     bool changed = false;
-
     for (const auto &pair: sandwich_pairs_) {
         const Region<RCIdx> &region = pair.region;
         const int sum = pair.sum;
@@ -16,13 +15,11 @@ bool RuleSandwich::number_changed(CellIdx pos) {
             changed |= check_sandwich(rcidx, sum);
         }
     }
-
     return changed;
 }
 
 bool RuleSandwich::candidates_changed() {
     bool changed = false;
-
     for (const auto &pair: sandwich_pairs_) {
         const Region<RCIdx> &region = pair.region;
         const int sum = pair.sum;
@@ -30,7 +27,6 @@ bool RuleSandwich::candidates_changed() {
         for (const auto &rcidx: region.items())
             changed |= check_sandwich(rcidx, sum);
     }
-
     return changed;
 };
 
@@ -180,7 +176,6 @@ bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD)
     return false;
 }
 
-
 bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
     initLine(pos);
 
@@ -224,7 +219,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
             if (c.is_solved() || !c.candidates.test(unknown))
                 continue;
 
-            const int dist = std::abs(i - idx_known) - 1;
+            int dist = std::abs(i - idx_known) - 1;
             if (dist < minD || dist > maxD)
                 changed |= c.remove_candidate(unknown);
         }
@@ -235,9 +230,9 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
         const int between = right - left - 1;
 
         if (between >= minD && between <= maxD) {
-            NumberSet unionSet(board_size);
+            NumberSet union_set(board_size);
             for (const auto &comb: valid_combinations[sum][between])
-                unionSet |= comb;
+                union_set |= comb;
 
             for (int i = left + 1; i < right; i++) {
                 Cell &c = *line[i];
@@ -245,7 +240,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
                     continue;
 
                 for (int d = 1; d <= board_size; d++)
-                    if (c.candidates.test(d) && !unionSet.test(d))
+                    if (c.candidates.test(d) && !union_set.test(d))
                         changed |= c.remove_candidate(d);
             }
         }

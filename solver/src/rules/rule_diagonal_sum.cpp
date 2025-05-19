@@ -43,7 +43,7 @@ void RuleDiagonalSum::from_json(JSON &json) {
             DiagSumPair pair;
             pair.region = region;
             pair.sum = sum;
-
+            
             diagsum_pairs_.push_back(pair);
         }
     }
