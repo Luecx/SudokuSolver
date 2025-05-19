@@ -131,13 +131,17 @@ public:
      * @param board_size Size of the Sudoku board (default: 9).
      * @return Vector of covered CellIdx entries.
      */
-    std::vector<CellIdx> attached_cells(int board_size = 9) const {
+    Region<CellIdx> attached_cells(int board_size = 9) const {
         std::vector<CellIdx> out;
         for (const auto &idx: items_) {
             auto cells = call_attached_cells(idx, board_size);
             out.insert(out.end(), cells.begin(), cells.end());
         }
-        return out;
+        Region<CellIdx> res;
+
+        for(CellIdx cidx:out)
+            res.add(cidx);
+        return res;
     }
 
     /**

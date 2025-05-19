@@ -30,6 +30,15 @@ bool RuleSandwich::candidates_changed() {
     return changed;
 };
 
+void RuleSandwich::update_impact(ImpactMap &map) {
+    for (const auto &pair: sandwich_pairs_) {
+        const Region<RCIdx> &region = pair.region;
+        auto cell_reg = region.attached_cells(this->board_->size());
+        map.increment_region(cell_reg);
+    }
+};
+
+
 bool RuleSandwich::valid() {
     const int board_size = board_->size();
 
