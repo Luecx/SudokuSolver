@@ -1,10 +1,12 @@
+// Updated Creator class using WebAssembly Solver with event-based handling
+
 import { createBoard } from "../board/board.js";
 import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../game/input_keyboard.js";
 import { InputMode } from "../game/input_constants.js";
-import { CellIdx } from "../region/CellIdx.js";
 import SolverEngine from "../cppsolver/solver.js";
+import {CellIdx} from "../region/CellIdx.js";
 
 class Creator {
     constructor() {
@@ -14,13 +16,11 @@ class Creator {
         }, 250);
     }
 
-    init(container) {
-        if (!container) throw new Error("Creator: .board-container element not found in the DOM.");
+    async init(container) {
+        if (!container) throw new Error("Creator: .board-container element not found.");
 
         this.board = createBoard(container);
         this.board.initBoard();
-        // let json = '{"fixedCells":[],"rules":[{"type":"Standard Sudoku","fields":{},"rules":[]},{"type":"Arrow","fields":{},"rules":[{"id":"1746986002490-d9w1","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":0},{"__type__":"CellIdx","r":2,"c":1}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":0},{"__type__":"CellIdx","r":3,"c":1},{"__type__":"CellIdx","r":3,"c":2},{"__type__":"CellIdx","r":4,"c":3}]}}},{"id":"1746986015426-mxm9","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":3},{"__type__":"CellIdx","r":2,"c":4}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":4},{"__type__":"CellIdx","r":3,"c":3},{"__type__":"CellIdx","r":4,"c":2},{"__type__":"CellIdx","r":5,"c":2}]}}},{"id":"1746986061300-4jud","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":5}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":5},{"__type__":"CellIdx","r":4,"c":5},{"__type__":"CellIdx","r":5,"c":5}]}}},{"id":"1746986069450-tj4u","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":6}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":5},{"__type__":"CellIdx","r":7,"c":5}]}}},{"id":"1746986078355-w4om","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":7},{"__type__":"CellIdx","r":5,"c":8}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":7},{"__type__":"CellIdx","r":7,"c":8},{"__type__":"CellIdx","r":8,"c":8},{"__type__":"CellIdx","r":8,"c":7},{"__type__":"CellIdx","r":8,"c":6},{"__type__":"CellIdx","r":8,"c":5},{"__type__":"CellIdx","r":8,"c":4},{"__type__":"CellIdx","r":8,"c":3},{"__type__":"CellIdx","r":8,"c":2},{"__type__":"CellIdx","r":8,"c":1},{"__type__":"CellIdx","r":8,"c":0},{"__type__":"CellIdx","r":7,"c":0}]}}},{"id":"1746986092942-q8m4","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":0}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":1},{"__type__":"CellIdx","r":4,"c":1}]}}},{"id":"1746986101814-muua","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":1}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":2},{"__type__":"CellIdx","r":6,"c":3},{"__type__":"CellIdx","r":6,"c":4}]}}},{"id":"1746986114118-asc1","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":4}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":3},{"__type__":"CellIdx","r":7,"c":2}]}}},{"id":"1746986126099-4dpv","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":6},{"__type__":"CellIdx","r":2,"c":7}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":8},{"__type__":"CellIdx","r":1,"c":8}]}}},{"id":"1746986135239-k7t4","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":6}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":6},{"__type__":"CellIdx","r":0,"c":5}]}}},{"id":"1746986144984-0xxy","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":6}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":5},{"__type__":"CellIdx","r":1,"c":4},{"__type__":"CellIdx","r":1,"c":3}]}}}]}]}'
-        // this.board.loadBoard(json)
         this.keyboard = new InputKeyboard(this.board, [InputMode.NumberFixed]);
         this.rule_manager = new CreatorRuleManager(this.board);
 
@@ -31,152 +31,169 @@ class Creator {
         this.showDefinite = true;
         this.showUncertain = true;
 
+        this.stats = {
+            solutions_found: 0,
+            nodes_explored: 0,
+            time_taken_ms: 0.0,
+            interrupted_by_node_limit: false,
+            interrupted_by_solution_limit: false,
+            error: null
+        };
+
+        this.normalDepth = 16384;
+        this.completeDepth = 1024;
+
+
+        this.module = await SolverEngine();
+        this.module.addMessageListener(this.onSolverMessage.bind(this));
+        this.resetSolverState();
+
         this.initSaveButton();
         this.initAnalysisButtons();
         this.registerBoardChangeListeners();
         this.renderActiveTags();
-
-
-
+        this.renderSettings();
     }
+
+    resetSolverState() {
+        this.solverRunning = false;
+        this.solverSolutions = [];
+        this.stats = {
+            solutions_found: 0,
+            nodes_explored: 0,
+            time_taken_ms: 0.0,
+            interrupted_by_node_limit: false,
+            interrupted_by_solution_limit: false,
+            error: null
+        };
+    }
+
+    disableAnalysisButtons(disabled) {
+        const ids = [
+            "start-normal-analysis-btn",
+            "start-complete-analysis-btn",
+            "clear-analysis-btn",
+            "debug-analysis-btn",
+            "toggle-definite",
+            "toggle-uncertain",
+        ];
+        ids.forEach(id => {
+            const btn = this.get(id);
+            if (btn) btn.disabled = disabled;
+        });
+    }
+
+    onSolverMessage(msg) {
+        console.log(msg);
+        if (msg.startsWith("[SOLUTION]")) {
+            this.addSolutionFromString(msg.replace("[SOLUTION]", "").trim());
+        } else if (msg.startsWith("[PROGRESS]")) {
+            const value = parseFloat(msg.replace("[PROGRESS]", "").trim());
+            const progressBar = document.querySelector(".progress-bar");
+            const loadingText = this.get("loading-text");
+            if (progressBar) {
+                progressBar.style.width = `${Math.floor(value * 100)}%`;
+                progressBar.textContent = `${Math.floor(value * 100)}%`;
+            }
+            if (loadingText) {
+                loadingText.textContent = `Progress: ${(value * 100).toFixed(1)}%`;
+            }
+        } else if (msg.startsWith("[INFO]")) {
+            const content = msg.replace("[INFO]", "").trim();
+            const [key, val] = content.split("=");
+            if (key in this.stats) {
+                if (key.startsWith("interrupted") || key === "error") {
+                    this.stats[key] = val === "true" ? true : val === "false" ? false : val;
+                } else {
+                    this.stats[key] = parseFloat(val);
+                }
+            }
+        } else if (msg.startsWith("[DONE]")) {
+            this.finishSolverRun();
+        }
+    }
+
+    addSolutionFromString(flatStr) {
+        const values = flatStr.split(",").map(Number);
+        const board = this.board.getSolverBoard().clone();
+        for (let i = 0; i < values.length; i++) {
+            const r = Math.floor(i / board.size);
+            const c = i % board.size;
+            board.setCellForce(new CellIdx(r, c), values[i]);
+        }
+        this.solverSolutions.push(board);
+    }
+
+    runNormalAnalysis() {
+        if (this.solverRunning) return;
+
+        this.clearAnalysisUI();
+        this.renderAlert("warning", "Analyzing...", "");
+        this.disableAnalysisButtons(true);
+        this.keyboard.setEnabled(false);
+        this.resetSolverState();
+        this.solverRunning = true;
+
+        const json = this.board.saveBoard();
+        this.module.postMessage("solve", json, 17, this.normalDepth);
+    }
+
+    async runCompleteAnalysis() {
+        this.disableAnalysisButtons(true);
+        if (!this.analysisUnlocked) {
+            alert("Run normal analysis first.");
+            return;
+        }
+
+        this.clearAnalysisUI();
+        this.renderAlert("warning", "Analyzing...", "");
+        this.resetSolverState();
+        this.solverRunning = true;
+        this.module.postMessage("solveComplete", this.board.saveBoard(), 9999, this.completeDepth);
+    }
+
+    finishSolverRun() {
+        const solverboard = this.board.getSolverBoard();
+        const solutions = this.solverSolutions;
+        this.solverRunning = false;
+        this.solutionsRef = solutions;
+
+        const { solutions_found, interrupted_by_node_limit, interrupted_by_solution_limit, error, nodes_explored, time_taken_ms } = this.stats;
+
+        if (error) {
+            this.renderAlert("danger", "Solver Error", `<p>❌ ${error}</p>`);
+        } else if (solutions_found === 0) {
+            this.renderAlert("danger", "No solution", "<p>❌ No solution exists for this puzzle.</p>");
+        } else if (solutions_found === 1 && !interrupted_by_solution_limit && !interrupted_by_node_limit) {
+            this.renderAlert("success", "1 solution", `<p>✅ Exactly one solution exists.<br><small>${nodes_explored} nodes, ${time_taken_ms.toFixed(1)} ms</small></p>`);
+            this.board.showSolution(solverboard, solutions[0]);
+            this.displaySolutions(solverboard, solutions);
+            this.checkIfCanSubmit();
+        } else {
+            let msg = "";
+            if (interrupted_by_solution_limit) {
+                msg = `⚠️ At least ${solutions_found} solutions found (solution limit reached).`;
+            } else if (interrupted_by_node_limit) {
+                msg = `⚠️ At least ${solutions_found} solutions found (node limit reached).`;
+            } else {
+                msg = `❌ Found ${solutions_found} solutions.`;
+            }
+            msg += `<br><small>${nodes_explored} nodes, ${time_taken_ms.toFixed(1)} ms</small>`;
+            this.renderAlert("danger", "Multiple solutions", `<p>${msg}</p>`);
+            this.displaySolutions(solverboard, solutions);
+            this.analysisUnlocked = true;
+        }
+
+        this.disableAnalysisButtons(false);
+        this.get("clear-analysis-btn").disabled = false;
+        this.get("start-complete-analysis-btn").disabled = !this.analysisUnlocked;
+        this.get("toggle-definite").disabled = !this.completeAnalysisDone;
+        this.get("toggle-uncertain").disabled = !this.completeAnalysisDone;
+    }
+
 
     get(id) {
         return document.getElementById(id);
-    }
-
-    initSaveButton() {
-        const btn = this.get("submit-sudoku-btn");
-        if (!btn) return;
-
-        btn.addEventListener("click", async (e) => {
-            e.preventDefault();
-
-            const loadingBox = this.get("upload-loading-box");
-            const loadingText = this.get("upload-progress-text");
-            const progressBar = this.get("upload-progress-bar");
-
-            if (!loadingBox || !loadingText || !progressBar) return;
-
-            // Reset visual state
-            progressBar.style.width = "0%";
-            progressBar.style.backgroundColor = "gold";
-            progressBar.textContent = "Uploading Sudoku...";
-            loadingBox.style.display = "block";
-            loadingText.textContent = "Encoding Sudoku as JSON...";
-
-            const steps = [
-                "Compressing clues...",
-                "Assigning digital ink...",
-                "Finalizing metadata...",
-                "Uploading to server...",
-            ];
-
-            let serverSuccess = null;
-            let serverDone = false;
-
-            console.log(this.board.getTags());
-            let json = this.board.saveBoard();
-            console.log(json);
-
-            const payload = {
-                title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",
-                board: this.board.saveBoard(),
-                solution: null,
-                tags: this.board.getTags()
-            };
-
-            // Start upload in parallel
-            fetch("/save-sudoku/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                body: JSON.stringify(payload),
-            })
-                .then(res => res.json())
-                .then(data => {
-                    serverSuccess = data.status === "success";
-                })
-                .catch(err => {
-                    console.error("Save error:", err);
-                    serverSuccess = false;
-                })
-                .finally(() => {
-                    serverDone = true;
-                });
-
-            // Animate bar and text
-            const duration = 2000;
-            const start = performance.now();
-            let progress = 0;
-
-            const animate = (now) => {
-                const elapsed = now - start;
-                const timeProgress = Math.min(elapsed / duration, 1);
-
-                // If server not done: clamp at 99%
-                if (!serverDone && timeProgress >= 1) {
-                    progress = 0.99;
-                } else {
-                    progress = timeProgress;
-                }
-
-                progressBar.style.width = `${progress * 100}%`;
-
-                const stepIndex = Math.floor(progress * steps.length);
-                if (stepIndex < steps.length) {
-                    loadingText.textContent = steps[stepIndex];
-                }
-
-                if (progress < 1 || !serverDone) {
-                    requestAnimationFrame(animate);
-                } else {
-                    // Animation done & server done
-                    progressBar.style.width = "100%";
-                    progressBar.style.backgroundColor = serverSuccess ? "green" : "red";
-                    progressBar.textContent = serverSuccess
-                        ? "Upload complete"
-                        : "Upload failed";
-                    loadingText.textContent = serverSuccess
-                        ? "Your Sudoku was saved successfully."
-                        : "An error occurred during upload.";
-                }
-            };
-
-            requestAnimationFrame(animate);
-        });
-
-
-        const box = document.getElementById("upload-loading-box");
-        if (box) box.style.display = "none";
-
-        const nameInput = document.querySelector("input[name='sudoku_name']");
-        if (nameInput) {
-            nameInput.addEventListener("input", () => this.checkIfCanSubmit());
-        }
-
-        this.checkIfCanSubmit();
-    }
-
-    renderAlert(type, text, html) {
-        const alertBox = this.get("alertBox");
-        const color = {
-            warning: "warning",
-            success: "success",
-            danger: "danger",
-        }[type];
-
-        alertBox.innerHTML = `
-            <div class="alert alert-${color}" role="alert">
-                <div class="progress mb-2" style="height: 28px;">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-${color}" style="width: 100%;">
-                        <span id="loading-text">${text}</span>
-                    </div>
-                </div>
-                <div id="alertContent">${html}</div>
-            </div>
-        `;
     }
 
     createSolutionItem(i, solverboard, solution) {
@@ -217,123 +234,25 @@ class Creator {
         this.board.hideSolution?.();
     }
 
-    runNormalAnalysis() {
-        const solverboard = this.board.getSolverBoard();
-        this.clearAnalysisUI();
-        this.renderAlert("warning", "Analyzing...", "");
+    renderAlert(type, text, html) {
+        const alertBox = this.get("alertBox");
+        const color = {
+            warning: "warning",
+            success: "success",
+            danger: "danger",
+        }[type];
 
-        this.analysisUnlocked = false;
-        this.completeAnalysisDone = false;
-        this.keyboard.setEnabled(false);
-
-        // Step 3: Prepare your puzzle
-        const jsonString = this.board.saveBoard();
-        const maxSolutions = 1;
-        const maxNodes = 10000;
-
-
-        // const solver = SolverEngine();
-        // console.log(solver);
-        // solver.addMessageListener(msg => console.log("message: ", msg));
-        // solver.postMessage(["solve", jsonString, maxSolutions, maxNodes])
-        //
-
-        (async () => {
-            const Module = await SolverEngine();
-
-            // Add a listener to receive output from the solver
-            Module.addMessageListener((text) => {
-                console.log("[Solver output]:", text);
-            });
-
-            // Trigger a command
-            Module.postMessage("solve", jsonString, 17, 1000000);
-        })();
-
-        setTimeout(() => {
-
-            const { solutions, stats } = solverboard.solve(17, 16384);
-
-            if (solutions.length === 0 && !stats.interrupted) {
-                this.renderAlert("danger", "No solution", "<p>❌ No solution exists for this puzzle.</p>");
-            } else if (solutions.length === 0 && stats.interrupted) {
-                this.renderAlert("danger", "Search interrupted", "<p>❌ Branching factor too high. Add more constraints.</p>");
-            } else if (solutions.length === 1 && !stats.interrupted) {
-                this.renderAlert("success", "1 solution", "<p>✅ Exactly one solution exists.</p>");
-                this.board.showSolution(solverboard, solutions[0]);
-                this.displaySolutions(solverboard, solutions);
-                this.checkIfCanSubmit();
-            } else {
-                const msg = stats.interrupted
-                    ? "⚠️ One or more solutions found, but more may exist."
-                    : `❌ At least ${solutions.length} solutions found.`;
-
-                this.renderAlert("danger", "Multiple solutions", `<p>${msg}</p>`);
-                this.displaySolutions(solverboard, solutions);
-                this.analysisUnlocked = true;
-                this.get("start-complete-analysis-btn").disabled = false;
-            }
-
-            this.get("clear-analysis-btn").disabled = false;
-        }, 50);
+        alertBox.innerHTML = `
+            <div class="alert alert-${color}" role="alert">
+                <div class="progress mb-2" style="height: 28px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-${color}" style="width: 100%;">
+                        <span id="loading-text">${text}</span>
+                    </div>
+                </div>
+                <div id="alertContent">${html}</div>
+            </div>
+        `;
     }
-
-    async runCompleteAnalysis() {
-        if (!this.analysisUnlocked) {
-            alert("Run normal analysis first.");
-            return;
-        }
-
-        const solverboard   = this.board.getSolverBoard();
-        this.clearAnalysisUI();
-        this.renderAlert("warning", "Analyzing...", "");
-
-        const progressBar   = document.querySelector(".progress-bar");
-        const loadingTextEl = this.get("loading-text");
-
-        // progressCallback now BOTH updates currentProgress *and* the UI
-        const progressCallback = async (count) => {
-            // calculate %
-            const fraction = Math.min(count / 81, 1);
-            const percent  = Math.floor(fraction * 100);
-
-            // update bar
-            if (progressBar) {
-                progressBar.style.width   = `${percent}%`;
-                progressBar.textContent   = `${percent}%`;
-            }
-
-            // update text
-            if (loadingTextEl) {
-                loadingTextEl.textContent = `${count} / 81 nodes processed...`;
-            }
-
-            // yield so browser can repaint immediately
-            await new Promise(resolve => setTimeout(resolve, 0));
-        };
-
-        // kick off the solve — each time it calls `progressCallback`,
-        // you’ll see the bar and text move in real time
-        const solutions = await solverboard.solveComplete(progressCallback);
-
-        // once done, show the result
-        this.completeAnalysisDone = true;
-        this.solutionsRef        = solutions;
-
-        if (solutions.length === 1) {
-            this.renderAlert("success", "1 solution", "<p>✅ Exactly one solution found.</p>");
-        } else if (solutions.length === 0) {
-            this.renderAlert("danger", "No solution", "<p>❌ No solution found.</p>");
-        } else {
-            this.renderAlert("danger", `${solutions.length} solutions`, `<p>Multiple solutions found (${solutions.length}).</p>`);
-        }
-
-        this.displaySolutions(solverboard, solutions);
-        this.get("clear-analysis-btn").disabled = false;
-        this.get("toggle-definite").disabled  = false;
-        this.get("toggle-uncertain").disabled = false;
-    }
-
 
     initAnalysisButtons() {
         const normalBtn = this.get("start-normal-analysis-btn");
@@ -343,7 +262,6 @@ class Creator {
         const toggleDefinite = this.get("toggle-definite");
         const toggleUncertain = this.get("toggle-uncertain");
 
-        // ✅ Disable by default
         completeBtn.disabled = true;
         clearBtn.disabled = true;
         toggleDefinite.disabled = true;
@@ -356,13 +274,20 @@ class Creator {
             this.keyboard.setEnabled(true);
             this.analysisUnlocked = false;
             this.completeAnalysisDone = false;
+            this.resetSolverState();
 
-            // ✅ Disable again after clearing
-            clearBtn.disabled = true;
-            completeBtn.disabled = true;
-            toggleDefinite.disabled = true;
-            toggleUncertain.disabled = true;
+            // Disable everything first
+            this.disableAnalysisButtons(true);
+
+            // Enable only Normal Analysis button
+            const normalBtn = this.get("start-normal-analysis-btn");
+            if (normalBtn) normalBtn.disabled = false;
+
+            // Clear all solver output
+            this.solverSolutions = [];
+            this.solutionsRef = [];
         });
+
 
         debugBtn?.addEventListener("click", () => console.log(this.board.getSolverBoard().toString(true)));
 
@@ -376,42 +301,70 @@ class Creator {
         toggleDefinite?.addEventListener("click", () => toggleFn(toggleDefinite, "Definite"));
         toggleUncertain?.addEventListener("click", () => toggleFn(toggleUncertain, "Uncertain"));
 
-        // Init tooltips
         [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).forEach(el => {
             new bootstrap.Tooltip(el, { trigger: 'hover' });
         });
+    }
 
+    initSaveButton() {
+        const btn = this.get("submit-sudoku-btn");
+        if (!btn) return;
+
+        btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            const box = this.get("upload-loading-box");
+            const text = this.get("upload-progress-text");
+            const bar = this.get("upload-progress-bar");
+
+            if (!box || !text || !bar) return;
+
+            bar.style.width = "0%";
+            bar.style.backgroundColor = "gold";
+            bar.textContent = "Uploading Sudoku...";
+            box.style.display = "block";
+            text.textContent = "Encoding Sudoku as JSON...";
+
+            const payload = {
+                title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",
+                board: this.board.saveBoard(),
+                solution: null,
+                tags: this.board.getTags()
+            };
+
+            let serverSuccess = null;
+            let serverDone = false;
+
+            fetch("/save-sudoku/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                body: JSON.stringify(payload),
+            })
+                .then(res => res.json())
+                .then(data => serverSuccess = data.status === "success")
+                .catch(() => serverSuccess = false)
+                .finally(() => serverDone = true);
+
+            const animate = () => {
+                const progress = serverDone ? 1 : 0.99;
+                bar.style.width = `${progress * 100}%`;
+                bar.style.backgroundColor = serverSuccess ? "green" : "red";
+                bar.textContent = serverSuccess ? "Upload complete" : "Upload failed";
+                text.textContent = serverSuccess ? "Your Sudoku was saved." : "Upload error.";
+            };
+
+            requestAnimationFrame(animate);
+        });
     }
 
     checkIfCanSubmit() {
         const btn = this.get("submit-sudoku-btn");
         const name = document.querySelector("input[name='sudoku_name']")?.value?.trim();
-        const hasExactlyOneSolution = this.solutionsRef.length === 1;
-        const isNameValid = name.length > 0;
-
-        // Update icon states
-        this.updateStatusIcon("status-name", isNameValid);
-        this.updateStatusIcon("status-solution", hasExactlyOneSolution);
-        this.updateStatusIcon("status-unique", hasExactlyOneSolution); // for now same
-
-        // Enable submit if all conditions met
-        btn.disabled = !(hasExactlyOneSolution && isNameValid);
-        btn.disabled = false;
-    }
-
-
-    updateStatusIcon(id, isValid) {
-        const el = document.querySelector(`#${id} i`);
-        if (!el) return;
-
-        el.classList.remove("fa-check", "fa-times", "text-success", "text-danger");
-        el.classList.add(isValid ? "fa-check" : "fa-times");
-        el.classList.add(isValid ? "text-success" : "text-danger");
-    }
-
-    disableSubmit() {
-        const btn = this.get("submit-sudoku-btn");
-        if (btn) btn.disabled = true;
+        const isValid = name.length > 0 && this.solutionsRef.length === 1;
+        btn.disabled = !isValid;
     }
 
     registerBoardChangeListeners() {
@@ -427,12 +380,31 @@ class Creator {
 
         events.forEach(event => {
             this.board.onEvent(event, () => {
-                this.disableSubmit();
+                this.checkIfCanSubmit();
                 this.renderActiveTags();
             });
         });
-
     }
+
+    renderSettings() {
+        const normalSelect = this.get("normal-depth-select");
+        const completeSelect = this.get("complete-depth-select");
+
+        if (normalSelect) {
+            normalSelect.value = this.normalDepth.toString();
+            normalSelect.addEventListener("change", () => {
+                this.normalDepth = parseInt(normalSelect.value);
+            });
+        }
+
+        if (completeSelect) {
+            completeSelect.value = this.completeDepth.toString();
+            completeSelect.addEventListener("change", () => {
+                this.completeDepth = parseInt(completeSelect.value);
+            });
+        }
+    }
+
 
     renderActiveTags() {
         const container = this.get("active-tags-container");
@@ -440,19 +412,13 @@ class Creator {
 
         const handlers = this.board.getAllHandlers();
         handlers.forEach(handler => {
-            if (!handler.enabled) return;
-
-            const tagName = handler.tag;
-            if (!tagName) return;
-
+            if (!handler.enabled || !handler.tag) return;
             const badge = document.createElement("span");
-            badge.className = `badge me-1 mb-1 p-2 badge-${tagName}`;
-            // badge.className = 'badge'
-            badge.textContent = tagName;
+            badge.className = `badge me-1 mb-1 p-2 badge-${handler.tag}`;
+            badge.textContent = handler.tag;
             container.appendChild(badge);
         });
     }
-
 }
 
 new Creator();

@@ -81,15 +81,38 @@
 									<i class="fa-solid fa-wrench"></i>
 								</button>
 							</div>
-							<div class="d-flex gap-2">
+							<!-- Right-hand buttons -->
+							<div class="d-flex gap-2 align-items-center">
 								<button id="toggle-definite" class="btn btn-outline-success square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Definite Squares">
 									<i class="fas fa-check-square"></i>
 								</button>
 								<button id="toggle-uncertain" class="btn btn-outline-warning square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Uncertain Squares">
 									<i class="fas fa-question-circle"></i>
 								</button>
+
+								<div class="dropdown" id="solver-settings">
+									<button class="btn btn-light square-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Solver Settings">
+										<i class="fas fa-sliders-h"></i>
+									</button>
+									<div class="dropdown-menu p-3 keep-open" style="min-width: 240px;">
+										<label for="normal-depth-select" class="form-label">Normal Depth</label>
+										<select id="normal-depth-select" class="form-select mb-2">
+											<option value="1024">Shallow [1024]</option>
+											<option value="16384">Medium [16384]</option>
+											<option value="128000">Deep [128000]</option>
+											<option value="1000000">Ultra [1000000]</option>
+										</select>
+
+										<label for="complete-depth-select" class="form-label">Complete Depth</label>
+										<select id="complete-depth-select" class="form-select">
+											<option value="128">Minimal [128]</option>
+											<option value="1024">Light [1024]</option>
+											<option value="16384">Solid [16384]</option>
+											<option value="128000">Thorough [128000]</option>
+										</select>
+									</div>
+								</div>
 							</div>
-						
 						</div>
 						
 						<!-- Alert Box (fixed position inside tab) -->
@@ -163,8 +186,16 @@
 		</div>
 	</div>
 </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
 <script type="module" src="{% static 'sudoku/js/creator/creator_ui.js' %}"></script>
+<script>
+	document.querySelectorAll('.dropdown-menu.keep-open').forEach(menu => {
+		menu.addEventListener('click', function (e) {
+			e.stopPropagation(); // Prevent dropdown from closing when clicking inside
+		});
+	});
+</script>
 {% endblock %}
