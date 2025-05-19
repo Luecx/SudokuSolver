@@ -21,7 +21,7 @@ export class Game {
 
         setTimeout(() => {
             this.init();
-        }, 250); // wait till everything initializes before redndering the board
+        }, 250); // wait till everything initializes before rendering the board
     }
 
     init() {

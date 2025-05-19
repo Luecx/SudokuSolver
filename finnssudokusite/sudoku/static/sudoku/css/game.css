@@ -19,7 +19,7 @@ html, body {
 	min-height: 0;
 	aspect-ratio: 1 / 1;
 }
-
+.btn-img img {width: 20px; height: 20px;}
 .left-pane {
 	position: relative; /* Wichtig für absolute Positionierung der Kinder */
 }
@@ -29,8 +29,12 @@ html, body {
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 2rem;
-	text-align: center;
+	height: 1.2rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 1rem;
+	padding: 0 0.2rem;
 }
 
 .timer-container .timer {
@@ -41,16 +45,31 @@ html, body {
 	color: lightslategray;
 	justify-self: center;
 }
+
 .info-container {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
 	align-items: start;
-	justify-content: center;
+	font-size: 1rem;
+	margin-bottom: 1rem;
+	justify-content: space-between;
 }
+
 .info-container .content_name,
 .info-container .content_creator {color: lightslategray;}
-.info-container .btn-link {color: lightslategray; text-decoration: none;}
+
+.timer-container .btn-link,
+.info-container .btn-link {
+	color: lightslategray;
+	text-decoration: none;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.info-container .btn-link {font-size: 1.2rem;}
+
+.timer-container .btn-link:focus,
 .info-container .btn-link:focus {
 	outline: none;
 	box-shadow: none;
@@ -146,18 +165,16 @@ html, body {
 	
 	.only_portrait {display: none;}
 	.only_landscape {display: block;}
-	.timer-container {font-size: 1rem;}
-	.info-container {font-size: 1rem; margin-bottom: 1rem;}
 }
 
-@media (max-aspect-ratio: 1/1) { /* Portrait */
+@media (max-aspect-ratio: 1/1) {
 	.grid-container {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: .3rem;
+		gap: 0.3rem;
 		box-sizing: border-box;
-		padding: .5rem .1rem .1rem .1rem;
+		padding: 0.5rem 0.1rem 0.1rem 0.1rem;
 		height: 100%;
 		overflow: hidden;
 	}
@@ -165,68 +182,67 @@ html, body {
 	.left-pane {
 		width: 100%;
 		aspect-ratio: 1 / 1;
-		max-width: calc(100vh - 60px - 2rem - 200px); /* bleibt im Viewport */
-		max-height: calc(100vw - 2rem); /* kein Überlauf bei sehr schmalen Geräten */
+		max-width: calc(100vh - 60px - 2rem - 200px);
+		max-height: calc(100vw - 2rem);
 		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
 	}
+	
 	.right-pane {
-		width: calc(100vw - 2rem);
-		max-width: calc(100vh - 60px - 2rem - 200px);
-		aspect-ratio: 3 / 2;
-		overflow-y: auto;
+		/* Layout-Parameter */
+		--g: .5rem;               /* 0.5rem Abstand zwischen Feldern */
+		--padding: 1rem;           /* 1rem Innenabstand */
+		width: 100%;
+		height: auto;
 		display: flex;
-		box-sizing: border-box;
-		flex-shrink: 1;
-		background-color: cornflowerblue;
+		justify-content: center;
+		align-items: center;
+		overflow: hidden;
+		padding: 1rem;
+		
+		/* Berechnung verfügbarer Fläche */
+		--available-width: calc(100vw - 2 * var(--padding));
+		--available-height: calc(100vh - 2 * var(--padding));
+		
+		/* Geometrie: Breite = 6A + 6g, Höhe = 4A + 3g */
+		--A-from-width: calc( (var(--available-width)/6) - 2*var(--g) );
+		--A-from-height: calc( (var(--available-height)/4) - (3 * var(--g) / 4) - var(--g));
+		--A: min(var(--A-from-width), var(--A-from-height));
+		--B: calc((4 * var(--A) / 3) + (var(--g)/3));
+		--grid-width: calc(6 * var(--A) + 6 * var(--g));
+		--grid-height: calc(4 * var(--A) + 3 * var(--g));
 	}
 	
-	:root {
-		--g: 0.5rem;
-		/* Max-A-Fläche auf Basis Viewport: clamp(min, ideal, max) */
-		--a: clamp(40px, calc((100vw - 2rem - 5 * var(--g)) / 6), 80px);
-		--b: calc((4 * var(--a) + var(--g)) / 3);
+	
+	.only_portrait {
+		display: block;
 	}
+	
+	.only_landscape {
+		display: none;
+	}
+	
 	
 	.mein-grid {
-		padding: 1rem;
 		display: grid;
-		width: 100%;
+		gap: var(--g);
+		width: var(--grid-width);
+		height: var(--grid-height);
 		box-sizing: border-box;
-		grid-template-columns:
-        var(--a) var(--a)
-        var(--g)
-        var(--b) var(--b) var(--b);
-		grid-template-rows:
-        var(--a) var(--a) var(--a) var(--a)
-        var(--g) var(--g) var(--g);
-		gap: 0;
-		background: mediumseagreen;
-		max-width: 100%;
+		margin: 0 auto;
 	}
 	
 	.feld {
 		aspect-ratio: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: bold;
-		border-radius: 0.3rem;
-		font-size: 1rem;
+		width: var(--A);
+		height: auto;
 	}
-	
-	.a {
-		background: #b5d0ff;
-		border: 2px solid #3574d4;
-	}
-	
-	.b {
-		background: #ffd6b5;
-		border: 2px solid #ff9800;
-	}
+	.btn-number{ font-size: 2rem;}
+	.btn-square{ font-size: 1.8rem;}
+	.btn-img img {width: 1.8rem; height: 1.8rem;}
 	
 	/* A-Felder: 2×4 */
 	.a1 { grid-column: 1; grid-row: 1; }
@@ -240,27 +256,25 @@ html, body {
 	
 	/* B-Block als 3x3 Grid */
 	.b-block {
-		grid-column: 4 / span 3;
+		grid-column: 3 / span 3;
 		grid-row: 1 / span 4;
 		display: grid;
-		grid-template-columns: repeat(3, var(--b));
-		grid-template-rows: repeat(3, var(--b));
+		grid-template-columns: repeat(3, 1fr);
+		grid-template-rows: repeat(3, 1fr);
 		gap: var(--g);
-		justify-content: start;
-		align-content: start;
+		width: 100%;
+		height: 100%;
+		padding-left: var(--g);
+		min-width: 0;
+		min-height: 0;
+		
 	}
-	
-	.only_portrait { display: block; }
-	.only_landscape { display: none; }
-	
-	.timer-container { top: -1.5rem; }
-	.dropdown .btn-link {
-		padding: 0 !important;
-		margin: 0 !important;
+	.b-block .feld {
+		width: var(--B);
+		height: auto;
 	}
+	.feld button {width: 100%; height: 100%;}
 }
-
-
 
 /* === Grid Areas === */
 
@@ -361,5 +375,73 @@ html, body {
 .btn-color-8:hover,
 .btn-selected-8 { background-color: rgba(240, 50, 230, 1); }
 
-.btn-color-9:hover,
-.btn-selected-
+btn-color-9:hover,
+.btn-selected-9 { background-color: rgba(188, 246, 12, 1); }
+
+/* === Bootstrap-like Hover / Focus for All Buttons === */
+.btn-square:hover,
+.btn-square:focus {
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	border-color: #86b7fe;
+}
+
+.btn-hovered {
+	background-color: #e7f1ff !important;
+	border-color: #86b7fe !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-selected {
+	border-color: #86b7fe !important;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* === Suppress persistent outline glow after focus === */
+.btn-square:focus:not(:focus-visible) {
+	outline: none;
+	box-shadow: none;
+}
+
+/* === Layout Details === */
+
+.block-top {
+	background: url("../img/game/block-top.png") top center no-repeat;
+	background-size: 100% auto;
+	height: 40px;
+	min-height: 30px;
+	width: 100%;
+}
+
+.block-middle {
+	background: url("../img/game/block-content.png") top center repeat-y;
+	background-size: 100% auto;
+	width: 100%;
+}
+
+.block-bottom {
+	background: url("../img/game/block-bottom.png") bottom center no-repeat;
+	background-size: 100% auto;
+	height: 20px;
+	min-height: 20px;
+	width: 100%;
+}
+
+.dropdown-submenu > .dropdown-menu {
+	display: none;
+	position: absolute;
+	left: 100%;
+	top: 0;
+	margin-top: 0;
+}
+
+.dropdown-submenu:hover > .dropdown-menu,
+.dropdown-submenu:focus-within > .dropdown-menu {
+	display: block;
+}
+
+.rule-description {
+	margin-bottom: 1em;
+	padding: 0.5em;
+	border-left: 3px solid #aaa;
+	background: #f8f9fa;
+}
