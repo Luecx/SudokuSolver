@@ -22,9 +22,6 @@ import json
 import zlib
 # === General Views === #
 
-def game_selection_view(request):
-    return render(request, 'sudoku/game_selection.html')
-
 def index(request):
     """Main landing page showing all Sudoku puzzles and user stats if logged in."""
     sudokus = Sudoku.objects.annotate(
@@ -243,3 +240,6 @@ def activate(request, uid, token):
         return render(request, 'sudoku/login/activation_success.html')
     else:
         return render(request, 'sudoku/login/activation_invalid.html')
+
+def game_selection_view(request):
+    return render(request, 'sudoku/game_selection.html')

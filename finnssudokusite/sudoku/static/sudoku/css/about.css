@@ -1,0 +1,120 @@
+html, body, #about {
+	height: 100%;
+	scroll-behavior: smooth;
+	margin: 0;
+}
+
+#about {
+	height: 100vh;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.block {
+	width: 50%;
+	height: 50%;
+	box-sizing: border-box;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2rem;
+	cursor: pointer;
+	flex-direction: column;
+}
+
+/* Vertikale Linie: zwischen linker und rechter Spalte */
+.block-OL::after,
+.block-UL::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	width: 0;
+	height: 80%;
+	border-right: 1px solid #ccc;
+	z-index: 10;
+}
+
+.block-OL::after {
+	bottom: 0;
+}
+
+.block-UL::after {
+	top: 0;
+}
+
+.block-OL::before,
+.block-OR::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	width: 80%;
+	height: 0;
+	border-bottom: 1px solid #ccc;
+	z-index: 10;
+}
+
+.block-OL::before {
+	right: 0;
+}
+
+.block-OR::before {
+	left: 0;
+}
+
+.block img {
+	height: 50%;
+	aspect-ratio: 1/1;
+	object-fit: cover;
+}
+
+
+.overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.85);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	z-index: 2;
+	pointer-events: none;
+	clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%);
+	opacity: 1;
+}
+
+.block.active .overlay {
+	pointer-events: auto;
+	opacity: 1;
+}
+
+@keyframes wipeURtoOL {
+	0% { clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%); }
+	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes wipeULtoOR {
+	0% { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
+	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes wipeORtoUL {
+	0% { clip-path: polygon(100% 0, 100% 0, 100% 0, 100% 0); }
+	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes wipeOLtoUR {
+	0% { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
+	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+.block.active .overlay.wipe-ol { animation: wipeURtoOL 2s forwards; }
+.block.active .overlay.wipe-or { animation: wipeULtoOR 2s forwards; }
+.block.active .overlay.wipe-ul { animation: wipeORtoUL 2s forwards; }
+.block.active .overlay.wipe-ur { animation: wipeOLtoUR 2s forwards; }
+
+.block.active .overlay.wipe-ol-reverse { animation: wipeURtoOL 2s reverse forwards; }
+.block.active .overlay.wipe-or-reverse { animation: wipeULtoOR 2s reverse forwards; }
+.block.active .overlay.wipe-ul-reverse { animation: wipeORtoUL 2s reverse forwards; }
+.block.active .overlay.wipe-ur-reverse { animation: wipeOLtoUR 2s reverse forwards; }
