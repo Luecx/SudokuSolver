@@ -118,10 +118,7 @@ bool RuleParity::enforceParityAlternation(const Region<CellIdx> &path) {
             continue;
 
         const NumberSet &mask = (i % 2 == 0) ? cand_mask_even_id : cand_mask_odd_id;
-        NumberSet before = cell.candidates;
-        cell.candidates &= mask;
-        if (cell.candidates != before)
-            changed = true;
+        changed |= cell.only_allow_candidates(mask);
     }
 
     return changed;

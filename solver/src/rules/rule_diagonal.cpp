@@ -19,11 +19,7 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
             Cell &diag_cell = board_->get_cell({i, i});
             if (diag_cell.is_solved())
                 continue;
-
-            NumberSet before = diag_cell.candidates;
-            diag_cell.candidates &= keep;
-            if (diag_cell.candidates != before)
-                changed = true;
+            changed |= diag_cell.only_allow_candidates(keep);
         }
     }
 
@@ -32,11 +28,7 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
             Cell &anti_diag_cell = board_->get_cell({i, board_size - 1 - i});
             if (anti_diag_cell.is_solved())
                 continue;
-
-            NumberSet before = anti_diag_cell.candidates;
-            anti_diag_cell.candidates &= keep;
-            if (anti_diag_cell.candidates != before)
-                changed = true;
+            changed |= anti_diag_cell.only_allow_candidates(keep);
         }
     }
 

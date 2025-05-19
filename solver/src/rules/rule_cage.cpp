@@ -11,7 +11,9 @@ namespace sudoku {
 bool RuleCage::number_changed(CellIdx pos) {
     bool changed = false;
 
-    for (const auto &region: cages_) {
+    for (const auto &pair: cage_pair_) {
+        const Region<CellIdx> &region = pair.region;
+
         if (!region.has(pos))
             continue;
 
@@ -38,7 +40,6 @@ bool RuleCage::valid() {
 }
 
 void RuleCage::from_json(JSON &json) {
-    cages_.clear();
     cage_pair_.clear();
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("NumberCanRepeat"))
@@ -55,8 +56,6 @@ void RuleCage::from_json(JSON &json) {
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0) {
-            cages_.push_back(region);
-
             CagePair cage_pair;
             cage_pair.region = region;
             cage_pair.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
@@ -72,16 +71,14 @@ bool RuleCage::check_cage(CagePair &pair) {
     const int board_size = board_->size();
     remaining_cells.clear();
 
-    int filled_counts = 0;
     int sum = 0;
     NumberSet seen_values(board_size);
 
-    for (const auto& item: pair.region) {
+    for (const auto &item: pair.region) {
         Cell &cell = board_->get_cell(item);
 
         if (cell.is_solved()) {
             sum += cell.value;
-            filled_counts++;
 
             if (!number_can_repeat_ && seen_values.test(cell.value)) {
                 return false;
@@ -97,7 +94,7 @@ bool RuleCage::check_cage(CagePair &pair) {
     Number min_candidate = board_size;
     Number max_candidate = 1;
 
-    for (const auto& item: remaining_cells) {
+    for (const auto &item: remaining_cells) {
         Cell &cell = board_->get_cell(item);
 
         for (Number d = 1; d <= board_size; ++d) {
@@ -112,8 +109,8 @@ bool RuleCage::check_cage(CagePair &pair) {
     auto [min, max] = getSoftBounds(remaining_cells.size(), pair.sum - sum, min_candidate, max_candidate, board_size);
 
     bool changed = false;
-    for (const auto& item: remaining_cells) {
-        Cell& cell = board_->get_cell(item);
+    for (const auto &item: remaining_cells) {
+        Cell &cell = board_->get_cell(item);
 
         for (Number d = 1; d <= board_size; ++d) {
             if (!cell.candidates.test(d))
@@ -130,16 +127,14 @@ bool RuleCage::check_cage(CagePair &pair) {
 }
 
 bool RuleCage::check_group(const CagePair &pair) const {
-    int filled_counts = 0;
     int sum = 0;
     sudoku::NumberSet seen_values(board_->size());
 
-    for (const auto& item: pair.region) {
+    for (const auto &item: pair.region) {
         Cell &cell = board_->get_cell(item);
 
         if (cell.is_solved()) {
             sum += cell.value;
-            filled_counts++;
 
             if (!number_can_repeat_ && seen_values.test(cell.value)) {
                 return false; // number already seen, repetition not allowed
@@ -151,7 +146,7 @@ bool RuleCage::check_group(const CagePair &pair) const {
     }
 
     // if all cells in the cage are filled, check if sum matches target
-    if (filled_counts == pair.region.size() && sum != pair.sum)
+    if (seen_values.count() == pair.region.size() && sum != pair.sum)
         return false;
 
     return true;

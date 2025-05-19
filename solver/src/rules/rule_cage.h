@@ -24,7 +24,6 @@ public:
 private:
     bool number_can_repeat_ = false;
 
-    std::vector<Region<CellIdx>> cages_;
     std::vector<CagePair> cage_pair_;
     Region<CellIdx> remaining_cells;
 

@@ -111,9 +111,7 @@ bool RuleKropki::apply_white_number(Cell &source, Cell &target) const {
     if (source.value < N)
         allowed.add(source.value + 1);
 
-    NumberSet before = target.candidates;
-    target.only_allow_candidates(allowed);
-    return target.candidates != before;
+    return target.only_allow_candidates(allowed);
 }
 
 bool RuleKropki::apply_black_number(Cell &source, Cell &target) const {
@@ -129,9 +127,7 @@ bool RuleKropki::apply_black_number(Cell &source, Cell &target) const {
     if (source.value * 2 <= N)
         allowed.add(source.value * 2);
 
-    NumberSet before = target.candidates;
-    target.only_allow_candidates(allowed);
-    return target.candidates != before;
+    return target.only_allow_candidates(allowed);
 }
 
 bool RuleKropki::apply_white_candidates(Cell &a, Cell &b) const {

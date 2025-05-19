@@ -45,7 +45,15 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleParity>(this);
             } else if (type == "Diagonal") {
                 handler = std::make_shared<RuleDiagonal>(this);
-            }else {
+            } else if (type == "Renban") {
+                handler = std::make_shared<RuleRenban>(this);
+            } else if (type == "Whisper") {
+                handler = std::make_shared<RuleWhisper>(this);
+            } else if (type == "Arrow") {
+                handler = std::make_shared<RuleArrow>(this);
+            } else if (type == "Anti-Chess") {
+                handler = std::make_shared<RuleAntiChess>(this);
+            } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }
 
