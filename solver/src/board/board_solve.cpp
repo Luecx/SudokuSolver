@@ -13,6 +13,8 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
     Board solver = clone();
     Board tracker = clone();
 
+    update_impact_map();
+
     std::vector<CellIdx> positions;
     for (Row r = 0; r < board_size_; ++r)
         for (Col c = 0; c < board_size_; ++c)
@@ -36,11 +38,12 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
             continue;
         }
 
-        NumberSet cands = tracker.get_cell(idx).candidates;
+        Cell &tracker_cell = tracker.get_cell(idx);
+        NumberSet cands = tracker_cell.candidates;
 
         for (Number n: cands) {
             if (!solver.set_cell(idx, n)) {
-                cands.remove(n);
+                tracker_cell.candidates.remove(n);
                 cell.remove_candidate(n);
                 continue;
             }
@@ -50,29 +53,30 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
             nodes_explored += local_stats.nodes_explored;
 
             if (!solutions.empty()) {
-                for (auto &sol: solutions) {
-                    int skipped = 0;
-                    for (Row r = 0; r < board_size_; ++r)
-                        for (Col c = 0; c < board_size_; ++c) {
-                            Number solved_value = sol.get_cell({r, c}).value;
+                Board &sol = solutions[0];
 
-                            Cell &tracker_cell = tracker.get_cell({r, c});
-                            if (!tracker_cell.candidates.test(solved_value))
-                                continue;
+                const std::string key = sol.to_string();
+                if (unique_solutions.find(key) == unique_solutions.end()) {
+                    unique_solutions.insert(key);
+                    all_solutions.push_back(sol);
+                }
 
-                            tracker_cell.candidates.remove(solved_value);
-                            skipped++;
-                        }
+                int skipped = 0;
+                for (Row r = 0; r < board_size_; r++) {
+                    for (Col c = 0; c < board_size_; c++) {
+                        Number solved_value = sol.get_cell({r, c}).value;
 
-                    const std::string key = sol.to_string();
-                    if (unique_solutions.find(key) == unique_solutions.end()) {
-                        unique_solutions.insert(key);
-                        all_solutions.push_back(sol);
+                        Cell &tracker_cell = tracker.get_cell({r, c});
+                        if (!tracker_cell.candidates.test(solved_value))
+                            continue;
+
+                        tracker_cell.candidates.remove(solved_value);
+                        skipped++;
                     }
                 }
             } else if (!local_stats.interrupted_by_node_limit) {
+                tracker_cell.candidates.remove(n);
                 cell.candidates.remove(n);
-                cands.remove(n);
             }
 
             solver.pop_history(); // always backtrack

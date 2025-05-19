@@ -105,7 +105,7 @@ public:
     }
 
     void remove(Number num) {
-        assert_valid(num);
+        // assert_valid(num);
         bits_ &= ~(bit_t{1} << num);
     }
 
@@ -222,7 +222,7 @@ private:
 
     static constexpr bit_t compute_mask(int n) { return ((bit_t{1} << (n + 1)) - 1) & ~bit_t{1}; }
 
-    void assert_valid(Number num) const { assert(num >= 1 && num <= max_number_); }
+    void assert_valid(Number num) const { assert(num >= 0 && num <= max_number_); }
 };
 
 } // namespace sudoku

@@ -4,10 +4,10 @@
 #include "board/board.h"
 #include "json/json.h"
 #include "solver_stats.h"
-
+#include "rules/include.h"
 
 int main(int argc, char *argv[]) {
-    bench::bench(argv[1], 17, 10 * 16384, false);
+    bench::bench(argv[1], 17, 16384, true);
     return 0;
 }
 

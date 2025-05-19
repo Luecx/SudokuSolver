@@ -76,6 +76,8 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
 
     // statistics for the benchmark
     int total_puzzles = 0;
+    int total_solutions = 0;
+    uint64_t total_nodes = 0;
     int successful_solutions = 0;
     float total_time_ms = 0;
 
@@ -106,6 +108,8 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
             auto sol = solve_complete ? board.solve_complete(&stats) : board.solve(max_solutions, max_nodes, &stats);
             std::cout << stats << std::endl;
 
+            total_solutions += stats.solutions_found;
+            total_nodes += stats.nodes_explored;
             total_time_ms += stats.time_taken_ms;
 
             if (!sol.empty())
@@ -127,6 +131,14 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
     std::cout << "| " << std::setw(26) << std::left << "Puzzles solved:";
     std::cout << std::setw(12) << std::right << successful_solutions << " |\n";
 
+    // Total solutions row
+    std::cout << "| " << std::setw(26) << std::left << "Total solutions:";
+    std::cout << std::setw(12) << std::right << total_solutions << " |\n";
+
+    // Total nodes row
+    std::cout << "| " << std::setw(26) << std::left << "Total nodes:";
+    std::cout << std::setw(12) << std::right << total_nodes << " |\n";
+
     // Total time row
     std::cout << "| " << std::setw(26) << std::left << "Total time (ms):";
     std::stringstream time_ss;
@@ -134,12 +146,6 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
     std::cout << std::setw(12) << std::right << time_ss.str() << " |\n";
 
     if (total_puzzles > 0) {
-        // Average time row
-        std::cout << "| " << std::setw(26) << std::left << "Average time (ms):";
-        std::stringstream avg_ss;
-        avg_ss << std::fixed << std::setprecision(3) << (total_time_ms / total_puzzles);
-        std::cout << std::setw(12) << std::right << avg_ss.str() << " |\n";
-
         // Success rate row
         std::cout << "| " << std::setw(25) << std::left << "Success rate:";
         double success_rate = (successful_solutions * 100.0 / total_puzzles);
