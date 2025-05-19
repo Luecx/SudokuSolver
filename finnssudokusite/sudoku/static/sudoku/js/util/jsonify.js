@@ -2,6 +2,7 @@ import { CellIdx } from "../region/CellIdx.js";
 import { CornerIdx } from "../region/CornerIdx.js";
 import { EdgeIdx } from "../region/EdgeIdx.js";
 import { RCIdx } from "../region/RCIdx.js";
+import { DiagonalIdx } from "../region/DiagonalIdx.js";
 import { Region } from "../region/Region.js";
 
 // === Internal type mapping ===
@@ -10,6 +11,7 @@ const typeMap = {
     "CornerIdx": CornerIdx,
     "EdgeIdx": EdgeIdx,
     "RCIdx": RCIdx,
+    "DiagonalIdx": DiagonalIdx,
     "Region": Region,
 };
 
@@ -26,6 +28,9 @@ function customReplacer(key, value) {
     }
     if (value instanceof RCIdx) {
         return { __type__: "RCIdx", row: value.row, col: value.col };
+    }
+    if (value instanceof DiagonalIdx) {
+        return { __type__: "DiagonalIdx", type: value.type, index: value.index };
     }
     if (value instanceof Region) {
         return {

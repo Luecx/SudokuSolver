@@ -1,7 +1,7 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { Region } from "../region/Region.js";
-// import { attachDiagonalSumSolverLogic } from "./rule_diagonalsum_solver.js"; // You'll implement this
+import { attachDiagSumSolverLogic } from "./rule_diag_sum_solver.js"; // You'll implement this
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class DiagonalSumHandler extends RuleTypeHandler {
@@ -10,7 +10,7 @@ export class DiagonalSumHandler extends RuleTypeHandler {
         this.tag = "DiagonalSum";
         this.can_create_rules = true;
 
-        // attachDiagonalSumSolverLogic(this); // Hook in your constraint logic
+        attachDiagSumSolverLogic(this);
     }
 
     defaultRules() {

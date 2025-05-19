@@ -6,6 +6,7 @@
 
 namespace sudoku {
 
+// NOTE: probably can be made more efficiently
 class RuleRenban : public RuleHandler {
 public:
     explicit RuleRenban(Board *board) : RuleHandler(board) {}
