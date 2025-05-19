@@ -5,7 +5,7 @@ namespace sudoku {
 
 // standard helpers
 
-bool hidden_singles(Board *board_, std::vector<Cell *> unit) {
+bool hidden_singles(Board *board_, std::vector<Cell *>& unit) {
     bool changed = false;
 
     const int board_size = board_->size();
@@ -30,6 +30,7 @@ bool hidden_singles(Board *board_, std::vector<Cell *> unit) {
     return changed;
 }
 
+// very slow!
 bool pointing(Board *board_) {
     bool changed = false;
     const int block_size = board_->block_size();
@@ -69,7 +70,7 @@ bool pointing(Board *board_) {
     return changed;
 }
 
-bool is_group_valid(const std::vector<Cell *> unit) {
+bool is_group_valid(const std::vector<Cell *>& unit) {
     const int unit_size = unit.size();
 
     NumberSet seen(unit_size);
@@ -130,7 +131,7 @@ bool RuleStandard::candidates_changed() {
             changed |= hidden_singles(board_, block);
         }
 
-    return pointing(board_) || changed;
+    return changed;
 }
 
 bool RuleStandard::valid() {

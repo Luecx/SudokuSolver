@@ -59,19 +59,19 @@ public:
    /**
     * @brief Access an entire row by index.
     */
-    std::vector<Cell*> get_row(Row r) ;
+    std::vector<Cell*>& get_row(Row r) ;
 
    /**
     * @brief Access an entire column by index.
     */
-    std::vector<Cell*> get_col(Col c) ;
+    std::vector<Cell*>& get_col(Col c) ;
 
    /**
     * @brief Access the block that contains cell (r, c).
     *
     * Only valid if the board size is a square number (e.g., 9).
     */
-   std::vector<Cell*> get_block(Row r, Col c) ;
+   std::vector<Cell*>& get_block(Row r, Col c) ;
 
    /**
     * @brief Add a rule handler to the board.
@@ -173,8 +173,12 @@ private:
 
    std::vector<std::shared_ptr<RuleHandler>> handlers_; ///< All registered rule handlers
 
-   using Snapshot = std::vector<std::vector<std::pair<Number, NumberSet>>>;
-   std::stack<Snapshot> history_; ///< History stack for backtracking
+//   using Snapshot = std::vector<std::vector<std::pair<Number, NumberSet>>>;
+//   std::stack<Snapshot> history_; ///< History stack for backtracking
+
+    std::vector<Snapshot> snapshot_pool_;
+    int history_top_ = -1;
+
 
    ImpactMap impact_map_; ///< Per-cell heuristic values computed by rule handlers
 

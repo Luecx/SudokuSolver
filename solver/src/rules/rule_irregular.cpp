@@ -41,7 +41,7 @@ bool RuleIrregular::candidates_changed() {
         changed |= hidden_singles(board_, board_->get_col(i));
     }
 
-    for (const auto &unit: irregular_units_)
+    for (auto &unit: irregular_units_)
         changed |= hidden_singles(board_, unit);
 
     return changed;

@@ -31,6 +31,9 @@ namespace sudoku {
 */
 class NumberSet {
 public:
+
+    using bit_t = uint32_t;
+
    /// Constructors
 
    /**
@@ -60,7 +63,7 @@ public:
     * @param max_number Maximum number.
     * @param bits Bitmask representing values.
     */
-   NumberSet(int max_number, uint64_t bits)
+   NumberSet(int max_number, bit_t bits)
        : max_number_(max_number), bits_(bits) {
        assert(max_number_ >= 1 && max_number_ <= MAX_SIZE);
        mask_ = compute_mask(max_number_);
@@ -79,34 +82,34 @@ public:
 
     static NumberSet greaterThan(Number num, int max_number) {
         assert(num >= 0 && num <= max_number);
-        return {max_number, compute_mask(max_number) & ~((uint64_t{1} << (num + 1)) - 1)};
+        return {max_number, compute_mask(max_number) & ~((bit_t{1} << (num + 1)) - 1)};
     }
 
    static NumberSet lessThan(Number num, int max_number) {
        assert(num >= 0 && num <= max_number);
-       return {max_number, (uint64_t{1} << num) - 1};
+       return {max_number, (bit_t{1} << num) - 1};
    }
 
    static NumberSet odd(int max_number) {
        assert(max_number >= 1 && max_number <= MAX_SIZE);
-       return {max_number, compute_mask(max_number) & 0xAAAAAAAAAAAAAAAA};
+       return {max_number, (bit_t)compute_mask(max_number) & (bit_t)0xAAAAAAAAAAAAAAAA};
    }
 
     static NumberSet even(int max_number) {
          assert(max_number >= 1 && max_number <= MAX_SIZE);
-         return {max_number, compute_mask(max_number) & 0x5555555555555555};
+         return {max_number, (bit_t)compute_mask(max_number) & (bit_t)0x5555555555555555};
     }
 
    // --- Modifiers ---
 
    void add(Number num) {
        assert_valid(num);
-       bits_ |= (uint64_t{1} << num);
+       bits_ |= (bit_t{1} << num);
    }
 
    void remove(Number num) {
        assert_valid(num);
-       bits_ &= ~(uint64_t{1} << num);
+       bits_ &= ~(bit_t{1} << num);
    }
 
    void clear() noexcept { bits_ = 0; }
@@ -116,7 +119,7 @@ public:
 
    bool test(Number num) const {
        assert_valid(num);
-       return bits_ & (uint64_t{1} << num);
+       return bits_ & (bit_t{1} << num);
    }
 
    int count() const noexcept {
@@ -131,7 +134,7 @@ public:
        return bits_ ? static_cast<Number>(63 - std::countl_zero(bits_)) : 0;
    }
 
-   uint64_t raw() const noexcept { return bits_; }
+   bit_t raw() const noexcept { return bits_; }
 
    int max_number() const noexcept { return max_number_; }
 
@@ -143,7 +146,7 @@ public:
        using difference_type = int;
        using iterator_category = std::input_iterator_tag;
 
-       Iterator(uint64_t bits, int max_number, Number start)
+       Iterator(bit_t bits, int max_number, Number start)
            : bits_(bits), max_(max_number), cur_(advance(bits, start, max_number)) {}
 
        Number operator*() const noexcept { return cur_; }
@@ -158,13 +161,13 @@ public:
        }
 
    private:
-       uint64_t bits_;
+       bit_t bits_;
        int max_;
        Number cur_;
 
-       static Number advance(uint64_t bits, Number start, int max) {
+       static Number advance(bit_t bits, Number start, int max) {
            for (Number i = start; i <= max; ++i) {
-               if (bits & (uint64_t{1} << i)) return i;
+               if (bits & (bit_t{1} << i)) return i;
            }
            return max + 1;
        }
@@ -227,11 +230,11 @@ public:
 
 private:
    int max_number_;
-   uint64_t bits_ = 0;
-   uint64_t mask_ = 0;
+   bit_t bits_ = 0;
+   bit_t mask_ = 0;
 
-   static constexpr uint64_t compute_mask(int n) {
-       return ((uint64_t{1} << (n + 1)) - 1) & ~uint64_t{1};
+   static constexpr bit_t compute_mask(int n) {
+       return ((bit_t{1} << (n + 1)) - 1) & ~bit_t{1};
    }
 
    void assert_valid(Number num) const {

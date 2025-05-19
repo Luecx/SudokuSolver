@@ -51,9 +51,9 @@ constexpr Number EMPTY = 0;
 /**
     * @brief Maximum supported board size (for validation purposes).
     *
-    * Although typical boards are 9×9, this allows for generalization up to 63×63.
+    * Although typical boards are 9×9, this allows for generalization up to 16×16.
 */
-constexpr Size MAX_SIZE = 63;
+constexpr Size MAX_SIZE = 16;
 
 class Board;
 

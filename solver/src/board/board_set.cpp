@@ -35,35 +35,34 @@ bool Board::is_solved() const {
 }
 
 void Board::push_history() {
-    Snapshot snapshot;
-    snapshot.reserve(board_size_);
+    assert(history_top_ + 1 < static_cast<int>(snapshot_pool_.size()));
+    ++history_top_;
+    Snapshot& snap = snapshot_pool_[history_top_];
 
     for (Row r = 0; r < board_size_; ++r) {
-        std::vector<std::pair<Number, NumberSet>> row_snapshot;
-        row_snapshot.reserve(board_size_);
         for (Col c = 0; c < board_size_; ++c) {
             const Cell& cell = grid_[r][c];
-            row_snapshot.emplace_back(cell.value, cell.candidates);
+            int idx = r * board_size_ + c;
+            snap[idx].value = cell.value;
+            snap[idx].candidate_bits = cell.candidates.raw();
         }
-        snapshot.push_back(std::move(row_snapshot));
     }
-
-    history_.push(std::move(snapshot));
 }
 
 bool Board::pop_history() {
-    if (history_.empty())
+    if (history_top_ < 0)
         return false;
 
-    const Snapshot& snapshot = history_.top();
+    const Snapshot& snap = snapshot_pool_[history_top_];
     for (Row r = 0; r < board_size_; ++r) {
         for (Col c = 0; c < board_size_; ++c) {
-            grid_[r][c].value = snapshot[r][c].first;
-            grid_[r][c].candidates = snapshot[r][c].second;
+            int idx = r * board_size_ + c;
+            grid_[r][c].value = snap[idx].value;
+            grid_[r][c].candidates = NumberSet(board_size_, snap[idx].candidate_bits);
         }
     }
 
-    history_.pop();
+    --history_top_;
     return true;
 }
 
