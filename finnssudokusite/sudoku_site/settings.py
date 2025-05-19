@@ -16,7 +16,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sudoku',
     'corsheaders',
-
 ]
 
 USE_I18N = True
@@ -99,21 +98,3 @@ LOCALE_PATHS = [BASE_DIR / 'locale']
 import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
-
-
-#
-# INSTALLED_APPS = [
-#     # ...
-#     'django.contrib.sites',
-#     'allauth',
-#     'allauth.account',
-#     'allauth.socialaccount',
-#     'allauth.socialaccount.providers.apple',
-#     # ggf. weitere Anbieter
-# ]
-# SITE_ID = 1
-#
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# )

@@ -30,25 +30,29 @@ void solve(const char *json, int max_solutions, int max_nodes) {
         SolverStats stats;
         auto solutions = board.solve(max_solutions, max_nodes, &stats);
 
-        for (size_t i = 0; i < solutions.size(); ++i) {
-            std::cout << "\nSOLUTION " << (i + 1) << ":";
-            Board &sol = solutions[i];
+        for (auto &sol : solutions) {
+            std::cout << "[SOLUTION]";
             int N = sol.size();
             for (int r = 0; r < N; ++r) {
                 for (int c = 0; c < N; ++c) {
-                    std::cout << (int) sol.get_cell({r, c}).value << ",";
+                    std::cout << (int)(sol.get_cell({r, c}).value);
+                    if (!(r == N - 1 && c == N - 1)) std::cout << ",";
                 }
             }
             std::cout << "\n";
         }
 
-        std::cout << stats; // Pretty-prints using operator<<
-
+        std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
+        std::cout << "[INFO]nodes_explored=" << stats.nodes_explored << "\n";
+        std::cout << "[INFO]time_taken_ms=" << std::fixed << std::setprecision(3) << stats.time_taken_ms << "\n";
+        std::cout << "[INFO]interrupted_by_node_limit=" << (stats.interrupted_by_node_limit ? "true" : "false") << "\n";
+        std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false") << "\n";
     } catch (const std::exception &e) {
-        std::cout << "ERROR: " << e.what() << "\n";
+        std::cout << "[INFO]error=" << e.what() << "\n";
     }
-    std::cout << "FINISHED\n";
+    std::cout << "[DONE]\n";
 }
+
 /**
  * @brief Alias for solve (no separate implementation).
  */

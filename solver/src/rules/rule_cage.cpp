@@ -61,7 +61,6 @@ void RuleCage::from_json(JSON &json) {
             CagePair cage_pair;
             cage_pair.region = region;
             cage_pair.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
-
             cage_pair_.push_back(cage_pair);
         }
     }
