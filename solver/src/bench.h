@@ -103,7 +103,7 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
             board.from_json(root);
 
             SolverStats stats;
-            auto sol = board.solve(max_solutions, max_nodes, &stats);
+            auto sol = solve_complete ? board.solve_complete(&stats) : board.solve(max_solutions, max_nodes, &stats);
             std::cout << stats << std::endl;
 
             total_time_ms += stats.time_taken_ms;
