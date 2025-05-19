@@ -18,6 +18,13 @@ public:
 
 private:
     std::vector<Region<CellIdx>> renban_paths_;
+    std::vector<std::vector<int>> ranges_;
+    std::vector<int> solved_values_;
+    std::vector<int> potential_range_;
 
+    void init_all_consecutive_ranges(int length);
+    void init_ranges_including_values(int length, int min_value, int max_value);
+
+    bool enforce_renban(const Region<CellIdx> &path);
 };
 } // namespace sudoku
