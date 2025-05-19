@@ -3,9 +3,33 @@
 
 namespace sudoku {
 
-bool RuleXV::number_changed(CellIdx pos) { return enforce(); }
+bool RuleXV::candidates_changed() {
+    bool changed = false;
 
-bool RuleXV::candidates_changed() { return enforce(); }
+    // process X edges
+    for (const auto &edge: x_edges_.items()) {
+        Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
+        Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
+
+        changed |= enforce_sum(a, b, 10);
+        changed |= enforce_sum(b, a, 10);
+    }
+
+    // process V edges
+    for (const auto &edge: v_edges_.items()) {
+        Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
+        Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
+
+        changed |= enforce_sum(a, b, 5);
+        changed |= enforce_sum(b, a, 5);
+    }
+
+    // if all symbols are given, enforce constraints on cells without symbols
+    if (all_symbols_given_)
+        changed |= denforce_missing_symbols();
+
+    return changed;
+}
 
 bool RuleXV::valid() {
     // check if all X edges form valid pairs
@@ -26,7 +50,6 @@ bool RuleXV::valid() {
 
         if (!a.is_solved() || !b.is_solved())
             continue;
-
         if (a.value + b.value != 5)
             return false;
     }
@@ -80,34 +103,6 @@ void RuleXV::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleXV::enforce() const {
-    bool changed = false;
-
-    // Process X edges
-    for (const auto &edge: x_edges_.items()) {
-        Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
-        Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
-
-        changed |= enforce_sum(a, b, 10);
-        changed |= enforce_sum(b, a, 10);
-    }
-
-    // Process V edges
-    for (const auto &edge: v_edges_.items()) {
-        Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
-        Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
-
-        changed |= enforce_sum(a, b, 5);
-        changed |= enforce_sum(b, a, 5);
-    }
-
-    // If all symbols are given, enforce constraints on cells without symbols
-    if (all_symbols_given_)
-        changed |= denforce_missing_symbols();
-
-    return changed;
-}
-
 bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {
     // case 1: one cell is solved, the other isn't
     if (a.is_solved() && !b.is_solved()) {
@@ -132,7 +127,7 @@ bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {
             }
         }
 
-        changed = a.only_allow_candidates(valid_a) || changed;
+        changed |= a.only_allow_candidates(valid_a);
 
         // filter candidates for cell b
         NumberSet valid_b(b.max_number);
@@ -143,8 +138,7 @@ bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {
             }
         }
 
-        changed = b.only_allow_candidates(valid_b) || changed;
-
+        changed |= b.only_allow_candidates(valid_b);
         return changed;
     }
 
@@ -170,16 +164,18 @@ bool RuleXV::denforce_missing_symbols() const {
 bool RuleXV::denforce_sum(Cell &a, Cell &b, int sum) const {
     // case 1: a cell is solved, b cell isn't
     if (a.is_solved() && !b.is_solved()) {
-        NumberSet forbidden(a.max_number, Number(sum - a.value));
-        return b.remove_candidates(forbidden);
+        int diff = sum - a.value;
+        if (diff < 1 || diff > b.max_number)
+            return false;
+        return b.remove_candidate(diff);
     }
-
     // case 2: b cell is solved a cell isn't
     if (!a.is_solved() && b.is_solved()) {
-        NumberSet forbidden(b.max_number, Number(sum - b.value));
-        return a.remove_candidates(forbidden);
+        int diff = sum - b.value;
+        if (diff < 1 || diff > a.max_number)
+            return false;
+        return a.remove_candidate(diff);
     }
-
     // case 3: both cells are unsolved/solved
     return false;
 }

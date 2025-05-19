@@ -7,7 +7,7 @@
 
 
 int main(int argc, char *argv[]) {
-    bench::bench(argv[1], 17, 10 * 16384, false);
+    bench::bench(argv[1], 17, 16384, false);
     return 0;
 }
 

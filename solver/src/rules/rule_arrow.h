@@ -11,6 +11,11 @@ struct ArrowPair {
     Region<CellIdx> arrow_path;
 };
 
+/*
+    Arrow is now the same implementation as the one in js
+    But there is probably a mistake in the js implementation
+    and therefore in this one too.
+*/
 class RuleArrow : public RuleHandler {
 public:
     explicit RuleArrow(Board *board) : RuleHandler(board) {}

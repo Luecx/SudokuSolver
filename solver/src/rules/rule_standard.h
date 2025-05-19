@@ -6,13 +6,13 @@
 
 namespace sudoku {
 
-bool hidden_singles(Board *board_, std::vector<Cell *>& unit);
-bool pointing(Board *board_);
+bool hidden_singles(Board *board_, std::vector<Cell *> &unit);
+// bool pointing(Board *board_);
 
 /**
  * @brief Check if a group contains all numbers from 1 to n.
  */
-bool is_group_valid(const std::vector<Cell *>& unit);
+bool is_group_valid(const std::vector<Cell *> &unit);
 
 class RuleStandard : public RuleHandler {
 public:

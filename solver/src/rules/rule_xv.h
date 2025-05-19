@@ -12,7 +12,7 @@ class RuleXV : public RuleHandler {
 public:
     explicit RuleXV(Board *board) : RuleHandler(board) {}
 
-    bool number_changed(CellIdx pos) override;
+    bool number_changed(CellIdx pos) override { return false; };
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override;
@@ -25,7 +25,6 @@ private:
     Region<EdgeIdx> missing_symbol_edges_;
     bool all_symbols_given_ = false;
 
-    bool enforce() const;
     bool enforce_sum(Cell &a, Cell &b, int sum) const;
 
     bool denforce_missing_symbols() const;
