@@ -46,10 +46,8 @@ bool RuleWhisper::valid() {
             Cell &cell1 = board_->get_cell(items[i]);
             Cell &cell2 = board_->get_cell(items[i + 1]);
 
-            if (!check_pair(cell1, cell2))
+            if (!valid_pair(cell1, cell2))
                 return false;
-            //if (!check_pair(cell2, cell1))
-            //    return false;
         }
     }
 
@@ -132,7 +130,7 @@ bool RuleWhisper::apply_candidate_contraint(Cell &cell1, Cell &cell2) {
     return changed;
 }
 
-bool RuleWhisper::check_pair(Cell &cell1, Cell &cell2) {
+bool RuleWhisper::valid_pair(Cell &cell1, Cell &cell2) {
     if (cell1.value == 5 || cell2.value == 5)
         return false;
 
