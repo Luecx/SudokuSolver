@@ -30,7 +30,6 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
     bool changed = false;
 
     const int board_size = board_->size();
-
     for (int i = 0; i < 2; i++) {
         if (!pair[i].enabled)
             continue;
@@ -88,7 +87,6 @@ bool RuleAntiChess::candidates_changed() {
 
 bool RuleAntiChess::valid() {
     const int board_size = board_->size();
-
     for (int i = 0; i < 2; i++) {
         if (!pair[i].enabled)
             continue;
@@ -157,7 +155,12 @@ void RuleAntiChess::from_json(JSON &json) {
         bool enabled = rule["fields"]["enabled"].get<bool>();
         bool number_can_repeat = rule["fields"]["NumberCanRepeat"].get<bool>();
         std::string forbidden_sums = rule["fields"]["sums"].get<std::string>();
-        Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
+
+        Region<CellIdx> region;
+        if (rule["fields"]["region"].is_object())
+            region = Region<CellIdx>::from_json(rule["fields"]["region"]);
+        else
+            region = Region<CellIdx>(); // anti-chess allows null regions
 
         pair[count].label = label;
         pair[count].enabled = enabled;
