@@ -6,7 +6,7 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class DiagonalSumHandler extends RuleTypeHandler {
     constructor(board) {
-        super("DiagonalSum", board);
+        super("Diagonal Sum", board);
         this.tag = "DiagonalSum";
         this.can_create_rules = true;
 

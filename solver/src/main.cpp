@@ -1,46 +1,8 @@
-#include <chrono>
-#include <fstream>
-#include <iostream>
 #include <string>
-
-
-// #include "board.h"
-#include "rules/include.h"
-// #include "position.h"
-#include "board/board.h"
-#include "json/json.h"
-#include "number_set.h"
-#include "region/region.h"
-
-using namespace sudoku;
+#include "bench.h"
 
 int main(int argc, char *argv[]) {
-    std::string txt;
-    {
-        std::ifstream file((std::string(argv[1])));
-        if (!file.is_open()) {
-            std::cerr << "Failed to open json" << std::endl;
-            return 1;
-        }
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        txt = buffer.str();
-    }
-
-    try {
-        auto root = JSON::parse(txt);
-
-        Board board{9};
-        board.from_json(root);
-        std::cout << board << std::endl;
-
-        SolverStats stats;
-        auto sol = board.solve(17, 10 * 16384, &stats);
-        std::cout << stats << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Parse error: " << e.what() << "\n";
-    }
-
+    bench::bench(argv[1], 17, 16384, false);
     return 0;
 }
 

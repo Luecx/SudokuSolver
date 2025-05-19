@@ -16,3 +16,4 @@
 #include "rule_arrow.h"
 #include "rule_anti_chess.h"
 #include "rule_sandwich.h"
+#include "rule_diagonal_sum.h"

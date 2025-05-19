@@ -76,8 +76,6 @@ bool RuleSandwich::valid() {
 void RuleSandwich::from_json(JSON &json) {
     sandwich_pairs_.clear();
 
-    std::cout << "RuleSandwich::from_json" << std::endl;
-
     if (!json["rules"].is_array())
         return;
 
