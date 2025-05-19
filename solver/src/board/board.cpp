@@ -23,6 +23,11 @@ Board::Board(int size)
     if (block_size_ * block_size_ == size) {
         initialize_blocks();
     }
+
+    snapshot_pool_.resize(size * size);
+    for (auto& snap : snapshot_pool_)
+        snap.resize(board_size_ * board_size_);
+
 }
 
 void Board::initialize_accessors() {
@@ -54,15 +59,15 @@ Cell& Board::get_cell(const CellIdx& idx) {
     return grid_.at(idx.r).at(idx.c);
 }
 
-std::vector<Cell*> Board::get_row(Row r)  {
+std::vector<Cell*>& Board::get_row(Row r)  {
     return rows_.at(r);
 }
 
-std::vector<Cell*> Board::get_col(Col c)  {
+std::vector<Cell*>& Board::get_col(Col c)  {
     return cols_.at(c);
 }
 
-std::vector<Cell*> Board::get_block(Row r, Col c)  {
+std::vector<Cell*>& Board::get_block(Row r, Col c)  {
     assert(block_size_ * block_size_ == board_size_);
     int block_row = r / block_size_;
     int block_col = c / block_size_;

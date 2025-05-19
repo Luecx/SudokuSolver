@@ -28,7 +28,7 @@ namespace sudoku {
 */
 class Cell {
 public:
-    CellIdx pos;              ///< Row/column position of the cell
+   CellIdx pos;              ///< Row/column position of the cell
    Number value = 0;          ///< 0 if unsolved, 1–N if solved
    NumberSet candidates;      ///< Active candidates (always consistent with value)
    int max_number = 9;        ///< Board size (max value), e.g., 9 for 9x9
@@ -112,6 +112,16 @@ public:
        return value != 0;
    }
 };
+
+
+struct CellSnapshot {
+    Number value;
+    uint32_t candidate_bits;
+};
+
+using Snapshot = std::vector<CellSnapshot>; // size = board_size_ * board_size_
+
+
 
 } // namespace sudoku
 
