@@ -61,7 +61,7 @@ std::vector<Solution> Board::solve_complete(
                 const std::string key = oss.str();
                 if (unique_solutions.insert(key).second) {
                     all_solutions.push_back(sol);
-//                    if (onSolution) onSolution(all_solutions.back());
+                    if (onSolution) onSolution(all_solutions.back());
                 }
 
                 for (Row r = 0; r < board_size_; ++r) {
