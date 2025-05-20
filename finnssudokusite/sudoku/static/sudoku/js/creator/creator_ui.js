@@ -5,7 +5,6 @@ import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../game/input_keyboard.js";
 import { InputMode } from "../game/input_constants.js";
-import SolverEngine from "../cppsolver/solver.js";
 import { CellIdx } from "../region/CellIdx.js";
 import { Solution, Solutions } from "../solver/solution.js";
 
@@ -47,8 +46,8 @@ class Creator {
         this.normalDepth = 16384;
         this.completeDepth = 1024;
 
-        this.module = await SolverEngine();
-        this.module.addMessageListener(this.onSolverMessage.bind(this));
+        this.worker = new Worker("/static/sudoku/js/cppsolver/solver.worker.js", { type: "module" });
+        this.worker.onmessage = e => this.onSolverMessage(e.data);
         this.resetSolverState();
 
         this.initSaveButton();
@@ -131,7 +130,7 @@ class Creator {
         this.preSolveNumbers = this.board.getFixedNumbers();
 
         const json = this.board.saveBoard();
-        this.module.postMessage("solve", json, 17, this.normalDepth);
+        this.worker.postMessage(["solve", json, 32, this.normalDepth]);
     }
 
     async runCompleteAnalysis() {
@@ -150,7 +149,7 @@ class Creator {
         this.preSolveNumbers = this.board.getFixedNumbers();
 
         const json = this.board.saveBoard();
-        this.module.postMessage("solveComplete", json, 9999, this.completeDepth);
+        this.worker.postMessage(["solveComplete", json, 0, this.completeDepth]);
     }
 
     finishSolverRun() {
