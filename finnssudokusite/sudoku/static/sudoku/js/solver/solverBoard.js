@@ -78,7 +78,7 @@ export class SolverBoard {
 
         for (const handler of this.rules) {
             const region = handler.attachedCells(this);
-            console.log(region);
+            // console.log(region);
             for (const cellIdx of region.items) {
                 this.getCell(cellIdx).ruleCount += 1;
             }
@@ -296,12 +296,12 @@ export class SolverBoard {
                                 }
                             }
                         }
-                        console.log(`→ Solution found. Skipping ${skipped} candidate(s).`);
+                        // console.log(`→ Solution found. Skipping ${skipped} candidate(s).`);
                         const key = sol.toString();
                         if (!all_solutions.has(key)) all_solutions.set(key, sol);
                     }
                 } else if (!stats.interrupted) {
-                    console.log(`→ Candidate ${n} at (${r},${c}) eliminated.`);
+                    // console.log(`→ Candidate ${n} at (${r},${c}) eliminated.`);
                     cell.candidates.disallow(n);
                     cands.disallow(n);
                 }
@@ -427,8 +427,8 @@ export class SolverBoard {
             const pos = this.getNextCell(impactSums);
             if (!pos) return true;
 
-            if (nodeCount < 10)
-                console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
+            // if (nodeCount < 10)
+            //     console.log(`Trying ${pos.r},${pos.c} (${this.getCell(pos).candidates.count()} candidates)`);
 
             for (const n of this.getRandomCandidates(pos, impactMap)) {
                 if (this.setCell(pos, n)) {
@@ -543,12 +543,12 @@ export class SolverBoard {
         const counts = this.grid.map(row => row.map(cell => cell.ruleCount));
         const maxCount = Math.max(...counts.flat());
         const maxWidth = String(maxCount).length;
-
-        console.log(this.grid.map(row =>
-            row.map(cell =>
-                String(cell.ruleCount).padStart(maxWidth, " ")
-            ).join(" ")
-        ).join("\n"));
+        //
+        // console.log(this.grid.map(row =>
+        //     row.map(cell =>
+        //         String(cell.ruleCount).padStart(maxWidth, " ")
+        //     ).join(" ")
+        // ).join("\n"));
     }
 }
 

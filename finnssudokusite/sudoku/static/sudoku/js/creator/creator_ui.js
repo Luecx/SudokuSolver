@@ -84,7 +84,7 @@ class Creator {
     }
 
     onSolverMessage(msg) {
-        console.log(msg);
+        // console.log(msg);
         if (msg.startsWith("[SOLUTION]")) {
             this.addSolutionFromString(msg.replace("[SOLUTION]", "").trim());
         } else if (msg.startsWith("[PROGRESS]")) {
@@ -152,7 +152,10 @@ class Creator {
         this.renderAlert("warning", "Analyzing...", "");
         this.resetSolverState();
         this.solverRunning = true;
-        this.module.postMessage("solveComplete", this.board.saveBoard(), 9999, this.completeDepth);
+
+        const json = this.board.saveBoard();
+        console.log(json);
+        this.module.postMessage("solveComplete", json, 9999, this.completeDepth);
     }
 
     finishSolverRun() {

@@ -15,8 +15,7 @@ std::vector<Solution> Board::solve_complete(
 {
     std::vector<Solution> all_solutions;
     std::unordered_set<std::string> unique_solutions;
-    Board solver = clone();
-    Board tracker = clone();
+    Board tracker = clone_shallow();
 
     update_impact_map();
 
@@ -37,21 +36,21 @@ std::vector<Solution> Board::solve_complete(
 
     for (const CellIdx &idx : positions) {
         current_idx++;
-        Cell &cell = solver.get_cell(idx);
+        Cell &cell = this->get_cell(idx);
         if (cell.is_solved()) continue;
 
         Cell &tracker_cell = tracker.get_cell(idx);
         NumberSet cands = tracker_cell.candidates;
 
         for (Number n : cands) {
-            if (!solver.set_cell(idx, n)) {
+            if (!this->set_cell(idx, n)) {
                 tracker_cell.candidates.remove(n);
                 cell.remove_candidate(n);
                 continue;
             }
 
             SolverStats local_stats;
-            std::vector<Solution> boards = solver.solve(1, max_nodes, &local_stats);
+            std::vector<Solution> boards = this->solve(1, max_nodes, &local_stats);
             nodes_explored += local_stats.nodes_explored;
 
             if (!boards.empty()) {
@@ -77,7 +76,7 @@ std::vector<Solution> Board::solve_complete(
                 cell.candidates.remove(n);
             }
 
-            solver.pop_history();
+            this->pop_history();
         }
 
         if (onProgress)
@@ -201,7 +200,7 @@ sudoku::Solution Board::copy_solution() const {
     return sol;
 }
 
-Board Board::clone() const {
+Board Board::clone_shallow() const {
     Board res{board_size_};
 
     // Copy cell values and candidates
@@ -212,10 +211,7 @@ Board Board::clone() const {
         }
     }
 
-    // Copy rule handlers (shared_ptr: shallow copy is fine)
-    for (const auto &handler : handlers_) {
-        res.add_handler(handler);  // invokes proper internal updates
-    }
+    // no copying of handlers!
 
     return res;
 }

@@ -169,7 +169,7 @@ public:
     CellIdx get_next_cell() const;
     std::vector<Number> get_random_candidates(const CellIdx &idx) const;
     Solution copy_solution() const;
-    Board clone() const;
+    Board clone_shallow() const;
     std::vector<Solution> solve_complete(
         SolverStats *stats_out = nullptr,
         int max_nodes = 1024,
