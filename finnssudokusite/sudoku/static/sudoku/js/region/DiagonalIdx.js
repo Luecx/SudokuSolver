@@ -85,9 +85,9 @@ export class DiagonalIdx {
         } else if (this.type === 'anti') {
             // r + c = index → r = index - c
             for (let c = 0; c < board_size; ++c) {
-                const r = this.index - c;
+                const r = this.index + c;
                 if (r >= 0 && r < board_size) {
-                    cells.push(new CellIdx(r, c));
+                    cells.push(new CellIdx(r, 8 - c));
                 }
             }
         }

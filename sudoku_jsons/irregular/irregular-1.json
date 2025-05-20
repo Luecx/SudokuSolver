@@ -1,1 +1,571 @@
-{"fixedCells":[{"r":1,"c":3,"value":5},{"r":1,"c":4,"value":8},{"r":1,"c":5,"value":9},{"r":2,"c":3,"value":4},{"r":2,"c":5,"value":3},{"r":3,"c":1,"value":1},{"r":3,"c":2,"value":9},{"r":3,"c":6,"value":2},{"r":3,"c":7,"value":5},{"r":4,"c":1,"value":2},{"r":4,"c":7,"value":4},{"r":5,"c":1,"value":9},{"r":5,"c":2,"value":3},{"r":5,"c":6,"value":1},{"r":5,"c":7,"value":7},{"r":6,"c":3,"value":1},{"r":6,"c":5,"value":8},{"r":7,"c":3,"value":3},{"r":7,"c":4,"value":9},{"r":7,"c":5,"value":4}],"rules":[{"type":"Irregular Regions","fields":{"region1":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":0},{"__type__":"CellIdx","r":0,"c":0},{"__type__":"CellIdx","r":0,"c":1},{"__type__":"CellIdx","r":0,"c":2},{"__type__":"CellIdx","r":1,"c":2},{"__type__":"CellIdx","r":2,"c":2},{"__type__":"CellIdx","r":1,"c":3},{"__type__":"CellIdx","r":0,"c":3},{"__type__":"CellIdx","r":0,"c":4}]},"region2":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":5},{"__type__":"CellIdx","r":1,"c":5},{"__type__":"CellIdx","r":1,"c":4},{"__type__":"CellIdx","r":2,"c":4},{"__type__":"CellIdx","r":3,"c":4},{"__type__":"CellIdx","r":4,"c":4},{"__type__":"CellIdx","r":4,"c":5},{"__type__":"CellIdx","r":1,"c":6},{"__type__":"CellIdx","r":2,"c":6}]},"region3":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":6},{"__type__":"CellIdx","r":0,"c":7},{"__type__":"CellIdx","r":0,"c":8},{"__type__":"CellIdx","r":1,"c":7},{"__type__":"CellIdx","r":2,"c":7},{"__type__":"CellIdx","r":3,"c":7},{"__type__":"CellIdx","r":3,"c":6},{"__type__":"CellIdx","r":3,"c":5},{"__type__":"CellIdx","r":2,"c":5}]},"region4":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":8},{"__type__":"CellIdx","r":2,"c":8},{"__type__":"CellIdx","r":3,"c":8},{"__type__":"CellIdx","r":4,"c":8},{"__type__":"CellIdx","r":4,"c":7},{"__type__":"CellIdx","r":4,"c":6},{"__type__":"CellIdx","r":5,"c":6},{"__type__":"CellIdx","r":5,"c":5},{"__type__":"CellIdx","r":6,"c":5}]},"region5":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":7},{"__type__":"CellIdx","r":5,"c":8},{"__type__":"CellIdx","r":6,"c":8},{"__type__":"CellIdx","r":7,"c":8},{"__type__":"CellIdx","r":8,"c":8},{"__type__":"CellIdx","r":6,"c":7},{"__type__":"CellIdx","r":6,"c":6},{"__type__":"CellIdx","r":7,"c":6},{"__type__":"CellIdx","r":7,"c":5}]},"region6":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":7},{"__type__":"CellIdx","r":8,"c":7},{"__type__":"CellIdx","r":8,"c":6},{"__type__":"CellIdx","r":8,"c":5},{"__type__":"CellIdx","r":8,"c":4},{"__type__":"CellIdx","r":7,"c":4},{"__type__":"CellIdx","r":6,"c":4},{"__type__":"CellIdx","r":5,"c":4},{"__type__":"CellIdx","r":6,"c":3}]},"region7":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":3},{"__type__":"CellIdx","r":3,"c":3},{"__type__":"CellIdx","r":3,"c":2},{"__type__":"CellIdx","r":3,"c":1},{"__type__":"CellIdx","r":4,"c":3},{"__type__":"CellIdx","r":5,"c":3},{"__type__":"CellIdx","r":5,"c":2},{"__type__":"CellIdx","r":6,"c":2},{"__type__":"CellIdx","r":7,"c":2}]},"region8":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":1},{"__type__":"CellIdx","r":2,"c":1},{"__type__":"CellIdx","r":2,"c":0},{"__type__":"CellIdx","r":3,"c":0},{"__type__":"CellIdx","r":4,"c":0},{"__type__":"CellIdx","r":4,"c":1},{"__type__":"CellIdx","r":4,"c":2},{"__type__":"CellIdx","r":5,"c":0},{"__type__":"CellIdx","r":6,"c":0}]},"region9":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":1},{"__type__":"CellIdx","r":6,"c":1},{"__type__":"CellIdx","r":7,"c":1},{"__type__":"CellIdx","r":7,"c":0},{"__type__":"CellIdx","r":8,"c":0},{"__type__":"CellIdx","r":8,"c":1},{"__type__":"CellIdx","r":8,"c":2},{"__type__":"CellIdx","r":8,"c":3},{"__type__":"CellIdx","r":7,"c":3}]}},"rules":[]}]}
+{
+    "fixedCells": [
+        {
+            "r": 1,
+            "c": 3,
+            "value": 5
+        },
+        {
+            "r": 1,
+            "c": 4,
+            "value": 8
+        },
+        {
+            "r": 1,
+            "c": 5,
+            "value": 9
+        },
+        {
+            "r": 2,
+            "c": 3,
+            "value": 4
+        },
+        {
+            "r": 2,
+            "c": 5,
+            "value": 3
+        },
+        {
+            "r": 3,
+            "c": 1,
+            "value": 1
+        },
+        {
+            "r": 3,
+            "c": 2,
+            "value": 9
+        },
+        {
+            "r": 3,
+            "c": 6,
+            "value": 2
+        },
+        {
+            "r": 3,
+            "c": 7,
+            "value": 5
+        },
+        {
+            "r": 4,
+            "c": 1,
+            "value": 2
+        },
+        {
+            "r": 4,
+            "c": 7,
+            "value": 4
+        },
+        {
+            "r": 5,
+            "c": 1,
+            "value": 9
+        },
+        {
+            "r": 5,
+            "c": 2,
+            "value": 3
+        },
+        {
+            "r": 5,
+            "c": 6,
+            "value": 1
+        },
+        {
+            "r": 5,
+            "c": 7,
+            "value": 7
+        },
+        {
+            "r": 6,
+            "c": 3,
+            "value": 1
+        },
+        {
+            "r": 6,
+            "c": 5,
+            "value": 8
+        },
+        {
+            "r": 7,
+            "c": 3,
+            "value": 3
+        },
+        {
+            "r": 7,
+            "c": 4,
+            "value": 9
+        },
+        {
+            "r": 7,
+            "c": 5,
+            "value": 4
+        }
+    ],
+    "rules": [
+        {
+            "type": "Irregular Regions",
+            "fields": {
+                "region1": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 4
+                        }
+                    ]
+                },
+                "region2": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 5
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 5
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 5
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 6
+                        }
+                    ]
+                },
+                "region3": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 0,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 5
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 5
+                        }
+                    ]
+                },
+                "region4": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 5
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 5
+                        }
+                    ]
+                },
+                "region5": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 8
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 5
+                        }
+                    ]
+                },
+                "region6": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 7
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 6
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 5
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 4
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 3
+                        }
+                    ]
+                },
+                "region7": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 2
+                        }
+                    ]
+                },
+                "region8": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 1,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 2,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 3,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 4,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 0
+                        }
+                    ]
+                },
+                "region9": {
+                    "__type__": "Region",
+                    "type": "cells",
+                    "items": [
+                        {
+                            "__type__": "CellIdx",
+                            "r": 5,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 6,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 0
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 1
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 2
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 8,
+                            "c": 3
+                        },
+                        {
+                            "__type__": "CellIdx",
+                            "r": 7,
+                            "c": 3
+                        }
+                    ]
+                }
+            },
+            "rules": []
+        }
+    ]
+}

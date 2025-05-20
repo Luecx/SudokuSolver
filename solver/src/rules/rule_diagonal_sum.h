@@ -18,10 +18,12 @@ public:
     bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;
     bool valid() override;
-    void update_impact(ImpactMap &map) override {};
+    void update_impact(ImpactMap &map) override;
     void from_json(JSON &json) override;
 
 private:
     std::vector<DiagSumPair> diagsum_pairs_;
+
+    bool check_diagonal(DiagSumPair &pair);
 };
 } // namespace sudoku
