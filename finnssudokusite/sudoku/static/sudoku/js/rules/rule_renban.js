@@ -1,6 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import {attachRenbanSolverLogic} from "./rule_renban_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class RenbanHandler extends RuleTypeHandler {
@@ -8,8 +7,6 @@ export class RenbanHandler extends RuleTypeHandler {
         super("Renban", board);
         this.tag = "Renban";
         this.can_create_rules = true;
-
-        attachRenbanSolverLogic(this);
     }
 
     defaultRules() {

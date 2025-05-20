@@ -13,10 +13,11 @@ bool RuleThermo::number_changed(CellIdx pos) {
         if (idx == -1)
             continue;
 
+        const int path_size = path.size();
         const std::vector<CellIdx> &items = path.items();
 
         int forward = idx;
-        while (++forward < path.size()) {
+        while (++forward < path_size) {
             Cell &cell_ = board_->get_cell(items[forward]);
             if (cell_.is_solved())
                 continue;
@@ -75,7 +76,7 @@ bool RuleThermo::valid() {
     for (const auto &path: thermo_paths_) {
         const std::vector<CellIdx> &items = path.items();
 
-        for (int i = 1; i < items.size(); ++i) {
+        for (size_t i = 1; i < items.size(); ++i) {
             Cell &a = board_->get_cell(items[i - 1]);
             Cell &b = board_->get_cell(items[i]);
 

@@ -1,6 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import { attachChevronSolverLogic } from "./rule_chevron_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ChevronHandler extends RuleTypeHandler {
@@ -8,8 +7,6 @@ export class ChevronHandler extends RuleTypeHandler {
         super("Chevron", board);
         this.tag = "Chevron";
         this.can_create_rules = false;
-
-        attachChevronSolverLogic(this);
     }
 
     defaultRules() {

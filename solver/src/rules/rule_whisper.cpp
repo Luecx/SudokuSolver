@@ -11,7 +11,7 @@ bool RuleWhisper::number_changed(CellIdx pos) {
             continue;
 
         const auto &items = path.items();
-        for (int i = 0; i < path.size() - 1; i++) {
+        for (size_t i = 0; i < path.size() - 1; i++) {
             Cell &cell1 = board_->get_cell(items[i]);
             Cell &cell2 = board_->get_cell(items[i + 1]);
 
@@ -27,7 +27,7 @@ bool RuleWhisper::candidates_changed() {
     bool changed = false;
     for (const auto &path: whisper_paths_) {
         const auto &items = path.items();
-        for (int i = 0; i < path.size() - 1; i++) {
+        for (size_t i = 0; i < path.size() - 1; i++) {
             Cell &cell1 = board_->get_cell(items[i]);
             Cell &cell2 = board_->get_cell(items[i + 1]);
 
@@ -42,7 +42,7 @@ bool RuleWhisper::candidates_changed() {
 bool RuleWhisper::valid() {
     for (const auto &path: whisper_paths_) {
         const auto &items = path.items();
-        for (int i = 0; i < path.size() - 1; i++) {
+        for (size_t i = 0; i < path.size() - 1; i++) {
             Cell &cell1 = board_->get_cell(items[i]);
             Cell &cell2 = board_->get_cell(items[i + 1]);
 

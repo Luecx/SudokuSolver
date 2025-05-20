@@ -95,7 +95,7 @@ bool RuleExtraRegions::check_group(const std::vector<Cell *> &unit) {
         }
     }
 
-    return combined.count() >= unit.size();
+    return combined.count() >= static_cast<int>(unit.size());
 }
 
 } // namespace sudoku

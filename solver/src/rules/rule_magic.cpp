@@ -26,8 +26,6 @@ const std::array<std::array<int, 9>, 8> MAGIC_SQUARE_SOLUTIONS =
 bool RuleMagic::number_changed(CellIdx pos) {
     bool changed = false;
     for (const auto &region: magic_regions_) {
-        const std::vector<CellIdx> &items = region.items();
-
         initPossibleLayouts(region);
         if (possible_layouts_.empty())
             continue;
@@ -102,7 +100,7 @@ bool RuleMagic::is3x3Square(const Region<CellIdx> &region) {
 bool RuleMagic::isValidLayout(const Region<CellIdx> &region, const std::array<int, 9> &layout) {
     const std::vector<CellIdx> &items = region.items();
 
-    for (int i = 0; i < items.size(); i++) {
+    for (size_t i = 0; i < items.size(); i++) {
         const Cell &cell = board_->get_cell(items[i]);
         if (cell.value != 0 && cell.value != layout[i])
             return false;
@@ -123,7 +121,7 @@ bool RuleMagic::applyCandidates(const Region<CellIdx> &region) {
 
     const std::vector<CellIdx> &items = region.items();
 
-    for (int i = 0; i < items.size(); i++) {
+    for (size_t i = 0; i < items.size(); i++) {
         Cell &cell = board_->get_cell(items[i]);
         if (cell.is_solved())
             continue;

@@ -1,6 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import {attachThermometerSolverLogic} from "./rule_thermo_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ThermometerHandler extends RuleTypeHandler {
@@ -8,8 +7,6 @@ export class ThermometerHandler extends RuleTypeHandler {
         super("Thermometer", board);
         this.tag = "Thermo";
         this.can_create_rules = true;
-
-        attachThermometerSolverLogic(this);
     }
 
     defaultRules() {

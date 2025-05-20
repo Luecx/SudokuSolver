@@ -128,8 +128,6 @@ bool RuleChevron::enforce_greater_less(Cell &cell, Cell &neighbor, std::string s
     if (cell.is_solved() && neighbor.is_solved())
         return false;
 
-    const int board_size = board_->size();
-
     bool changed = false;
     NumberSet cell_candidates = cell.get_candidates();
     NumberSet neighbor_candidates = neighbor.get_candidates();

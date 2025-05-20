@@ -1,6 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import {attachPalindromeSolverLogic} from "./rule_palindrome_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class PalindromeHandler extends RuleTypeHandler {
@@ -8,8 +7,6 @@ export class PalindromeHandler extends RuleTypeHandler {
         super("Palindrome", board);
         this.tag = "Palindrome";
         this.can_create_rules = true;
-
-        attachPalindromeSolverLogic(this);
     }
 
     defaultRules() {

@@ -17,7 +17,6 @@ bool RuleDiagonalSum::candidates_changed() {
 };
 
 bool RuleDiagonalSum::valid() {
-    const int board_size = board_->size();
 
     return true;
 }

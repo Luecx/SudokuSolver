@@ -1,7 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
-import { attachIrregularSolverLogic} from "./rule_irregular_regions_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class IrregularRegionsHandler extends RuleTypeHandler {
@@ -20,9 +19,7 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
             'region7', 
             'region8', 
             'region9'
-        ];
-        
-        attachIrregularSolverLogic(this);
+        ];        
     }
 
     defaultRules() {

@@ -115,7 +115,7 @@ void RuleClone::initCloneGroups() {
     const int max_regions = clone_regions_.size();
     NumberSet processed(max_regions);
 
-    for (int i = 0; i < clone_regions_.size(); i++) {
+    for (int i = 0; i < max_regions; i++) {
         // skip if already processed
         if (processed.test(i + 1)) // +1 because NumberSet is 1-based
             continue;
@@ -123,7 +123,7 @@ void RuleClone::initCloneGroups() {
         const auto &region = clone_regions_[i];
         std::vector<int> clones = {i};
 
-        for (int j = i + 1; j < clone_regions_.size(); j++) {
+        for (int j = i + 1; j < max_regions; j++) {
             if (processed.test(j + 1)) // +1 because NumberSet is 1-based
                 continue;
 

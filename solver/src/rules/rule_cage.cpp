@@ -147,7 +147,7 @@ bool RuleCage::check_group(const CagePair &pair) const {
     }
 
     // if all cells in the cage are filled, check if sum matches target
-    if (seen_values.count() == pair.region.size() && sum != pair.sum)
+    if (seen_values.count() == static_cast<int>(pair.region.size()) && sum != pair.sum)
         return false;
 
     return true;

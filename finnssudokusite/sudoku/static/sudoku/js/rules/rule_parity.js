@@ -1,6 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import {attachParitySolverLogic} from "./rule_parity_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ParityHandler extends RuleTypeHandler {
@@ -8,8 +7,6 @@ export class ParityHandler extends RuleTypeHandler {
         super("Parity", board);
         this.tag = "Parity";
         this.can_create_rules = true;
-
-        attachParitySolverLogic(this);
     }
 
     defaultRules() {

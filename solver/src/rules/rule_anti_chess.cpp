@@ -29,7 +29,6 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
     Cell &cell = board_->get_cell(pos);
     bool changed = false;
 
-    const int board_size = board_->size();
     for (int i = 0; i < 2; i++) {
         if (!pair[i].enabled)
             continue;

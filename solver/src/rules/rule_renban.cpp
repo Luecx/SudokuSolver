@@ -50,7 +50,7 @@ bool RuleRenban::valid() {
             continue;
 
         std::sort(solved_values_.begin(), solved_values_.end());
-        for (int i = 1; i < solved_values_.size(); i++)
+        for (size_t i = 1; i < solved_values_.size(); i++)
             if (solved_values_[i] != solved_values_[i - 1] + 1)
                 return false;
     }

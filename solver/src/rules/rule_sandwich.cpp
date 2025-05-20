@@ -170,7 +170,8 @@ void RuleSandwich::initLine(const RCIdx &pos) {
 }
 
 bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD) {
-    for (int j = 0; j < line.size(); j++) {
+    const int line_size = line.size();
+    for (int j = 0; j < line_size; j++) {
         if (j == i)
             continue;
 

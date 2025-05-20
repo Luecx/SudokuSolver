@@ -1,7 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
-import { attachCageSolverLogic} from "./rule_cage_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class CageHandler extends RuleTypeHandler {
@@ -9,8 +8,6 @@ export class CageHandler extends RuleTypeHandler {
         super("Cage", board);
         this.tag = "Killer";
         this.can_create_rules = true;
-
-        attachCageSolverLogic(this);
     }
 
     defaultRules() {

@@ -2,7 +2,6 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
-import * as CloneSolver from "./rule_clone_solver.js";
 
 export class CloneHandler extends RuleTypeHandler {
     constructor(board) {
@@ -10,8 +9,6 @@ export class CloneHandler extends RuleTypeHandler {
         this.tag = "Clone";
         this.can_create_rules = true;
         this.usedColors = new Set();
-
-        CloneSolver.attachCloneSolverLogic(this);
     }
 
     defaultRules() {
@@ -27,7 +24,7 @@ export class CloneHandler extends RuleTypeHandler {
             return warnings;
         }
 
-        const cloneGroups = CloneSolver.findCloneGroups(this.rules);
+        const cloneGroups = this.findCloneGroups(this.rules);
         const singleRegions = cloneGroups.filter(group => group.length === 1);
         
         if (singleRegions.length > 0) {
@@ -120,5 +117,50 @@ export class CloneHandler extends RuleTypeHandler {
 
         this.usedColors.add(color);
         return color;
+    }
+
+    findCloneGroups(rules) {
+        const cloneGroups = [];
+        const processed = new Set();
+             
+        for (let i = 0; i < rules.length; i++) {
+            if (processed.has(i)) continue;            
+    
+            const region = rules[i].fields.region;
+            const clones = [i];
+                
+            for (let j = i + 1; j < rules.length; j++) {
+                if (processed.has(j)) continue;
+                    
+                if (isRegionSameShape(region,  rules[j].fields.region)) {
+                    clones.push(j);
+                    processed.add(j);
+                }
+            }
+    
+            //if (clones.length < 2) {
+            //    throw new Error("Clone groups must have at least 2 regions");
+            //}
+                
+            processed.add(i);
+            cloneGroups.push(clones);
+        }
+    
+        // sort each clone regions so items are easier to compare later on
+        for (const group of cloneGroups) {
+            for (const regionIdx of group) {
+                const region = rules[regionIdx].fields.region;
+                if (!region) continue;
+                
+                region.items.sort((a, b) => {
+                    if (a.r !== b.r) 
+                        return a.r - b.r; // sort by row first
+                    else 
+                        return a.c - b.c; // for same row, sort by column
+                });
+            }
+        }
+            
+        return cloneGroups;
     }
 }

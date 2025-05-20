@@ -5,7 +5,6 @@ import { CellIdx } from "../region/CellIdx.js";
 import { SolverCell } from './solverCell.js';
 import { SolverStats } from './solverStats.js';
 import * as RegionUtils from './solverUtil.js';
-import {NumberSet} from "../number/number_set.js";
 
 export class SolverBoard {
     /**

@@ -1,7 +1,5 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
-import { Region } from "../region/Region.js";
-import { attachArrowSolverLogic } from "./rule_arrow_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ArrowHandler extends RuleTypeHandler {
@@ -9,8 +7,6 @@ export class ArrowHandler extends RuleTypeHandler {
         super("Arrow", board);
         this.tag = "Arrow";
         this.can_create_rules = true;
-
-        attachArrowSolverLogic(this);
     }
 
     defaultRules() {

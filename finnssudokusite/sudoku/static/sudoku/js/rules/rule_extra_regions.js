@@ -1,7 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
-import { attachExtraRegionsSolverLogic} from "./rule_extra_regions_solver.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class ExtraRegionsHandler extends RuleTypeHandler {
@@ -9,10 +8,7 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
         super("Extra Regions", board);
         this.tag = "Extra-Regions";
         this.can_create_rules = true;
-        
         this.usedColors = new Set();
-
-        attachExtraRegionsSolverLogic(this);
     }
 
     defaultRules() {

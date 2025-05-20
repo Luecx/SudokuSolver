@@ -1,7 +1,6 @@
 import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
-import { attachCageSolverLogic} from "./rule_cage_solver.js";
 
 export class CustomSumHandler extends RuleTypeHandler {
     constructor(board) {
@@ -10,8 +9,6 @@ export class CustomSumHandler extends RuleTypeHandler {
         this.can_create_rules = true;
         this.sumColors = new Map();
         this.usedColors = new Set();
-
-        attachCageSolverLogic(this);
     }
 
     defaultRules() {
