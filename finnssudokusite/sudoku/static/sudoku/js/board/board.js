@@ -73,7 +73,7 @@ export function createBoard(container) {
         offEvent                : (eventName, callback) => eventManager.off(eventName, callback),
 
         // solver related
-        getSolverBoard          : () => numberLayer.getSolverBoard(),
+        getFixedNumbers         : () => numberLayer.getFixedNumbers(),
 
         // ───  CONTENT-LAYER APIs ────────────────────────────────────────
         setValues:       (region,val,fixed=false)  => {numberLayer.setValues(region,val,fixed);
@@ -204,13 +204,12 @@ export function createBoard(container) {
         for (let r = 0; r < 9; r++) {
             for (let c = 0; c < 9; c++) {
                 const idx = new CellIdx(r, c);
-                const initialCell  = initial.getCell(idx);
-                const solutionCell = solution.getCell(idx);
-                const value        = solutionCell.value;
+                const init_value  = initial .get(idx);
+                const sol_value   = solution.get(idx);
 
                 // Treat as fixed if present in initial
-                const fixed = (initialCell.value !== NO_NUMBER);
-                solutionLayer.setValue(idx, value, fixed);
+                const fixed = (init_value !== NO_NUMBER);
+                solutionLayer.setValue(idx, sol_value, fixed);
             }
         }
     }
@@ -224,27 +223,22 @@ export function createBoard(container) {
         for (let r = 0; r < 9; r++) {
             for (let c = 0; c < 9; c++) {
                 const idx = new CellIdx(r, c);
-                const initialCell = initial.getCell(idx);
+                const init_val = initial.get(idx);
 
-                if (initialCell.value !== NO_NUMBER) {
+                if (init_val !== NO_NUMBER) {
                     // Fixed cell
-                    solutionLayer.setValue(idx, initialCell.value, true);
+                    solutionLayer.setValue(idx, init_val, true);
                     continue;
                 }
 
-                const values = new Set();
-                for (const sol of solutions) {
-                    const val = sol.getCell(idx).value;
-                    values.add(val);
-                }
+                const cands = solutions.getCandidates(idx);
 
-                if (values.size === 1 && show_definite) {
-                    // Definite value across all solutions
-                    const definite = values.values().next().value;
+                if (cands.count() === 1 && show_definite) {
+                    const definite = cands.lowest();
                     solutionLayer.setValue(idx, definite, false);
-                } else if (values.size > 1 && show_uncertain) {
+                } else if (cands.count() > 1 && show_uncertain) {
                     // Uncertain: show all values as red candidates
-                    for (const v of values) {
+                    for (const v of cands) {
                         solutionLayer.setCandidate(idx, v, false);
                     }
                 }

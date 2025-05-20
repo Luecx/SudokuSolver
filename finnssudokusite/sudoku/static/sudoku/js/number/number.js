@@ -3,8 +3,6 @@
 
 /** @typedef {number} Row        0–8 */
 /** @typedef {number} Col        0–8 */
-/** @typedef {number} Number     1–9 */
-/** @typedef {number} Candidate  1–9 */
 
 /**
  * Special constant representing an empty or unset cell.

@@ -1,4 +1,4 @@
-// Updated Creator class using WebAssembly Solver with event-based handling
+// Updated Creator class with solution caching
 
 import { createBoard } from "../board/board.js";
 import { CreatorRuleManager } from "./creator_rule_manager.js";
@@ -6,7 +6,8 @@ import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../game/input_keyboard.js";
 import { InputMode } from "../game/input_constants.js";
 import SolverEngine from "../cppsolver/solver.js";
-import {CellIdx} from "../region/CellIdx.js";
+import { CellIdx } from "../region/CellIdx.js";
+import { Solution, Solutions } from "../solver/solution.js";
 
 class Creator {
     constructor() {
@@ -24,10 +25,12 @@ class Creator {
         this.keyboard = new InputKeyboard(this.board, [InputMode.NumberFixed]);
         this.rule_manager = new CreatorRuleManager(this.board);
 
+        this.preSolveNumbers = null;
         this.analysisUnlocked = false;
         this.completeAnalysisDone = false;
         this.selectedIndex = null;
-        this.solutionsRef = [];
+        this.solutions_temp_list = [];
+        this.solutions = null;
         this.showDefinite = true;
         this.showUncertain = true;
 
@@ -43,7 +46,6 @@ class Creator {
         this.normalDepth = 16384;
         this.completeDepth = 1024;
 
-
         this.module = await SolverEngine();
         this.module.addMessageListener(this.onSolverMessage.bind(this));
         this.resetSolverState();
@@ -57,7 +59,8 @@ class Creator {
 
     resetSolverState() {
         this.solverRunning = false;
-        this.solverSolutions = [];
+        this.solutions_temp_list = [];
+        this.solutions = null;
         this.stats = {
             solutions_found: 0,
             nodes_explored: 0,
@@ -86,7 +89,8 @@ class Creator {
     onSolverMessage(msg) {
         console.log(msg);
         if (msg.startsWith("[SOLUTION]")) {
-            this.addSolutionFromString(msg.replace("[SOLUTION]", "").trim());
+            const sol = Solution.fromFlatString(msg.replace("[SOLUTION]", "").trim(), 9);
+            this.solutions_temp_list.push(sol);
         } else if (msg.startsWith("[PROGRESS]")) {
             const value = parseFloat(msg.replace("[PROGRESS]", "").trim());
             const progressBar = document.querySelector(".progress-bar");
@@ -113,33 +117,21 @@ class Creator {
         }
     }
 
-    addSolutionFromString(flatStr) {
-        const values = flatStr.split(",").map(Number);
-        const board = this.board.getSolverBoard().clone();
-        for (let i = 0; i < values.length; i++) {
-            const r = Math.floor(i / board.size);
-            const c = i % board.size;
-            board.setCellForce(new CellIdx(r, c), values[i]);
-        }
-        this.solverSolutions.push(board);
-    }
-
     runNormalAnalysis() {
         if (this.solverRunning) return;
 
         this.clearAnalysisUI();
         this.renderAlert("warning", "Analyzing...", "");
         this.disableAnalysisButtons(true);
-        this.keyboard.setEnabled(false);
         this.resetSolverState();
+        this.keyboard.setEnabled(false);
         this.solverRunning = true;
         this.lastCommand = "solve";
+        this.preSolveNumbers = this.board.getFixedNumbers();
 
         const json = this.board.saveBoard();
-
         this.module.postMessage("solve", json, 17, this.normalDepth);
     }
-
 
     async runCompleteAnalysis() {
         this.disableAnalysisButtons(true);
@@ -154,17 +146,22 @@ class Creator {
         this.solverRunning = true;
         this.lastCommand = "solveComplete";
         this.completeAnalysisDone = false;
+        this.preSolveNumbers = this.board.getFixedNumbers();
 
         const json = this.board.saveBoard();
         this.module.postMessage("solveComplete", json, 9999, this.completeDepth);
     }
 
-
     finishSolverRun() {
-        const solverboard = this.board.getSolverBoard();
-        const solutions = this.solverSolutions;
+        const solutions = this.solutions_temp_list;
         this.solverRunning = false;
-        this.solutionsRef = solutions;
+
+        try {
+            this.solutions = new Solutions(solutions);
+        } catch (e) {
+            this.solutions = null;
+            console.error("Failed to build Solutions object:", e);
+        }
 
         const { solutions_found, interrupted_by_node_limit, interrupted_by_solution_limit, error, nodes_explored, time_taken_ms } = this.stats;
 
@@ -174,8 +171,8 @@ class Creator {
             this.renderAlert("danger", "No solution", "<p>❌ No solution exists for this puzzle.</p>");
         } else if (solutions_found === 1 && !interrupted_by_solution_limit && !interrupted_by_node_limit) {
             this.renderAlert("success", "1 solution", `<p>✅ Exactly one solution exists.<br><small>${nodes_explored} nodes, ${time_taken_ms.toFixed(1)} ms</small></p>`);
-            this.board.showSolution(solverboard, solutions[0]);
-            this.displaySolutions(solverboard, solutions);
+            this.board.showSolution(this.preSolveNumbers, solutions[0]);
+            this.displaySolutions(solutions);
             this.checkIfCanSubmit();
         } else {
             let msg = "";
@@ -188,28 +185,24 @@ class Creator {
             }
             msg += `<br><small>${nodes_explored} nodes, ${time_taken_ms.toFixed(1)} ms</small>`;
             this.renderAlert("danger", "Multiple solutions", `<p>${msg}</p>`);
-            this.displaySolutions(solverboard, solutions);
+            this.displaySolutions(solutions);
             this.analysisUnlocked = true;
         }
 
-        // Enable buttons
         this.disableAnalysisButtons(false);
         this.get("clear-analysis-btn").disabled = false;
         this.get("start-complete-analysis-btn").disabled = !this.analysisUnlocked;
 
-        // Enable toggle buttons only if last command was solveComplete and there was no error
         this.completeAnalysisDone = !error && this.lastCommand === "solveComplete";
         this.get("toggle-definite").disabled = !this.completeAnalysisDone;
         this.get("toggle-uncertain").disabled = !this.completeAnalysisDone;
     }
 
-
-
     get(id) {
         return document.getElementById(id);
     }
 
-    createSolutionItem(i, solverboard, solution) {
+    createSolutionItem(i, solution) {
         const li = document.createElement("li");
         li.className = "list-group-item";
         li.textContent = `Solution ${i + 1}`;
@@ -223,18 +216,17 @@ class Creator {
                 solutionList.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
                 li.classList.add("active");
                 this.selectedIndex = i;
-                this.board.showSolution(solverboard, solution);
+                this.board.showSolution(this.preSolveNumbers, solution);
             }
         });
         return li;
     }
 
-    displaySolutions(solverboard, solutions) {
+    displaySolutions(solutions) {
         const solutionList = this.get("solutionList");
         solutionList.innerHTML = "";
-        this.solutionsRef = solutions;
         solutions.forEach((s, i) => {
-            solutionList.appendChild(this.createSolutionItem(i, solverboard, s));
+            solutionList.appendChild(this.createSolutionItem(i, s));
         });
     }
 
@@ -288,32 +280,15 @@ class Creator {
             this.analysisUnlocked = false;
             this.completeAnalysisDone = false;
             this.resetSolverState();
-
-            // Disable everything first
             this.disableAnalysisButtons(true);
-
-            // Enable only Normal Analysis button
-            const normalBtn = this.get("start-normal-analysis-btn");
-            if (normalBtn) normalBtn.disabled = false;
-
-            // Disable toggles explicitly
-            toggleDefinite.disabled = true;
-            toggleUncertain.disabled = true;
-
-            // Clear all solver output
-            this.solverSolutions = [];
-            this.solutionsRef = [];
+            normalBtn.disabled = false;
         });
 
-
-
-        debugBtn?.addEventListener("click", () => console.log(this.board.getSolverBoard().toString(true)));
-
         const toggleFn = (btn, key) => {
-            if (btn.disabled) return;
+            if (btn.disabled || !this.solutions) return;
             btn.classList.toggle("active");
             this[`show${key}`] = btn.classList.contains("active");
-            this.board.showSolutions?.(this.board.getSolverBoard(), this.solutionsRef, this.showDefinite, this.showUncertain);
+            this.board.showSolutions?.(this.preSolveNumbers, this.solutions, this.showDefinite, this.showUncertain);
         };
 
         toggleDefinite?.addEventListener("click", () => toggleFn(toggleDefinite, "Definite"));
@@ -381,7 +356,7 @@ class Creator {
     checkIfCanSubmit() {
         const btn = this.get("submit-sudoku-btn");
         const name = document.querySelector("input[name='sudoku_name']")?.value?.trim();
-        const isValid = name.length > 0 && this.solutionsRef.length === 1;
+        const isValid = name.length > 0 && this.solutions_temp_list.length === 1;
         btn.disabled = !isValid;
     }
 
@@ -422,7 +397,6 @@ class Creator {
             });
         }
     }
-
 
     renderActiveTags() {
         const container = this.get("active-tags-container");

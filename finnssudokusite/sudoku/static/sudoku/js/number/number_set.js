@@ -45,7 +45,7 @@ export class NumberSet {
      * Enables digit `n` in the set.
      * @param {number} n
      */
-    allow(n) {
+    add(n) {
         this.#validate(n);
         this.mask |= (1 << n) & this.mask_all;
     }
@@ -54,7 +54,7 @@ export class NumberSet {
      * Disables digit `n` in the set.
      * @param {number} n
      */
-    disallow(n) {
+    remove(n) {
         this.#validate(n);
         this.mask &= ~(1 << n) & this.mask_all;
     }
