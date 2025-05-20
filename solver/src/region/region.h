@@ -139,7 +139,7 @@ public:
         }
         Region<CellIdx> res;
 
-        for(CellIdx cidx:out)
+        for (CellIdx cidx: out)
             res.add(cidx);
         return res;
     }
@@ -162,33 +162,25 @@ public:
      * @brief Returns an iterator to the first element in the region.
      * @return Iterator to the beginning.
      */
-    typename std::vector<IdxT>::const_iterator begin() const {
-        return items_.begin();
-    }
+    typename std::vector<IdxT>::const_iterator begin() const { return items_.begin(); }
 
     /**
      * @brief Returns an iterator to the element following the last element in the region.
      * @return Iterator to the end.
      */
-    typename std::vector<IdxT>::const_iterator end() const {
-        return items_.end();
-    }
+    typename std::vector<IdxT>::const_iterator end() const { return items_.end(); }
 
     /**
      * @brief Returns a mutable iterator to the first element in the region.
      * @return Mutable iterator to the beginning.
      */
-    typename std::vector<IdxT>::iterator begin() {
-        return items_.begin();
-    }
+    typename std::vector<IdxT>::iterator begin() { return items_.begin(); }
 
     /**
      * @brief Returns a mutable iterator to the element following the last element in the region.
      * @return Mutable iterator to the end.
      */
-    typename std::vector<IdxT>::iterator end() {
-        return items_.end();
-    }
+    typename std::vector<IdxT>::iterator end() { return items_.end(); }
 
     /**
      * @brief Returns reference to the contained items.

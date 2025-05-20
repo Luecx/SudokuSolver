@@ -11,7 +11,7 @@ public:
     explicit RuleDiagonal(Board *board) : RuleHandler(board) {}
 
     bool number_changed(CellIdx pos) override;
-    bool candidates_changed() override {return false;};
+    bool candidates_changed() override { return false; };
     bool valid() override;
     void update_impact(ImpactMap &map) override {};
     void from_json(JSON &json) override;

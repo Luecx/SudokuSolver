@@ -7,12 +7,9 @@
 
 namespace sudoku {
 
-std::vector<Solution> Board::solve_complete(
-    SolverStats *stats_out,
-    int max_nodes,
-    std::function<void(float)> onProgress,
-    std::function<void(Solution&)> onSolution)
-{
+std::vector<Solution> Board::solve_complete(SolverStats *stats_out, int max_nodes,
+                                            std::function<void(float)> onProgress,
+                                            std::function<void(Solution &)> onSolution) {
     std::vector<Solution> all_solutions;
     std::unordered_set<std::string> unique_solutions;
     Board tracker = clone_shallow();
@@ -34,15 +31,16 @@ std::vector<Solution> Board::solve_complete(
 
     const auto start_time = std::chrono::steady_clock::now();
 
-    for (const CellIdx &idx : positions) {
+    for (const CellIdx &idx: positions) {
         current_idx++;
         Cell &cell = this->get_cell(idx);
-        if (cell.is_solved()) continue;
+        if (cell.is_solved())
+            continue;
 
         Cell &tracker_cell = tracker.get_cell(idx);
         NumberSet cands = tracker_cell.candidates;
 
-        for (Number n : cands) {
+        for (Number n: cands) {
             if (!this->set_cell(idx, n)) {
                 tracker_cell.candidates.remove(n);
                 cell.remove_candidate(n);
@@ -60,7 +58,8 @@ std::vector<Solution> Board::solve_complete(
                 const std::string key = oss.str();
                 if (unique_solutions.insert(key).second) {
                     all_solutions.push_back(sol);
-                    if (onSolution) onSolution(all_solutions.back());
+                    if (onSolution)
+                        onSolution(all_solutions.back());
                 }
 
                 for (Row r = 0; r < board_size_; ++r) {

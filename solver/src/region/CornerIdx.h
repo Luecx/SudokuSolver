@@ -91,9 +91,7 @@ struct CornerIdx {
      * @param idx The CornerIdx to print.
      * @return Reference to the output stream.
      */
-    friend std::ostream &operator<<(std::ostream &os, const CornerIdx &idx) {
-        return os << idx.r << "," << idx.c;
-    }
+    friend std::ostream &operator<<(std::ostream &os, const CornerIdx &idx) { return os << idx.r << "," << idx.c; }
 };
 
 } // namespace sudoku

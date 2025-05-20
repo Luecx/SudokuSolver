@@ -1,7 +1,8 @@
 #include <set>
 
-#include "rule_magic.h"
 #include "../board/board.h"
+#include "rule_magic.h"
+
 
 
 namespace sudoku {

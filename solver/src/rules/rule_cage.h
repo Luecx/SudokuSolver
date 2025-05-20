@@ -6,7 +6,7 @@
 
 namespace sudoku {
 
-    std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_ = false);
+std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_ = false);
 
 
 struct CagePair {
