@@ -84,7 +84,7 @@ class Creator {
     }
 
     onSolverMessage(msg) {
-        // console.log(msg);
+        console.log(msg);
         if (msg.startsWith("[SOLUTION]")) {
             this.addSolutionFromString(msg.replace("[SOLUTION]", "").trim());
         } else if (msg.startsWith("[PROGRESS]")) {
