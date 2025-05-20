@@ -21,6 +21,17 @@ bool RuleRenban::candidates_changed() {
     return changed;
 }
 
+void RuleRenban::update_impact(ImpactMap &map) {
+    for (const auto &path: renban_paths_) {
+        for (const auto &pos: path) {
+            Cell &cell = board_->get_cell(pos);
+            if (cell.is_solved())
+                continue;
+            map.increment(pos);
+        }
+    }
+}
+
 bool RuleRenban::valid() {
     for (const auto &path: renban_paths_) {
         solved_values_.clear();

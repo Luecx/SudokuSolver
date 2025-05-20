@@ -54,6 +54,17 @@ bool RuleWhisper::valid() {
     return true;
 }
 
+void RuleWhisper::update_impact(ImpactMap &map) {
+    for (const auto &path: whisper_paths_) {
+        for (const auto &pos: path) {
+            Cell &cell = board_->get_cell(pos);
+            if (cell.is_solved())
+                continue;
+            map.increment(pos);
+        }
+    }
+}
+
 void RuleWhisper::from_json(JSON &json) {
     whisper_paths_.clear();
 

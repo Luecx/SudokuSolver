@@ -66,6 +66,20 @@ bool RulePalindrome::valid() {
     return true;
 }
 
+void RulePalindrome::update_impact(ImpactMap &map) {
+    // this increases the node time with planindrom
+    // so probably need more json data to test it
+    return;
+    for (auto &path: palindrome_paths_) {
+        for (const auto &pos: path) {
+            Cell &cell = board_->get_cell(pos);
+            if (cell.is_solved())
+                continue;
+            map.increment(pos);
+        }
+    }
+};
+
 void RulePalindrome::from_json(JSON &json) {
     palindrome_paths_.clear();
 

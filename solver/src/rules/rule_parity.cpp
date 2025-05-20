@@ -38,6 +38,18 @@ bool RuleParity::valid() {
     return true;
 }
 
+void RuleParity::update_impact(ImpactMap &map) {
+    for (const auto &path: parity_paths_) {
+        for (const auto &pos: path) {
+            Cell &cell = board_->get_cell(pos);
+            if (cell.is_solved())
+                continue;
+
+            map.increment(pos);
+        }
+    }
+}
+
 void RuleParity::from_json(JSON &json) {
     parity_paths_.clear();
 

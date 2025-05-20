@@ -136,6 +136,26 @@ bool RuleAntiChess::valid() {
     return true;
 }
 
+void RuleAntiChess::update_impact(ImpactMap &map) {
+    for (int i = 0; i < 2; i++) {
+        if (!pair[i].enabled)
+            continue;
+
+        const Region<CellIdx> &region = pair[i].region;
+        const attacks &move_pattern = (pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
+
+        for (const auto &pos: region.items()) {
+            for (const auto &attack: move_pattern) {
+                CellIdx neighbor_pos{pos.r + attack.first, pos.c + attack.second};
+                if (!in_bounds(neighbor_pos))
+                    continue;
+
+                map.increment(neighbor_pos);
+            }
+        }
+    }
+};
+
 void RuleAntiChess::from_json(JSON &json) {
     if (!json["rules"].is_array())
         return;

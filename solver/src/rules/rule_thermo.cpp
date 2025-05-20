@@ -87,6 +87,23 @@ bool RuleThermo::valid() {
     return true;
 }
 
+void RuleThermo::update_impact(ImpactMap &map) {
+    for (const auto &path: thermo_paths_) {
+        const std::vector<CellIdx> &items = path.items();
+
+        for (size_t i = 1; i < items.size(); i++) {
+            Cell &a = board_->get_cell(items[i - 1]);
+            Cell &b = board_->get_cell(items[i]);
+
+            if (a.is_solved() && b.is_solved() && a.value >= b.value)
+                continue;
+
+            map.increment(items[i - 1]);
+            map.increment(items[i]);
+        }
+    }
+}
+
 void RuleThermo::from_json(JSON &json) {
     thermo_paths_.clear();
 

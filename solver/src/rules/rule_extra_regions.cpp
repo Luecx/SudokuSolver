@@ -1,6 +1,6 @@
 #include "rule_extra_regions.h"
-#include "rule_standard.h"
 #include "../board/board.h"
+#include "rule_standard.h"
 
 
 namespace sudoku {
@@ -8,7 +8,7 @@ namespace sudoku {
 bool RuleExtraRegions::number_changed(CellIdx pos) {
     Cell &cell = board_->get_cell(pos);
     bool changed = false;
-    
+
     NumberSet rm(cell.max_number, cell.value);
     for (const auto &region: extra_regions_) {
         if (!region.has(pos))
@@ -36,6 +36,17 @@ bool RuleExtraRegions::valid() {
         if (!check_group(unit))
             return false;
     return true;
+}
+
+void RuleExtraRegions::update_impact(ImpactMap &map) {
+    for (const auto &region: extra_regions_) {
+        for (const auto &item: region.items()) {
+            Cell &cell = board_->get_cell(item);
+            if (cell.is_solved())
+                continue;
+            map.increment(item);
+        }
+    }
 }
 
 void RuleExtraRegions::from_json(JSON &json) {
@@ -66,7 +77,7 @@ void RuleExtraRegions::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleExtraRegions::check_group(const std::vector<Cell *>& unit) {
+bool RuleExtraRegions::check_group(const std::vector<Cell *> &unit) {
     const int board_size = board_->size();
 
     NumberSet seen(board_size);

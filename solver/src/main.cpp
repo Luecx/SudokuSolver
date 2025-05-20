@@ -12,7 +12,7 @@
 #include "rules/include.h"
 
 int main(int argc, char *argv[]) {
-    bench::bench(argv[1], 17, 16384, true);
+    bench::bench(argv[1], 17, 16384, false);
     return 0;
 }
 
