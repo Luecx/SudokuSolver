@@ -31,8 +31,9 @@ class Creator {
         this.selectedIndex = null;
         this.solutions_temp_list = [];
         this.solutions = null;
-        this.showDefinite = true;
-        this.showUncertain = true;
+        this.showDefinite = false;
+        this.showUncertain = false;
+
 
         this.stats = {
             solutions_found: 0,
@@ -235,6 +236,9 @@ class Creator {
         this.get("solutionList").innerHTML = "";
         this.get("toggle-definite").classList.remove("active");
         this.get("toggle-uncertain").classList.remove("active");
+        this.showDefinite = false;
+        this.showUncertain = false;
+
         this.selectedIndex = null;
         this.board.hideSolution?.();
     }
@@ -282,7 +286,14 @@ class Creator {
             this.resetSolverState();
             this.disableAnalysisButtons(true);
             normalBtn.disabled = false;
+
+            // Reset toggle states
+            this.showDefinite = false;
+            this.showUncertain = false;
+            toggleDefinite.classList.remove("active");
+            toggleUncertain.classList.remove("active");
         });
+
 
         const toggleFn = (btn, key) => {
             if (btn.disabled || !this.solutions) return;
