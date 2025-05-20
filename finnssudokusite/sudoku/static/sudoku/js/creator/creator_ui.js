@@ -135,6 +135,9 @@ class Creator {
         this.solverRunning = true;
 
         const json = this.board.saveBoard();
+
+        console.log(json);
+
         this.module.postMessage("solve", json, 17, this.normalDepth);
     }
 

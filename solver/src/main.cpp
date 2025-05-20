@@ -1,5 +1,10 @@
 #include <iostream>
 
+#include <chrono>
+#include <functional>
+#include <random>
+#include <unordered_set>
+
 #include "bench.h"
 #include "board/board.h"
 #include "json/json.h"
@@ -31,15 +36,7 @@ void solve(const char *json, int max_solutions, int max_nodes) {
         auto solutions = board.solve(max_solutions, max_nodes, &stats);
 
         for (auto &sol : solutions) {
-            std::cout << "[SOLUTION]";
-            int N = sol.size();
-            for (int r = 0; r < N; ++r) {
-                for (int c = 0; c < N; ++c) {
-                    std::cout << (int)(sol.get_cell({r, c}).value);
-                    if (!(r == N - 1 && c == N - 1)) std::cout << ",";
-                }
-            }
-            std::cout << "\n";
+            std::cout << "[SOLUTION]" << sol << std::endl;
         }
 
         std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
@@ -53,9 +50,49 @@ void solve(const char *json, int max_solutions, int max_nodes) {
     std::cout << "[DONE]\n";
 }
 
+
 /**
- * @brief Alias for solve (no separate implementation).
+ * @brief Solve using complete method with progress logging.
+ *        Prints "STARTING" at start, regular progress updates, and "DONE" at end.
+ * @param json Input puzzle JSON as string.
+ * @param unused Not used; kept for signature consistency.
+ * @param max_nodes Max decision nodes to explore (-1 for unlimited).
  */
-void solveComplete(const char *json, int max_solutions, int max_nodes) { solve(json, max_solutions, max_nodes); }
+void solveComplete(const char *json, int /*unused*/, int max_nodes) {
+    std::cout << "STARTING\n";
+    try {
+        auto root = JSON::parse(json);
+        Board board{9};
+        board.from_json(root);
+
+        SolverStats stats;
+
+        float last_progress_reported = -1.0f;
+
+        auto solutions = board.solve_complete(
+            &stats,
+            max_nodes,
+            [&](float progress) {
+                 float rounded = std::floor(progress * 100.0f) / 100.0f;
+                if (rounded > last_progress_reported) {
+                    last_progress_reported = rounded;
+                    std::cout << "[PROGRESS]" << std::fixed << std::setprecision(2) << rounded << "\n";
+                }
+            },
+            [&](Solution& sol) {
+                std::cout << "[SOLUTION]" << sol << std::endl;;
+            });
+
+        std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
+        std::cout << "[INFO]nodes_explored=" << stats.nodes_explored << "\n";
+        std::cout << "[INFO]time_taken_ms=" << std::fixed << std::setprecision(3) << stats.time_taken_ms << "\n";
+        std::cout << "[INFO]interrupted_by_node_limit=" << (stats.interrupted_by_node_limit ? "true" : "false") << "\n";
+        std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false") << "\n";
+    } catch (const std::exception &e) {
+        std::cout << "[INFO]error=" << e.what() << "\n";
+    }
+    std::cout << "[DONE]\n";
+}
+
 
 } // extern "C"

@@ -1,3 +1,4 @@
 Kropki + Standard
 
 all have 1 solution
+except for kropki-4 which is for debugging

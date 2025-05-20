@@ -211,6 +211,11 @@ public:
      * @throws std::runtime_error on validation failure.
      */
     static Region from_json(const JSON &node) {
+        // check if its null
+        if (node.is_null()) {
+            return Region{};
+        }
+
         if (!node.is_object())
             throw std::runtime_error("Region must be a JSON object");
 

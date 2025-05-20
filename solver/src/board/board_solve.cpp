@@ -7,8 +7,13 @@
 
 namespace sudoku {
 
-std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
-    std::vector<Board> all_solutions;
+std::vector<Solution> Board::solve_complete(
+    SolverStats *stats_out,
+    int max_nodes,
+    std::function<void(float)> onProgress,
+    std::function<void(Solution&)> onSolution)
+{
+    std::vector<Solution> all_solutions;
     std::unordered_set<std::string> unique_solutions;
     Board solver = clone();
     Board tracker = clone();
@@ -20,28 +25,25 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
         for (Col c = 0; c < board_size_; ++c)
             positions.push_back({r, c});
 
-    // shuffle positions for more varied exploration
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(positions.begin(), positions.end(), g);
 
-    int progress = 0;
     int nodes_explored = 0;
+    const int total_positions = positions.size();
+    int current_idx = 0;
 
     const auto start_time = std::chrono::steady_clock::now();
 
-    for (const CellIdx &idx: positions) {
+    for (const CellIdx &idx : positions) {
+        current_idx++;
         Cell &cell = solver.get_cell(idx);
-
-        if (cell.is_solved()) {
-            progress++;
-            continue;
-        }
+        if (cell.is_solved()) continue;
 
         Cell &tracker_cell = tracker.get_cell(idx);
         NumberSet cands = tracker_cell.candidates;
 
-        for (Number n: cands) {
+        for (Number n : cands) {
             if (!solver.set_cell(idx, n)) {
                 tracker_cell.candidates.remove(n);
                 cell.remove_candidate(n);
@@ -49,29 +51,25 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
             }
 
             SolverStats local_stats;
-            std::vector<Board> solutions = solver.solve(1, 512, &local_stats);
+            std::vector<Solution> boards = solver.solve(1, max_nodes, &local_stats);
             nodes_explored += local_stats.nodes_explored;
 
-            if (!solutions.empty()) {
-                Board &sol = solutions[0];
-
-                const std::string key = sol.to_string();
-                if (unique_solutions.find(key) == unique_solutions.end()) {
-                    unique_solutions.insert(key);
+            if (!boards.empty()) {
+                Solution sol = boards[0];
+                std::ostringstream oss;
+                oss << sol;
+                const std::string key = oss.str();
+                if (unique_solutions.insert(key).second) {
                     all_solutions.push_back(sol);
+//                    if (onSolution) onSolution(all_solutions.back());
                 }
 
-                int skipped = 0;
-                for (Row r = 0; r < board_size_; r++) {
-                    for (Col c = 0; c < board_size_; c++) {
-                        Number solved_value = sol.get_cell({r, c}).value;
-
+                for (Row r = 0; r < board_size_; ++r) {
+                    for (Col c = 0; c < board_size_; ++c) {
+                        Number solved_value = sol.get(r, c);
                         Cell &tracker_cell = tracker.get_cell({r, c});
-                        if (!tracker_cell.candidates.test(solved_value))
-                            continue;
-
-                        tracker_cell.candidates.remove(solved_value);
-                        skipped++;
+                        if (tracker_cell.candidates.test(solved_value))
+                            tracker_cell.candidates.remove(solved_value);
                     }
                 }
             } else if (!local_stats.interrupted_by_node_limit) {
@@ -79,10 +77,11 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
                 cell.candidates.remove(n);
             }
 
-            solver.pop_history(); // always backtrack
+            solver.pop_history();
         }
 
-        progress++;
+        if (onProgress)
+            onProgress(static_cast<float>(current_idx) / static_cast<float>(total_positions));
     }
 
     const auto end_time = std::chrono::steady_clock::now();
@@ -92,13 +91,16 @@ std::vector<Board> Board::solve_complete(SolverStats *stats_out) {
         stats_out->solutions_found = static_cast<int>(all_solutions.size());
         stats_out->nodes_explored = nodes_explored;
         stats_out->time_taken_ms = elapsed_ms;
+        stats_out->interrupted_by_node_limit = false;
+        stats_out->interrupted_by_solution_limit = false;
     }
 
     return all_solutions;
 }
 
-std::vector<Board> Board::solve(int max_solutions, int max_nodes, SolverStats *stats_out) {
-    std::vector<Board> solutions;
+
+std::vector<Solution> Board::solve(int max_solutions, int max_nodes, SolverStats *stats_out) {
+    std::vector<Solution> solutions;
     int nodes_explored = 0;
     bool interrupted_by_node_limit = false;
     bool interrupted_by_solution_limit = false;
@@ -113,7 +115,7 @@ std::vector<Board> Board::solve(int max_solutions, int max_nodes, SolverStats *s
         }
 
         if (is_solved()) {
-            solutions.push_back(clone());
+            solutions.push_back(copy_solution());
             if (static_cast<int>(solutions.size()) >= max_solutions) {
                 interrupted_by_solution_limit = true;
                 return false;
@@ -189,18 +191,34 @@ CellIdx Board::get_next_cell() const {
     return chosen->pos;
 }
 
-Board Board::clone() const {
-    Board copy(board_size_);
-
+sudoku::Solution Board::copy_solution() const {
+    Solution sol(board_size_);
     for (Row r = 0; r < board_size_; ++r) {
         for (Col c = 0; c < board_size_; ++c) {
-            copy.grid_[r][c].value = grid_[r][c].value;
-            copy.grid_[r][c].candidates = grid_[r][c].candidates;
+            sol.set(r, c, grid_[r][c].value);
+        }
+    }
+    return sol;
+}
+
+Board Board::clone() const {
+    Board res{board_size_};
+
+    // Copy cell values and candidates
+    for (Row r = 0; r < board_size_; ++r) {
+        for (Col c = 0; c < board_size_; ++c) {
+            res.grid_[r][c].value = grid_[r][c].value;
+            res.grid_[r][c].candidates = grid_[r][c].candidates;
         }
     }
 
-    copy.handlers_ = handlers_; // Note: shared_ptrs
-    return copy;
+    // Copy rule handlers (shared_ptr: shallow copy is fine)
+    for (const auto &handler : handlers_) {
+        res.add_handler(handler);  // invokes proper internal updates
+    }
+
+    return res;
 }
+
 
 }; // namespace sudoku
