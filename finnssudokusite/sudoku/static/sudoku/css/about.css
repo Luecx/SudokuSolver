@@ -8,6 +8,7 @@ html, body, #about {
 	height: 100vh;
 	display: flex;
 	flex-wrap: wrap;
+	background-color: white;
 }
 
 .block {
@@ -21,9 +22,9 @@ html, body, #about {
 	font-size: 2rem;
 	cursor: pointer;
 	flex-direction: column;
+	text-align: center;
 }
 
-/* Vertikale Linie: zwischen linker und rechter Spalte */
 .block-OL::after,
 .block-UL::after {
 	content: '';
@@ -34,15 +35,8 @@ html, body, #about {
 	border-right: 1px solid #ccc;
 	z-index: 10;
 }
-
-.block-OL::after {
-	bottom: 0;
-}
-
-.block-UL::after {
-	top: 0;
-}
-
+.block-OL::after {bottom: 0;}
+.block-UL::after {top: 0;}
 .block-OL::before,
 .block-OR::before {
 	content: '';
@@ -53,14 +47,8 @@ html, body, #about {
 	border-bottom: 1px solid #ccc;
 	z-index: 10;
 }
-
-.block-OL::before {
-	right: 0;
-}
-
-.block-OR::before {
-	left: 0;
-}
+.block-OL::before {right: 0;}
+.block-OR::before {left: 0;}
 
 .block img {
 	height: 50%;
@@ -73,48 +61,53 @@ html, body, #about {
 	position: absolute;
 	inset: 0;
 	background: rgba(0, 0, 0, 0.85);
-	color: #fff;
+	color: white;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-size: 1.5rem;
+	flex-direction: column;
+	text-align: center;
 	z-index: 2;
 	pointer-events: none;
+	opacity: 1;
 	clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%);
-	opacity: 1;
 }
-
-.block.active .overlay {
-	pointer-events: auto;
-	opacity: 1;
+.overlay h2 {
+	color: white;
+	font-family: "Londrina Sketch", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	padding-bottom: 1rem;
+	font-size: 3rem;
 }
 
 @keyframes wipeURtoOL {
-	0% { clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%); }
-	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+	from { clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 }
 
 @keyframes wipeULtoOR {
-	0% { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
-	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+	from { clip-path: polygon(0 100%, 0 100%, 0 100%, 0 100%); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 }
 
 @keyframes wipeORtoUL {
-	0% { clip-path: polygon(100% 0, 100% 0, 100% 0, 100% 0); }
-	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+	from { clip-path: polygon(100% 0, 100% 0, 100% 0, 100% 0); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 }
 
 @keyframes wipeOLtoUR {
-	0% { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
-	100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+	from { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 }
 
-.block.active .overlay.wipe-ol { animation: wipeURtoOL 2s forwards; }
-.block.active .overlay.wipe-or { animation: wipeULtoOR 2s forwards; }
-.block.active .overlay.wipe-ul { animation: wipeORtoUL 2s forwards; }
-.block.active .overlay.wipe-ur { animation: wipeOLtoUR 2s forwards; }
+.block.active .overlay.wipe-ol { animation: wipeURtoOL 0.5s forwards; pointer-events: auto;}
+.block.active .overlay.wipe-or { animation: wipeULtoOR 0.5s forwards; pointer-events: auto;}
+.block.active .overlay.wipe-ul { animation: wipeORtoUL 0.5s forwards; pointer-events: auto;}
+.block.active .overlay.wipe-ur { animation: wipeOLtoUR 0.5s forwards; pointer-events: auto;}
 
-.block.active .overlay.wipe-ol-reverse { animation: wipeURtoOL 2s reverse forwards; }
-.block.active .overlay.wipe-or-reverse { animation: wipeULtoOR 2s reverse forwards; }
-.block.active .overlay.wipe-ul-reverse { animation: wipeORtoUL 2s reverse forwards; }
-.block.active .overlay.wipe-ur-reverse { animation: wipeOLtoUR 2s reverse forwards; }
+.block.active .overlay.wipe-ol-reverse { animation: wipeURtoOL 0.5s reverse forwards; }
+.block.active .overlay.wipe-or-reverse { animation: wipeULtoOR 0.5s reverse forwards; }
+.block.active .overlay.wipe-ul-reverse { animation: wipeORtoUL 0.5s reverse forwards; }
+.block.active .overlay.wipe-ur-reverse { animation: wipeOLtoUR 0.5s reverse forwards; }

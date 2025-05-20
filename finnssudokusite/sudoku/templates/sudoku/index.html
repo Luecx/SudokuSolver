@@ -92,24 +92,36 @@
 
 <div id="about">
 	<div class="block block-OL">
-		<img src="bild1.jpg" alt="Bild 1">
-		<p class="londrina-sketch-regular">Chief of Everything</p>
-		<div class="overlay">Chief Content</div>
+		<img src="../../static/sudoku/img/index/chief.jpg" alt="Bild 1">
+		<p class="londrina-sketch-regular">Chief of Everything officer</p>
+		<div class="overlay wipe-ol">
+			<h2>FINN</h2>
+			<p>Software Development<br>Backend + Frontend<br>HTML  C++  JS</p>
+		</div>
 	</div>
 	<div class="block block-OR">
-		<img src="bild2.jpg" alt="Bild 2">
-		<p class="londrina-sketch-regular">Code Ninja</p>
-		<div class="overlay">Ninja Content</div>
+		<img src="../../static/sudoku/img/index/code.jpg" alt="Bild 2">
+		<p class="londrina-sketch-regular">Code Boy</p>
+		<div class="overlay wipe-or">
+			<h2>SEMIH</h2>
+			<p>Software Development Backend<br>C++  JS</p>
+		</div>
 	</div>
 	<div class="block block-UL">
 		<img src="../../static/sudoku/img/index/layout.jpg" />
 		<p class="londrina-sketch-regular">Layout Lover</p>
-		<div class="overlay">Lover Content</div>
+		<div class="overlay wipe-ul">
+			<h2>MARC</h2>
+			<p>Styles Frontend<br>HTML  CSS  JS</p>
+		</div>
 	</div>
 	<div class="block block-UR">
-		<img src="bild4.jpg" alt="Bild 4">
+		<img src="../../static/sudoku/img/index/sidekicks.jpg" alt="Bild 4">
 		<p class="londrina-sketch-regular">The Sidekicks</p>
-		<div class="overlay">Side Content</div>
+		<div class="overlay wipe-ul">
+			<h2>HELPING HANDS</h2>
+			<p>Special Thanks<br>N.N.  N.N. ...</p>
+		</div>
 	</div>
 </div>
 
@@ -166,35 +178,79 @@
 
 <script>
     document.querySelectorAll('#about .block').forEach(block => {
-        block.addEventListener('click', function(e) {
-            const overlay = this.querySelector('.overlay');
-            const wipeClasses = ['wipe-ol', 'wipe-or', 'wipe-ul', 'wipe-ur'];
+        block.addEventListener('click', function () {
+            const wipeMap = {
+                'block-OL': 'wipe-ol',
+                'block-OR': 'wipe-or',
+                'block-UL': 'wipe-ul',
+                'block-UR': 'wipe-ur'
+            };
 
-            if(this.classList.contains('active')) {
-                this.classList.remove('active');
-                overlay.style.animation = 'none';
-                wipeClasses.forEach(cls => overlay.classList.remove(cls));
-                void overlay.offsetWidth; // Reflow erzwingen
-            } else {
-                document.querySelectorAll('#about .block.active').forEach(b => {
-                    b.classList.remove('active');
-                    const ov = b.querySelector('.overlay');
-                    ov.style.animation = 'none';
-                    wipeClasses.forEach(cls => ov.classList.remove(cls));
+            const reverseMap = {
+                'block-OL': 'wipe-ol-reverse',
+                'block-OR': 'wipe-or-reverse',
+                'block-UL': 'wipe-ul-reverse',
+                'block-UR': 'wipe-ur-reverse'
+            };
+
+            const overlay = this.querySelector('.overlay');
+            const wipeClasses = Object.values(wipeMap);
+            const reverseClasses = Object.values(reverseMap);
+
+            // === Fall: Block ist bereits aktiv → Rückwärts schließen ===
+            if (this.classList.contains('active')) {
+                const ownReverseClass = Object.entries(reverseMap)
+                    .find(([cls]) => this.classList.contains(cls))?.[1];
+
+                if (ownReverseClass) {
+                    overlay.classList.remove(...wipeClasses, ...reverseClasses);
+                    void overlay.offsetWidth;
+                    overlay.classList.add(ownReverseClass);
+
+                    overlay.addEventListener('animationend', function handler() {
+                        block.classList.remove('active');
+                        overlay.classList.remove(ownReverseClass);
+                        overlay.removeEventListener('animationend', handler);
+                    });
+                }
+                return;
+            }
+
+            // === Andere aktive Blöcke rückwärts schließen ===
+            document.querySelectorAll('#about .block.active').forEach(b => {
+                if (b === this) return;
+
+                const ov = b.querySelector('.overlay');
+                wipeClasses.forEach(cls => ov.classList.remove(cls));
+                reverseClasses.forEach(cls => ov.classList.remove(cls));
+
+                const reverseClass = Object.entries(reverseMap)
+                    .find(([cls]) => b.classList.contains(cls))?.[1];
+
+                if (reverseClass) {
                     void ov.offsetWidth;
-                });
-                this.classList.add('active');
-                overlay.style.animation = 'none';
-                wipeClasses.forEach(cls => overlay.classList.remove(cls));
+                    ov.classList.add(reverseClass);
+                    ov.addEventListener('animationend', function handler() {
+                        b.classList.remove('active');
+                        ov.classList.remove(reverseClass);
+                        ov.removeEventListener('animationend', handler);
+                    });
+                }
+            });
+
+            // === Diesen Block aktivieren ===
+            this.classList.add('active');
+
+            const wipeClass = Object.entries(wipeMap)
+                .find(([cls]) => this.classList.contains(cls))?.[1];
+
+            if (wipeClass) {
+                overlay.classList.remove(...wipeClasses, ...reverseClasses);
                 void overlay.offsetWidth;
-                if(this.classList.contains('block-OL')) overlay.classList.add('wipe-ol');
-                if(this.classList.contains('block-OR')) overlay.classList.add('wipe-or');
-                if(this.classList.contains('block-UL')) overlay.classList.add('wipe-ul');
-                if(this.classList.contains('block-UR')) overlay.classList.add('wipe-ur');
+                overlay.classList.add(wipeClass);
             }
         });
     });
-
 </script>
 
 {% endblock %}
