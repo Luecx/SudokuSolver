@@ -337,7 +337,7 @@ class Creator {
             let serverSuccess = null;
             let serverDone = false;
 
-            fetch("/save-sudoku/", {
+           fetch("/save-sudoku/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -345,10 +345,27 @@ class Creator {
                 },
                 body: JSON.stringify(payload),
             })
-                .then(res => res.json())
-                .then(data => serverSuccess = data.status === "success")
-                .catch(() => serverSuccess = false)
-                .finally(() => serverDone = true);
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                serverSuccess = data.status === "success";
+                if (!serverSuccess) {
+                    throw new Error(data.message || "Server returned failure status");
+                }
+            })
+            .catch((error) => {
+                serverSuccess = false;
+                console.error("Save failed:", error);
+                text.textContent = error.message || "Failed to save Sudoku";
+            })
+            .finally(() => {
+                serverDone = true;
+                animate(); // ensure UI updates
+            });
 
             const animate = () => {
                 const progress = serverDone ? 1 : 0.99;
