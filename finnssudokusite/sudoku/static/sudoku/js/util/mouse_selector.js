@@ -1,6 +1,5 @@
 import { SelectionMode } from "../board/board_selectionEnums.js";
-import { RegionType}     from "../region/RegionType.js";
-import { CellIdx }      from "../region/CellIdx.js";
+
 export class MouseSelector {
     constructor({
                     getKeyFromEvent,       // (MouseEvent e) => string | null
