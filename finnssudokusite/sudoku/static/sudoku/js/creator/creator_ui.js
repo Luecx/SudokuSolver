@@ -133,13 +133,13 @@ class Creator {
         this.keyboard.setEnabled(false);
         this.resetSolverState();
         this.solverRunning = true;
+        this.lastCommand = "solve";
 
         const json = this.board.saveBoard();
 
-        console.log(json);
-
         this.module.postMessage("solve", json, 17, this.normalDepth);
     }
+
 
     async runCompleteAnalysis() {
         this.disableAnalysisButtons(true);
@@ -152,11 +152,13 @@ class Creator {
         this.renderAlert("warning", "Analyzing...", "");
         this.resetSolverState();
         this.solverRunning = true;
+        this.lastCommand = "solveComplete";
+        this.completeAnalysisDone = false;
 
         const json = this.board.saveBoard();
-        console.log(json);
         this.module.postMessage("solveComplete", json, 9999, this.completeDepth);
     }
+
 
     finishSolverRun() {
         const solverboard = this.board.getSolverBoard();
@@ -190,12 +192,17 @@ class Creator {
             this.analysisUnlocked = true;
         }
 
+        // Enable buttons
         this.disableAnalysisButtons(false);
         this.get("clear-analysis-btn").disabled = false;
         this.get("start-complete-analysis-btn").disabled = !this.analysisUnlocked;
+
+        // Enable toggle buttons only if last command was solveComplete and there was no error
+        this.completeAnalysisDone = !error && this.lastCommand === "solveComplete";
         this.get("toggle-definite").disabled = !this.completeAnalysisDone;
         this.get("toggle-uncertain").disabled = !this.completeAnalysisDone;
     }
+
 
 
     get(id) {
@@ -289,10 +296,15 @@ class Creator {
             const normalBtn = this.get("start-normal-analysis-btn");
             if (normalBtn) normalBtn.disabled = false;
 
+            // Disable toggles explicitly
+            toggleDefinite.disabled = true;
+            toggleUncertain.disabled = true;
+
             // Clear all solver output
             this.solverSolutions = [];
             this.solutionsRef = [];
         });
+
 
 
         debugBtn?.addEventListener("click", () => console.log(this.board.getSolverBoard().toString(true)));

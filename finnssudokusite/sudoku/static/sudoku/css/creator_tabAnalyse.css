@@ -1,12 +1,3 @@
-.square-btn {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 /*.toggle-btn.active {*/
 /*    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3), 0 0 4px rgba(0, 0, 0, 0.2);*/
 /*}*/
@@ -47,25 +38,57 @@
 }
 
 
-.toggle-btn {
-    border: none !important;
-    color: white;
-    opacity: 0.7;
+/* Generic square button styling (unchanged for other buttons) */
+.square-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.toggle-btn.active {
+/* Only affects our two toggle buttons */
+.toggle-btn {
+    border: none;
+    background: transparent;
+    transition: background-color 0.2s ease;
+}
+
+/* Icon inside toggle */
+.toggle-btn i {
+    font-size: 1.2rem;
+    color: black;
+    transition: all 0.2s ease;
+}
+
+/* Hover: only icon is affected */
+.toggle-btn:hover:not(:disabled) i {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+/* Disabled: no border or background, grayed icon */
+.toggle-btn:disabled {
+    background: none !important;
+    cursor: not-allowed;
+}
+.toggle-btn:disabled i {
+    color: #bbb;
     opacity: 1;
 }
 
+/* Active state — applies fill + custom icon color */
 #toggle-definite.active {
-    background-color: #28a745; /* Bootstrap green */
+    background-color: #198754; /* Green */
+}
+#toggle-definite.active i {
+    color: white;
 }
 
 #toggle-uncertain.active {
-    background-color: #ffc107; /* Bootstrap yellow */
+    background-color: #ffc107; /* Yellow */
 }
-
-.toggle-btn:disabled {
-    background-color: #ccc !important;
-    color: #666 !important;
+#toggle-uncertain.active i {
+    color: black;
 }
