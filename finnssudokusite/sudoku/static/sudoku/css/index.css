@@ -17,15 +17,6 @@
 		font-style: normal;
 	}*/
 
-.full-height {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	height: calc(100dvh - 60px); /* 60px menüzeile*/
-	box-sizing: border-box;
-	padding-top: 0; /* Platz für Menü  */
-}
-
 .brain-img {
 	width: 250px;
 	height: auto;
@@ -56,9 +47,13 @@
 .sides { transform: scale(1);}
 .card-body { margin-top: 0; padding-top: 0;}
 .card-title {font-weight: 100; font-size: 4rem; }
-.card-text { font-size: 1.5rem;}
+.card-text { font-size: 4rem;}
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1200px) {  /*  gilt für md, lg */
+	.card-title {font-size: 3rem;}
+}
+
+@media (min-width: 768px) {  /*  md und größer  */
 	.sides {transform: scale(0.8);}
 	.sides.card-body {margin-top: -2rem;}
 }
@@ -79,6 +74,7 @@
 	/* Optional: Schatten */
 	box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 	min-width: 80%;
+	margin-bottom: 1rem;
 }
 .faehnchen::after {
 	content: "";
@@ -91,105 +87,8 @@
 	border-left: 1.2em solid #e0d3bc;
 }
 
-
-/*
-
-.block {
-	width: 50%;
-	height: 50%;
-	box-sizing: border-box;
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 2rem;
-	cursor: pointer;
-	flex-direction: column;
-	text-align: center;
-}
-
-.block-OL::after,
-.block-UL::after {
-	content: '';
-	position: absolute;
-	right: 0;
-	width: 0;
-	height: 80%;
-	border-right: 1px solid #ccc;
-	z-index: 10;
-}
-.block-OL::after {bottom: 0;}
-.block-UL::after {top: 0;}
-.block-OL::before,
-.block-OR::before {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	width: 80%;
-	height: 0;
-	border-bottom: 1px solid #ccc;
-	z-index: 10;
-}
-.block-OL::before {right: 0;}
-.block-OR::before {left: 0;}
-
-.block img {
-	height: 50%;
-	aspect-ratio: 1/1;
-	object-fit: cover;
-}
-
-
-.overlay {
-	position: absolute;
-	inset: 0;
-	background: rgba(0, 0, 0, 0.85);
-	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.5rem;
-	flex-direction: column;
-	text-align: center;
-	z-index: 2;
-	pointer-events: none;
-	opacity: 1;
-	clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%);
-}
-.overlay h2 {
-	color: white;
-	font-weight: 600;
-	padding-bottom: 1rem;
-	font-size: 3rem;
-}
-
-@keyframes wipeURtoOL {
-	from { clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%); }
-	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
-}
-
-@keyframes wipeULtoOR {
-	from { clip-path: polygon(0 100%, 0 100%, 0 100%, 0 100%); }
-	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
-}
-
-@keyframes wipeORtoUL {
-	from { clip-path: polygon(100% 0, 100% 0, 100% 0, 100% 0); }
-	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
-}
-
-@keyframes wipeOLtoUR {
-	from { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
-	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
-}
-
-.block.active .overlay.wipe-ol { animation: wipeURtoOL 0.5s forwards; pointer-events: auto;}
-.block.active .overlay.wipe-or { animation: wipeULtoOR 0.5s forwards; pointer-events: auto;}
-.block.active .overlay.wipe-ul { animation: wipeORtoUL 0.5s forwards; pointer-events: auto;}
-.block.active .overlay.wipe-ur { animation: wipeOLtoUR 0.5s forwards; pointer-events: auto;}
-
-.block.active .overlay.wipe-ol-reverse { animation: wipeURtoOL 0.5s reverse forwards; }
-.block.active .overlay.wipe-or-reverse { animation: wipeULtoOR 0.5s reverse forwards; }
-.block.active .overlay.wipe-ul-reverse { animation: wipeORtoUL 0.5s reverse forwards; }
-.block.active .overlay.wipe-ur-reverse { animation: wipeOLtoUR 0.5s reverse forwards; }
-*/
+.dsgvo {font-size: 1rem; font-weight: 300;}
+.dsgvo h2 {font-size: 1.4rem;}
+.dsgvo h3 {font-size: 1.2rem;}
+.dsgvo h4 {font-size: 1.1rem;}
+.dsgvo h5 {font-size: 1rem;}

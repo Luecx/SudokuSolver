@@ -23,19 +23,48 @@
 .my_red     { color: black; background-color: rgba(255, 0, 0, 0.3); }
 .my_violet  { color: black; background-color: rgba(238, 130, 238, 0.3); }
 .my_black   { color: black; background-color: rgba(0, 0, 0, 0.3); }
+
+.card:hover .my_green,
 .my_green:hover {color: white;background-color: green;}
+.card:hover .my_gold,
 .my_gold:hover 	{color: black;background-color: gold;}
+.card:hover .my_red,
 .my_red:hover 	{color: black;background-color: red;}
+.card:hover .my_violet,
 .my_violet:hover{color: black;background-color: violet;}
+.card:hover .my_black,
 .my_black:hover {color: white;background-color: black;}
 
+
 .grid-container {
+	width: 100%;
 	display: grid;
-	gap: 1rem;
 	grid-template-columns: repeat(5, 1fr);
+	gap: 2rem;
+	justify-content: center;
+	align-content: center;
+	max-width: 1400px; /* oder ein Wert deiner Wahl */
+}
+
+.center-block {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	padding: 0 4rem;
+	max-width: 1400px; /* oder ein Wert deiner Wahl */
 }
 
 @media (max-width: 1200px) {
+	.container-fluid.full-height {
+		align-items: flex-start !important; /* vertikale Zentrierung aufheben */
+		justify-content: flex-start !important; /* optional: auch horizontal */
+	}
+	.center-block {
+		align-items: flex-start; /* falls du das auch für center-block möchtest */
+		padding: 4rem;
+	}
 	.grid-container {
 		grid-template-columns: repeat(3, 1fr);
 	}
