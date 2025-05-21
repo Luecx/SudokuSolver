@@ -35,7 +35,7 @@
 	</div>
 	<div class="row w-100 justify-content-center" style="margin-top: 0px">
 		<div class="col-auto d-flex justify-content-center">
-			<h1 class="text-center fw-light">{% trans "FINN'S SUDOKU APP" %}</h1>
+			<h1 class="text-center" style="font-weight: 100; font-size: 3rem;">{% trans "FINN'S SUDOKU APP" %}</h1>
 		</div>
 	</div>
 	<div class="row w-100 justify-content-center mb-5">
@@ -249,84 +249,4 @@
         gradient.setAttribute('gradientTransform', `rotate(${angle + 90}, 422, 368)`);
     });
 </script>
-
-<!--
-<script>
-    document.querySelectorAll('#about .block').forEach(block => {
-        block.addEventListener('click', function () {
-            const wipeMap = {
-                'block-OL': 'wipe-ol',
-                'block-OR': 'wipe-or',
-                'block-UL': 'wipe-ul',
-                'block-UR': 'wipe-ur'
-            };
-
-            const reverseMap = {
-                'block-OL': 'wipe-ol-reverse',
-                'block-OR': 'wipe-or-reverse',
-                'block-UL': 'wipe-ul-reverse',
-                'block-UR': 'wipe-ur-reverse'
-            };
-
-            const overlay = this.querySelector('.overlay');
-            const wipeClasses = Object.values(wipeMap);
-            const reverseClasses = Object.values(reverseMap);
-
-            // === Fall: Block ist bereits aktiv → Rückwärts schließen ===
-            if (this.classList.contains('active')) {
-                const ownReverseClass = Object.entries(reverseMap)
-                    .find(([cls]) => this.classList.contains(cls))?.[1];
-
-                if (ownReverseClass) {
-                    overlay.classList.remove(...wipeClasses, ...reverseClasses);
-                    void overlay.offsetWidth;
-                    overlay.classList.add(ownReverseClass);
-
-                    overlay.addEventListener('animationend', function handler() {
-                        block.classList.remove('active');
-                        overlay.classList.remove(ownReverseClass);
-                        overlay.removeEventListener('animationend', handler);
-                    });
-                }
-                return;
-            }
-
-            // === Andere aktive Blöcke rückwärts schließen ===
-            document.querySelectorAll('#about .block.active').forEach(b => {
-                if (b === this) return;
-
-                const ov = b.querySelector('.overlay');
-                wipeClasses.forEach(cls => ov.classList.remove(cls));
-                reverseClasses.forEach(cls => ov.classList.remove(cls));
-
-                const reverseClass = Object.entries(reverseMap)
-                    .find(([cls]) => b.classList.contains(cls))?.[1];
-
-                if (reverseClass) {
-                    void ov.offsetWidth;
-                    ov.classList.add(reverseClass);
-                    ov.addEventListener('animationend', function handler() {
-                        b.classList.remove('active');
-                        ov.classList.remove(reverseClass);
-                        ov.removeEventListener('animationend', handler);
-                    });
-                }
-            });
-
-            // === Diesen Block aktivieren ===
-            this.classList.add('active');
-
-            const wipeClass = Object.entries(wipeMap)
-                .find(([cls]) => this.classList.contains(cls))?.[1];
-
-            if (wipeClass) {
-                overlay.classList.remove(...wipeClasses, ...reverseClasses);
-                void overlay.offsetWidth;
-                overlay.classList.add(wipeClass);
-            }
-        });
-    });
-</script>
--->
-
 {% endblock %}
