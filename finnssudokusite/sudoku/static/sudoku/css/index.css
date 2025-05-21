@@ -1,0 +1,195 @@
+
+#about {
+	scroll-behavior: smooth;
+	margin: 0;
+	min-height: 100vh;           /* statt height: 100vh – damit es wachsen kann */
+	display: flex;
+	flex-direction: column;      /* falls du später mehr Inhalt über/unter dem Container willst */
+	justify-content: center;     /* vertikal zentrieren */
+	background-color: white;
+	overflow-y: auto;            /* falls Inhalt zu hoch */
+}
+
+/*@import url('https://fonts.googleapis.com/css2?family=Londrina+Sketch&display=swap');
+	.londrina-sketch-regular {
+		font-family: "Londrina Sketch", sans-serif;
+		font-weight: 400;
+		font-style: normal;
+	}*/
+
+.full-height {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: calc(100dvh - 60px); /* 60px menüzeile*/
+	box-sizing: border-box;
+	padding-top: 0; /* Platz für Menü  */
+}
+
+.brain-img {
+	width: 250px;
+	height: auto;
+	pointer-events: none;
+	overflow: visible;
+}
+
+.brain-wrapper {
+	filter: drop-shadow(0px 10px 9px rgba(0, 0, 0, 0.2));
+	-webkit-filter: drop-shadow(0px 10px 9px rgba(0, 0, 0, 0.2));
+	position: relative;
+	transition: filter 0.1s ease-out;
+	overflow: visible;
+	padding: 20px;
+	transform: translateZ(0);
+}
+.square-img {
+	aspect-ratio: 1 / 1;
+	width: 100%;
+	max-width: 400px;
+	max-height: 400px;
+	object-fit: contain;
+	display: block;
+	margin-inline: auto;
+	padding: 1rem;
+	transition: transform 0.3s ease; /* optional für sanftes Ein-/Ausblenden */
+}
+.sides { transform: scale(1);}
+.card-body { margin-top: 0; padding-top: 0;}
+.card-title {font-weight: 100; font-size: 4rem; }
+.card-text { font-size: 1.5rem;}
+
+@media (min-width: 768px) {
+	.sides {transform: scale(0.8);}
+	.sides.card-body {margin-top: -2rem;}
+}
+
+.faehnchen {
+	display: inline-block;
+	padding: 0.5em 2.5em 0.5em 2.5em;
+	background: #e0d3bc;
+	color: #222;
+	font-weight: bold;
+	font-size: 1.5em;
+	font-family: sans-serif;
+	position: relative;
+	/* Fähnchenform */
+	clip-path: polygon(0 0, 90% 0, 100% 50%, 90% 100%, 0 100%, 10% 50%);
+	/* Rotation */
+	transform: rotate(-8deg);
+	/* Optional: Schatten */
+	box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+	min-width: 80%;
+}
+.faehnchen::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	border-top: 1em solid transparent;
+	border-bottom: 1em solid transparent;
+	border-left: 1.2em solid #e0d3bc;
+}
+
+
+/*
+
+.block {
+	width: 50%;
+	height: 50%;
+	box-sizing: border-box;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2rem;
+	cursor: pointer;
+	flex-direction: column;
+	text-align: center;
+}
+
+.block-OL::after,
+.block-UL::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	width: 0;
+	height: 80%;
+	border-right: 1px solid #ccc;
+	z-index: 10;
+}
+.block-OL::after {bottom: 0;}
+.block-UL::after {top: 0;}
+.block-OL::before,
+.block-OR::before {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	width: 80%;
+	height: 0;
+	border-bottom: 1px solid #ccc;
+	z-index: 10;
+}
+.block-OL::before {right: 0;}
+.block-OR::before {left: 0;}
+
+.block img {
+	height: 50%;
+	aspect-ratio: 1/1;
+	object-fit: cover;
+}
+
+
+.overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.85);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	flex-direction: column;
+	text-align: center;
+	z-index: 2;
+	pointer-events: none;
+	opacity: 1;
+	clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%);
+}
+.overlay h2 {
+	color: white;
+	font-weight: 600;
+	padding-bottom: 1rem;
+	font-size: 3rem;
+}
+
+@keyframes wipeURtoOL {
+	from { clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes wipeULtoOR {
+	from { clip-path: polygon(0 100%, 0 100%, 0 100%, 0 100%); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes wipeORtoUL {
+	from { clip-path: polygon(100% 0, 100% 0, 100% 0, 100% 0); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes wipeOLtoUR {
+	from { clip-path: polygon(0 0, 0 0, 0 0, 0 0); }
+	to	 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+.block.active .overlay.wipe-ol { animation: wipeURtoOL 0.5s forwards; pointer-events: auto;}
+.block.active .overlay.wipe-or { animation: wipeULtoOR 0.5s forwards; pointer-events: auto;}
+.block.active .overlay.wipe-ul { animation: wipeORtoUL 0.5s forwards; pointer-events: auto;}
+.block.active .overlay.wipe-ur { animation: wipeOLtoUR 0.5s forwards; pointer-events: auto;}
+
+.block.active .overlay.wipe-ol-reverse { animation: wipeURtoOL 0.5s reverse forwards; }
+.block.active .overlay.wipe-or-reverse { animation: wipeULtoOR 0.5s reverse forwards; }
+.block.active .overlay.wipe-ul-reverse { animation: wipeORtoUL 0.5s reverse forwards; }
+.block.active .overlay.wipe-ur-reverse { animation: wipeOLtoUR 0.5s reverse forwards; }
+*/
