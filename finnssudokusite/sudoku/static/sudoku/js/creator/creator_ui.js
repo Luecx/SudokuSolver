@@ -55,6 +55,7 @@ class Creator {
         this.registerBoardChangeListeners();
         this.renderActiveTags();
         this.renderSettings();
+        this.checkIfCanSubmit()
     }
 
     resetSolverState() {
@@ -361,14 +362,40 @@ class Creator {
 
             requestAnimationFrame(animate);
         });
+
+        document.querySelector("input[name='sudoku_name']")?.addEventListener("input", () => {
+            this.checkIfCanSubmit();
+        });
+
     }
 
     checkIfCanSubmit() {
         const btn = this.get("submit-sudoku-btn");
-        const name = document.querySelector("input[name='sudoku_name']")?.value?.trim();
-        const isValid = name.length > 0 && this.solutions_temp_list.length === 1;
-        btn.disabled = !isValid;
+        const name = document.querySelector("input[name='sudoku_name']")?.value?.trim() || "";
+
+        const nameValid = name.length > 0;
+        const uniqueSolution = this.solutions_temp_list.length === 1;
+
+        // Update button state
+        btn.disabled = !(nameValid && uniqueSolution);
+
+        // Update status icons
+        const updateStatus = (id, isValid) => {
+            const statusDiv = this.get(id);
+            if (!statusDiv) return;
+            const icon = statusDiv.querySelector("i");
+            if (!icon) return;
+
+            icon.classList.remove("fa-check", "fa-times", "text-success", "text-danger");
+            icon.classList.add(isValid ? "fa-check" : "fa-times");
+            icon.classList.add(isValid ? "text-success" : "text-danger");
+        };
+
+        updateStatus("status-name", nameValid);
+        updateStatus("status-solution", uniqueSolution);
+        updateStatus("status-unique", true);
     }
+
 
     registerBoardChangeListeners() {
         const events = [
