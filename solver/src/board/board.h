@@ -17,19 +17,19 @@
 
 #include <cassert>
 #include <cmath>
+#include <functional>
 #include <memory>
 #include <stack>
 #include <unordered_map>
 #include <vector>
-#include <functional>
 
 
 #include "../cell.h"
 #include "../impact_map.h"
 #include "../number_set.h"
 #include "../rules/_rule_handler.h"
-#include "../solver_stats.h"
 #include "../solution.h"
+#include "../solver_stats.h"
 
 
 namespace sudoku {
@@ -170,11 +170,9 @@ public:
     std::vector<Number> get_random_candidates(const CellIdx &idx) const;
     Solution copy_solution() const;
     Board clone_shallow() const;
-    std::vector<Solution> solve_complete(
-        SolverStats *stats_out = nullptr,
-        int max_nodes = 1024,
-        std::function<void(float)> onProgress = nullptr,
-        std::function<void(Solution&)> onSolution = nullptr);
+    std::vector<Solution> solve_complete(SolverStats *stats_out = nullptr, int max_nodes = 1024,
+                                         std::function<void(float)> onProgress = nullptr,
+                                         std::function<void(Solution &)> onSolution = nullptr);
 
 private:
     int board_size_; ///< Board size (typically 9)

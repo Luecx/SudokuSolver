@@ -60,9 +60,6 @@ struct DiagonalIdx {
     /**
      * @brief Returns all cells belonging to this diagonal on a given board size.
      *
-     * For MAIN diagonals: r = c + index
-     * For ANTI diagonals: r = index - c
-     *
      * @param board_size The size of the Sudoku grid (typically 9).
      * @return Vector of CellIdx objects on the diagonal.
      */
@@ -70,15 +67,15 @@ struct DiagonalIdx {
         std::vector<CellIdx> cells;
         if (type == DiagonalType::MAIN) {
             for (int c = 0; c < board_size; ++c) {
-                int r = c + index;
+                int r = c - index;
                 if (r >= 0 && r < board_size)
                     cells.emplace_back(r, c);
             }
         } else {
             for (int c = 0; c < board_size; ++c) {
-                int r = index - c;
+                int r = c + index;
                 if (r >= 0 && r < board_size)
-                    cells.emplace_back(r, c);
+                    cells.emplace_back(r, 8 - c); // 8 - c for anti-diagonal
             }
         }
         return cells;

@@ -1,1 +1,231 @@
-{"fixedCells":[{"r":1,"c":1,"value":1},{"r":1,"c":2,"value":2},{"r":1,"c":3,"value":3},{"r":1,"c":7,"value":5},{"r":2,"c":1,"value":4},{"r":2,"c":3,"value":6},{"r":2,"c":6,"value":3},{"r":3,"c":1,"value":7},{"r":3,"c":2,"value":8},{"r":3,"c":3,"value":9},{"r":5,"c":5,"value":1},{"r":5,"c":6,"value":2},{"r":5,"c":7,"value":3},{"r":6,"c":2,"value":3},{"r":6,"c":6,"value":5},{"r":6,"c":7,"value":6},{"r":7,"c":1,"value":5},{"r":7,"c":5,"value":7},{"r":7,"c":6,"value":8},{"r":7,"c":7,"value":9}],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Renban","fields":{},"rules":[{"id":"1747597725727-s79f","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":4},{"__type__":"CellIdx","r":2,"c":5}]}}},{"id":"1747597730161-fwgd","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":7},{"__type__":"CellIdx","r":0,"c":8},{"__type__":"CellIdx","r":1,"c":8},{"__type__":"CellIdx","r":2,"c":8}]}}},{"id":"1747597733887-xqkg","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":4,"c":3},{"__type__":"CellIdx","r":5,"c":3},{"__type__":"CellIdx","r":5,"c":4},{"__type__":"CellIdx","r":4,"c":4}]}}},{"id":"1747597737645-3wel","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":0},{"__type__":"CellIdx","r":7,"c":0},{"__type__":"CellIdx","r":8,"c":1},{"__type__":"CellIdx","r":8,"c":2}]}}}]}]}
+{
+    "fixedCells": [
+        {
+            "r": 1,
+            "c": 1,
+            "value": 1
+        },
+        {
+            "r": 1,
+            "c": 2,
+            "value": 2
+        },
+        {
+            "r": 1,
+            "c": 3,
+            "value": 3
+        },
+        {
+            "r": 1,
+            "c": 7,
+            "value": 5
+        },
+        {
+            "r": 2,
+            "c": 1,
+            "value": 4
+        },
+        {
+            "r": 2,
+            "c": 3,
+            "value": 6
+        },
+        {
+            "r": 2,
+            "c": 6,
+            "value": 3
+        },
+        {
+            "r": 3,
+            "c": 1,
+            "value": 7
+        },
+        {
+            "r": 3,
+            "c": 2,
+            "value": 8
+        },
+        {
+            "r": 3,
+            "c": 3,
+            "value": 9
+        },
+        {
+            "r": 5,
+            "c": 5,
+            "value": 1
+        },
+        {
+            "r": 5,
+            "c": 6,
+            "value": 2
+        },
+        {
+            "r": 5,
+            "c": 7,
+            "value": 3
+        },
+        {
+            "r": 6,
+            "c": 2,
+            "value": 3
+        },
+        {
+            "r": 6,
+            "c": 6,
+            "value": 5
+        },
+        {
+            "r": 6,
+            "c": 7,
+            "value": 6
+        },
+        {
+            "r": 7,
+            "c": 1,
+            "value": 5
+        },
+        {
+            "r": 7,
+            "c": 5,
+            "value": 7
+        },
+        {
+            "r": 7,
+            "c": 6,
+            "value": 8
+        },
+        {
+            "r": 7,
+            "c": 7,
+            "value": 9
+        }
+    ],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Renban",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1747597725727-s79f",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 5
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747597730161-fwgd",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 8
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747597733887-xqkg",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 4
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747597737645-3wel",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 2
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

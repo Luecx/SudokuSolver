@@ -1,1 +1,226 @@
-{"fixedCells":[{"r":0,"c":0,"value":3},{"r":0,"c":5,"value":8},{"r":1,"c":7,"value":9},{"r":2,"c":0,"value":1},{"r":2,"c":7,"value":3},{"r":4,"c":4,"value":7},{"r":6,"c":1,"value":1},{"r":7,"c":1,"value":5},{"r":8,"c":3,"value":9}],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Thermometer","fields":{},"rules":[{"id":"1747579934859-z500","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":0},{"__type__":"CellIdx","r":3,"c":1},{"__type__":"CellIdx","r":3,"c":2},{"__type__":"CellIdx","r":2,"c":3},{"__type__":"CellIdx","r":1,"c":3},{"__type__":"CellIdx","r":0,"c":2}]}}},{"id":"1747579936002-f8b8","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":6},{"__type__":"CellIdx","r":1,"c":5},{"__type__":"CellIdx","r":2,"c":5},{"__type__":"CellIdx","r":3,"c":6},{"__type__":"CellIdx","r":3,"c":7},{"__type__":"CellIdx","r":2,"c":8}]}}},{"id":"1747579936152-j8zd","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":8},{"__type__":"CellIdx","r":5,"c":7},{"__type__":"CellIdx","r":5,"c":6},{"__type__":"CellIdx","r":6,"c":5},{"__type__":"CellIdx","r":7,"c":5},{"__type__":"CellIdx","r":8,"c":6}]}}},{"id":"1747579936286-ngxt","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":8,"c":2},{"__type__":"CellIdx","r":7,"c":3},{"__type__":"CellIdx","r":6,"c":3},{"__type__":"CellIdx","r":5,"c":2},{"__type__":"CellIdx","r":5,"c":1},{"__type__":"CellIdx","r":6,"c":0}]}}}]}]}
+{
+    "fixedCells": [
+        {
+            "r": 0,
+            "c": 0,
+            "value": 3
+        },
+        {
+            "r": 0,
+            "c": 5,
+            "value": 8
+        },
+        {
+            "r": 1,
+            "c": 7,
+            "value": 9
+        },
+        {
+            "r": 2,
+            "c": 0,
+            "value": 1
+        },
+        {
+            "r": 2,
+            "c": 7,
+            "value": 3
+        },
+        {
+            "r": 4,
+            "c": 4,
+            "value": 7
+        },
+        {
+            "r": 6,
+            "c": 1,
+            "value": 1
+        },
+        {
+            "r": 7,
+            "c": 1,
+            "value": 5
+        },
+        {
+            "r": 8,
+            "c": 3,
+            "value": 9
+        }
+    ],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Thermometer",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1747579934859-z500",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 2
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747579936002-f8b8",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 8
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747579936152-j8zd",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 6
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747579936286-ngxt",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 0
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

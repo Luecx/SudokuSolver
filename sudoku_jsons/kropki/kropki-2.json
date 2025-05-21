@@ -1,1 +1,66 @@
-{"fixedCells":[{"r":0,"c":1,"value":5},{"r":0,"c":3,"value":6},{"r":2,"c":0,"value":3},{"r":7,"c":0,"value":4},{"r":6,"c":3,"value":7}],"rules":[{"type":"Kropki","fields":{"allDotsGiven":true},"rules":[{"label":"White Kropki Dots","color":"white","fields":{"region":{"__type__":"Region","type":"edges","items":[]}}},{"label":"Black Kropki Dots","color":"black","fields":{"region":{"__type__":"Region","type":"edges","items":[]}}}]},{"type":"Standard","fields":{},"rules":[]}]}
+{
+    "fixedCells": [
+        {
+            "r": 0,
+            "c": 1,
+            "value": 5
+        },
+        {
+            "r": 0,
+            "c": 3,
+            "value": 6
+        },
+        {
+            "r": 2,
+            "c": 0,
+            "value": 3
+        },
+        {
+            "r": 7,
+            "c": 0,
+            "value": 4
+        },
+        {
+            "r": 6,
+            "c": 3,
+            "value": 7
+        }
+    ],
+    "rules": [
+        {
+            "type": "Kropki",
+            "fields": {
+                "allDotsGiven": true
+            },
+            "rules": [
+                {
+                    "label": "White Kropki Dots",
+                    "color": "white",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "edges",
+                            "items": []
+                        }
+                    }
+                },
+                {
+                    "label": "Black Kropki Dots",
+                    "color": "black",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "edges",
+                            "items": []
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        }
+    ]
+}

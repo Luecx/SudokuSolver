@@ -6,6 +6,9 @@
 
 namespace sudoku {
 
+std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_ = false);
+
+
 struct CagePair {
     Region<CellIdx> region;
     int sum;
@@ -29,11 +32,5 @@ private:
 
     bool check_cage(CagePair &pair);
     bool check_group(const CagePair &pair) const;
-
-    int maxSum(int small, int N, int maxC) const;
-    int minSum(int large, int N, int minC) const;
-    int lowerBound(int N, int sum, int maxC, int size) const;
-    int upperBound(int N, int sum, int minC, int size) const;
-    std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size) const;
 };
 } // namespace sudoku

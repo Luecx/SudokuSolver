@@ -1,1 +1,324 @@
-{"fixedCells":[{"r":0,"c":0,"value":1},{"r":0,"c":2,"value":5},{"r":1,"c":7,"value":3},{"r":2,"c":5,"value":4},{"r":4,"c":0,"value":4},{"r":5,"c":1,"value":6},{"r":5,"c":7,"value":5},{"r":6,"c":3,"value":6},{"r":8,"c":1,"value":4}],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Custom Sum","fields":{},"rules":[{"id":"1747576038910-jnam","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":6},{"__type__":"CellIdx","r":3,"c":6}]},"color":"rgba(188, 183, 80, 0.3)","sum":15}},{"id":"1747576104656-ikme","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":1},{"__type__":"CellIdx","r":7,"c":2},{"__type__":"CellIdx","r":7,"c":3}]},"color":"rgba(121, 205, 5, 0.3)","sum":19}},{"id":"1747576104808-o762","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":3},{"__type__":"CellIdx","r":5,"c":4},{"__type__":"CellIdx","r":5,"c":5},{"__type__":"CellIdx","r":5,"c":6}]},"color":"rgba(33, 106, 124, 0.3)","sum":27}},{"id":"1747576142776-3ued","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":3},{"__type__":"CellIdx","r":1,"c":3},{"__type__":"CellIdx","r":1,"c":4},{"__type__":"CellIdx","r":1,"c":5},{"__type__":"CellIdx","r":2,"c":5}]},"color":"rgba(186, 96, 229, 0.3)","sum":21}},{"id":"1747576219839-b3bl","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":6},{"__type__":"CellIdx","r":6,"c":7}]},"color":"rgba(221, 224, 34, 0.3)","sum":10}},{"id":"1747576240170-dyi5","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":8},{"__type__":"CellIdx","r":8,"c":8}]},"color":"rgba(95, 58, 49, 0.3)","sum":17}},{"id":"1747576272406-y1d5","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":8,"c":3},{"__type__":"CellIdx","r":8,"c":4},{"__type__":"CellIdx","r":8,"c":5}]},"color":"rgba(133, 10, 180, 0.3)","sum":9}},{"id":"1747576297499-l3hx","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":7},{"__type__":"CellIdx","r":3,"c":7}]},"color":"rgba(188, 183, 80, 0.3)","sum":15}},{"id":"1747576379909-oqsz","fields":{"region":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":3},{"__type__":"CellIdx","r":0,"c":4},{"__type__":"CellIdx","r":0,"c":5},{"__type__":"CellIdx","r":0,"c":6},{"__type__":"CellIdx","r":0,"c":7},{"__type__":"CellIdx","r":0,"c":8}]},"color":"rgba(4, 60, 46, 0.3)","sum":30}}]}]}
+{
+    "fixedCells": [
+        {
+            "r": 0,
+            "c": 0,
+            "value": 1
+        },
+        {
+            "r": 0,
+            "c": 2,
+            "value": 5
+        },
+        {
+            "r": 1,
+            "c": 7,
+            "value": 3
+        },
+        {
+            "r": 2,
+            "c": 5,
+            "value": 4
+        },
+        {
+            "r": 4,
+            "c": 0,
+            "value": 4
+        },
+        {
+            "r": 5,
+            "c": 1,
+            "value": 6
+        },
+        {
+            "r": 5,
+            "c": 7,
+            "value": 5
+        },
+        {
+            "r": 6,
+            "c": 3,
+            "value": 6
+        },
+        {
+            "r": 8,
+            "c": 1,
+            "value": 4
+        }
+    ],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Custom Sum",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1747576038910-jnam",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 6
+                                }
+                            ]
+                        },
+                        "color": "rgba(188, 183, 80, 0.3)",
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1747576104656-ikme",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 3
+                                }
+                            ]
+                        },
+                        "color": "rgba(121, 205, 5, 0.3)",
+                        "sum": 19
+                    }
+                },
+                {
+                    "id": "1747576104808-o762",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 6
+                                }
+                            ]
+                        },
+                        "color": "rgba(33, 106, 124, 0.3)",
+                        "sum": 27
+                    }
+                },
+                {
+                    "id": "1747576142776-3ued",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "color": "rgba(186, 96, 229, 0.3)",
+                        "sum": 21
+                    }
+                },
+                {
+                    "id": "1747576219839-b3bl",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "color": "rgba(221, 224, 34, 0.3)",
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1747576240170-dyi5",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 8
+                                }
+                            ]
+                        },
+                        "color": "rgba(95, 58, 49, 0.3)",
+                        "sum": 17
+                    }
+                },
+                {
+                    "id": "1747576272406-y1d5",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "color": "rgba(133, 10, 180, 0.3)",
+                        "sum": 9
+                    }
+                },
+                {
+                    "id": "1747576297499-l3hx",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "color": "rgba(188, 183, 80, 0.3)",
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1747576379909-oqsz",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 8
+                                }
+                            ]
+                        },
+                        "color": "rgba(4, 60, 46, 0.3)",
+                        "sum": 30
+                    }
+                }
+            ]
+        }
+    ]
+}

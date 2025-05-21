@@ -1,1 +1,84 @@
-{"fixedCells":[],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Diagonal Sum","fields":{},"rules":[{"id":"1747669951551-g0bn","fields":{"region":{"__type__":"Region","type":"diagonal","items":[{"__type__":"DiagonalIdx","type":"main","index":6}]},"sum":21}},{"id":"1747669956073-yzn4","fields":{"region":{"__type__":"Region","type":"diagonal","items":[{"__type__":"DiagonalIdx","type":"anti","index":-4}]},"sum":32}},{"id":"1747669956235-hjfx","fields":{"region":{"__type__":"Region","type":"diagonal","items":[{"__type__":"DiagonalIdx","type":"anti","index":-6}]},"sum":13}}]}]}
+{
+    "fixedCells": [],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Diagonal Sum",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1747769764159-szzq",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "diagonal",
+                            "items": [
+                                {
+                                    "__type__": "DiagonalIdx",
+                                    "type": "main",
+                                    "index": 7
+                                }
+                            ]
+                        },
+                        "sum": 11
+                    }
+                },
+                {
+                    "id": "1747769777222-0952",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "diagonal",
+                            "items": [
+                                {
+                                    "__type__": "DiagonalIdx",
+                                    "type": "anti",
+                                    "index": -4
+                                }
+                            ]
+                        },
+                        "sum": 24
+                    }
+                },
+                {
+                    "id": "1747769803362-20k8",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "diagonal",
+                            "items": [
+                                {
+                                    "__type__": "DiagonalIdx",
+                                    "type": "anti",
+                                    "index": 6
+                                }
+                            ]
+                        },
+                        "sum": 21
+                    }
+                },
+                {
+                    "id": "1747769818546-30bk",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "diagonal",
+                            "items": [
+                                {
+                                    "__type__": "DiagonalIdx",
+                                    "type": "main",
+                                    "index": -6
+                                }
+                            ]
+                        },
+                        "sum": 24
+                    }
+                }
+            ]
+        }
+    ]
+}

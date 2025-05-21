@@ -1,1 +1,408 @@
-{"fixedCells":[{"r":0,"c":0,"value":2},{"r":0,"c":5,"value":5},{"r":0,"c":8,"value":8},{"r":1,"c":6,"value":4},{"r":2,"c":6,"value":1},{"r":3,"c":4,"value":7},{"r":4,"c":5,"value":6},{"r":5,"c":5,"value":4}],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Whisper","fields":{},"rules":[{"id":"1747665637010-jqsa","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":1},{"__type__":"CellIdx","r":0,"c":0},{"__type__":"CellIdx","r":0,"c":1},{"__type__":"CellIdx","r":0,"c":2}]}}},{"id":"1747665642377-jl6q","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":2,"c":2},{"__type__":"CellIdx","r":1,"c":3},{"__type__":"CellIdx","r":2,"c":3}]}}},{"id":"1747665642519-bgmt","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":0},{"__type__":"CellIdx","r":2,"c":0},{"__type__":"CellIdx","r":3,"c":1},{"__type__":"CellIdx","r":4,"c":1}]}}},{"id":"1747665642668-5l7t","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":7},{"__type__":"CellIdx","r":1,"c":7},{"__type__":"CellIdx","r":2,"c":8},{"__type__":"CellIdx","r":1,"c":8},{"__type__":"CellIdx","r":0,"c":8}]}}},{"id":"1747665642822-58q4","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":5},{"__type__":"CellIdx","r":2,"c":4},{"__type__":"CellIdx","r":2,"c":5},{"__type__":"CellIdx","r":1,"c":5},{"__type__":"CellIdx","r":2,"c":6}]}}},{"id":"1747665662611-efgg","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":2},{"__type__":"CellIdx","r":3,"c":3},{"__type__":"CellIdx","r":4,"c":2},{"__type__":"CellIdx","r":5,"c":2},{"__type__":"CellIdx","r":6,"c":3},{"__type__":"CellIdx","r":6,"c":4}]}}},{"id":"1747665662756-4gvj","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":1},{"__type__":"CellIdx","r":6,"c":2},{"__type__":"CellIdx","r":7,"c":1},{"__type__":"CellIdx","r":8,"c":0}]}}},{"id":"1747665662896-27ld","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":5},{"__type__":"CellIdx","r":8,"c":5},{"__type__":"CellIdx","r":7,"c":6},{"__type__":"CellIdx","r":6,"c":6},{"__type__":"CellIdx","r":7,"c":7}]}}},{"id":"1747665686802-kuxi","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":6,"c":7},{"__type__":"CellIdx","r":6,"c":8},{"__type__":"CellIdx","r":5,"c":8}]}}},{"id":"1747665692252-bv10","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":7},{"__type__":"CellIdx","r":4,"c":7},{"__type__":"CellIdx","r":3,"c":6}]}}},{"id":"1747665699120-hs26","fields":{"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":4},{"__type__":"CellIdx","r":4,"c":4},{"__type__":"CellIdx","r":4,"c":3},{"__type__":"CellIdx","r":5,"c":4}]}}}]}]}
+{
+    "fixedCells": [
+        {
+            "r": 0,
+            "c": 0,
+            "value": 2
+        },
+        {
+            "r": 0,
+            "c": 5,
+            "value": 5
+        },
+        {
+            "r": 0,
+            "c": 8,
+            "value": 8
+        },
+        {
+            "r": 1,
+            "c": 6,
+            "value": 4
+        },
+        {
+            "r": 2,
+            "c": 6,
+            "value": 1
+        },
+        {
+            "r": 3,
+            "c": 4,
+            "value": 7
+        },
+        {
+            "r": 4,
+            "c": 5,
+            "value": 6
+        },
+        {
+            "r": 5,
+            "c": 5,
+            "value": 4
+        }
+    ],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Whisper",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1747665637010-jqsa",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 2
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665642377-jl6q",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 3
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665642519-bgmt",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665642668-5l7t",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 8
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665642822-58q4",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 6
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665662611-efgg",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 4
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665662756-4gvj",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 0
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665662896-27ld",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 7
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665686802-kuxi",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 8
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665692252-bv10",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 6
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1747665699120-hs26",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 4
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

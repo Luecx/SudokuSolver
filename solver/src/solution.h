@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
+#include <functional> // for std::hash
 #include <ostream>
-#include <functional>  // for std::hash
+#include <vector>
 #include "defs.h"
+
 
 namespace sudoku {
 
@@ -29,9 +30,7 @@ public:
      * @param c Column index
      * @param value Value to set
      */
-    void set(Row r, Col c, Number value) {
-        values_[r * size_ + c] = value;
-    }
+    void set(Row r, Col c, Number value) { values_[r * size_ + c] = value; }
 
     /**
      * @brief Get a value from the solution grid.
@@ -39,9 +38,7 @@ public:
      * @param c Column index
      * @return Stored value
      */
-    Number get(Row r, Col c) const {
-        return values_[r * size_ + c];
-    }
+    Number get(Row r, Col c) const { return values_[r * size_ + c]; }
 
     /**
      * @brief Get board dimension.
@@ -53,11 +50,11 @@ public:
      * @brief Direct access to the flat vector of values.
      * @return Const reference to internal vector
      */
-    const std::vector<Number>& raw() const { return values_; }
+    const std::vector<Number> &raw() const { return values_; }
 
 private:
-    int size_;                      ///< Board size
-    std::vector<Number> values_;    ///< Flattened board values in row-major order
+    int size_; ///< Board size
+    std::vector<Number> values_; ///< Flattened board values in row-major order
 };
 
 /**
@@ -66,9 +63,7 @@ private:
  * @param b Second solution
  * @return True if size and values are identical
  */
-inline bool operator==(const Solution &a, const Solution &b) {
-    return a.size() == b.size() && a.raw() == b.raw();
-}
+inline bool operator==(const Solution &a, const Solution &b) { return a.size() == b.size() && a.raw() == b.raw(); }
 
 /**
  * @brief Stream output operator for Solution.
@@ -96,11 +91,11 @@ namespace std {
 /**
  * @brief Hash function for sudoku::Solution for use in unordered containers.
  */
-template <>
+template<>
 struct hash<sudoku::Solution> {
     std::size_t operator()(const sudoku::Solution &sol) const {
         std::size_t seed = 0;
-        for (sudoku::Number val : sol.raw()) {
+        for (sudoku::Number val: sol.raw()) {
             // Hash combine (boost-style)
             seed ^= std::hash<sudoku::Number>{}(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }

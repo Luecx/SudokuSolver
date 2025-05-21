@@ -7,7 +7,6 @@
 namespace sudoku {
 
 bool hidden_singles(Board *board_, std::vector<Cell *> &unit);
-// bool pointing(Board *board_);
 
 /**
  * @brief Check if a group contains all numbers from 1 to n.

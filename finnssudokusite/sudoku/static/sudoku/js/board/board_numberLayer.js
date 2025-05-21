@@ -1,5 +1,5 @@
 import { CellIdx } from "../region/CellIdx.js";
-import {Solution} from "../solver/solution.js";
+import {Solution} from "../solution/solution.js";
 
 export class Cell {
     constructor(r, c) {

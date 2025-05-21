@@ -24,7 +24,7 @@ private:
 
     bool is3x3Square(const Region<CellIdx> &region);
 
-    bool isValidLayout(const Region<CellIdx>& region, const std::array<int, 9>& layout);
+    bool isValidLayout(const Region<CellIdx> &region, const std::array<int, 9> &layout);
     void initPossibleLayouts(const Region<CellIdx> &region);
 
     bool applyCandidates(const Region<CellIdx> &region);
