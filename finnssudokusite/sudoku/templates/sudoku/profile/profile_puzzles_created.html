@@ -1,40 +1,45 @@
 {% if created_puzzles %}
 {% load formatting star_rating %}
+
+<!-- Search & Tag Filter -->
+<div class="mb-4">
+  <label class="form-label fw-semibold">Search puzzles:</label>
+  <div class="input-group">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search by puzzle name..." oninput="applyFilters()">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+      Tags
+    </button>
+    <div class="dropdown-menu p-3" style="min-width: 250px; max-height: 250px; overflow-y: auto;">
+      {% for tag in all_tags %}
+      <div class="form-check">
+        <input class="form-check-input tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="applyFilters()">
+        <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Puzzle Table -->
 <div class="table-responsive" style="min-height: 400px;">
   <table class="table table-striped table-hover small align-middle" id="createdTable">
     <thead>
     <tr>
-      <th style="width: 25%;" onclick="sortTable(0)">Name <span class="sort-indicator"></span></th>
-      <th style="width: 15%;" onclick="sortTable(1)">Solved / Attempts <span class="sort-indicator"></span></th>
-      <th style="width: 20%;" onclick="sortTable(2)">Rating <span class="sort-indicator"></span></th>
-      <th style="width: 10%;" onclick="sortTable(3)">Avg Time <span class="sort-indicator"></span></th>
-      <th style="width: 30%;">
-        <div class="dropdown">
-          <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            Tags
-          </span>
-          <ul class="dropdown-menu p-2" id="tagFilterMenu" style="max-height: 200px; overflow-y: auto;">
-            {% for tag in all_tags %}
-            <li>
-              <div class="form-check">
-                <input class="form-check-input tag-filter" type="checkbox" value="{{ tag.name }}" id="tag-{{ tag.name }}" onchange="filterByTags()">
-                <label class="form-check-label" for="tag-{{ tag.name }}">{{ tag.name }}</label>
-              </div>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </th>
+      <th onclick="sortBy('name')">Name <span class="sort-indicator"></span></th>
+      <th onclick="sortBy('solves')">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th onclick="sortBy('rating')">Rating <span class="sort-indicator"></span></th>
+      <th onclick="sortBy('avgtime')">Avg Time <span class="sort-indicator"></span></th>
+      <th>Tags</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="tableBody">
     {% for puzzle in created_puzzles %}
-    <tr data-tags="{{ puzzle.tags.all|join:',' }}"
-        data-name="{{ puzzle.title|lower }}"
+    <tr data-name="{{ puzzle.title|lower }}"
         data-solves="{{ puzzle.solves }}"
         data-attempts="{{ puzzle.attempts }}"
         data-rating="{{ puzzle.average_rating|default:0 }}"
-        data-avgtime="{{ puzzle.average_time|floatformat:0 }}">
+        data-avgtime="{{ puzzle.average_time|floatformat:0 }}"
+        data-tags="{{ puzzle.tags.all|join:','|lower }}">
       <td>{{ puzzle.title }}</td>
       <td>{{ puzzle.solves }} / {{ puzzle.attempts }}</td>
       <td>{% render_starbar puzzle.average_rating %}</td>
@@ -49,60 +54,138 @@
     </tbody>
   </table>
 </div>
+
+<!-- Pagination -->
+<nav>
+  <ul class="pagination justify-content-center mt-3" id="paginationControls"></ul>
+</nav>
+
 {% else %}
 <p>You haven’t created any puzzles yet.</p>
 {% endif %}
 
 <script>
-  let currentSortCol = null;
-  let ascending = true;
+  const rowsPerPage = 10;
+  let currentPage = 1;
+  let currentSort = { key: null, ascending: true };
 
-  function sortTable(colIndex) {
-    const table = document.getElementById("createdTable");
-    const tbody = table.querySelector("tbody");
-    const rows = Array.from(tbody.querySelectorAll("tr"));
+  function getFilteredRows() {
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const selectedTags = Array.from(document.querySelectorAll(".tag-filter:checked")).map(cb => cb.value.toLowerCase());
+    const allRows = Array.from(document.querySelectorAll("#createdTable tbody tr"));
 
-    if (currentSortCol === colIndex) {
-      ascending = !ascending;
-    } else {
-      ascending = true;
-      currentSortCol = colIndex;
+    return allRows.filter(row => {
+      const name = row.dataset.name;
+      const rowTags = row.dataset.tags;
+      const matchesSearch = name.includes(search);
+      const matchesTags = selectedTags.every(tag => rowTags.includes(tag));
+      return matchesSearch && matchesTags;
+    });
+  }
+
+  function renderPage(filteredRows) {
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = currentPage * rowsPerPage;
+    filteredRows.forEach((row, i) => {
+      row.style.display = (i >= start && i < end) ? "" : "none";
+    });
+  }
+
+  function updatePaginationControls(totalPages) {
+    const pagination = document.getElementById("paginationControls");
+    pagination.innerHTML = "";
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = "page-item" + (i === currentPage ? " active" : "");
+      const btn = document.createElement("button");
+      btn.className = "page-link";
+      btn.textContent = i;
+      btn.onclick = () => {
+        currentPage = i;
+        applyFilters();
+      };
+      li.appendChild(btn);
+      pagination.appendChild(li);
+    }
+  }
+
+  function applyFilters() {
+    const filtered = getFilteredRows();
+
+    // Sort filtered rows
+    if (currentSort.key) {
+      sortRows(filtered, currentSort.key, currentSort.ascending);
     }
 
+    // Move filtered rows to DOM in correct order
+    const tbody = document.getElementById("tableBody");
+    filtered.forEach(row => tbody.appendChild(row));
+
+    // Paginate
+    const totalPages = Math.ceil(filtered.length / rowsPerPage);
+    currentPage = Math.min(currentPage, totalPages || 1);
+    document.querySelectorAll("#createdTable tbody tr").forEach(row => row.style.display = "none");
+    renderPage(filtered);
+    updatePaginationControls(totalPages);
+  }
+
+  function sortRows(rows, key, asc) {
     rows.sort((a, b) => {
       let valA, valB;
 
-      switch (colIndex) {
-        case 0: valA = a.dataset.name; valB = b.dataset.name; break;
-        case 1:
+      switch (key) {
+        case "name":
+          valA = a.dataset.name;
+          valB = b.dataset.name;
+          return asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        case "solves":
           valA = parseFloat(a.dataset.solves) / Math.max(1, parseFloat(a.dataset.attempts));
           valB = parseFloat(b.dataset.solves) / Math.max(1, parseFloat(b.dataset.attempts));
           break;
-        case 2: valA = parseFloat(a.dataset.rating); valB = parseFloat(b.dataset.rating); break;
-        case 3: valA = parseFloat(a.dataset.avgtime); valB = parseFloat(b.dataset.avgtime); break;
+        case "rating":
+          valA = parseFloat(a.dataset.rating);
+          valB = parseFloat(b.dataset.rating);
+          break;
+        case "avgtime":
+          valA = parseFloat(a.dataset.avgtime);
+          valB = parseFloat(b.dataset.avgtime);
+          break;
+        default:
+          return 0;
       }
 
-      if (typeof valA === 'string') {
-        return ascending ? valA.localeCompare(valB) : valB.localeCompare(valA);
-      }
-      return ascending ? valA - valB : valB - valA;
-    });
-
-    document.querySelectorAll("#createdTable .sort-indicator").forEach(el => el.innerHTML = "");
-    const arrow = ascending ? "▲" : "▼";
-    table.querySelector(`thead tr th:nth-child(${colIndex + 1}) .sort-indicator`).innerText = arrow;
-
-    rows.forEach(row => tbody.appendChild(row));
-  }
-
-  function filterByTags() {
-    const activeTags = Array.from(document.querySelectorAll(".tag-filter:checked")).map(el => el.value.toLowerCase());
-    const rows = document.querySelectorAll("#createdTable tbody tr");
-
-    rows.forEach(row => {
-      const rowTags = row.getAttribute("data-tags").toLowerCase();
-      const shouldShow = activeTags.every(tag => rowTags.includes(tag));
-      row.style.display = (activeTags.length === 0 || shouldShow) ? "" : "none";
+      return asc ? valA - valB : valB - valA;
     });
   }
+
+  function sortBy(key) {
+    if (currentSort.key === key) {
+      currentSort.ascending = !currentSort.ascending;
+    } else {
+      currentSort.key = key;
+      currentSort.ascending = true;
+    }
+    applyFilters();
+    updateSortIndicators();
+  }
+
+  function updateSortIndicators() {
+    document.querySelectorAll(".sort-indicator").forEach(el => el.innerText = "");
+    if (!currentSort.key) return;
+
+    const columns = {
+      name: 0,
+      solves: 1,
+      rating: 2,
+      avgtime: 3
+    };
+
+    const th = document.querySelectorAll("thead th")[columns[currentSort.key]];
+    const indicator = th.querySelector(".sort-indicator");
+    indicator.innerText = currentSort.ascending ? " ▲" : " ▼";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    applyFilters();
+  });
 </script>
