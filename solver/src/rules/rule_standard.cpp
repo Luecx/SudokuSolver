@@ -30,46 +30,6 @@ bool hidden_singles(Board *board_, std::vector<Cell *> &unit) {
     return changed;
 }
 
-// very slow!
-bool pointing(Board *board_) {
-    bool changed = false;
-    const int block_size = board_->block_size();
-    const int board_size = board_->size();
-
-    for (int br = 0; br < board_size; br += block_size)
-        for (int bc = 0; bc < board_size; bc += block_size) {
-            auto block = board_->get_block(br, bc);
-            for (Number d = 1; d <= board_size; d++) {
-                int row_mask = 0, col_mask = 0;
-                for (const auto &c: block)
-                    if (!c->is_solved() && c->get_candidates().test(d)) {
-                        row_mask |= 1 << (c->pos.r - br);
-                        col_mask |= 1 << (c->pos.c - bc);
-                    }
-
-                // check for row pointing
-                if (row_mask == 1 || row_mask == 2 || row_mask == 4) {
-                    int local = (row_mask == 1) ? 0 : (row_mask == 2) ? 1 : 2;
-                    int global = br + local;
-                    for (auto &peer: board_->get_row(global))
-                        if (peer->pos.c / block_size != bc / block_size)
-                            changed = peer->remove_candidate(d) || changed;
-                }
-
-                // check for column pointing
-                if (col_mask == 1 || col_mask == 2 || col_mask == 4) {
-                    int local = (col_mask == 1) ? 0 : (col_mask == 2) ? 1 : 2;
-                    int global = bc + local;
-                    for (auto &peer: board_->get_col(global))
-                        if (peer->pos.r / block_size != br / block_size)
-                            changed = peer->remove_candidate(d) || changed;
-                }
-            }
-        }
-
-    return changed;
-}
-
 bool is_group_valid(const std::vector<Cell *> &unit) {
     const int unit_size = unit.size();
 
@@ -90,7 +50,6 @@ bool is_group_valid(const std::vector<Cell *> &unit) {
 
     return combined == NumberSet::full(unit_size);
 }
-
 
 // RuleStandard methods
 
