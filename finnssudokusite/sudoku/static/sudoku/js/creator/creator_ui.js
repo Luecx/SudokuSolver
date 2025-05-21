@@ -337,8 +337,34 @@ class Creator {
 
             let serverSuccess = null;
             let serverDone = false;
+            let animationStartTime = performance.now();
+            let animationFrameId = null;
 
-           fetch("/save-sudoku/", {
+            // start animation loop immediately
+            function animate(currentTime) {
+                const elapsed = currentTime - animationStartTime;
+                const fakeProgress = serverDone ? 1 : Math.min(0.95, 0.1 + 0.85 * (1 - Math.exp(-elapsed / 2000)));
+                
+                bar.style.width = `${fakeProgress * 100}%`;
+                
+                if (serverDone) {
+                    // final state
+                    bar.style.backgroundColor = serverSuccess ? "green" : "red";
+                    bar.textContent = serverSuccess ? "Upload complete" : "Upload failed";
+                    text.textContent = serverSuccess ? "Your Sudoku was saved." : "Upload error.";
+                    // stop animation loop
+                    cancelAnimationFrame(animationFrameId);
+                } else {
+                    // continue animation loop
+                    animationFrameId = requestAnimationFrame(animate);
+                }
+            }
+            
+            // start the animation loop
+            animationFrameId = requestAnimationFrame(animate);
+
+            // start the actual fetch request
+            fetch("/save-sudoku/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -350,6 +376,7 @@ class Creator {
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
+                text.textContent = "Processing response...";
                 return res.json();
             })
             .then(data => {
@@ -365,24 +392,12 @@ class Creator {
             })
             .finally(() => {
                 serverDone = true;
-                animate(); // ensure UI updates
             });
-
-            const animate = () => {
-                const progress = serverDone ? 1 : 0.99;
-                bar.style.width = `${progress * 100}%`;
-                bar.style.backgroundColor = serverSuccess ? "green" : "red";
-                bar.textContent = serverSuccess ? "Upload complete" : "Upload failed";
-                text.textContent = serverSuccess ? "Your Sudoku was saved." : "Upload error.";
-            };
-
-            requestAnimationFrame(animate);
         });
 
         document.querySelector("input[name='sudoku_name']")?.addEventListener("input", () => {
             this.checkIfCanSubmit();
         });
-
     }
 
     checkIfCanSubmit() {
