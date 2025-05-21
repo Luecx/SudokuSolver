@@ -137,12 +137,11 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         const loops = buildInsetPath(cells, inset);
             
         ctx.save();
-        ctx.strokeStyle = rule.label == "Anti-Knight" ? "rgb(81, 157, 187)" : "rgb(125, 196, 62)";
+        ctx.strokeStyle = rule.label == "Anti-Knight" ? "rgb(158, 107, 73)" : "rgb(125, 196, 62)";
         ctx.lineWidth = 3;
         ctx.lineJoin = "round";  // Ensures smooth connection of line segments
         ctx.lineCap = "round";   // Ensures smooth caps at the ends
             
-        // Dash pattern: [5px line, 5px space]
         ctx.setLineDash([10, 10]);
             
         for (const loop of loops) {
@@ -160,46 +159,50 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
 
         // Position top left
 
+        const forbiddenSums = this.getForbiddenSums(rule);
+        const totalNumbers = forbiddenSums.length;
+        if (!forbiddenSums || totalNumbers === 0) {
+            ctx.restore();
+            return;
+        }
+
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
         const topLeft = this.board.getCellTopLeftCTX(firstPoint.r, firstPoint.c);
-        const boxWidth = s * 0.20;
-        const boxHeight = s * 0.20;
-        const paddingX = s * 0.03;
-        const paddingY = s * 0.05;
+            
+        const boxWidth = s * 0.22 * totalNumbers;
+        const boxHeight = s * 0.25;
 
-        const rectX = topLeft.x + paddingX;
-        const rectY = topLeft.y + paddingY;
-        
+        const rectX = topLeft.x + s * 0.03;
+        const rectY = topLeft.y + s * 0.05;
+
+        // Draw white rectangle background
         ctx.fillStyle = "white";
         ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
 
-        const forbiddenSumsText = this.getForbiddenSums(rule).join(", ");
+        const forbiddenSumsText = forbiddenSums.join(", ");
+        const textX =  rectX + s * 0.02;
+        const textY = rectY + s * 0.03;
 
-        if (forbiddenSumsText) {
-            ctx.setLineDash([]); // reset dashed lines before strikethrough
-            ctx.fillStyle = "black";
-            ctx.font = `${s * 0.21}px sans-serif`;
-            ctx.textAlign = "left";
-            ctx.textBaseline = "top";
+        ctx.setLineDash([]); // reset dashed lines before strikethrough
+        ctx.fillStyle = "#B92B2B";
+        ctx.font = `${s * 0.24}px Tahoma, Geneva, sans-serif`;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
 
-            const textX = rectX + s * 0.02;
-            const textY = rectY + s * 0.01;
+        ctx.fillText(forbiddenSumsText, textX, textY);
 
-            // Get text metrics before drawing text
-            const textMetrics = ctx.measureText(forbiddenSumsText);
-            // calculate a vertical position
-            const middleY = textY + (textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent) / 1.75;
+        // Get text metrics before drawing text
+        const textMetrics = ctx.measureText(forbiddenSumsText);
+        // calculate a vertical position
+        const middleY = textY + (textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent) / 1.75;
 
-            ctx.fillText(forbiddenSumsText, textX, textY);
-
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(textX, middleY);
-            ctx.lineTo(textX + textMetrics.width, middleY);
-            ctx.stroke();
-        }
-
+        ctx.strokeStyle = "rgb(61, 50, 42, 0.5)";
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(textX, middleY);
+        ctx.lineTo(textX + textMetrics.width, middleY);
+        ctx.stroke();
+        
         ctx.restore();
     }
 

@@ -119,7 +119,6 @@ export class CageHandler extends RuleTypeHandler {
         ctx.lineJoin = "round";  // Ensures smooth connection of line segments
         ctx.lineCap = "round";   // Ensures smooth caps at the ends
     
-        // Dash pattern: [5px line, 5px space]
         ctx.setLineDash([10, 10]);
     
         for (const loop of loops) {
