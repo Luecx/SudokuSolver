@@ -1,0 +1,17 @@
+<div class="mb-4">
+    <label class="form-label fw-semibold">Search puzzles:</label>
+    <div class="input-group">
+        <input type="text" id="{{ search_id }}" class="form-control" placeholder="Search by puzzle name...">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+            Tags
+        </button>
+        <div class="dropdown-menu p-3" style="min-width: 250px; max-height: 250px; overflow-y: auto;">
+            {% for tag in all_tags %}
+            <div class="form-check">
+                <input class="form-check-input {{ tag_class }}" type="checkbox" value="{{ tag.name }}" id="{{ tag_prefix }}-{{ tag.name }}">
+                <label class="form-check-label" for="{{ tag_prefix }}-{{ tag.name }}">{{ tag.name }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

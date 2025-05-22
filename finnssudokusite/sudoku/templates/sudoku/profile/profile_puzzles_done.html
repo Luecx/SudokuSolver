@@ -1,59 +1,39 @@
 {% if attempted_stats %}
+{% load form_filters %}
+{% load static %}
 {% load formatting star_rating %}
+
+<!-- Shared Search & Tag Filter -->
+{% include "sudoku/profile/search_filter.html" with search_id="doneSearch" tag_class="done-tag-filter" tag_prefix="done-tag" %}
+
+<!-- Solved Puzzles Table -->
 <div class="table-responsive" style="min-height: 400px;">
   <table class="table table-striped table-hover small align-middle" id="doneTable">
     <thead>
     <tr>
-      <th style="width: 20%;" onclick="sortDoneTable(0)">Name <span class="sort-indicator"></span></th>
-      <th style="width: 10%;" onclick="sortDoneTable(1)">Creator <span class="sort-indicator"></span></th>
-      <th style="width: 12%;" onclick="sortDoneTable(2)">Solved / Attempts <span class="sort-indicator"></span></th>
-      <th style="width: 15%;" onclick="sortDoneTable(3)">Rating <span class="sort-indicator"></span></th>
-      <th style="width: 10%;" onclick="sortDoneTable(4)">Avg Time <span class="sort-indicator"></span></th>
-      <th style="width: 10%;" onclick="sortDoneTable(5)">Your Time <span class="sort-indicator"></span></th>
-      <th style="width: 13%;" onclick="sortDoneTable(6)">Last Solved <span class="sort-indicator"></span></th>
-      <th style="width: 20%;">
-        <div class="dropdown">
-          <span role="button" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            Tags
-          </span>
-          <ul class="dropdown-menu p-2" id="doneTagFilterMenu" style="max-height: 200px; overflow-y: auto;">
-            {% for tag in all_tags %}
-            <li>
-              <div class="form-check">
-                <input class="form-check-input done-tag-filter" type="checkbox" value="{{ tag.name }}" id="done-tag-{{ tag.name }}" onchange="filterDoneByTags()">
-                <label class="form-check-label" for="done-tag-{{ tag.name }}">{{ tag.name }}</label>
-              </div>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </th>
+      <th data-key="name">Name <span class="sort-indicator"></span></th>
+      <th data-key="creator">Creator <span class="sort-indicator"></span></th>
+      <th data-key="solves">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th data-key="rating">Rating <span class="sort-indicator"></span></th>
+      <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
+      <th data-key="besttime">Your Time <span class="sort-indicator"></span></th>
+      <th data-key="datesolved">Last Solved <span class="sort-indicator"></span></th>
+      <th>Tags</th>
     </tr>
     </thead>
     <tbody>
     {% for stat in attempted_stats %}
-    <tr data-tags="{{ stat.sudoku.tags.all|join:',' }}"
-        data-name="{{ stat.sudoku.title|lower }}"
-        data-creator="{{ stat.sudoku.created_by.username|default_if_none:"" }}"
-    data-solves="{{ stat.sudoku.solves }}"
-    data-attempts="{{ stat.sudoku.attempts }}"
-    data-rating="{{ stat.sudoku.average_rating|default:0 }}"
-    data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
-    data-besttime="{{ stat.best_time }}"
-    data-datesolved="{{ stat.date_solved|date:"U" }}">
+    <tr data-name="{{ stat.sudoku.title|lower }}"
+        data-creator="{{ stat.sudoku.created_by.username }}"
+        data-solves="{{ stat.sudoku.solves }}"
+        data-attempts="{{ stat.sudoku.attempts }}"
+        data-rating="{{ stat.sudoku.average_rating|default:0 }}"
+        data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
+        data-besttime="{{ stat.best_time }}"
+        data-datesolved="{{ stat.date_solved|date:"U" }}"
+    data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
     <td>{{ stat.sudoku.title }}</td>
-    <td>
-      {% if stat.sudoku.created_by %}
-      {% if stat.sudoku.created_by.username == request.user.username %}
-      <a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
-      {% else %}
-      <a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
-      {% endif %}
-      {% else %}
-      —
-      {% endif %}
-    </td>
-
+    <td>{{ stat.sudoku.created_by.username }}</td>
     <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
     <td>{% render_starbar stat.sudoku.average_rating %}</td>
     <td>{{ stat.sudoku.average_time|humantime }}</td>
@@ -69,63 +49,26 @@
     </tbody>
   </table>
 </div>
+
+<!-- Pagination Placeholder -->
+<nav>
+  <ul class="pagination justify-content-center mt-3" id="doneTable-pagination"></ul>
+</nav>
+
+<!-- JS Hook -->
+<script type="module">
+  import { initTableFilter } from "/static/sudoku/js/util/table_filter.js";
+
+  initTableFilter({
+    tableId: "doneTable",
+    searchInputId: "doneSearch",
+    tagClass: "done-tag-filter",
+    tagAttribute: "data-tags",
+    columns: ["name", "creator", "solves", "rating", "avgtime", "besttime", "datesolved"],
+    rowsPerPage: 10
+  });
+</script>
+
 {% else %}
 <p>You haven’t attempted any puzzles yet.</p>
 {% endif %}
-
-<script>
-  let currentDoneSortCol = null;
-  let doneAscending = true;
-
-  function sortDoneTable(colIndex) {
-    const table = document.getElementById("doneTable");
-    const tbody = table.querySelector("tbody");
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-
-    if (currentDoneSortCol === colIndex) {
-      doneAscending = !doneAscending;
-    } else {
-      doneAscending = true;
-      currentDoneSortCol = colIndex;
-    }
-
-    rows.sort((a, b) => {
-      let valA, valB;
-
-      switch (colIndex) {
-        case 0: valA = a.dataset.name; valB = b.dataset.name; break;
-        case 1: valA = a.dataset.creator; valB = b.dataset.creator; break;
-        case 2:
-          valA = parseFloat(a.dataset.solves) / Math.max(1, parseFloat(a.dataset.attempts));
-          valB = parseFloat(b.dataset.solves) / Math.max(1, parseFloat(b.dataset.attempts));
-          break;
-        case 3: valA = parseFloat(a.dataset.rating); valB = parseFloat(b.dataset.rating); break;
-        case 4: valA = parseFloat(a.dataset.avgtime); valB = parseFloat(b.dataset.avgtime); break;
-        case 5: valA = parseFloat(a.dataset.besttime); valB = parseFloat(b.dataset.besttime); break;
-        case 6: valA = parseInt(a.dataset.datesolved); valB = parseInt(b.dataset.datesolved); break;
-      }
-
-      if (typeof valA === 'string') {
-        return doneAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
-      }
-      return doneAscending ? valA - valB : valB - valA;
-    });
-
-    document.querySelectorAll("#doneTable .sort-indicator").forEach(el => el.innerHTML = "");
-    const arrow = doneAscending ? "▲" : "▼";
-    table.querySelector(`thead tr th:nth-child(${colIndex + 1}) .sort-indicator`).innerText = arrow;
-
-    rows.forEach(row => tbody.appendChild(row));
-  }
-
-  function filterDoneByTags() {
-    const activeTags = Array.from(document.querySelectorAll(".done-tag-filter:checked")).map(el => el.value.toLowerCase());
-    const rows = document.querySelectorAll("#doneTable tbody tr");
-
-    rows.forEach(row => {
-      const rowTags = row.getAttribute("data-tags").toLowerCase();
-      const shouldShow = activeTags.every(tag => rowTags.includes(tag));
-      row.style.display = (activeTags.length === 0 || shouldShow) ? "" : "none";
-    });
-  }
-</script>
