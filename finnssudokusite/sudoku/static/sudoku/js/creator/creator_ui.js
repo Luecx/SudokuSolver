@@ -120,6 +120,11 @@ class Creator {
     runNormalAnalysis() {
         if (this.solverRunning) return;
 
+        if (this.rule_manager.anyWarnings()) {
+            alert("Please resolve all warnings before running analysis.");
+            return;
+        }
+
         this.clearAnalysisUI();
         this.renderAlert("warning", "Analyzing...", "");
         this.disableAnalysisButtons(true);
@@ -137,6 +142,11 @@ class Creator {
         this.disableAnalysisButtons(true);
         if (!this.analysisUnlocked) {
             alert("Run normal analysis first.");
+            return;
+        }
+
+        if (this.rule_manager.anyWarnings()) {
+            alert("Please resolve all warnings before running analysis.");
             return;
         }
 

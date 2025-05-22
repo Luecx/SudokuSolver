@@ -27,6 +27,10 @@ export class CreatorRuleManager {
         this._setupBoardListeners();
     }
 
+    anyWarnings() {
+        return this.ruleWarnings.size > 0 || this.handlerWarnings.size > 0;
+    }
+
     _setupInputFiltering() {
         this.inputEl.addEventListener("focus", () => this._updateDropdown(""));
         this.inputEl.addEventListener("input", () => this._updateDropdown(this.inputEl.value.trim()));
