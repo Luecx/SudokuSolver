@@ -45,10 +45,24 @@ export function initTableFilter({
     function renderPage(rows) {
         const start = (currentPage - 1) * rowsPerPage;
         const end = currentPage * rowsPerPage;
-        rows.forEach((row, i) => {
-            row.style.display = i >= start && i < end ? "" : "none";
+        const visibleRows = rows.slice(start, end);
+
+        // Hide all rows initially
+        rows.forEach(row => {
+            row.style.display = "none";
+            row.classList.remove("animated-row");
+            row.style.animationDelay = "";
+        });
+
+        // Show and animate visible rows
+        visibleRows.forEach((row, i) => {
+            row.style.display = "";
+            row.classList.add("animated-row");
+            row.style.animationDelay = `${i * 15}ms`;
         });
     }
+
+
 
     function updatePaginationControls(totalPages) {
         const containerId = `${tableId}-pagination`;
