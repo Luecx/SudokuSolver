@@ -46,24 +46,11 @@ export class Game {
             classic: "none"
         };
 
-        document.getElementById("theme-menu")?.addEventListener("click", (e) => {
-            const link = e.target.closest("a");
-            if (!link) return;
-
-            const id = link.id;
+        const applyTheme = (id) => {
             if (!backgrounds.hasOwnProperty(id)) return;
 
-            // Alle Theme-Check-Icons unsichtbar machen
-            document.querySelectorAll('#theme-menu .bi-check-lg').forEach(icon => {
-                icon.classList.add('invisible');
-            });
-
-            // Icon beim aktuellen Menüpunkt sichtbar machen
-            const checkIcon = link.querySelector('.bi-check-lg');
-            if (checkIcon) checkIcon.classList.remove('invisible');
-
-            // Restliche Logik
             document.body.style.backgroundImage = backgrounds[id];
+
             document.querySelectorAll(".right-pane-middle-content").forEach(bg =>
                 bg.classList.toggle("my_box_style", id === "classic")
             );
@@ -73,9 +60,21 @@ export class Game {
                 part.classList.toggle("block-middle", id !== "classic" && type === "middle");
                 part.classList.toggle("block-bottom", id !== "classic" && type === "bottom");
             });
+
+            localStorage.setItem("selectedTheme", id);
+        };
+
+        const select = document.getElementById("theme-menu");
+        if (!select) return;
+
+        const savedTheme = localStorage.getItem("selectedTheme") || "classic";
+        select.value = savedTheme;
+        applyTheme(savedTheme);
+
+        select.addEventListener("change", () => {
+            applyTheme(select.value);
         });
     }
-
     renderRuleDescriptions() {
         const container = document.getElementById("rules-description");
         if (!container) return;

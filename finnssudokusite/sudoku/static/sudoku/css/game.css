@@ -9,7 +9,7 @@ html, body {
 	margin: 0;
 	padding: 0;
 }
-/* macht die Buttons Quadratisch */
+
 .btn-square,
 .btn-number{
 	display: flex;
@@ -17,8 +17,10 @@ html, body {
 	justify-content: center;
 	min-width: 0;
 	min-height: 0;
+	width: 100%;
 	aspect-ratio: 1 / 1;
 }
+
 .btn-img img {width: 20px; height: 20px;}
 .left-pane {
 	position: relative; /* Wichtig für absolute Positionierung der Kinder */
@@ -30,51 +32,20 @@ html, body {
 	left: 0;
 	width: 100%;
 	height: 1.2rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 	font-size: 1rem;
 	padding: 0 0.2rem;
 }
 
 .timer-container .timer {
-	pointer-events: auto;
+	margin: 0 auto;
 	text-align: center;
 	font-family: "JetBrains Mono", monospace;
 	font-weight: bold;
 	color: lightslategray;
-	justify-self: center;
 }
 
-.info-container {
-	width: 100%;
-	display: flex;
-	flex-direction: row;
-	align-items: start;
-	font-size: 1rem;
-	margin-bottom: 1rem;
-	justify-content: space-between;
-}
-
-.info-container .content_name,
-.info-container .content_creator {color: lightslategray;}
-
-.timer-container .btn-link,
-.info-container .btn-link {
-	color: lightslategray;
-	text-decoration: none;
-	padding: 0 !important;
-	margin: 0 !important;
-}
-
-.info-container .btn-link {font-size: 1.2rem;}
-
-.timer-container .btn-link:focus,
-.info-container .btn-link:focus {
-	outline: none;
-	box-shadow: none;
-}
-
+.content_name,
+.content_creator {color: lightslategray;}
 
 @media (min-aspect-ratio: 1/1) {
 	/* Landscape */
@@ -86,6 +57,7 @@ html, body {
 		gap: 1rem;
 		box-sizing: border-box;
 		max-width: 100vw; /* optional, falls nötig */
+		max-height: 100vh;
 	}
 	
 	.left-pane { /* Landscape */
@@ -100,22 +72,33 @@ html, body {
 	
 	.right-pane { /* Landscape */
 		width: 300px;
-		min-width: 300px;
-		max-width: 300px;
-		/* Höhe ergibt sich automatisch aus dem Inhalt */
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 0;
+	}
+	
+	.control-container {
+		width: 100%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		box-sizing: border-box;
 		overflow: hidden;
+		min-height: 0;
 	}
-	
+
 	.grid-a {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: auto repeat(4, 1fr) auto;
+		grid-template-rows: auto auto repeat(4, 1fr) auto;
 		gap: 0.5rem;
 		width: 100%;
+		height: fit-content;
+		min-height: 0;
 		grid-template-areas:
+		"info info info gear"
 		"undo redo rules clear"
 		"content content content content"
 		"content content content content"
@@ -124,28 +107,33 @@ html, body {
 		"number top center color";
 	}
 	
-	
 	.grid-b {  /* Gilt immer */
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		grid-template-rows: repeat(3, minmax(0, 1fr));
 		gap: 0.5rem;
 		width: 100%;
-		height: auto;
+		min-width: 0;
+		min-height: 0;
+		aspect-ratio: 1 / 1;
+		min-height: 0;
 		grid-template-areas:
     		"one two three"
 			"four five six"
 			"seven eight nine";
 	}
 	.grid-b-area {
-		grid-area: content;
+		height: 100%;
+		min-height: 0;
+		width: 100%;
+		flex: 1;
 		display: flex;
 		align-items: stretch;
 		justify-content: stretch;
-		height: 100%;
-		width: 100%;
+		grid-area: content;
 		padding-top: 1rem;
 		padding-bottom: 1rem;
+		
 	}
 	.right-pane-middle-content { /* Landscape */
 		flex: 1;
@@ -155,10 +143,51 @@ html, body {
 		display: flex;
 		flex-direction: column;
 		box-sizing: border-box;
+		min-height: 0;
+	}
+	
+	@media (max-height: 630px) {
+		.grid-container,
+		.right-pane,
+		.control-container,
+		.grid-a {
+			height: 100%;
+			min-height: 0;    /* damit flex nicht blockiert */
+			flex: 1;          /* wenn im Flex-Layout */
+		}
+		.btn-square{height: 100%;}
+		
+		.right-pane {
+			height: 100%;
+			border: 2px solid #86b7fe;
+		}
+		
+		.grid-a {
+			display: grid;
+			grid-template-columns: repeat(6, 1fr);
+			grid-template-rows: repeat(5, 1fr);
+			gap: 0.5rem;
+			height: 100%;
+			width: min(100%, 540px);
+			grid-template-areas:
+			"info info info info info gear"
+		"content content content content number undo"
+		"content content content content top redo"
+		"content content content content center rules"
+		"content content content content color clear"
+		}
+		.grid-b-area {
+			grid-area: content;
+			display: flex;
+			align-items: start;
+			justify-content: start;
+			padding: 0 1rem 0 0;
+		}
 	}
 	
 	.btn-square { /* Landscape */
 		width: 100%;
+		height: 100%;
 	}
 	.grid-a .btn-square {font-size: 1.8rem;}
 	.grid-b .btn-square {font-size: 2rem;}
@@ -172,17 +201,22 @@ html, body {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.3rem;
 		box-sizing: border-box;
-		padding: 0.5rem 0.1rem 0.1rem 0.1rem;
-		height: 100%;
 		overflow: hidden;
+		justify-content: start;
+		height: 100%;
+		width: 100%;
+		gap: 1rem;
+	}
+	
+	:root{
+		--min-height:189px;
 	}
 	
 	.left-pane {
 		width: 100%;
 		aspect-ratio: 1 / 1;
-		max-width: calc(100vh - 60px - 2rem - 200px);
+		max-width: calc(100vh - 60px - 3rem - var(--min-height));
 		max-height: calc(100vw - 2rem);
 		flex-shrink: 0;
 		display: flex;
@@ -192,88 +226,72 @@ html, body {
 	}
 	
 	.right-pane {
-		/* Layout-Parameter */
-		--g: .5rem;               /* 0.5rem Abstand zwischen Feldern */
-		--padding: 1rem;           /* 1rem Innenabstand */
-		width: 100%;
-		height: auto;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		overflow: hidden;
-		padding: 1rem;
+		--header-height: 60px;
+		--padding-body: 1rem;
+		--gap: .5rem;
+		--padding-right-pane: .5rem;
+		--cell: calc((100vw - 2 * var(--padding-body) - 5 * var(--gap) - 2 * var(--padding-right-pane) - 2px) / 6);
+		--pane-h: clamp(
+				var(--min-height),
+				calc(100vh - 100vw - var(--header-height) - 2 * var(--padding-body)),
+				calc(3 * var(--cell) + 2 * var(--gap) + 2 * var(--padding-right-pane) + 2px)
+		);
 		
-		/* Berechnung verfügbarer Fläche */
-		--available-width: calc(100vw - 2 * var(--padding));
-		--available-height: calc(100vh - 2 * var(--padding));
+		height: var(--pane-h);
+		width: calc(2 * var(--pane-h) - var(--gap) - 2px);
 		
-		/* Geometrie: Breite = 6A + 6g, Höhe = 4A + 3g */
-		--A-from-width: calc( (var(--available-width)/6) - 2*var(--g) );
-		--A-from-height: calc( (var(--available-height)/4) - (3 * var(--g) / 4) - var(--g));
-		--A: min(var(--A-from-width), var(--A-from-height));
-		--B: calc((4 * var(--A) / 3) + (var(--g)/3));
-		--grid-width: calc(6 * var(--A) + 6 * var(--g));
-		--grid-height: calc(4 * var(--A) + 3 * var(--g));
-	}
-	
-	
-	.only_portrait {
-		display: block;
-	}
-	
-	.only_landscape {
-		display: none;
-	}
-	
-	
-	.mein-grid {
-		display: grid;
-		gap: var(--g);
-		width: var(--grid-width);
-		height: var(--grid-height);
+		padding: var(--padding-right-pane);
 		box-sizing: border-box;
+		display: flex;
+	}
+	
+	.control-container {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		overflow: hidden;
+	}
+	
+	.only_portrait {display: block;}
+	
+	.only_landscape {display: none;}
+	
+	.grid-c {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		grid-template-rows: repeat(3, 1fr);
+		gap: .5rem;
+		width: 100%;
+		max-width: calc(100vw - 2 * var(--padding-body) - 2 * var(--padding-right-pane) - 2px);
+		height: auto;
+		aspect-ratio: auto;
 		margin: 0 auto;
+		grid-template-areas:
+			"one two three undo redo gear"
+			"four five six top center rules"
+			"seven eight nine number color clear";
+	}
 	}
 	
 	.feld {
-		aspect-ratio: 1;
-		width: var(--A);
-		height: auto;
+		aspect-ratio: 1 / 1;
+		width: 100%;
 	}
-	.btn-number{ font-size: 2rem;}
-	.btn-square{ font-size: 1.8rem;}
-	.btn-img img {width: 1.8rem; height: 1.8rem;}
 	
-	/* A-Felder: 2×4 */
-	.a1 { grid-column: 1; grid-row: 1; }
-	.a2 { grid-column: 2; grid-row: 1; }
-	.a3 { grid-column: 1; grid-row: 2; }
-	.a4 { grid-column: 2; grid-row: 2; }
-	.a5 { grid-column: 1; grid-row: 3; }
-	.a6 { grid-column: 2; grid-row: 3; }
-	.a7 { grid-column: 1; grid-row: 4; }
-	.a8 { grid-column: 2; grid-row: 4; }
-	
-	/* B-Block als 3x3 Grid */
-	.b-block {
-		grid-column: 3 / span 3;
-		grid-row: 1 / span 4;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		grid-template-rows: repeat(3, 1fr);
-		gap: var(--g);
+	.feld button {
+		aspect-ratio: 1 / 1;
 		width: 100%;
 		height: 100%;
-		padding-left: var(--g);
-		min-width: 0;
-		min-height: 0;
-		
+		font-size: min(4vw, 4vh);
 	}
-	.b-block .feld {
-		width: var(--B);
-		height: auto;
-	}
-	.feld button {width: 100%; height: 100%;}
+	
+	.btn-number { font-size: 2rem;}
+	
+	.btn-square { font-size: 1.8rem;}
+	
+	.btn-img img {width: 1.8rem; height: 1.8rem;}
 }
 
 /* === Grid Areas === */
@@ -312,6 +330,9 @@ html, body {
 
 #btn-centerMode { grid-area: center; }
 
+#btn-gear { grid-area: gear;}
+
+#info { grid-area: info; }
 
 /* Erzeugt weiße button */
 .btn-custom-white {
@@ -375,7 +396,7 @@ html, body {
 .btn-color-8:hover,
 .btn-selected-8 { background-color: rgba(240, 50, 230, 1); }
 
-btn-color-9:hover,
+.btn-color-9:hover,
 .btn-selected-9 { background-color: rgba(188, 246, 12, 1); }
 
 /* === Bootstrap-like Hover / Focus for All Buttons === */
@@ -406,12 +427,10 @@ btn-color-9:hover,
 
 .block-top {
 	background: url("../img/game/block-top.png") top center no-repeat;
-	background-size: 100% auto;
+	background-size: 100% 40px;
 	height: 40px;
-	min-height: 30px;
 	width: 100%;
 }
-
 .block-middle {
 	background: url("../img/game/block-content.png") top center repeat-y;
 	background-size: 100% auto;
@@ -445,3 +464,4 @@ btn-color-9:hover,
 	border-left: 3px solid #aaa;
 	background: #f8f9fa;
 }
+

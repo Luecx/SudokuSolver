@@ -19,98 +19,102 @@
 		<div class="left-pane my_box_style">
 			<div class="board-container"></div>
 			<div class="timer-container">
-				<div style="width: 1rem"></div>
 				<div class="timer" id="timer">00:00:00</div>
-				<div style="width: 1rem">
-					<div class="dropdown">
-						<button id="btn-gear" type="button" class="btn btn-link" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-gear"></i></button>
-						<ul id="theme-menu" class="dropdown-menu" aria-labelledby="btn-gear">
-							<li><h6 class="dropdown-header">Backgrounds</h6></li>
-							<li><a id="classic" class="dropdown-item" href="#"><i class="bi bi-check-lg me-2 check-icon"></i>Classic</a></li>
-							<li><a id="cement" class="dropdown-item" href="#"><i class="bi bi-check-lg me-2 check-icon invisible"></i>Cement</a></li>
-							<li><a id="glow" class="dropdown-item" href="#"><i class="bi bi-check-lg me-2 check-icon invisible"></i>Glow</a></li>
-							<li><a id="stone" class="dropdown-item" href="#"><i class="bi bi-check-lg me-2 check-icon invisible"></i>Stone</a></li>
-							<li><a id="wood" class="dropdown-item" href="#"><i class="bi bi-check-lg me-2 check-icon invisible"></i>Wood</a></li>
-						</ul>
-					</div>
-				</div>
 			</div>
 		</div>
 		<div class="right-pane only_landscape">
-			<div class="block-part" data-block="top"></div>
-			<div class="block-part right-pane-middle-content my_box_style justify-content-start" data-block="middle">
-				<div class="info-container">
-					<div>
-						<span class="content_name">PUZZLENAME</span><br>
-						<span class="content_creator">Terminator3</span>
+			<div class="control-container">
+				<div class="block-part" data-block="top"></div>
+				<div class="block-part right-pane-middle-content my_box_style justify-content-start" data-block="middle">
+					<div class="grid-a">
+						<div id="info">
+							<span class="content_name">PUZZLENAME</span><br>
+							<span class="content_creator">Terminator3</span>
+						</div>
+						<button id="btn-gear" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
+						
+						<!-- Zeile 1 -->
+						<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>
+						<button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button>
+						<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
+						<button id="btn-clear" class="btn btn-custom-white btn-square "><i class="bi bi-trash"></i></button>
+						
+						<!-- Zeile 3 -->
+						<button id="btn-numberMode" class="btn btn-custom-white btn-square "><i class="bi bi-pencil-square"></i></button>
+						<button id="btn-topMode" class="btn btn-custom-white btn-square "><i class="bi bi-arrow-up-left-square"></i></button>
+						<button id="btn-centerMode" class="btn btn-custom-white btn-square "><i class="bi bi-dash-square"></i></button>
+						<button id="btn-colorMode" class="btn btn-custom-white btn-square ">
+							<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon" width="20px" />
+						</button>
+						
+						<!-- Zeile 2 -->
+						<div class="grid-b-area">
+							<div class="grid-b">
+								<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
+								<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
+								<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
+								<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
+								<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
+								<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
+								<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
+								<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
+								<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="grid-a">
-					<!-- Zeile 1 -->
+				<div class="block-part" data-block="bottom"></div>
+			</div>
+		</div>
+		<div class="right-pane only_portrait my_box_style">
+			<div class="control-container">
+				<div class="grid-c">
 					<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>
 					<button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button>
 					<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-info-lg"></i></button>
 					<button id="btn-clear" class="btn btn-custom-white btn-square "><i class="bi bi-trash"></i></button>
-					
-					<!-- Zeile 3 -->
 					<button id="btn-numberMode" class="btn btn-custom-white btn-square "><i class="bi bi-pencil-square"></i></button>
 					<button id="btn-topMode" class="btn btn-custom-white btn-square "><i class="bi bi-arrow-up-left-square"></i></button>
+					
 					<button id="btn-centerMode" class="btn btn-custom-white btn-square "><i class="bi bi-dash-square"></i></button>
-					<button id="btn-colorMode" class="btn btn-custom-white btn-square ">
-						<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon" width="20px" />
-					</button>
+					<button id="btn-colorMode" class="btn btn-custom-white btn-square btn-img"><img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon" /></button>
+					<button id="btn-one" class="btn btn-custom-white btn-number">1</button>
+					<button id="btn-two" class="btn btn-custom-white btn-number">2</button>
+					<button id="btn-three" class="btn btn-custom-white btn-number">3</button>
+					<button id="btn-four" class="btn btn-custom-white btn-number">4</button>
 					
-					<!-- Zeile 2 -->
-					<div class="grid-b-area">
-						<div class="grid-b">
-							<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
-							<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
-							<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
-							<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
-							<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
-							<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
-							<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
-							<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
-							<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
-						</div>
-					</div>
+					<button id="btn-five" class="btn btn-custom-white btn-number">5</button>
+					<button id="btn-six" class="btn btn-custom-white btn-number">6</button>
+					<button id="btn-seven" class="btn btn-custom-white btn-number">7</button>
+					<button id="btn-eight" class="btn btn-custom-white btn-number">8</button>
+					<button id="btn-nine" class="btn btn-custom-white btn-number">9</button>
+					<button id="btn-gear" class="btn btn-custom-white btn-number" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-gear"></i></button>
 				</div>
-			</div>
-			<div class="block-part" data-block="bottom"></div>
-		</div>
-		<div class="right-pane only_portrait my_box_style">
-				<div class="mein-grid">
-					<!-- A-Felder -->
-					<div class="feld a1"><button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button></div>
-					<div class="feld a2"><button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button></div>
-					<div class="feld a3"><button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample"><i class="bi bi-info-lg"></i></button></div>
-					<div class="feld a4"><button id="btn-clear" class="btn btn-custom-white btn-square "><i class="bi bi-trash"></i></button></div>
-					<div class="feld a5"><button id="btn-numberMode" class="btn btn-custom-white btn-square "><i class="bi bi-pencil-square"></i></button></div>
-					<div class="feld a6"><button id="btn-topMode" class="btn btn-custom-white btn-square "><i class="bi bi-arrow-up-left-square"></i></button></div>
-					<div class="feld a7"><button id="btn-centerMode" class="btn btn-custom-white btn-square "><i class="bi bi-dash-square"></i></button></div>
-					<div class="feld a8"><button id="btn-colorMode" class="btn btn-custom-white btn-square btn-img">
-						<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon" />
-					</button></div>
-					
-					<!-- B-Block -->
-					<div class="b-block">
-						<div class="feld"><button id="btn-one" class="btn btn-custom-white btn-number">1</button></div>
-						<div class="feld"><button id="btn-two" class="btn btn-custom-white btn-number">2</button></div>
-						<div class="feld"><button id="btn-three" class="btn btn-custom-white btn-number">3</button></div>
-						<div class="feld"><button id="btn-four" class="btn btn-custom-white btn-number">4</button></div>
-						<div class="feld"><button id="btn-five" class="btn btn-custom-white btn-number">5</button></div>
-						<div class="feld"><button id="btn-six" class="btn btn-custom-white btn-number">6</button></div>
-						<div class="feld"><button id="btn-seven" class="btn btn-custom-white btn-number">7</button></div>
-						<div class="feld"><button id="btn-eight" class="btn btn-custom-white btn-number">8</button></div>
-						<div class="feld"><button id="btn-nine" class="btn btn-custom-white btn-number">9</button>
-						</div>
-					</div>
 			</div>
 		</div>
 		
-		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasGear" aria-labelledby="offcanvasGearLabel">
 			<div class="offcanvas-header">
-				<h5 class="offcanvas-title" id="offcanvasExampleLabel">Rules</h5>
+				<h5 class="offcanvas-title" id="offcanvasGearLabel">Design & Settings</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<div id="gear-description" class="gear-description-wrapper px-2">
+					<label for="theme-menu" class="form-label">Choose Background:</label>
+					<select id="theme-menu" class="form-select">
+						<option value="classic">Classic</option>
+						<option value="cement">Cement</option>
+						<option value="glow">Glow</option>
+						<option value="stone">Stone</option>
+						<option value="wood">Wood</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		
+		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRules" aria-labelledby="offcanvasRulesLabel">
+			<div class="offcanvas-header">
+				<h5 class="offcanvas-title" id="offcanvasRulesLabel">Rules</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
 			<div class="offcanvas-body">
