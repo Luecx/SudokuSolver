@@ -19,6 +19,9 @@ urlpatterns = [
     path('game/', views.game, name='game'),
     path('game_selection/', views.game_selection_view, name='game_selection'),
 
+    # nur zum testen
+    path('help/', views.help, name='help'),
+
     # Activation
     path('activate/<uid>/<token>/', views.activate, name='activate'),
 
