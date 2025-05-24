@@ -9,7 +9,7 @@ html, body {
 	margin: 0;
 	padding: 0;
 }
-
+.btn-clear,
 .btn-square,
 .btn-number{
 	display: flex;
@@ -18,10 +18,13 @@ html, body {
 	min-width: 0;
 	min-height: 0;
 	width: 100%;
-	aspect-ratio: 1 / 1;
 }
+.grid-a-X .btn-clear {grid-column: span 2; height: 100%;}
+.grid-a-O .btn-clear,
+.grid-a-Y .btn-clear,
+.btn-square,
+.btn-number{aspect-ratio: 1 / 1;}
 
-.btn-img img {width: 20px; height: 20px;}
 .left-pane {
 	position: relative; /* Wichtig für absolute Positionierung der Kinder */
 }
@@ -47,21 +50,27 @@ html, body {
 .content_name,
 .content_creator {color: lightslategray;}
 
-@media (min-aspect-ratio: 1/1) {
-	/* Landscape */
+@media (min-aspect-ratio: 1/1) {  /* Landscape */
+	:root {
+		--min-space: 300px;
+		--menü-height: 60px;
+		--grid-container-gap: 1rem;
+		--border: 1rem;
+	}
+	
 	.grid-container { /* Landscape */
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
 		justify-content: center;
-		gap: 1rem;
+		gap: var(--grid-container-gap);
 		box-sizing: border-box;
-		max-width: 100vw; /* optional, falls nötig */
-		max-height: 100vh;
+		max-width: 100%;
+		max-height: 100%;
 	}
 	
 	.left-pane { /* Landscape */
-		width: min(100%, calc(100dvh - 60px - 2rem));
+		width: min(100%, calc(100dvh - var(--menü-height) - 2 * var(--border)));
 		max-width: 100%;
 		max-height: 100%;
 		aspect-ratio: 1 / 1;
@@ -71,7 +80,7 @@ html, body {
 	}
 	
 	.right-pane { /* Landscape */
-		width: 300px;
+		min-width: var(--min-space);
 		height: 100%;
 		display: flex;
 		align-items: center;
@@ -80,122 +89,71 @@ html, body {
 	}
 	
 	.control-container {
+		display: grid;
 		width: 100%;
 		height: 100%;
-		display: flex;
-		flex-direction: column;
-		box-sizing: border-box;
-		overflow: hidden;
-		min-height: 0;
+		gap: .5rem;
+		padding: 1rem;
 	}
-
-	.grid-a {
-		display: grid;
+	
+	.grid-a-O {
+		grid-template-columns: repeat(5, 1fr);
+		grid-template-rows: repeat(6, 1fr);
+		grid-template-areas:
+		"info info info info info"
+		"NB NB NB NB gear"
+		"NB NB NB NB undo"
+		"NB NB NB NB redo"
+		"NB NB NB NB rules"
+		"number top center color clear";
+	}
+	.grid-a-X {
+		grid-template-columns: repeat(6, 1fr);
+		grid-template-rows: repeat(4, 1fr);
+		grid-template-areas:
+		"info info info info info gear"
+		"NB NB NB top number rules"
+		"NB NB NB center undo redo"
+		"NB NB NB color clear clear";
+	}
+	
+	.grid-a-Y {
 		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: auto auto repeat(4, 1fr) auto;
-		gap: 0.5rem;
-		width: 100%;
-		height: fit-content;
-		min-height: 0;
+		grid-template-rows: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
 		grid-template-areas:
 		"info info info gear"
 		"undo redo rules clear"
-		"content content content content"
-		"content content content content"
-		"content content content content"
-		"content content content content"
+		"gap1 gap1 gap1 gap1"
+		"NB NB NB NB"
+		"NB NB NB NB"
+		"NB NB NB NB"
+		"NB NB NB NB"
+		"gap2 gap2 gap2 gap2"
 		"number top center color";
 	}
 	
-	.grid-b {  /* Gilt immer */
+	.grid-b {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		grid-template-rows: repeat(3, minmax(0, 1fr));
-		gap: 0.5rem;
 		width: 100%;
 		min-width: 0;
 		min-height: 0;
 		aspect-ratio: 1 / 1;
-		min-height: 0;
+		padding: 0;
+		margin: 0;
+		gap: .5rem;
 		grid-template-areas:
     		"one two three"
 			"four five six"
 			"seven eight nine";
 	}
-	.grid-b-area {
-		height: 100%;
-		min-height: 0;
-		width: 100%;
-		flex: 1;
-		display: flex;
-		align-items: stretch;
-		justify-content: stretch;
-		grid-area: content;
-		padding-top: 1rem;
-		padding-bottom: 1rem;
-		
-	}
-	.right-pane-middle-content { /* Landscape */
-		flex: 1;
-		min-width: 0;
-		overflow: auto;
-		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-		box-sizing: border-box;
-		min-height: 0;
-	}
-	
-	@media (max-height: 630px) {
-		.grid-container,
-		.right-pane,
-		.control-container,
-		.grid-a {
-			height: 100%;
-			min-height: 0;    /* damit flex nicht blockiert */
-			flex: 1;          /* wenn im Flex-Layout */
-		}
-		.btn-square{height: 100%;}
-		
-		.right-pane {
-			height: 100%;
-			border: 2px solid #86b7fe;
-		}
-		
-		.grid-a {
-			display: grid;
-			grid-template-columns: repeat(6, 1fr);
-			grid-template-rows: repeat(5, 1fr);
-			gap: 0.5rem;
-			height: 100%;
-			width: min(100%, 540px);
-			grid-template-areas:
-			"info info info info info gear"
-		"content content content content number undo"
-		"content content content content top redo"
-		"content content content content center rules"
-		"content content content content color clear"
-		}
-		.grid-b-area {
-			grid-area: content;
-			display: flex;
-			align-items: start;
-			justify-content: start;
-			padding: 0 1rem 0 0;
-		}
-	}
-	
-	.btn-square { /* Landscape */
-		width: 100%;
-		height: 100%;
-	}
-	.grid-a .btn-square {font-size: 1.8rem;}
-	.grid-b .btn-square {font-size: 2rem;}
 	
 	.only_portrait {display: none;}
 	.only_landscape {display: block;}
 }
 
+/*
 @media (max-aspect-ratio: 1/1) {
 	.grid-container {
 		display: flex;
@@ -273,7 +231,6 @@ html, body {
 			"four five six top center rules"
 			"seven eight nine number color clear";
 	}
-	}
 	
 	.feld {
 		aspect-ratio: 1 / 1;
@@ -293,8 +250,32 @@ html, body {
 	
 	.btn-img img {width: 1.8rem; height: 1.8rem;}
 }
+*/
 
 /* === Grid Areas === */
+
+.grid-a-X #number-block {grid-area: NB; grid-row: span 3; grid-column: span 3;}
+.grid-a-Y #number-block {grid-area: NB; grid-row: span 4; grid-column: span 4;}
+.grid-a-O #number-block {grid-area: NB; grid-row: span 4; grid-column: span 4;}
+
+.grid-a-X #gap-row1,
+.grid-a-X #gap-row2,
+.grid-a-O #gap-row1,
+.grid-a-O #gap-row2 {display: none;}
+
+
+#gap-row1{
+	grid-area: gap1;
+	height: 1rem;
+	width: 100%;
+	pointer-events: none;
+}
+#gap-row2 {
+	grid-area: gap2;
+	height: 1rem;
+	width: 100%;
+	pointer-events: none;
+}
 
 #btn-rules { grid-area: rules; }
 

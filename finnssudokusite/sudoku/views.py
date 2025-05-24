@@ -252,3 +252,7 @@ def activate(request, uid, token):
 
 def game_selection_view(request):
     return render(request, 'sudoku/game_selection.html')
+
+#nur zum Testen
+def help(request):
+    return render(request, 'sudoku/help.html')

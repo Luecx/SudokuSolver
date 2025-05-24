@@ -23,47 +23,44 @@
 			</div>
 		</div>
 		<div class="right-pane only_landscape">
-			<div class="control-container">
-				<div class="block-part" data-block="top"></div>
+			<div class="control-container my_box_style">
+				<!--<div class="block-part" data-block="top"></div>
 				<div class="block-part right-pane-middle-content my_box_style justify-content-start" data-block="middle">
-					<div class="grid-a">
-						<div id="info">
-							<span class="content_name">PUZZLENAME</span><br>
-							<span class="content_creator">Terminator3</span>
-						</div>
-						<button id="btn-gear" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
-						
-						<!-- Zeile 1 -->
-						<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>
-						<button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button>
-						<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
-						<button id="btn-clear" class="btn btn-custom-white btn-square "><i class="bi bi-trash"></i></button>
-						
-						<!-- Zeile 3 -->
-						<button id="btn-numberMode" class="btn btn-custom-white btn-square "><i class="bi bi-pencil-square"></i></button>
-						<button id="btn-topMode" class="btn btn-custom-white btn-square "><i class="bi bi-arrow-up-left-square"></i></button>
-						<button id="btn-centerMode" class="btn btn-custom-white btn-square "><i class="bi bi-dash-square"></i></button>
-						<button id="btn-colorMode" class="btn btn-custom-white btn-square ">
-							<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon" width="20px" />
-						</button>
-						
-						<!-- Zeile 2 -->
-						<div class="grid-b-area">
-							<div class="grid-b">
-								<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
-								<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
-								<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
-								<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
-								<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
-								<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
-								<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
-								<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
-								<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
-							</div>
-						</div>
-					</div>
+					<div class="grid-right">
+				-->
+				<div id="info">
+					<span class="content_name">PUZZLENAME</span><br>
+					<span class="content_creator">Terminator3</span>
 				</div>
-				<div class="block-part" data-block="bottom"></div>
+				<button id="btn-gear" class="btn btn-secondary btn-square" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
+				<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>
+				<button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button>
+				<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
+				<button id="btn-clear" class="btn btn-custom-white btn-clear"><i class="bi bi-trash"></i></button>
+				<div id="gap-row1"></div>
+				<div id="number-block" class="grid-b">
+					<button id="btn-one" class="btn btn-custom-white btn-square btn-number">1</button>
+					<button id="btn-two" class="btn btn-custom-white btn-square btn-number">2</button>
+					<button id="btn-three" class="btn btn-custom-white btn-square btn-number">3</button>
+					<button id="btn-four" class="btn btn-custom-white btn-square btn-number">4</button>
+					<button id="btn-five" class="btn btn-custom-white btn-square btn-number">5</button>
+					<button id="btn-six" class="btn btn-custom-white btn-square btn-number">6</button>
+					<button id="btn-seven" class="btn btn-custom-white btn-square btn-number">7</button>
+					<button id="btn-eight" class="btn btn-custom-white btn-square btn-number">8</button>
+					<button id="btn-nine" class="btn btn-custom-white btn-square btn-number">9</button>
+				</div>
+				<div id="gap-row2"></div>
+				<button id="btn-numberMode" class="btn btn-custom-white btn-square "><i class="bi bi-pencil-square"></i></button>
+				<button id="btn-topMode" class="btn btn-custom-white btn-square "><i class="bi bi-arrow-up-left-square"></i></button>
+				<button id="btn-centerMode" class="btn btn-custom-white btn-square "><i class="bi bi-dash-square"></i></button>
+				<button id="btn-colorMode" class="btn btn-custom-white btn-square">
+					<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon"/>
+				</button>
+				
+				<!--		</div>
+					</div>
+					<div class="block-part" data-block="bottom"></div>
+				-->
 			</div>
 		</div>
 		<div class="right-pane only_portrait my_box_style">
@@ -130,5 +127,93 @@
 {% block extra_scripts %}
 <script>window.puzzle_data={{puzzle_data_json | safe}};</script>
 <script type="module" src="{% static 'sudoku/js/game/game.js' %}"></script>
+
+<script>
+	function updateControlContainerGrid() {
+		const container = document.querySelector(".control-container");
+		if (!container) return;
+
+		// Layoutparameter wie im CSS
+		const menuHeight = 60;         // px
+		const border = 16;             // 1rem = 16px
+		const gap = 16;                // 1rem
+
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+
+		const availableHeight = vh - menuHeight - 2 * border;
+		const availableRightPane = vw - availableHeight - gap;
+		const ratio = availableRightPane / availableHeight;
+
+		// Entferne bestehende Layoutklassen
+		container.classList.remove("grid-a-O", "grid-a-X", "grid-a-Y");
+
+		// Neue Klasse setzen je nach Verhältnis
+		let layout = "";
+		if (Math.abs(ratio - 1) <= 0.2) {
+			layout = "grid-a-O";
+		} else if (ratio < 1) {
+			layout = "grid-a-Y";
+		} else {
+			layout = "grid-a-X";
+		}
+		container.classList.add(layout);
+
+		// Seitenverhältnisse je nach Layout
+		const aspectRatios = {
+			"grid-a-Y": 300 / 537,
+			"grid-a-X": 366 / 250,
+			"grid-a-O": 300 / 362,
+		};
+
+		const targetRatio = aspectRatios[layout];
+
+		// Berechne maximale Breite und Höhe, ohne Verzerrung, mit 1rem (16px) Abstand rechts und unten
+		let maxWidth = availableRightPane - 2 * border;
+		const maxHeight = availableHeight;
+
+		// Mindestbreite für grid-a-Y sicherstellen
+		if (layout === "grid-a-Y" && maxWidth < 300) {
+			maxWidth = 300;
+		}
+
+		let width, height;
+
+		if (maxWidth / maxHeight > targetRatio) {
+			// Höhe ist begrenzender Faktor
+			height = maxHeight;
+			width = height * targetRatio;
+		} else {
+			// Breite ist begrenzender Faktor
+			width = maxWidth;
+			height = width / targetRatio;
+		}
+
+		// Anwenden der Maße
+		container.style.width = `${width}px`;
+		container.style.height = `${height}px`;
+
+		// Dynamische Anpassung der Schrift- und Bildgröße
+		const scaleBase = 300; // Referenzbreite für 1.2rem
+		const scaleFactor = width / scaleBase;
+		const fontSize = Math.max(0.8, Math.min(3.0, 1.2 * scaleFactor)); // clamp zwischen 0.8rem und 2.0rem
+
+		container.querySelectorAll(".btn").forEach(btn => {
+			btn.style.fontSize = `${fontSize}rem`;
+		});
+
+		const imageSize = Math.round(20 * scaleFactor); // Bildgröße proportional
+		const colorBtnImg = document.querySelector("#btn-colorMode img");
+		if (colorBtnImg) {
+			colorBtnImg.style.width = `${imageSize}px`;
+			colorBtnImg.style.height = `${imageSize}px`;
+		}
+	}
+
+	// ausführen NACH dem vollständigen Laden (inkl. Fonts/Bilder/Layout)
+	window.addEventListener("load", updateControlContainerGrid);
+	window.addEventListener("resize", updateControlContainerGrid);
+
+</script>
 
 {% endblock %}
