@@ -59,43 +59,77 @@ class Sudoku(models.Model):
     def __str__(self):
         return self.title
 
-
-class UserSudokuStats(models.Model):
+class UserSudokuOngoing(models.Model):
     """
-    Tracks user-specific stats for each Sudoku puzzle.
-
-    - Attempts, best time, and last attempt.
-    - Rating and optional feedback.
-    - One UserSudokuStats per (user, sudoku) pair.
+    Tracks ongoing Sudoku attempts with saved progress.
     """
-
-    # Relationships
-    user   = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sudoku_stats")
-    sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE, related_name="user_stats")
+    # Store IDs instead of foreign keys for cross-database compatibility
+    user_id = models.PositiveIntegerField()  # Reference to User.id
+    sudoku_id = models.PositiveIntegerField()  # Reference to Sudoku.id
 
     # Performance
     attempts  = models.PositiveIntegerField(default=0)
-    best_time = models.PositiveIntegerField(default=0)  # Best solving time (seconds); 0 means not yet solved
-    last_time = models.PositiveIntegerField(default=0)  # Time taken in the most recent attempt
+    current_time = models.PositiveIntegerField(default=0)
+    total_time   = models.PositiveIntegerField(default=0)
 
     # Timestamps
     first_attempt = models.DateTimeField(null=True, blank=True)
-    last_attempt  = models.DateTimeField(null=True, blank=True)
-    date_solved   = models.DateTimeField(null=True, blank=True)
+    last_attempt  = models.DateTimeField(auto_now=True)
+    started_at    = models.DateTimeField(auto_now_add=True)
+    
+    # Saved game state
+    saved_board_state = models.BinaryField(null=True, blank=True)
+    completion_percentage = models.FloatField(default=0.0)
+    
+    class Meta:
+        unique_together = ('user_id', 'sudoku_id')
 
-    # Feedback
-    rating  = models.PositiveSmallIntegerField(null=True, blank=True)  # Rating (1–5 stars)
+    def __str__(self):
+        return f"User {self.user_id} - Sudoku {self.sudoku_id} (Ongoing)"
+
+
+class UserSudokuFinished(models.Model):
+    """
+    Tracks completed Sudoku puzzles.
+    """
+    # Store IDs instead of foreign keys
+    user_id = models.PositiveIntegerField()
+    sudoku_id = models.PositiveIntegerField()
+
+    saved_board_state = models.BinaryField(null=True, blank=True)
+
+    # Performance
+    attempts_to_solve = models.PositiveIntegerField(default=1)
+    completion_time   = models.PositiveIntegerField()
+    total_time_spent  = models.PositiveIntegerField(default=0)
+
+    # Timestamps
+    started_at   = models.DateTimeField()
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    # User feedback
+    rating  = models.PositiveSmallIntegerField(null=True, blank=True, choices=[
+        (1, '1 Star'), (2, '2 Stars'), (3, '3 Stars'), (4, '4 Stars'), (5, '5 Stars'),
+    ])
     comment = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('user', 'sudoku')  # One stats record per user-sudoku pair
+        ordering = ['-completed_at']
+        indexes = [
+            models.Index(fields=['user_id', 'completed_at']),
+            models.Index(fields=['sudoku_id', 'completion_time']),
+        ]
+
+    def __str__(self):
+        return f"User {self.user_id} - Sudoku {self.sudoku_id} (Completed {self.completed_at.date()})"
 
     @property
-    def solved(self):
-        """Returns True if the user has successfully solved the Sudoku."""
-        return self.best_time > 0
-
-
+    def completion_time_formatted(self):
+        """Returns completion time in MM:SS format."""
+        minutes = self.completion_time // 60
+        seconds = self.completion_time % 60
+        return f"{minutes:02d}:{seconds:02d}"
+    
 """
 NOTES:
 - related_name="..." allows you to do things like:

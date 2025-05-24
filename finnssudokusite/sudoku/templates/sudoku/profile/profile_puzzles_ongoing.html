@@ -1,0 +1,89 @@
+{% if ongoing_puzzles %}
+{% load form_filters %}
+{% load static %}
+{% load formatting star_rating %}
+
+<!-- Shared Search & Tag Filter -->
+{% include "sudoku/profile/search_filter.html" with search_id="ongoingSearch" tag_class="ongoing-tag-filter" tag_prefix="ongoing-tag" %}
+
+<!-- Ongoing Puzzles Table -->
+<div class="table-responsive" style="min-height: 400px;">
+  <table class="table table-striped table-hover small align-middle" id="ongoingTable">
+    <thead>
+    <tr>
+      <th data-key="name">Name <span class="sort-indicator"></span></th>
+      <th data-key="creator">Creator <span class="sort-indicator"></span></th>
+      <th data-key="attempts">Attempts <span class="sort-indicator"></span></th>
+      <th data-key="completion">Completion <span class="sort-indicator"></span></th>
+      <th data-key="totaltime">Total Time <span class="sort-indicator"></span></th>
+      <th data-key="lastattempt">Last Attempt <span class="sort-indicator"></span></th>
+      <th>Tags</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for puzzle in ongoing_puzzles %}
+    <tr data-name="{{ puzzle.sudoku.title|lower }}"
+        data-creator="{{ puzzle.sudoku.created_by.username }}"
+        data-attempts="{{ puzzle.attempts }}"
+        data-completion="{{ puzzle.completion_percentage|floatformat:1 }}"
+        data-totaltime="{{ puzzle.total_time }}"
+        data-lastattempt="{{ puzzle.last_attempt|date:"U" }}"
+        data-tags="{{ puzzle.sudoku.tags.all|join:','|lower }}">
+    <td>
+      <a href="{% url 'play_sudoku' puzzle.sudoku.id %}" class="text-decoration-none">
+          {{ puzzle.sudoku.title }}
+      </a>
+    </td>
+    <td>{{ puzzle.sudoku.created_by.username }}</td>
+    <td>{{ puzzle.attempts }}</td>
+    <td>
+      <div class="progress" style="width: 80px; height: 20px;">
+        <div class="progress-bar" role="progressbar" 
+             style="width: {{ puzzle.completion_percentage }}%"
+             aria-valuenow="{{ puzzle.completion_percentage }}" 
+             aria-valuemin="0" aria-valuemax="100">
+          {{ puzzle.completion_percentage|floatformat:0 }}%
+        </div>
+      </div>
+    </td>
+    <td>{{ puzzle.total_time|humantime }}</td>
+    <td>{{ puzzle.last_attempt|date:"Y-m-d H:i" }}</td>
+    <td>
+      {% for tag in puzzle.sudoku.tags.all %}
+      <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
+      {% endfor %}
+    </td>
+    <td>
+      <a href="{% url 'play_sudoku' puzzle.sudoku.id %}" class="btn btn-sm btn-primary">Continue</a>
+    </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination Placeholder -->
+<nav>
+  <ul class="pagination justify-content-center mt-3" id="ongoingTable-pagination"></ul>
+</nav>
+
+<!-- JS Hook -->
+<script type="module">
+  import { initTableFilter } from "/static/sudoku/js/util/table_filter.js";
+
+  initTableFilter({
+    tableId: "ongoingTable",
+    searchInputId: "ongoingSearch",
+    tagClass: "ongoing-tag-filter",
+    tagAttribute: "data-tags",
+    columns: ["name", "creator", "attempts", "completion", "totaltime", "lastattempt"],
+    rowsPerPage: 10
+  });
+</script>
+
+{% else %}
+<div class="text-center py-4">
+  <p class="text-muted">No ongoing puzzles found.</p>
+</div>
+{% endif %}

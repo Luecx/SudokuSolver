@@ -14,7 +14,7 @@ import math
 from collections import defaultdict
 from datetime import datetime, timezone
 from django.utils.timezone import make_aware, is_naive
-from ..models import UserSudokuStats
+from ..models import UserSudokuFinished
 
 
 # === Constants === #
@@ -24,19 +24,19 @@ ALPHA, BETA = 1, 2        # Difficulty smoothing constants
 DIFF_EXP = 1.7            # Exponent in difficulty formula
 
 
-def _compute_weights(stat, now):
-    """Compute recency, difficulty, and speed weights for a given stat record."""
-    puzzle = stat.sudoku
+def _compute_weights(finished_record, now):
+    """Compute recency, difficulty, and speed weights for a given finished record."""
+    puzzle = finished_record.sudoku
 
     # Recency weight: exponential decay
-    last_attempt = stat.last_attempt
-    if not last_attempt:
+    completed_at = finished_record.completed_at
+    if not completed_at:
         return None
 
-    if is_naive(last_attempt):
-        last_attempt = make_aware(last_attempt, timezone=timezone.utc)
+    if is_naive(completed_at):
+        completed_at = make_aware(completed_at, timezone=timezone.utc)
 
-    days_since = (now - last_attempt).days
+    days_since = (now - completed_at).days
     w_rec = 2 ** (-days_since / HALF_LIFE_DAYS)
 
     # Difficulty weight: based on solve ratio
@@ -46,7 +46,7 @@ def _compute_weights(stat, now):
     w_diff = 1 + (1 - q) ** DIFF_EXP
 
     # Speed bonus: positive only if faster than average
-    user_t = max(stat.best_time, 1e-8)
+    user_t = max(finished_record.completion_time, 1e-8)
     avg_t = max(puzzle.average_time or 0, 1e-8)
 
     try:
@@ -57,24 +57,24 @@ def _compute_weights(stat, now):
     return w_rec, w_diff, delta_speed
 
 
-def _compute_raw_scores(stats, now):
+def _compute_raw_scores(finished_records, now):
     """Aggregate raw performance scores for each user."""
     players = defaultdict(lambda: {'P': 0.0, 'N': 0.0, 'solved': 0})
 
-    for stat in stats:
-        puzzle = stat.sudoku
+    for record in finished_records:
+        puzzle = record.sudoku
 
         if (puzzle.average_time or 0) <= 0:
             continue
 
-        weights = _compute_weights(stat, now)
+        weights = _compute_weights(record, now)
         if not weights:
             continue
 
         w_rec, w_diff, delta_speed = weights
         p_ui = w_rec * w_diff * (1 + delta_speed)
 
-        user_record = players[stat.user.username]
+        user_record = players[record.user.username]
         user_record['P'] += p_ui
         user_record['N'] += w_rec
         user_record['solved'] += 1
@@ -112,7 +112,7 @@ def _convert_to_leaderboard(players):
 
 def compute_leaderboard_scores():
     """
-    Computes the leaderboard using all solve records with best_time > 0.
+    Computes the leaderboard using all completed puzzle records.
 
     Returns:
         A sorted list of dictionaries:
@@ -123,15 +123,37 @@ def compute_leaderboard_scores():
             }
         If no data is available, returns an empty list.
     """
-    stats = (
-        UserSudokuStats.objects
+    # Get best completion for each user-puzzle pair from finished_db
+    from django.db.models import Min
+    
+    finished_records = (
+        UserSudokuFinished.objects
+        .using('finished_db')
         .select_related('user', 'sudoku')
-        .filter(best_time__gt=0)
+        .values('user', 'sudoku')
+        .annotate(best_completion_time=Min('completion_time'))
     )
 
-    if not stats.exists():
+    if not finished_records.exists():
         return []
 
+    # Get the actual records with best times
+    best_records = []
+    for record in finished_records:
+        best_record = (
+            UserSudokuFinished.objects
+            .using('finished_db')
+            .select_related('user', 'sudoku')
+            .filter(
+                user=record['user'],
+                sudoku=record['sudoku'],
+                completion_time=record['best_completion_time']
+            )
+            .first()
+        )
+        if best_record:
+            best_records.append(best_record)
+
     now = datetime.now(timezone.utc)
-    raw_players = _compute_raw_scores(stats, now)
+    raw_players = _compute_raw_scores(best_records, now)
     return _convert_to_leaderboard(raw_players)

@@ -1,4 +1,4 @@
-{% if attempted_stats %}
+{% if completed_puzzles %}
 {% load form_filters %}
 {% load static %}
 {% load formatting star_rating %}
@@ -6,43 +6,63 @@
 <!-- Shared Search & Tag Filter -->
 {% include "sudoku/profile/search_filter.html" with search_id="doneSearch" tag_class="done-tag-filter" tag_prefix="done-tag" %}
 
-<!-- Solved Puzzles Table -->
+<!-- Finished Puzzles Table -->
 <div class="table-responsive" style="min-height: 400px;">
   <table class="table table-striped table-hover small align-middle" id="doneTable">
     <thead>
     <tr>
       <th data-key="name">Name <span class="sort-indicator"></span></th>
       <th data-key="creator">Creator <span class="sort-indicator"></span></th>
-      <th data-key="solves">Solved / Attempts <span class="sort-indicator"></span></th>
-      <th data-key="rating">Rating <span class="sort-indicator"></span></th>
-      <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
-      <th data-key="besttime">Your Time <span class="sort-indicator"></span></th>
-      <th data-key="datesolved">Last Solved <span class="sort-indicator"></span></th>
+      <th data-key="attempts">Attempts to Solve <span class="sort-indicator"></span></th>
+      <th data-key="completiontime">Completion Time <span class="sort-indicator"></span></th>
+      <th data-key="totaltime">Total Time <span class="sort-indicator"></span></th>
+      <th data-key="rating">Your Rating <span class="sort-indicator"></span></th>
+      <th data-key="completed">Date Completed <span class="sort-indicator"></span></th>
       <th>Tags</th>
+      <th>Actions</th>
     </tr>
     </thead>
     <tbody>
-    {% for stat in attempted_stats %}
-    <tr data-name="{{ stat.sudoku.title|lower }}"
-        data-creator="{{ stat.sudoku.created_by.username }}"
-        data-solves="{{ stat.sudoku.solves }}"
-        data-attempts="{{ stat.sudoku.attempts }}"
-        data-rating="{{ stat.sudoku.average_rating|default:0 }}"
-        data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
-        data-besttime="{{ stat.best_time }}"
-        data-datesolved="{{ stat.date_solved|date:"U" }}"
-    data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
-    <td>{{ stat.sudoku.title }}</td>
-    <td>{{ stat.sudoku.created_by.username }}</td>
-    <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
-    <td>{% render_starbar stat.sudoku.average_rating %}</td>
-    <td>{{ stat.sudoku.average_time|humantime }}</td>
-    <td>{{ stat.best_time|humantime }}</td>
-    <td>{{ stat.date_solved|date:"Y-m-d H:i" }}</td>
+    {% for puzzle in completed_puzzles %}
+    <tr data-name="{{ puzzle.sudoku.title|lower }}"
+        data-creator="{{ puzzle.sudoku.created_by.username }}"
+        data-attempts="{{ puzzle.attempts_to_solve }}"
+        data-completiontime="{{ puzzle.completion_time }}"
+        data-totaltime="{{ puzzle.total_time_spent }}"
+        data-rating="{{ puzzle.rating|default:0 }}"
+        data-completed="{{ puzzle.completed_at|date:"U" }}"
+        data-tags="{{ puzzle.sudoku.tags.all|join:','|lower }}">
     <td>
-      {% for tag in stat.sudoku.tags.all %}
+      <a href="{% url 'play_sudoku' puzzle.sudoku.id %}" class="text-decoration-none">
+        {{ puzzle.sudoku.title }}
+      </a>
+    </td>
+    <td>{{ puzzle.sudoku.created_by.username }}</td>
+    <td>{{ puzzle.attempts_to_solve }}</td>
+    <td>
+      <span class="badge bg-success">{{ puzzle.completion_time|humantime }}</span>
+    </td>
+    <td>{{ puzzle.total_time_spent|humantime }}</td>
+    <td>
+      {% if puzzle.rating %}
+        {% render_starbar puzzle.rating %}
+      {% else %}
+        <span class="text-muted">Not rated</span>
+      {% endif %}
+    </td>
+    <td>{{ puzzle.completed_at|date:"Y-m-d H:i" }}</td>
+    <td>
+      {% for tag in puzzle.sudoku.tags.all %}
       <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
       {% endfor %}
+    </td>
+    <td>
+      <a href="{% url 'play_sudoku' puzzle.sudoku.id %}" class="btn btn-sm btn-outline-primary">Play Again</a>
+      {% if puzzle.comment %}
+        <button class="btn btn-sm btn-outline-info ms-1" data-bs-toggle="tooltip" title="{{ puzzle.comment }}">
+          <i class="fas fa-comment"></i>
+        </button>
+      {% endif %}
     </td>
     </tr>
     {% endfor %}
@@ -64,11 +84,13 @@
     searchInputId: "doneSearch",
     tagClass: "done-tag-filter",
     tagAttribute: "data-tags",
-    columns: ["name", "creator", "solves", "rating", "avgtime", "besttime", "datesolved"],
+    columns: ["name", "creator", "attempts", "completiontime", "totaltime", "rating", "completed"],
     rowsPerPage: 10
   });
 </script>
 
 {% else %}
-<p>You haven’t attempted any puzzles yet.</p>
+<div class="text-center py-4">
+  <p class="text-muted">You haven't completed any puzzles yet.</p>
+</div>
 {% endif %}

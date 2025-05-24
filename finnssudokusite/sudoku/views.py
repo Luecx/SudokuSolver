@@ -10,43 +10,59 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.timezone import make_aware, is_naive
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
+from django.db import models
 from django.db.models import Count
 from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from datetime import datetime, timezone
-from .models import Sudoku, UserSudokuStats, Tag
+from .models import Sudoku, UserSudokuOngoing, UserSudokuFinished, Tag
 from .forms import UserRegisterForm
 from .util.leaderboard import compute_leaderboard_scores
 import json
 import zlib
 # === General Views === #
 
+
 def index(request):
     """Main landing page showing all Sudoku puzzles and user stats if logged in."""
-    sudokus = Sudoku.objects.annotate(
-        attempts_count=Count('attempts'),
-        solves_count=Count('solves')
-    )
+    # Remove the Count annotations since we can't count across databases with IDs
+    sudokus = Sudoku.objects.all()
+    
     user_stats = {}
     if request.user.is_authenticated:
-        stats = UserSudokuStats.objects.filter(user=request.user)
-        user_stats = {us.sudoku_id: us.best_time for us in stats}
+        # Get ongoing puzzles from ongoing_db
+        ongoing_stats = UserSudokuOngoing.objects.using('ongoing_db').filter(user_id=request.user.id)
+        ongoing_dict = {us.sudoku_id: 'ongoing' for us in ongoing_stats}
+        
+        # Get completed puzzles from finished_db - get best time for each puzzle
+        finished_stats = UserSudokuFinished.objects.using('finished_db').filter(
+            user_id=request.user.id
+        ).values('sudoku_id').annotate(
+            best_time=models.Min('completion_time')
+        )
+        finished_dict = {us['sudoku_id']: us['best_time'] for us in finished_stats}
+        
+        # Combine the stats
+        user_stats = {**ongoing_dict, **finished_dict}
 
     return render(request, 'sudoku/index.html', {
         'sudokus': sudokus,
         'user_stats': user_stats,
     })
 
+
 def game(request):
     """Renders the general Sudoku game page."""
     return render(request, "sudoku/game.html")
+
 
 def puzzles_view(request):
     query = request.GET.get("q", "").strip()
     tag_names = request.GET.getlist("tags")  # List of selected tags
 
-    sudokus = Sudoku.objects.filter(is_public=True).select_related("created_by").prefetch_related("tags")
+    sudokus = Sudoku.objects.filter(is_public=True).select_related(
+        "created_by").prefetch_related("tags")
 
     if query:
         sudokus = sudokus.filter(title__icontains=query)
@@ -69,6 +85,7 @@ def puzzles_view(request):
         "all_tags": all_tags,
     })
 
+
 def leaderboard(request):
     """Displays the leaderboard."""
     leaderboard_data = compute_leaderboard_scores()
@@ -76,9 +93,11 @@ def leaderboard(request):
         "leaderboard": leaderboard_data
     })
 
+
 def creator(request):
     """Sudoku puzzle creator view."""
     return render(request, "sudoku/creator/creator.html")
+
 
 @login_required
 @require_POST
@@ -115,6 +134,7 @@ def save_sudoku(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
+
 def play_sudoku(request, sudoku_id):
     """Play a specific Sudoku puzzle."""
     try:
@@ -124,7 +144,8 @@ def play_sudoku(request, sudoku_id):
 
     try:
         # Decompress the puzzle JSON
-        puzzle_data = json.loads(zlib.decompress(sudoku.puzzle).decode('utf-8'))
+        puzzle_data = json.loads(
+            zlib.decompress(sudoku.puzzle).decode('utf-8'))
     except Exception:
         raise Http404("Invalid puzzle data.")
 
@@ -146,22 +167,50 @@ def profile(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            return redirect('profile')
     else:
         form = PasswordChangeForm(user=request.user)
 
-    solved_stats = UserSudokuStats.objects.filter(user=request.user, best_time__gt=0).select_related("sudoku")
-    attempted_stats = UserSudokuStats.objects.filter(user=request.user, attempts__gt=0).select_related("sudoku")
+  # Query ongoing puzzles from ongoing_db
+    ongoing_puzzles = UserSudokuOngoing.objects.using('ongoing_db').filter(
+        user_id=request.user.id
+    )
+    
+    # Get sudoku IDs and fetch the sudokus separately from default database
+    ongoing_sudoku_ids = [puzzle.sudoku_id for puzzle in ongoing_puzzles]
+    ongoing_sudokus = {s.id: s for s in Sudoku.objects.filter(id__in=ongoing_sudoku_ids).select_related('created_by').prefetch_related('tags')}
+    
+    # Filter out puzzles where sudoku doesn't exist and attach sudoku objects
+    valid_ongoing_puzzles = []
+    for puzzle in ongoing_puzzles:
+        sudoku = ongoing_sudokus.get(puzzle.sudoku_id)
+        if sudoku:  # Only include if sudoku exists
+            puzzle.sudoku = sudoku
+            valid_ongoing_puzzles.append(puzzle)
+        else:
+            print(f"Warning: Sudoku {puzzle.sudoku_id} not found for ongoing puzzle")
+    
+    # Query completed puzzles from finished_db (without cross-database joins)
+    completed_puzzles = UserSudokuFinished.objects.using('finished_db').filter(
+        user_id=request.user.id  # Changed from user=request.user
+    ).order_by('-completed_at')
+    
+    # Get sudoku IDs and fetch the sudokus separately from default database
+    completed_sudoku_ids = [puzzle.sudoku_id for puzzle in completed_puzzles]
+    completed_sudokus = {s.id: s for s in Sudoku.objects.filter(id__in=completed_sudoku_ids).prefetch_related('tags')}
+    
+    # Attach sudoku objects to completed puzzles
+    for puzzle in completed_puzzles:
+        puzzle.sudoku = completed_sudokus.get(puzzle.sudoku_id)
+
     created_puzzles = Sudoku.objects.filter(created_by=request.user)
-    all_tags = Tag.objects.order_by("name")
 
     return render(request, 'sudoku/profile/profile.html', {
         'form': form,
-        'solved_stats': solved_stats.order_by("-date_solved"),
-        'attempted_stats': attempted_stats.order_by("-last_attempt"),
+        'ongoing_puzzles': valid_ongoing_puzzles,  # Use filtered list
+        'completed_puzzles': completed_puzzles,  # Change this line
         'created_puzzles': created_puzzles.order_by("-id"),
-        'all_tags': all_tags,
     })
+
 
 def user_profile(request, username):
     """Public profile view for another user."""
@@ -174,8 +223,32 @@ def user_profile(request, username):
     except User.DoesNotExist:
         raise Http404("User does not exist.")
 
-    solved_stats = UserSudokuStats.objects.filter(user=target_user, best_time__gt=0).select_related("sudoku")
-    attempted_stats = UserSudokuStats.objects.filter(user=target_user, attempts__gt=0).select_related("sudoku")
+    # Query ongoing puzzles from ongoing_db (without cross-database joins)
+    ongoing_puzzles = UserSudokuOngoing.objects.using('ongoing_db').filter(
+        user_id=target_user.id  # Changed from user=target_user
+    )
+    
+    # Get sudoku IDs and fetch the sudokus separately from default database
+    ongoing_sudoku_ids = [puzzle.sudoku_id for puzzle in ongoing_puzzles]
+    ongoing_sudokus = {s.id: s for s in Sudoku.objects.filter(id__in=ongoing_sudoku_ids).prefetch_related('tags')}
+    
+    # Attach sudoku objects to ongoing puzzles
+    for puzzle in ongoing_puzzles:
+        puzzle.sudoku = ongoing_sudokus.get(puzzle.sudoku_id)
+    
+    # Query completed puzzles from finished_db (without cross-database joins)
+    completed_puzzles = UserSudokuFinished.objects.using('finished_db').filter(
+        user_id=target_user.id  # Changed from user=target_user
+    ).order_by('-completed_at')
+    
+    # Get sudoku IDs and fetch the sudokus separately from default database
+    completed_sudoku_ids = [puzzle.sudoku_id for puzzle in completed_puzzles]
+    completed_sudokus = {s.id: s for s in Sudoku.objects.filter(id__in=completed_sudoku_ids).prefetch_related('tags')}
+    
+    # Attach sudoku objects to completed puzzles
+    for puzzle in completed_puzzles:
+        puzzle.sudoku = completed_sudokus.get(puzzle.sudoku_id)
+    
     created_puzzles = Sudoku.objects.filter(created_by=target_user)
     all_tags = Tag.objects.order_by("name")
 
@@ -189,18 +262,19 @@ def user_profile(request, username):
 
     return render(request, 'sudoku/profile/user_profile.html', {
         'target_user': target_user,
-        'solved_stats': solved_stats.order_by("-date_solved"),
-        'attempted_stats': attempted_stats.order_by("-last_attempt"),
+        'ongoing_puzzles': ongoing_puzzles,
+        'completed_puzzles': completed_puzzles,
         'created_puzzles': created_puzzles.order_by("-id"),
         'all_tags': all_tags,
         'rank': rank,
         'score': score,
-        'done_count': solved_stats.count(),
-        'attempt_count': attempted_stats.count(),
+        'done_count': completed_puzzles.count(),
+        'attempt_count': ongoing_puzzles.count(),
         'last_login': target_user.last_login,
     })
 
 # === Auth Views === #
+
 
 def register(request):
     """Handles user registration and sends activation email."""
@@ -226,6 +300,7 @@ def register(request):
 
     return render(request, 'sudoku/login/register.html', {'form': form})
 
+
 def activate(request, uid, token):
     """Verifies activation email and activates the user."""
     try:
@@ -240,6 +315,7 @@ def activate(request, uid, token):
         return render(request, 'sudoku/login/activation_success.html')
     else:
         return render(request, 'sudoku/login/activation_invalid.html')
+
 
 def game_selection_view(request):
     return render(request, 'sudoku/game_selection.html')
