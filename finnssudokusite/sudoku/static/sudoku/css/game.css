@@ -10,20 +10,24 @@ html, body {
 	padding: 0;
 }
 .btn-clear,
+.btn-gear,
 .btn-square,
-.btn-number{
+.btn-number {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
 	min-height: 0;
 	width: 100%;
+	aspect-ratio: 1 / 1;
 }
-.grid-a-X .btn-clear {grid-column: span 2; height: 100%;}
-.grid-a-O .btn-clear,
-.grid-a-Y .btn-clear,
-.btn-square,
-.btn-number{aspect-ratio: 1 / 1;}
+.btn-number { position: relative; }
+
+.grid-a-X .btn-gear,
+.grid-a-Y .btn-gear{
+	max-height: 3rem;
+	max-width: 3rem;
+}
 
 .left-pane {
 	position: relative; /* Wichtig für absolute Positionierung der Kinder */
@@ -48,15 +52,24 @@ html, body {
 }
 
 .content_name,
-.content_creator {color: lightslategray;}
+.content_creator {color: black;}
+
+.my_control_style {
+	background: rgba(255,255,255,.5);
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	box-sizing: border-box;
+}
+
+:root {
+	--min-spaceX: 250px;
+	--min-spaceY: 200px;
+	--menü-height: 60px;
+	--grid-container-gap: 1rem;
+	--border: 1rem;
+}
 
 @media (min-aspect-ratio: 1/1) {  /* Landscape */
-	:root {
-		--min-space: 300px;
-		--menü-height: 60px;
-		--grid-container-gap: 1rem;
-		--border: 1rem;
-	}
 	
 	.grid-container { /* Landscape */
 		display: flex;
@@ -80,7 +93,7 @@ html, body {
 	}
 	
 	.right-pane { /* Landscape */
-		min-width: var(--min-space);
+		min-width: var(--min-spaceX);
 		height: 100%;
 		display: flex;
 		align-items: center;
@@ -96,40 +109,30 @@ html, body {
 		padding: 1rem;
 	}
 	
-	.grid-a-O {
-		grid-template-columns: repeat(5, 1fr);
-		grid-template-rows: repeat(6, 1fr);
-		grid-template-areas:
-		"info info info info info"
-		"NB NB NB NB gear"
-		"NB NB NB NB undo"
-		"NB NB NB NB redo"
-		"NB NB NB NB rules"
-		"number top center color clear";
-	}
 	.grid-a-X {
-		grid-template-columns: repeat(6, 1fr);
-		grid-template-rows: repeat(4, 1fr);
+		grid-template-columns: repeat(4, 1fr) 1rem 1fr 1fr;
+		grid-template-rows: 1fr repeat(4, 1fr);
 		grid-template-areas:
-		"info info info info info gear"
-		"NB NB NB top number rules"
-		"NB NB NB center undo redo"
-		"NB NB NB color clear clear";
+		"info info info info col1  .       gear"
+		"NB   NB   NB 	NB   col1  number  rules"
+		"NB   NB   NB 	NB   col1  top     undo"
+		"NB   NB   NB 	NB   col1  center  redo"
+		"NB   NB   NB 	NB   col1  color   clear";
 	}
 	
 	.grid-a-Y {
 		grid-template-columns: repeat(4, 1fr);
 		grid-template-rows: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
 		grid-template-areas:
-		"info info info gear"
-		"undo redo rules clear"
-		"gap1 gap1 gap1 gap1"
-		"NB NB NB NB"
-		"NB NB NB NB"
-		"NB NB NB NB"
-		"NB NB NB NB"
-		"gap2 gap2 gap2 gap2"
-		"number top center color";
+		"info   info  info   gear"
+		"undo   redo  rules  clear"
+		"row1   row1  row1   row1"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"row2   row2  row2   row2"
+		"number top   center color";
 	}
 	
 	.grid-b {
@@ -144,8 +147,8 @@ html, body {
 		margin: 0;
 		gap: .5rem;
 		grid-template-areas:
-    		"one two three"
-			"four five six"
+    		"one   two   three"
+			"four  five  six"
 			"seven eight nine";
 	}
 	
@@ -153,127 +156,163 @@ html, body {
 	.only_landscape {display: block;}
 }
 
-/*
-@media (max-aspect-ratio: 1/1) {
-	.grid-container {
+
+@media (max-aspect-ratio: 1/1) {/* Portrait */
+	.grid-container { /* Portrait */
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: var(--grid-container-gap);
 		box-sizing: border-box;
-		overflow: hidden;
-		justify-content: start;
-		height: 100%;
-		width: 100%;
-		gap: 1rem;
+		max-width: 100%;
+		max-height: 100%;
 	}
 	
-	:root{
-		--min-height:189px;
-	}
-	
-	.left-pane {
-		width: 100%;
+	.left-pane { /* Portrait */
+		height: min(calc(100vw - 2 * var(--border)) , calc(100dvh - var(--menü-height) - 2 * var(--border) - var(--min-spaceY) - var(--grid-container-gap)) );
+		max-width: 100%;
+		max-height: 100%;
 		aspect-ratio: 1 / 1;
-		max-width: calc(100vh - 60px - 3rem - var(--min-height));
-		max-height: calc(100vw - 2rem);
-		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+	}
+	
+	.right-pane { /* Portrait */
+		height: 100%;
+		min-height: var(--min-spaceY);
+		min-width: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		box-sizing: border-box;
-	}
-	
-	.right-pane {
-		--header-height: 60px;
-		--padding-body: 1rem;
-		--gap: .5rem;
-		--padding-right-pane: .5rem;
-		--cell: calc((100vw - 2 * var(--padding-body) - 5 * var(--gap) - 2 * var(--padding-right-pane) - 2px) / 6);
-		--pane-h: clamp(
-				var(--min-height),
-				calc(100vh - 100vw - var(--header-height) - 2 * var(--padding-body)),
-				calc(3 * var(--cell) + 2 * var(--gap) + 2 * var(--padding-right-pane) + 2px)
-		);
-		
-		height: var(--pane-h);
-		width: calc(2 * var(--pane-h) - var(--gap) - 2px);
-		
-		padding: var(--padding-right-pane);
-		box-sizing: border-box;
-		display: flex;
 	}
 	
 	.control-container {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		box-sizing: border-box;
-		overflow: hidden;
-	}
-	
-	.only_portrait {display: block;}
-	
-	.only_landscape {display: none;}
-	
-	.grid-c {
 		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		grid-template-rows: repeat(3, 1fr);
-		gap: .5rem;
-		width: 100%;
-		max-width: calc(100vw - 2 * var(--padding-body) - 2 * var(--padding-right-pane) - 2px);
-		height: auto;
-		aspect-ratio: auto;
-		margin: 0 auto;
-		grid-template-areas:
-			"one two three undo redo gear"
-			"four five six top center rules"
-			"seven eight nine number color clear";
-	}
-	
-	.feld {
-		aspect-ratio: 1 / 1;
-		width: 100%;
-	}
-	
-	.feld button {
-		aspect-ratio: 1 / 1;
 		width: 100%;
 		height: 100%;
-		font-size: min(4vw, 4vh);
+		gap: .5rem;
+		padding: 1rem;
 	}
 	
-	.btn-number { font-size: 2rem;}
+	.grid-a-superX {
+		grid-template-columns: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
+		grid-template-rows: repeat(4, 1fr);
+		grid-template-areas:
+		"info    info   col1  NB  NB  NB  NB  col2  number"
+		"rules   gear   col1  NB  NB  NB  NB  col2  top   "
+		"undo    redo   col1  NB  NB  NB  NB  col2  center"
+		".       clear  col1  NB  NB  NB  NB  col2  color ";
+	}
 	
-	.btn-square { font-size: 1.8rem;}
+	.grid-a-X {
+		grid-template-columns: repeat(4, 1fr) 1rem 1fr 1fr;
+		grid-template-rows:  repeat(5, 1fr);
+		grid-template-areas:
+		"info info info info col1  .       gear"
+		"NB   NB   NB 	NB   col1  number  rules"
+		"NB   NB   NB 	NB   col1  top     undo"
+		"NB   NB   NB 	NB   col1  center  redo"
+		"NB   NB   NB 	NB   col1  color   clear";
+	}
 	
-	.btn-img img {width: 1.8rem; height: 1.8rem;}
+	.grid-a-Y {
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
+		grid-template-areas:
+		"info   info  info   gear"
+		"undo   redo  rules  clear"
+		"row1   row1  row1   row1"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"row2   row2  row2   row2"
+		"number top   center color";
+	}
+	
+	.grid-b {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-rows: repeat(3, minmax(0, 1fr));
+		width: 100%;
+		min-width: 0;
+		min-height: 0;
+		aspect-ratio: 1 / 1;
+		padding: 0;
+		margin: 0;
+		gap: .5rem;
+		grid-template-areas:
+    		"one   two   three"
+			"four  five  six"
+			"seven eight nine";
+	}
+	
 }
-*/
 
-/* === Grid Areas === */
 
-.grid-a-X #number-block {grid-area: NB; grid-row: span 3; grid-column: span 3;}
-.grid-a-Y #number-block {grid-area: NB; grid-row: span 4; grid-column: span 4;}
-.grid-a-O #number-block {grid-area: NB; grid-row: span 4; grid-column: span 4;}
+#number-block {
+	position:relative;
+	grid-area: NB;
+	grid-row: span 4;
+	grid-column: span 4;
+	height: 100%;
+}
+/* Orientation numbers in buttons*/
+.toCorner .cornerPos1 { position: absolute; left: 20%; top:20%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos2 { position: absolute; left: 50%; top:20%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos3 { position: absolute; left: 80%; top:20%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos4 { position: absolute; left: 20%; top:50%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos5 { position: absolute; left: 50%; top:50%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos6 { position: absolute; left: 80%; top:50%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos7 { position: absolute; left: 20%; top:80%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos8 { position: absolute; left: 50%; top:80%; transform: translate(-50%, -50%);}
+.toCorner .cornerPos9 { position: absolute; left: 80%; top:80%; transform: translate(-50%, -50%);}
+
+.toCenter .cornerPos1 { position: absolute; left: 20.0%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos2 { position: absolute; left: 27.5%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos3 { position: absolute; left: 35.0%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos4 { position: absolute; left: 42.5%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos5 { position: absolute; left: 50.0%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos6 { position: absolute; left: 57.5%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos7 { position: absolute; left: 65.0%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos8 { position: absolute; left: 72.5%; top:50%; transform: translate(-50%, -50%);}
+.toCenter .cornerPos9 { position: absolute; left: 80.0%; top:50%; transform: translate(-50%, -50%);}
+
+	/* === Grid Areas === */
 
 .grid-a-X #gap-row1,
 .grid-a-X #gap-row2,
-.grid-a-O #gap-row1,
-.grid-a-O #gap-row2 {display: none;}
+.grid-a-X #gap-col2,
+
+.grid-a-Y #gap-col1,
+.grid-a-Y #gap-col2,
+
+.grid-a-superX #gap-row1,
+.grid-a-superX #gap-row2 {display: none;}
 
 
 #gap-row1{
-	grid-area: gap1;
+	grid-area: row1;
 	height: 1rem;
 	width: 100%;
 	pointer-events: none;
 }
 #gap-row2 {
-	grid-area: gap2;
+	grid-area: row2;
 	height: 1rem;
 	width: 100%;
+	pointer-events: none;
+}
+#gap-col1 {
+	grid-area: col1;
+	height: 100%;
+	width: 1rem;
+	pointer-events: none;
+}
+#gap-col2 {
+	grid-area: col2;
+	height: 100%;
+	width: 1rem;
 	pointer-events: none;
 }
 
@@ -304,6 +343,7 @@ html, body {
 #btn-nine { grid-area: nine; }
 
 #btn-colorMode { grid-area: color; }
+#btn-colorMode img {width: 20px; height: 20px;}
 
 #btn-numberMode { grid-area: number; }
 
@@ -311,9 +351,9 @@ html, body {
 
 #btn-centerMode { grid-area: center; }
 
-#btn-gear { grid-area: gear;}
+#btn-gear { grid-area: gear; justify-self: end;}
 
-#info { grid-area: info; }
+#info { grid-area: info;  font-size: 1rem;}
 
 /* Erzeugt weiße button */
 .btn-custom-white {
@@ -383,19 +423,19 @@ html, body {
 /* === Bootstrap-like Hover / Focus for All Buttons === */
 .btn-square:hover,
 .btn-square:focus {
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .5);
 	border-color: #86b7fe;
 }
 
 .btn-hovered {
 	background-color: #e7f1ff !important;
 	border-color: #86b7fe !important;
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .5);
 }
 
 .btn-selected {
 	border-color: #86b7fe !important;
-	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .8);
 }
 
 /* === Suppress persistent outline glow after focus === */
@@ -412,6 +452,7 @@ html, body {
 	height: 40px;
 	width: 100%;
 }
+
 .block-middle {
 	background: url("../img/game/block-content.png") top center repeat-y;
 	background-size: 100% auto;

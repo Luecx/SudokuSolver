@@ -40,6 +40,20 @@ export class InputKeyboard {
     setMode(mode) {
         if (this.allowedModes.includes(mode)) {
             this.mode = mode;
+
+            const numberBlock = document.getElementById("number-block");
+            if (numberBlock) {
+                if (mode === InputMode.CandidateRegular) {
+                    numberBlock.classList.add("toCorner");
+                } else {
+                    numberBlock.classList.remove("toCorner");
+                }
+                if (mode === InputMode.CandidateCentered) {
+                    numberBlock.classList.add("toCenter");
+                } else {
+                    numberBlock.classList.remove("toCenter");
+                }
+            }
             this.events.dispatchEvent(new CustomEvent('modechange', { detail: { mode } }));
         }
     }

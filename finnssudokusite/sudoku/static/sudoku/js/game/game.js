@@ -51,15 +51,15 @@ export class Game {
 
             document.body.style.backgroundImage = backgrounds[id];
 
-            document.querySelectorAll(".right-pane-middle-content").forEach(bg =>
-                bg.classList.toggle("my_box_style", id === "classic")
+           /* document.querySelectorAll(".right-pane-middle-content").forEach(bg =>
+                bg.classList.toggle("my_control_style", id === "classic")
             );
             document.querySelectorAll(".block-part").forEach(part => {
                 const type = part.getAttribute("data-block");
                 part.classList.toggle("block-top", id !== "classic" && type === "top");
                 part.classList.toggle("block-middle", id !== "classic" && type === "middle");
                 part.classList.toggle("block-bottom", id !== "classic" && type === "bottom");
-            });
+            });*/
 
             localStorage.setItem("selectedTheme", id);
         };
@@ -71,6 +71,29 @@ export class Game {
         select.value = savedTheme;
         applyTheme(savedTheme);
 
+        // Transparenz-Slider und .right-pane Transparenzsteuerung
+        const transparencySlider = document.getElementById("transparency-range");
+        const rightPane = document.querySelector(".right-pane"); // oder ggf. .my_control_style
+
+        if (transparencySlider && rightPane) {
+            const applyTransparency = (value) => {
+                const alpha = Math.max(0, Math.min(1, value / 100));
+                rightPane.style.backgroundColor = `rgba(255, 255, 255, ${alpha})`;
+            };
+
+            // gespeicherten Wert laden oder aktuellen verwenden
+            const savedTransparency = localStorage.getItem("transparencyValue");
+            const initialValue = savedTransparency !== null ? parseInt(savedTransparency, 10) : transparencySlider.value;
+            transparencySlider.value = initialValue;
+            applyTransparency(initialValue);
+
+            // Speichern bei Änderung
+            transparencySlider.addEventListener("input", () => {
+                const value = transparencySlider.value;
+                applyTransparency(value);
+                localStorage.setItem("transparencyValue", value);
+            });
+        }
         select.addEventListener("change", () => {
             applyTheme(select.value);
         });

@@ -48,10 +48,10 @@ h1, h2, h3 {margin-bottom: 1rem;}
     justify-content: center;
     height: calc(100dvh - 60px); /* 60px menüzeile*/
     box-sizing: border-box;
-    padding-top: 0; /* Platz für Menü  */
+    padding-top: 0;
 }
 
-.my_box_style {
+.my_board_style {
     background: white;
     border: 1px solid #ccc;
     border-radius: 0.25rem;
