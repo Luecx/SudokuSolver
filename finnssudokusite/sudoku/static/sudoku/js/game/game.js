@@ -61,16 +61,19 @@ export class Game {
             const response = await fetch(`/load-puzzle-state/${this.sudokuId}/`);
             const data = await response.json();
 
-            if (data.status === "success") {
+            if (data.status === "success" || data.status === "completed") {
                 if (data.board_state) 
                     this.board.contentLayer.loadState(data.board_state);
 
-                this.timer.setTimer(data.time || 0);
+                const timeValue = data.status === "completed" ? data.completion_time : data.time;
+                this.timer.setTimer(timeValue || 0);
                 
-                console.log("Loaded saved game state");
-            } else if (data.status === "completed") {
-                this.isCompleted = true;
-                this.showCompletedState(data);
+                if (data.status === "completed") {
+                    this.isCompleted = true;
+                    this.showCompletedState(data);
+                } else {
+                    console.log("Loaded saved game state");
+                }
             }
         } catch (error) {
             console.log("No saved state found or error loading:", error);
@@ -105,7 +108,6 @@ export class Game {
 
         try {
             const currentTime = this.timer.getDuration() || 0;
-            console.log("Saving game state at time:", currentTime);
             const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
 
             const payload = {

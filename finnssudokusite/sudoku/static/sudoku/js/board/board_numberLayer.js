@@ -26,6 +26,14 @@ export class Cell {
         return this.value !== null;
     }
 
+    hasCandidates() {
+        return this.ordinaryCandidates.length > 0 || this.centeredCandidates.length > 0;
+    }
+
+    hasColors() {
+        return this.colors.length > 0;
+    }
+
     /*
      *  Compression right now isnt really for board sizes greater 9
      */
@@ -198,18 +206,30 @@ export class BoardNumberLayer {
         return solution;
     }
 
-    loadState(state) {
-        for (let i = 0; i < state.length; i++) 
-        {
-            this.cells[i].fromCompressedString(state[i]);
-            this.updateCell(this.cells[i]);
+loadState(state) {
+    for (const cellState of state) {
+        // Extract r and c from the compressed string format "r0;c0;..."
+        const splitted = cellState.split(';');
+        const r = parseInt(splitted[0].slice(1));
+        const c = parseInt(splitted[1].slice(1));
+
+        const cell = this.cells.find(cell => cell.idx.r === r && cell.idx.c === c);
+        if (cell) {
+            cell.fromCompressedString(cellState);
+            this.updateCell(cell);
         }
     }
+}
 
     getState() {
         let state = [];
-        for (const cell of this.cells) 
+        for (const cell of this.cells)
+        {
+            // only store cells that have a value, candidates or colors and are not fixed
+            if (cell.fixed || !(cell.hasValue() || cell.hasCandidates() || cell.hasColors()))
+                continue;
             state.push(cell.compressedString());
+        }
         return state;
     }
 

@@ -228,6 +228,11 @@ def save_puzzle_state(request):
         sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
         
         if status == "completed":
+            # Prepare the final state for completed puzzle
+            board_state = board_state or []
+            state_json = json.dumps(board_state)
+            state_compressed = zlib.compress(state_json.encode('utf-8'))
+            
             # Mark puzzle as completed
             done_puzzle, created = UserSudokuDone.objects.get_or_create(
                 user=request.user,
@@ -236,6 +241,7 @@ def save_puzzle_state(request):
                     'time': current_time,
                     'rating': rating,
                     'date': timezone.now(),
+                    'state': state_compressed,  # Save the final state
                 }
             )
             
@@ -244,6 +250,7 @@ def save_puzzle_state(request):
                 done_puzzle.time = current_time
                 done_puzzle.rating = rating
                 done_puzzle.date = timezone.now()
+                done_puzzle.state = state_compressed  # Update the final state
                 done_puzzle.save()
             
             # Remove the ongoing puzzle record since it's now completed
@@ -256,11 +263,9 @@ def save_puzzle_state(request):
             return JsonResponse({"status": "success", "message": "completed"})
         
         else:
-            # Save ongoing state
-            if not board_state:
-                return JsonResponse({"status": "error", "message": "Missing board_state for ongoing puzzle"}, status=400)
+            # state can be empty, assume user sets numbers and then unsets them again to the original state
+            board_state = board_state or [] 
             
-            # Compress the board state for storage
             state_json = json.dumps(board_state)
             state_compressed = zlib.compress(state_json.encode('utf-8'))
             
@@ -294,12 +299,21 @@ def load_puzzle_state(request, sudoku_id):
     try:
         sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
         
+        print("f");
+
         # First check if puzzle is already completed
         try:
             done_puzzle = UserSudokuDone.objects.get(user=request.user, sudoku=sudoku)
+            
+            board_state = None
+            if done_puzzle.state:
+                state_json = zlib.decompress(done_puzzle.state).decode('utf-8')
+                board_state = json.loads(state_json)
+            
             return JsonResponse({
                 "status": "completed",
                 "message": "Puzzle already completed",
+                "board_state": board_state,
                 "completion_time": done_puzzle.time,
                 "rating": done_puzzle.rating,
                 "completed_date": done_puzzle.date.isoformat() if done_puzzle.date else None
@@ -312,7 +326,6 @@ def load_puzzle_state(request, sudoku_id):
             ongoing = UserSudokuOngoing.objects.get(user=request.user, sudoku=sudoku)
             
             if ongoing.state:
-                # Decompress the saved state
                 state_json = zlib.decompress(ongoing.state).decode('utf-8')
                 board_state = json.loads(state_json)
                 

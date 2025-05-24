@@ -71,6 +71,7 @@ class AbstractUserSudoku(models.Model):
 
 class UserSudokuDone(AbstractUserSudoku):
     rating = models.PositiveSmallIntegerField(null=True, blank=True)
+    state = models.BinaryField(null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'sudoku')
