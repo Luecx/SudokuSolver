@@ -23,6 +23,9 @@
               <button class="nav-link" id="done-tab" data-bs-toggle="tab" data-bs-target="#done" type="button" role="tab">Puzzles Done</button>
             </li>
             <li class="nav-item" role="presentation">
+              <button class="nav-link" id="ongoing-tab" data-bs-toggle="tab" data-bs-target="#ongoing" type="button" role="tab">Ongoing Puzzles</button>
+            </li>
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="created-tab" data-bs-toggle="tab" data-bs-target="#created" type="button" role="tab">Puzzles Created</button>
             </li>
           </ul>
@@ -34,6 +37,9 @@
             </div>
             <div class="tab-pane fade" id="done" role="tabpanel" aria-labelledby="done-tab">
               {% include "sudoku/profile/profile_puzzles_done.html" %}
+            </div>
+            <div class="tab-pane fade" id="ongoing" role="tabpanel" aria-labelledby="ongoing-tab">
+              {% include "sudoku/profile/profile_puzzles_ongoing.html" %}
             </div>
             <div class="tab-pane fade" id="created" role="tabpanel" aria-labelledby="created-tab">
               {% include "sudoku/profile/profile_puzzles_created.html" %}

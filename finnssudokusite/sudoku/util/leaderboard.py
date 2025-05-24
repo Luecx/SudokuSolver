@@ -14,7 +14,7 @@ import math
 from collections import defaultdict
 from datetime import datetime, timezone
 from django.utils.timezone import make_aware, is_naive
-from ..models import UserSudokuStats
+from ..models import UserSudokuDone
 
 
 # === Constants === #
@@ -28,15 +28,15 @@ def _compute_weights(stat, now):
     """Compute recency, difficulty, and speed weights for a given stat record."""
     puzzle = stat.sudoku
 
-    # Recency weight: exponential decay
-    last_attempt = stat.last_attempt
-    if not last_attempt:
+    # Recency weight: exponential decay using stat.date
+    if not stat.date:
         return None
 
-    if is_naive(last_attempt):
-        last_attempt = make_aware(last_attempt, timezone=timezone.utc)
+    last_solve = stat.date
+    if is_naive(last_solve):
+        last_solve = make_aware(last_solve, timezone=timezone.utc)
 
-    days_since = (now - last_attempt).days
+    days_since = (now - last_solve).days
     w_rec = 2 ** (-days_since / HALF_LIFE_DAYS)
 
     # Difficulty weight: based on solve ratio
@@ -46,7 +46,7 @@ def _compute_weights(stat, now):
     w_diff = 1 + (1 - q) ** DIFF_EXP
 
     # Speed bonus: positive only if faster than average
-    user_t = max(stat.best_time, 1e-8)
+    user_t = max(stat.time, 1e-8)
     avg_t = max(puzzle.average_time or 0, 1e-8)
 
     try:
@@ -63,8 +63,7 @@ def _compute_raw_scores(stats, now):
 
     for stat in stats:
         puzzle = stat.sudoku
-
-        if (puzzle.average_time or 0) <= 0:
+        if not puzzle or (puzzle.average_time or 0) <= 0:
             continue
 
         weights = _compute_weights(stat, now)
@@ -91,11 +90,10 @@ def _convert_to_leaderboard(players):
         P, N = data['P'], data['N']
         sqrt_N = math.sqrt(N) if N >= 0 else 0
         R = P * (1 + LAMBDA_VOL * sqrt_N)
-        if isinstance(R, complex):
-            R = R.real
+        R = R.real if isinstance(R, complex) else R
 
         raw_scores[user] = {'R': R, 'solved': data['solved']}
-        R_max = max(R_max, R.real if isinstance(R_max, complex) else R)
+        R_max = max(R_max, R)
 
     leaderboard = []
     for user, vals in raw_scores.items():
@@ -112,21 +110,20 @@ def _convert_to_leaderboard(players):
 
 def compute_leaderboard_scores():
     """
-    Computes the leaderboard using all solve records with best_time > 0.
+    Computes the leaderboard using all solve records with time > 0.
 
     Returns:
         A sorted list of dictionaries:
             {
                 'user': username,
                 'score': float (0-100),
-                'solved': int (count of puzzles solved)
+                'solved': int
             }
-        If no data is available, returns an empty list.
     """
     stats = (
-        UserSudokuStats.objects
+        UserSudokuDone.objects
         .select_related('user', 'sudoku')
-        .filter(best_time__gt=0)
+        .filter(time__gt=0)
     )
 
     if not stats.exists():

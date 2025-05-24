@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, update_session_auth_hash, get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.tokens import default_token_generator
@@ -11,15 +11,17 @@ from django.utils.timezone import make_aware, is_naive
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.db.models import Q
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
+from django.contrib.auth.models import User
 from datetime import datetime, timezone
-from .models import Sudoku, UserSudokuStats, Tag
+from .models import Sudoku, UserSudokuDone, UserSudokuOngoing, Tag
 from .forms import UserRegisterForm
 from .util.leaderboard import compute_leaderboard_scores
 import json
 import zlib
+
+
 # === General Views === #
 
 def index(request):
@@ -30,21 +32,23 @@ def index(request):
     )
     user_stats = {}
     if request.user.is_authenticated:
-        stats = UserSudokuStats.objects.filter(user=request.user)
-        user_stats = {us.sudoku_id: us.best_time for us in stats}
+        stats = UserSudokuDone.objects.filter(user=request.user)
+        user_stats = {us.sudoku_id: us.time for us in stats}
 
     return render(request, 'sudoku/index.html', {
         'sudokus': sudokus,
         'user_stats': user_stats,
     })
 
+
 def game(request):
     """Renders the general Sudoku game page."""
     return render(request, "sudoku/game.html")
 
+
 def puzzles_view(request):
     query = request.GET.get("q", "").strip()
-    tag_names = request.GET.getlist("tags")  # List of selected tags
+    tag_names = request.GET.getlist("tags")
 
     sudokus = Sudoku.objects.filter(is_public=True).select_related("created_by").prefetch_related("tags")
 
@@ -69,16 +73,23 @@ def puzzles_view(request):
         "all_tags": all_tags,
     })
 
+
 def leaderboard(request):
     """Displays the leaderboard."""
     leaderboard_data = compute_leaderboard_scores()
+
+    for entry in leaderboard_data:
+        entry["user"] = User.objects.get(username=entry["user"])
+
     return render(request, "sudoku/leaderboard.html", {
         "leaderboard": leaderboard_data
     })
 
+
 def creator(request):
     """Sudoku puzzle creator view."""
     return render(request, "sudoku/creator/creator.html")
+
 
 @login_required
 @require_POST
@@ -93,11 +104,9 @@ def save_sudoku(request):
         if not board_object:
             return JsonResponse({"status": "error", "message": "No board data provided."}, status=400)
 
-        # Compress board data
         board_json = json.dumps(board_object)
         board_zip = zlib.compress(board_json.encode('utf-8'))
 
-        # Create Sudoku
         sudoku = Sudoku.objects.create(
             title=title,
             puzzle=board_zip,
@@ -105,7 +114,6 @@ def save_sudoku(request):
             is_public=True,
         )
 
-        # Attach tags (create if missing)
         for tag_name in tag_names:
             tag_obj, _ = Tag.objects.get_or_create(name=tag_name)
             sudoku.tags.add(tag_obj)
@@ -115,15 +123,12 @@ def save_sudoku(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
+
 def play_sudoku(request, sudoku_id):
     """Play a specific Sudoku puzzle."""
-    try:
-        sudoku = Sudoku.objects.get(pk=sudoku_id)
-    except Sudoku.DoesNotExist:
-        raise Http404("Sudoku not found.")
+    sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
 
     try:
-        # Decompress the puzzle JSON
         puzzle_data = json.loads(zlib.decompress(sudoku.puzzle).decode('utf-8'))
     except Exception:
         raise Http404("Invalid puzzle data.")
@@ -136,11 +141,12 @@ def play_sudoku(request, sudoku_id):
         }),
     })
 
+
 # === Profile Views === #
 
 @login_required
 def profile(request):
-    """Authenticated user's profile page."""
+    """Authenticated user's profile page including created, done, and ongoing puzzles."""
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
@@ -150,55 +156,56 @@ def profile(request):
     else:
         form = PasswordChangeForm(user=request.user)
 
-    solved_stats = UserSudokuStats.objects.filter(user=request.user, best_time__gt=0).select_related("sudoku")
-    attempted_stats = UserSudokuStats.objects.filter(user=request.user, attempts__gt=0).select_related("sudoku")
-    created_puzzles = Sudoku.objects.filter(created_by=request.user)
+    solved_stats = UserSudokuDone.objects.filter(user=request.user, time__gt=0).select_related("sudoku")
+    attempted_stats = UserSudokuDone.objects.filter(user=request.user, sudoku__isnull=False).select_related("sudoku")
+    created_puzzles = Sudoku.objects.filter(created_by=request.user).select_related("created_by")
+    ongoing_stats = UserSudokuOngoing.objects.filter(user=request.user).select_related("sudoku")
+
     all_tags = Tag.objects.order_by("name")
 
     return render(request, 'sudoku/profile/profile.html', {
         'form': form,
-        'solved_stats': solved_stats.order_by("-date_solved"),
-        'attempted_stats': attempted_stats.order_by("-last_attempt"),
+        'solved_stats': solved_stats.order_by("-date"),
+        'attempted_stats': attempted_stats.order_by("-date"),
         'created_puzzles': created_puzzles.order_by("-id"),
+        'ongoing_stats': ongoing_stats.order_by("-date"),
         'all_tags': all_tags,
     })
+
 
 def user_profile(request, username):
-    """Public profile view for another user."""
-    if request.user.username == username:
-        return redirect('profile')
+    """Other user's public profile with solved and attempted puzzles."""
+    target_user = get_object_or_404(User, username=username)
 
-    User = get_user_model()
-    try:
-        target_user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        raise Http404("User does not exist.")
+    # All attempted
+    attempted_stats = (
+        UserSudokuDone.objects
+        .filter(user=target_user)
+        .select_related("sudoku")
+        .order_by("-date")
+    )
 
-    solved_stats = UserSudokuStats.objects.filter(user=target_user, best_time__gt=0).select_related("sudoku")
-    attempted_stats = UserSudokuStats.objects.filter(user=target_user, attempts__gt=0).select_related("sudoku")
-    created_puzzles = Sudoku.objects.filter(created_by=target_user)
-    all_tags = Tag.objects.order_by("name")
+    # Subset that is done (time > 0)
+    solved_stats = attempted_stats.filter(time__gt=0)
 
-    leaderboard = compute_leaderboard_scores()
-    rank, score = None, None
-    for i, entry in enumerate(leaderboard):
-        if entry['user'] == target_user.username:
-            rank = i + 1
-            score = entry['score']
-            break
+    created_puzzles = (
+        Sudoku.objects
+        .filter(created_by=target_user)
+        .order_by("-id")
+    )
 
-    return render(request, 'sudoku/profile/user_profile.html', {
-        'target_user': target_user,
-        'solved_stats': solved_stats.order_by("-date_solved"),
-        'attempted_stats': attempted_stats.order_by("-last_attempt"),
-        'created_puzzles': created_puzzles.order_by("-id"),
-        'all_tags': all_tags,
-        'rank': rank,
-        'score': score,
-        'done_count': solved_stats.count(),
-        'attempt_count': attempted_stats.count(),
-        'last_login': target_user.last_login,
-    })
+    context = {
+        "target_user": target_user,
+        "last_login": target_user.last_login,
+        "done_count": solved_stats.count(),
+        "attempt_count": attempted_stats.count(),
+        "solved_stats": solved_stats,
+        "attempted_stats": attempted_stats,
+        "created_puzzles": created_puzzles,
+    }
+
+    return render(request, "sudoku/profile/profile_detail.html", context)
+
 
 # === Auth Views === #
 
@@ -226,6 +233,7 @@ def register(request):
 
     return render(request, 'sudoku/login/register.html', {'form': form})
 
+
 def activate(request, uid, token):
     """Verifies activation email and activates the user."""
     try:
@@ -240,6 +248,7 @@ def activate(request, uid, token):
         return render(request, 'sudoku/login/activation_success.html')
     else:
         return render(request, 'sudoku/login/activation_invalid.html')
+
 
 def game_selection_view(request):
     return render(request, 'sudoku/game_selection.html')

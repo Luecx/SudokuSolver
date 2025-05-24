@@ -26,7 +26,9 @@
         data-rating="{{ puzzle.average_rating|default:0 }}"
         data-avgtime="{{ puzzle.average_time|floatformat:0 }}"
         data-tags="{{ puzzle.tags.all|join:','|lower }}">
-      <td>{{ puzzle.title }}</td>
+      <td>
+        <a href="{% url 'play_sudoku' puzzle.id %}">{{ puzzle.title }}</a>
+      </td>
       <td>{{ puzzle.solves }} / {{ puzzle.attempts }}</td>
       <td>{% render_starbar puzzle.average_rating %}</td>
       <td>{{ puzzle.average_time|humantime }}</td>

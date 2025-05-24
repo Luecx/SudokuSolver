@@ -29,15 +29,27 @@
         data-attempts="{{ stat.sudoku.attempts }}"
         data-rating="{{ stat.sudoku.average_rating|default:0 }}"
         data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
-        data-besttime="{{ stat.best_time }}"
+        data-besttime="{{ stat.time }}"
         data-datesolved="{{ stat.date_solved|date:"U" }}"
     data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
-    <td>{{ stat.sudoku.title }}</td>
-    <td>{{ stat.sudoku.created_by.username }}</td>
+    <td>
+      <a href="{% url 'play_sudoku' stat.sudoku.id %}">{{ stat.sudoku.title }}</a>
+    </td>
+    <td>
+      {% if stat.sudoku.created_by %}
+      {% if stat.sudoku.created_by.username == request.user.username %}
+      <a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
+      {% else %}
+      <a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
+      {% endif %}
+      {% else %}
+      —
+      {% endif %}
+    </td>
     <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
     <td>{% render_starbar stat.sudoku.average_rating %}</td>
     <td>{{ stat.sudoku.average_time|humantime }}</td>
-    <td>{{ stat.best_time|humantime }}</td>
+    <td>{{ stat.time|humantime }}</td>
     <td>{{ stat.date_solved|date:"Y-m-d H:i" }}</td>
     <td>
       {% for tag in stat.sudoku.tags.all %}

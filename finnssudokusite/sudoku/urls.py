@@ -9,13 +9,12 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('puzzles/', views.puzzles_view, name='puzzles'),
     path('profile/', views.profile, name='profile'),
-    path('user/<str:username>/', views.user_profile, name='user_profile'),
+    path('user/<str:username>/', views.user_profile, name='user_profile'),  # ✅ updated
     path('register/', views.register, name='register'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('creator/', views.creator, name='creator'),
     path('save-sudoku/', views.save_sudoku, name='save_sudoku'),
     path('play-sudoku/<int:sudoku_id>/', views.play_sudoku, name='play_sudoku'),
-
     path('game/', views.game, name='game'),
     path('game_selection/', views.game_selection_view, name='game_selection'),
 
@@ -26,7 +25,6 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(
         template_name='sudoku/login/login.html'
     ), name='login'),
-
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # Password Reset Workflow

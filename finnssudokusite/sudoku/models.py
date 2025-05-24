@@ -60,40 +60,26 @@ class Sudoku(models.Model):
         return self.title
 
 
-class UserSudokuStats(models.Model):
-    """
-    Tracks user-specific stats for each Sudoku puzzle.
-
-    - Attempts, best time, and last attempt.
-    - Rating and optional feedback.
-    - One UserSudokuStats per (user, sudoku) pair.
-    """
-
-    # Relationships
-    user   = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sudoku_stats")
-    sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE, related_name="user_stats")
-
-    # Performance
-    attempts  = models.PositiveIntegerField(default=0)
-    best_time = models.PositiveIntegerField(default=0)  # Best solving time (seconds); 0 means not yet solved
-    last_time = models.PositiveIntegerField(default=0)  # Time taken in the most recent attempt
-
-    # Timestamps
-    first_attempt = models.DateTimeField(null=True, blank=True)
-    last_attempt  = models.DateTimeField(null=True, blank=True)
-    date_solved   = models.DateTimeField(null=True, blank=True)
-
-    # Feedback
-    rating  = models.PositiveSmallIntegerField(null=True, blank=True)  # Rating (1–5 stars)
-    comment = models.TextField(blank=True)
+class AbstractUserSudoku(models.Model):
+    user   = models.ForeignKey(User, on_delete=models.CASCADE)
+    sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE)
+    time   = models.PositiveIntegerField(default=0)
+    date   = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('user', 'sudoku')  # One stats record per user-sudoku pair
+        abstract = True
 
-    @property
-    def solved(self):
-        """Returns True if the user has successfully solved the Sudoku."""
-        return self.best_time > 0
+class UserSudokuDone(AbstractUserSudoku):
+    rating = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'sudoku')
+
+class UserSudokuOngoing(AbstractUserSudoku):
+    state = models.BinaryField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'sudoku')
 
 
 """

@@ -6,14 +6,15 @@
 {% block content %}
 <div class="container mt-5">
 	<h2 class="text-center mb-4">{% trans "Leaderboard" %}</h2>
-	
+
 	<div class="text-center mb-4">
 		<p>
-			{% blocktrans %}For a detailed explanation of how the rating is computed, {% endblocktrans %}
-			<a href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">{% trans "click here" %}</a>.
+			{% blocktrans with link='<a href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">'|safe %}
+			For a detailed explanation of how the rating is computed, {{ link }}click here</a>.
+			{% endblocktrans %}
 		</p>
 	</div>
-	
+
 	<!-- Leaderboard Table -->
 	<div class="table-responsive">
 		<table class="table table-striped table-hover align-middle">
@@ -26,20 +27,30 @@
 			</tr>
 			</thead>
 			<tbody>
+			{% if leaderboard %}
 			{% for entry in leaderboard %}
 			<tr>
 				<td>{{ forloop.counter }}</td>
-				<td>{{ entry.user }}</td>
+				<td>
+					<a href="{% url 'user_profile' entry.user.username %}">
+						{{ entry.user.username }}
+					</a>
+				</td>
 				<td>{{ entry.score }}</td>
 				<td>{{ entry.solved }}</td>
 			</tr>
 			{% endfor %}
+
+			{% else %}
+			<tr>
+				<td colspan="4" class="text-center text-muted">{% trans "No results yet." %}</td>
+			</tr>
+			{% endif %}
 			</tbody>
 		</table>
 	</div>
-	
-	<!-- Modal -->
-	<!-- Modal explaining the new Sudoku Power Index (SPI) formula -->
+
+	<!-- Modal explaining SPI formula -->
 	<div class="modal fade" id="formulaModal" tabindex="-1" aria-labelledby="formulaModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-scrollable">
 			<div class="modal-content rounded-5">
@@ -56,14 +67,14 @@
 						<em>recency</em>, and gives a gentle boost for tackling lots of puzzles.
 						{% endblocktrans %}
 					</p>
-					
+
 					<ol class="list-group list-group-numbered">
-						<!--  1  -->
+
 						<li class="list-group-item d-flex justify-content-between align-items-start">
 							<div class="ms-2 me-auto">
 								<div class="fw-bold">{% trans "Per‑puzzle points" %}</div>
 								<p>
-									{% blocktrans %}Each time you solve a puzzle you earn.{% endblocktrans %}
+									{% trans "Each time you solve a puzzle you earn:" %}
 									<span class="ps-3 text-primary">\({p = w_{rec}\;w_{diff}\;(1+\Delta_{speed})}\)</span>
 								</p>
 								<p>
@@ -85,29 +96,23 @@
 								</p>
 							</div>
 						</li>
-						
-						<!--  2  -->
+
 						<li class="list-group-item d-flex justify-content-between align-items-start">
 							<div class="ms-2 me-auto">
-								<div class="fw-bold">Cumulative strength</div>
-								<p>{% trans "Your lifetime strength grows with the <em>recency‑weighted</em> sums" %}
-								</p>
+								<div class="fw-bold">{% trans "Cumulative strength" %}</div>
+								<p>{% trans "Your lifetime strength grows with the recency‑weighted sums" %}</p>
 								<p><span class="px-3 text-primary">\(P=\sum p\)</span> {% trans "and" %} <span class="px-3 text-primary">\(N=\sum w_{rec}\)</span> (<span>{% trans "volume" %}</span>)</p>
 							</div>
 						</li>
-						
-						<!--  3  -->
+
 						<li class="list-group-item d-flex justify-content-between align-items-start">
 							<div class="ms-2 me-auto">
 								<div class="fw-bold">{% trans "Raw rating" %}</div>
 								<p>{% trans "Frequent players get a modest boost." %}</p>
-								<p class="ps-3 text-primary">
-									\(R = P\,\bigl(1 + 0.04\,\sqrt{N}\bigr)\)
-								</p>
+								<p class="ps-3 text-primary">\(R = P\,\bigl(1 + 0.04\,\sqrt{N}\bigr)\)</p>
 							</div>
 						</li>
-						
-						<!--  4  -->
+
 						<li class="list-group-item d-flex justify-content-between align-items-start">
 							<div class="ms-2 me-auto">
 								<div class="fw-bold">{% trans "Leaderboard score" %}</div>
@@ -117,18 +122,18 @@
 							</div>
 						</li>
 					</ol>
-					
+
 					<p><strong>{% trans "Why exponential decay?" %}</strong></p>
 					<p>{% blocktrans %}
 						It keeps the board dynamic: a stellar run
 						<em>today</em> can lift you quickly, but you need to keep performing to stay on top.
-						After 60&nbsp;days, a solve counts for only half its original value.{% endblocktrans %}
+						After 60&nbsp;days, a solve counts for only half its original value.
+						{% endblocktrans %}
 					</p>
 				</div>
 			</div>
 		</div>
 	</div>
-
 </div>
 {% endblock %}
 
@@ -152,5 +157,4 @@
 		});
 	});
 </script>
-
 {% endblock %}

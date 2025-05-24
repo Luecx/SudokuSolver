@@ -1,25 +1,22 @@
 {% extends "sudoku/base.html" %}
 {% load form_filters %}
+{% load static %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <h4 class="mb-3">{{ target_user.username }}'s Profile</h4>
 
-                    <div class="row mb-3">
-                        <div class="col-md-4"><strong>Last Login:</strong> {{ last_login|date:"Y-m-d H:i" }}</div>
-                        <div class="col-md-4"><strong>Puzzles Solved:</strong> {{ done_count }}</div>
-                        <div class="col-md-4"><strong>Puzzles Attempted:</strong> {{ attempt_count }}</div>
+                    <h4 class="mb-3 text-center">{{ target_user.username }}</h4>
+
+                    <div class="row mb-4 text-center">
+                        <div class="col-md-6"><strong>Last Login:</strong><br>{{ last_login|date:"Y-m-d H:i" }}</div>
+                        <div class="col-md-6"><strong>Puzzles Solved:</strong><br>{{ done_count }} / {{ attempt_count }}</div>
                     </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-4"><strong>Leaderboard Score:</strong> {{ score|default:"—" }}</div>
-                        <div class="col-md-4"><strong>Leaderboard Rank:</strong> {{ rank|default:"—" }}</div>
-                    </div>
-
-
+                    <!-- Nav Tabs -->
                     <ul class="nav nav-tabs mb-3" id="profileTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="done-tab" data-bs-toggle="tab" data-bs-target="#done" type="button" role="tab">Puzzles Done</button>
@@ -29,6 +26,7 @@
                         </li>
                     </ul>
 
+                    <!-- Tab Content -->
                     <div class="tab-content pt-2" id="profileTabsContent">
                         <div class="tab-pane fade show active" id="done" role="tabpanel" aria-labelledby="done-tab">
                             {% include "sudoku/profile/profile_puzzles_done.html" with solved_stats=solved_stats %}
@@ -37,6 +35,7 @@
                             {% include "sudoku/profile/profile_puzzles_created.html" with created_puzzles=created_puzzles %}
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
