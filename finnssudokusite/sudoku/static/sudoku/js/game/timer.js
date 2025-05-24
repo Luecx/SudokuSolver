@@ -36,6 +36,19 @@ export class Timer {
         }
     }
 
+    getDuration() {
+        return this.seconds;
+    }
+
+    // set timer to specific duration (in seconds)
+    setTimer(seconds) {
+        this.seconds = parseInt(seconds, 10) || 0;
+        localStorage.setItem('sudoku_timer_seconds', this.seconds.toString());
+        if (this.timerElement) {
+            this.timerElement.textContent = this.formatTime(this.seconds);
+        }
+    }
+
     init() {
         if (this.timerElement) {
             this.timerElement.textContent = this.formatTime(this.seconds);

@@ -51,4 +51,7 @@ urlpatterns = [
     path('reset_done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='sudoku/password/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+    path('save-puzzle-state/', views.save_puzzle_state, name='save_puzzle_state'),
+    path('load-puzzle-state/<int:sudoku_id>/', views.load_puzzle_state, name='load_puzzle_state'),
 ]

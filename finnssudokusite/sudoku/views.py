@@ -14,7 +14,8 @@ from django.db.models import Count
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
-from datetime import datetime, timezone
+from django.utils import timezone
+from datetime import datetime
 from .models import Sudoku, UserSudokuDone, UserSudokuOngoing, Tag
 from .forms import UserRegisterForm
 from .util.leaderboard import compute_leaderboard_scores
@@ -170,7 +171,6 @@ def profile(request):
         'created_puzzles': created_puzzles.order_by("-id"),
         'ongoing_stats': ongoing_stats.order_by("-date"),
         'all_tags': all_tags,
-        'is_own_profile': True,
     })
 
 
@@ -203,10 +203,133 @@ def user_profile(request, username):
         "solved_stats": solved_stats,
         "attempted_stats": attempted_stats,
         "created_puzzles": created_puzzles,
-        'is_own_profile': False,
     }
 
     return render(request, "sudoku/profile/profile_detail.html", context)
+
+
+# === Finished and Ongoing Puzzles === #
+
+@login_required
+@require_POST
+def save_puzzle_state(request):
+    """Saves the current state of a puzzle or marks it as completed."""
+    try:
+        data = json.loads(request.body)
+        sudoku_id = data.get("sudoku_id")
+        board_state = data.get("board_state")
+        current_time = data.get("time", 0)
+        status = data.get("status", "ongoing")  # "ongoing" or "completed"
+        rating = data.get("rating", None)
+        
+        if not sudoku_id:
+            return JsonResponse({"status": "error", "message": "Missing sudoku_id"}, status=400)
+        
+        sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
+        
+        if status == "completed":
+            # Mark puzzle as completed
+            done_puzzle, created = UserSudokuDone.objects.get_or_create(
+                user=request.user,
+                sudoku=sudoku,
+                defaults={
+                    'time': current_time,
+                    'rating': rating,
+                    'date': timezone.now(),
+                }
+            )
+            
+            if not created:
+                # Update existing record (in case user completed it multiple times)
+                done_puzzle.time = current_time
+                done_puzzle.rating = rating
+                done_puzzle.date = timezone.now()
+                done_puzzle.save()
+            
+            # Remove the ongoing puzzle record since it's now completed
+            try:
+                ongoing = UserSudokuOngoing.objects.get(user=request.user, sudoku=sudoku)
+                ongoing.delete()
+            except UserSudokuOngoing.DoesNotExist:
+                pass  # No ongoing record to delete
+            
+            return JsonResponse({"status": "success", "message": "completed"})
+        
+        else:
+            # Save ongoing state
+            if not board_state:
+                return JsonResponse({"status": "error", "message": "Missing board_state for ongoing puzzle"}, status=400)
+            
+            # Compress the board state for storage
+            state_json = json.dumps(board_state)
+            state_compressed = zlib.compress(state_json.encode('utf-8'))
+            
+            # Update or create the ongoing puzzle record
+            ongoing, created = UserSudokuOngoing.objects.get_or_create(
+                user=request.user,
+                sudoku=sudoku,
+                defaults={
+                    'state': state_compressed,
+                    'time': current_time,
+                    'date': timezone.now(),
+                }
+            )
+            
+            if not created:
+                # Update existing record
+                ongoing.state = state_compressed
+                ongoing.time = current_time
+                ongoing.date = timezone.now()
+                ongoing.save()
+            
+            return JsonResponse({"status": "success", "message": "State saved"})
+        
+    except Exception as e:
+        print(f"Error saving puzzle state: {e}")
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+@login_required
+def load_puzzle_state(request, sudoku_id):
+    """Loads the saved state of a puzzle."""
+    try:
+        sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
+        
+        # First check if puzzle is already completed
+        try:
+            done_puzzle = UserSudokuDone.objects.get(user=request.user, sudoku=sudoku)
+            return JsonResponse({
+                "status": "completed",
+                "message": "Puzzle already completed",
+                "completion_time": done_puzzle.time,
+                "rating": done_puzzle.rating,
+                "completed_date": done_puzzle.date.isoformat() if done_puzzle.date else None
+            })
+        except UserSudokuDone.DoesNotExist:
+            pass
+        
+        # Check for ongoing state
+        try:
+            ongoing = UserSudokuOngoing.objects.get(user=request.user, sudoku=sudoku)
+            
+            if ongoing.state:
+                # Decompress the saved state
+                state_json = zlib.decompress(ongoing.state).decode('utf-8')
+                board_state = json.loads(state_json)
+                
+                return JsonResponse({
+                    "status": "success",
+                    "board_state": board_state,
+                    "time": ongoing.time,
+                    "last_saved": ongoing.date.isoformat() if ongoing.date else None
+                })
+            else:
+                return JsonResponse({"status": "no_state", "message": "No saved state found"})
+                
+        except UserSudokuOngoing.DoesNotExist:
+            return JsonResponse({"status": "no_state", "message": "No saved state found"})
+            
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
 
 # === Auth Views === #
