@@ -14,10 +14,10 @@
       <th data-key="name">Name <span class="sort-indicator"></span></th>
       <th data-key="creator">Creator <span class="sort-indicator"></span></th>
       <th data-key="solves">Solved / Attempts <span class="sort-indicator"></span></th>
-      <th data-key="rating">Rating <span class="sort-indicator"></span></th>
+      <th data-key="rating">{% if is_own_profile %}Your Rating{% else %}Their Rating{% endif %} <span class="sort-indicator"></span></th>
       <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
-      <th data-key="besttime">Your Time <span class="sort-indicator"></span></th>
-      <th data-key="datesolved">Last Solved <span class="sort-indicator"></span></th>
+      <th data-key="besttime">Completion Time <span class="sort-indicator"></span></th>
+      <th data-key="datesolved">Date Completed <span class="sort-indicator"></span></th>
       <th>Tags</th>
     </tr>
     </thead>
@@ -27,14 +27,18 @@
         data-creator="{{ stat.sudoku.created_by.username }}"
         data-solves="{{ stat.sudoku.solves }}"
         data-attempts="{{ stat.sudoku.attempts }}"
-        data-rating="{{ stat.sudoku.average_rating|default:0 }}"
+        data-rating="{{ stat.rating|default:0 }}"
         data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
         data-besttime="{{ stat.time }}"
-        data-datesolved="{{ stat.date_solved|date:"U" }}"
+        data-datesolved="{{ stat.date|date:"U" }}"
     data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
+
+    <!-- Title -->
     <td>
       <a href="{% url 'play_sudoku' stat.sudoku.id %}">{{ stat.sudoku.title }}</a>
     </td>
+
+    <!-- Creator -->
     <td>
       {% if stat.sudoku.created_by %}
       {% if stat.sudoku.created_by.username == request.user.username %}
@@ -46,11 +50,29 @@
       —
       {% endif %}
     </td>
+
+    <!-- Solve ratio -->
     <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
-    <td>{% render_starbar stat.sudoku.average_rating %}</td>
+
+    <!-- Rating -->
+    <td>{% render_starbar stat.rating %}</td>
+
+    <!-- Average Time -->
     <td>{{ stat.sudoku.average_time|humantime }}</td>
-    <td>{{ stat.time|humantime }}</td>
-    <td>{{ stat.date_solved|date:"Y-m-d H:i" }}</td>
+
+    <!-- Completion Time with badge -->
+    <td>
+      {% if stat.time < stat.sudoku.average_time %}
+      <span class="badge bg-success">{{ stat.time|humantime }}</span>
+      {% else %}
+      <span class="badge bg-warning text-dark">{{ stat.time|humantime }}</span>
+      {% endif %}
+    </td>
+
+    <!-- Date Solved -->
+    <td>{{ stat.date|date:"Y-m-d H:i" }}</td>
+
+    <!-- Tags -->
     <td>
       {% for tag in stat.sudoku.tags.all %}
       <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
@@ -82,5 +104,11 @@
 </script>
 
 {% else %}
-<p>You haven’t attempted any puzzles yet.</p>
+<p>
+  {% if is_own_profile %}
+  You haven’t finished any puzzles yet.
+  {% else %}
+  {{ target_user.username }} hasn’t finished any puzzles yet.
+  {% endif %}
+</p>
 {% endif %}

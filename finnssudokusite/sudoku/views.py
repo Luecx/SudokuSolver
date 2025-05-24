@@ -170,6 +170,7 @@ def profile(request):
         'created_puzzles': created_puzzles.order_by("-id"),
         'ongoing_stats': ongoing_stats.order_by("-date"),
         'all_tags': all_tags,
+        'is_own_profile': True,
     })
 
 
@@ -202,6 +203,7 @@ def user_profile(request, username):
         "solved_stats": solved_stats,
         "attempted_stats": attempted_stats,
         "created_puzzles": created_puzzles,
+        'is_own_profile': False,
     }
 
     return render(request, "sudoku/profile/profile_detail.html", context)

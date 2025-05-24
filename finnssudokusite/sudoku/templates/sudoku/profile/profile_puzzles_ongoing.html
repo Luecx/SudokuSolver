@@ -75,5 +75,11 @@
   });
 </script>
 {% else %}
-<p>You don’t have any ongoing puzzles.</p>
+<p>
+  {% if is_own_profile %}
+  You don’t have any ongoing puzzles.
+  {% else %}
+  {{ target_user.username }} doesn’t have any ongoing puzzles.
+  {% endif %}
+</p>
 {% endif %}
