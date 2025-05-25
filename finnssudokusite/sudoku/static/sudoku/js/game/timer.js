@@ -3,7 +3,7 @@
 export class Timer {
     constructor(timerElementId) {
         this.timerElement = document.getElementById(timerElementId);
-        this.seconds = parseInt(localStorage.getItem('sudoku_timer_seconds') || '0', 10);
+        this.seconds = 0;
         this.timerInterval = null;
     }
 
@@ -19,7 +19,6 @@ export class Timer {
         this.timerInterval = setInterval(() => {
             this.seconds++;
             this.timerElement.textContent = this.formatTime(this.seconds);
-            localStorage.setItem('sudoku_timer_seconds', this.seconds.toString());
         }, 1000);
     }
 
@@ -30,7 +29,6 @@ export class Timer {
 
     reset() {
         this.seconds = 0;
-        localStorage.removeItem('sudoku_timer_seconds');
         if (this.timerElement) {
             this.timerElement.textContent = this.formatTime(this.seconds);
         }
@@ -43,7 +41,6 @@ export class Timer {
     // set timer to specific duration (in seconds)
     setTimer(seconds) {
         this.seconds = parseInt(seconds, 10) || 0;
-        localStorage.setItem('sudoku_timer_seconds', this.seconds.toString());
         if (this.timerElement) {
             this.timerElement.textContent = this.formatTime(this.seconds);
         }

@@ -47,7 +47,8 @@ export class Game {
                 this.setupAutoSave();
         }
 
-        this.timer.init();
+        if (!this.isCompleted)
+            this.timer.init();
         new InputGrid(this.keyboard);
 
         this.setupThemeMenu();

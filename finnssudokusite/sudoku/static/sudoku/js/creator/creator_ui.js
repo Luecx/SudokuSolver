@@ -418,7 +418,7 @@ class Creator {
         const uniqueSolution = this.solutions_temp_list.length === 1;
 
         // Update button state
-        btn.disabled = /*!(nameValid && uniqueSolution)*/ false;
+        btn.disabled = !(nameValid && uniqueSolution);
 
         // Update status icons
         const updateStatus = (id, isValid) => {
