@@ -254,9 +254,7 @@ export class CreatorRuleManager {
 
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
-        removeBtn.className = "border-0 bg-transparent ms-2 d-flex align-items-center justify-content-center";
-        removeBtn.style.width = "2rem";
-        removeBtn.style.height = "2rem";
+        removeBtn.className = "btn btn-danger btn-spezial ms-3 d-flex align-items-center justify-content-center";
         removeBtn.innerHTML = `<i class="fa fa-times"></i>`;
         removeBtn.addEventListener("click", () => {
             handler.disable();

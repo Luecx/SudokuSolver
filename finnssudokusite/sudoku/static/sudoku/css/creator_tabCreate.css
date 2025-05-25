@@ -1,9 +1,17 @@
 /* --------- Accordion (Rahmen, Abstände, klassischer Look) --------- */
+
+.btn-spezial {
+    width: 1.6rem !important;
+    height: 1.6rem !important;
+    font-size: 1rem;
+    aspect-ratio: 1 / 1;
+}
+
 .accordion {
     --accordion-space: 10px;
 }
 .accordion .accordion-item {
-    border: 1px solid #b6c7e3;
+    border: 1px solid cornflowerblue;
     border-radius: 0.75rem;
     background: #fff;
     margin-bottom: var(--accordion-space);
@@ -18,7 +26,7 @@
 .accordion-header {
     padding: 0;
     margin: 0;
-    background: transparent;
+    background-color: #b6c7e3;
 }
 
 .accordion-button {
@@ -64,10 +72,11 @@
     background-size: 1rem 1rem;
     background-repeat: no-repeat;
     transition: transform 0.2s;
+    transform: rotate(90deg);
 }
 
 .accordion-button:not(.collapsed)::after {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
 }
 
 /* --------- Mülltonnen-Button --------- */
