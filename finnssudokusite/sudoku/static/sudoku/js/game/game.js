@@ -49,9 +49,144 @@ export class Game {
             this.timer.init();
         new InputGrid(this.keyboard);
 
+        this.setupPageUnloadHandlers();
         this.setupThemeMenu();
         this.renderRuleDescriptions();
     }
+
+    // page unload related
+
+    setupPageUnloadHandlers() {
+        // Save when user navigates away or closes tab
+        window.addEventListener('beforeunload', () => {
+            this.saveGameStateSync();
+        });
+
+        // Save when tab becomes hidden (user switches tabs)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden')
+                this.saveGameStateSync();
+        });
+
+        // Save when page loses focus (user clicks on another window)
+        window.addEventListener('blur', () => {
+            this.saveGameStateSync();
+        });
+    }
+
+    saveGameStateSync() {
+        if (!this.sudokuId || this.isCompleted) return;
+
+        const currentTime = this.timer.getDuration() || 0;
+        const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
+
+        // always save to cache immediately (synchronous)
+        this.saveToCache(currentTime, status);
+
+        // try to save to server using sendBeacon
+        try {
+            const payload = {
+                sudoku_id: this.sudokuId,
+                time: parseInt(currentTime),
+                status: status,
+                board_state: this.board.contentLayer.getState(),
+            };
+
+            if (navigator.sendBeacon) {
+                // Use sendBeacon - designed for page unload scenarios
+                const formData = new FormData();
+                formData.append('data', JSON.stringify(payload));
+                formData.append('csrfmiddlewaretoken', getCSRFToken());
+                
+                navigator.sendBeacon('/save-puzzle-state/', formData);
+            } else {
+                // Fallback: synchronous XMLHttpRequest (less reliable but better than nothing)
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/save-puzzle-state/', false); // false = synchronous
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
+                xhr.send(JSON.stringify(payload));
+            }
+        } catch (error) {
+            console.error("Error saving on page unload:", error);
+        }
+    }
+
+    // cache related
+
+    loadFromCache() {
+        try {
+            const cacheKey = `sudoku_${this.sudokuId}`;
+            const cachedData = localStorage.getItem(cacheKey);
+            
+            if (cachedData) {
+                const data = JSON.parse(cachedData);
+                
+                if (data.board_state) 
+                    this.board.contentLayer.loadState(data.board_state);
+
+                this.timer.setTimer(data.time || 0);
+                
+                if (data.status === "completed") {
+                    this.isCompleted = true;
+                    this.showCompletedState(data);
+                } else {
+                    console.log("Loaded cached game state");
+                }
+            }
+        } catch (error) {
+            console.log("No cached state found or error loading:", error);
+        }
+    }
+
+    saveToCache(currentTime, status) {
+        try {
+            const cacheData = {
+                sudoku_id: this.sudokuId,
+                time: parseInt(currentTime),
+                status: status,
+                board_state: this.board.contentLayer.getState(),
+                timestamp: Date.now()
+            };
+
+            const cacheKey = `sudoku_${this.sudokuId}`;
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
+            if (status === "completed") {
+                this.isCompleted = true;
+                this.showCompletedState();
+            } else {
+                console.log("Game state saved to cache");
+            }
+
+            // clean up old cache entries
+            this.cleanOldCacheEntries();
+        } catch (error) {
+            console.error("Error saving game state to cache:", error);
+        }
+    }
+
+    cleanOldCacheEntries() {
+        const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+        const now = Date.now();
+
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('sudoku_')) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data.timestamp && (now - data.timestamp) > maxAge) {
+                        localStorage.removeItem(key);
+                    }
+                } catch (error) {
+                    // remove corrupted entries
+                    localStorage.removeItem(key);
+                }
+            }
+        }
+    }
+
+    // server related
 
     async loadGameState() {
         if (!this.sudokuId) return;
@@ -84,52 +219,6 @@ export class Game {
             console.log("Error loading from server, trying cache:", error);
             this.loadFromCache();
         }
-    }
-
-    loadFromCache() {
-        try {
-            const cacheKey = `sudoku_${this.sudokuId}`;
-            const cachedData = localStorage.getItem(cacheKey);
-            
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                
-                if (data.board_state) 
-                    this.board.contentLayer.loadState(data.board_state);
-
-                this.timer.setTimer(data.time || 0);
-                
-                if (data.status === "completed") {
-                    this.isCompleted = true;
-                    this.showCompletedState(data);
-                } else {
-                    console.log("Loaded cached game state");
-                }
-            }
-        } catch (error) {
-            console.log("No cached state found or error loading:", error);
-        }
-    }
-
-    setupAutoSave() {
-        if (!this.sudokuId || this.isCompleted) return;
-
-        this.board.onEvent("ev_number_changed", () => {
-            this.saveGameState();
-        });
-
-        this.board.onEvent("ev_candidates_changed", () => {
-            this.saveGameState();
-        });
-
-        this.board.onEvent("ev_color_changed", () => {
-            this.saveGameState();
-        });
-
-        setInterval(() => {
-            if (!this.isSaveTriggered) return;
-            this.saveGameState();
-        }, 2 * 60000); // every 2 minutes
     }
 
     async saveGameState() {
@@ -181,56 +270,19 @@ export class Game {
         }
     }
 
-    saveToCache(currentTime, status) {
-        try {
-            const cacheData = {
-                sudoku_id: this.sudokuId,
-                time: parseInt(currentTime),
-                status: status,
-                board_state: this.board.contentLayer.getState(),
-                timestamp: Date.now()
-            };
+    // general
 
-            const cacheKey = `sudoku_${this.sudokuId}`;
-            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+    setupAutoSave() {
+        if (!this.sudokuId || this.isCompleted) return;
 
-            if (status === "completed") {
-                this.isCompleted = true;
-                this.showCompletedState();
-            } else {
-                console.log("Game state saved to cache");
-            }
-
-            // clean up old cache entries
-            this.cleanOldCacheEntries();
-        } catch (error) {
-            console.error("Error saving game state to cache:", error);
-        }
-    }
-
-    cleanOldCacheEntries() {
-        const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
-        const now = Date.now();
-
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('sudoku_')) {
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data.timestamp && (now - data.timestamp) > maxAge) {
-                        localStorage.removeItem(key);
-                    }
-                } catch (error) {
-                    // remove corrupted entries
-                    localStorage.removeItem(key);
-                }
-            }
-        }
+        setInterval(() => {
+            if (!this.isSaveTriggered) return;
+            this.saveGameState();
+        }, 2 * 60 * 1000); // every 2 minutes
     }
 
     showCompletedState(data = null) {
         console.log("Puzzle is completed - disabling interaction");
-        
     }
 
     setupThemeMenu() {

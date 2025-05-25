@@ -220,8 +220,18 @@ def save_puzzle_state(request):
                 "status": "no_auth",
                 "message": "User not authenticated - use local storage"
             })
+        
+        data = {}
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+        else:
+            # Handle FormData from sendBeacon
+            data_str = request.POST.get('data')
+            if data_str:
+                data = json.loads(data_str)
+            else:
+                return JsonResponse({"status": "error", "message": "No data provided"}, status=400)
 
-        data = json.loads(request.body)
         sudoku_id = data.get("sudoku_id")
         board_state = data.get("board_state")
         current_time = data.get("time", 0)
