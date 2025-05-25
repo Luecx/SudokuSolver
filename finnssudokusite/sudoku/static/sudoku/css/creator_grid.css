@@ -34,7 +34,7 @@
 		align-items: flex-start;
 		gap: 1rem;
 	}
-	.left-pane { /* Landscape */
+	.board-pane { /* Landscape */
 		width: min(100%, calc(100dvh - 60px - 2rem));
 		aspect-ratio: 1 / 1;
 		max-width: 100%;
@@ -43,7 +43,7 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.right-pane { /* Landscape */
+	.keypad-pane { /* Landscape */
 		width: 450px;
 		height: min(100%, calc(100dvh - 60px - 2rem));
 		overflow: hidden;
@@ -69,7 +69,7 @@
 		/* grid-template-rows: auto auto; // optional */
 	}
 	
-	.left-pane {
+	.board-pane {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -79,7 +79,7 @@
 		max-height: 100%;
 	}
 	
-	.right-pane {
+	.keypad-pane {
 		width: 100%;
 		display: flex;
 		flex-direction: column;

@@ -18,23 +18,9 @@ export class Game {
                 InputMode.Color
             ]
         );
-
         setTimeout(() => {
             this.init();
         }, 250); // wait till everything initializes before rendering the board
-    }
-
-    init() {
-        this.board.initBoard();
-
-        const jsonData = window.puzzle_data;
-        if (jsonData) this.board.loadBoard(jsonData.board);
-
-        new Timer("timer").init();
-        new InputGrid(this.keyboard);
-
-        this.setupThemeMenu();
-        this.renderRuleDescriptions();
     }
 
     setupThemeMenu() {
@@ -50,17 +36,6 @@ export class Game {
             if (!backgrounds.hasOwnProperty(id)) return;
 
             document.body.style.backgroundImage = backgrounds[id];
-
-           /* document.querySelectorAll(".right-pane-middle-content").forEach(bg =>
-                bg.classList.toggle("my_control_style", id === "classic")
-            );
-            document.querySelectorAll(".block-part").forEach(part => {
-                const type = part.getAttribute("data-block");
-                part.classList.toggle("block-top", id !== "classic" && type === "top");
-                part.classList.toggle("block-middle", id !== "classic" && type === "middle");
-                part.classList.toggle("block-bottom", id !== "classic" && type === "bottom");
-            });*/
-
             localStorage.setItem("selectedTheme", id);
         };
 
@@ -71,9 +46,9 @@ export class Game {
         select.value = savedTheme;
         applyTheme(savedTheme);
 
-        // Transparenz-Slider und .right-pane Transparenzsteuerung
+        // Transparenz-Slider und .keypad-pane Transparenzsteuerung
         const transparencySlider = document.getElementById("transparency-range");
-        const rightPane = document.querySelector(".right-pane"); // oder ggf. .my_control_style
+        const rightPane = document.querySelector(".keypad-pane"); // oder ggf. .my_control_style
 
         if (transparencySlider && rightPane) {
             const applyTransparency = (value) => {
@@ -94,9 +69,28 @@ export class Game {
                 localStorage.setItem("transparencyValue", value);
             });
         }
-        select.addEventListener("change", () => {
-            applyTheme(select.value);
-        });
+        select.addEventListener("change", () => { applyTheme(select.value); });
+
+        // Rotation NumberPad
+        const rotationCheckbox = document.getElementById("rotationNumberPad");
+        const gridB = document.getElementById("number-block");
+        function applyRotationSetting(enabled) {
+            if (!gridB) return;
+            gridB.classList.toggle("reversed", enabled);
+            gridB.classList.toggle("normal", !enabled);
+        }
+        // Save Rotation NumberPad
+        if (rotationCheckbox && gridB) {
+            const saved = localStorage.getItem("rotationNumberPad") === "true";
+            rotationCheckbox.checked = saved;
+            applyRotationSetting(saved);
+
+            rotationCheckbox.addEventListener("change", () => {
+                const enabled = rotationCheckbox.checked;
+                localStorage.setItem("rotationNumberPad", enabled);
+                applyRotationSetting(enabled);
+            });
+        }
     }
     renderRuleDescriptions() {
         const container = document.getElementById("rules-description");
@@ -115,6 +109,19 @@ export class Game {
                 }
             }
         }
+    }
+
+    init() {
+        this.board.initBoard();
+
+        const jsonData = window.puzzle_data;
+        if (jsonData) this.board.loadBoard(jsonData.board);
+
+        new Timer("timer").init();
+        new InputGrid(this.keyboard);
+
+        this.setupThemeMenu();
+        this.renderRuleDescriptions();
     }
 
 }
