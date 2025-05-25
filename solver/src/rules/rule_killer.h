@@ -14,9 +14,9 @@ struct CagePair {
     int sum;
 };
 
-class RuleCage : public RuleHandler {
+class RuleKiller : public RuleHandler {
 public:
-    explicit RuleCage(Board *board) : RuleHandler(board) {}
+    explicit RuleKiller(Board *board) : RuleHandler(board) {}
 
     bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;

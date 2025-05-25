@@ -1,11 +1,11 @@
 // game.js
 
 import { createBoard } from "../board/board.js";
-import { createSelectionConfig } from "../board/board_selectionConfig.js";
 import { InputKeyboard } from "./input_keyboard.js";
 import { InputMode } from "./input_constants.js";
 import { InputGrid } from "./input_grid.js";
 import { Timer } from "./timer.js";
+import { getCSRFToken } from "../csrf/csrf.js";
 
 export class Game {
     constructor(options = {}) {
@@ -19,22 +19,131 @@ export class Game {
             ]
         );
 
+        this.isSaveTriggered = false;
+
+        this.timer = new Timer("timer");
+
+        this.sudokuId = null;
+        this.isCompleted = false;
+        this.saveTimer = null;
+
         setTimeout(() => {
             this.init();
         }, 250); // wait till everything initializes before rendering the board
     }
 
-    init() {
+    async init() {
         this.board.initBoard();
 
         const jsonData = window.puzzle_data;
-        if (jsonData) this.board.loadBoard(jsonData.board);
+        if (jsonData) {
+            this.sudokuId = jsonData.id;
+            this.board.loadBoard(jsonData.board);
+            
+            // check if puzzle is completed or load saved state
+            await this.loadGameState();
+            // set up auto-save if puzzle is not completed
+            if (!this.isCompleted) 
+                this.setupAutoSave();
+        }
 
-        new Timer("timer").init();
+        if (!this.isCompleted)
+            this.timer.init();
         new InputGrid(this.keyboard);
 
         this.setupThemeMenu();
         this.renderRuleDescriptions();
+    }
+
+    async loadGameState() {
+        if (!this.sudokuId) return;
+
+        try {
+            const response = await fetch(`/load-puzzle-state/${this.sudokuId}/`);
+            const data = await response.json();
+
+            if (data.status === "success" || data.status === "completed") {
+                if (data.board_state) 
+                    this.board.contentLayer.loadState(data.board_state);
+
+                const timeValue = data.status === "completed" ? data.completion_time : data.time;
+                this.timer.setTimer(timeValue || 0);
+                
+                if (data.status === "completed") {
+                    this.isCompleted = true;
+                    this.showCompletedState(data);
+                } else {
+                    console.log("Loaded saved game state");
+                }
+            }
+        } catch (error) {
+            console.log("No saved state found or error loading:", error);
+        }
+    }
+
+    setupAutoSave() {
+        if (!this.sudokuId || this.isCompleted) return;
+
+        this.board.onEvent("ev_number_changed", () => {
+            this.saveGameState();
+        });
+
+        this.board.onEvent("ev_candidates_changed", () => {
+            this.saveGameState();
+        });
+
+        this.board.onEvent("ev_color_changed", () => {
+            this.saveGameState();
+        });
+
+        setInterval(() => {
+            if (!this.isSaveTriggered) return;
+            this.saveGameState();
+        }, 60000); // Save every 60 seconds
+    }
+
+    async saveGameState() {
+        if (!this.sudokuId || this.isCompleted) return;
+
+        this.isSaveTriggered = true;
+
+        try {
+            const currentTime = this.timer.getDuration() || 0;
+            const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
+
+            const payload = {
+                sudoku_id: this.sudokuId,
+                time: parseInt(currentTime),
+                status: status,
+                board_state: this.board.contentLayer.getState(),
+            };
+
+            const response = await fetch('/save-puzzle-state/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (data.status === "success") {
+                if (status === "completed") {
+                    this.isCompleted = true;
+                    this.showCompletedState();
+                } else {
+                    console.log("Game state saved");
+                }
+            }
+        } catch (error) {
+            console.error("Error saving game state:", error);
+        }
+    }
+
+    showCompletedState(data = null) {
+        console.log("Puzzle is completed - disabling interaction");
+        
     }
 
     setupThemeMenu() {
@@ -98,6 +207,7 @@ export class Game {
             applyTheme(select.value);
         });
     }
+
     renderRuleDescriptions() {
         const container = document.getElementById("rules-description");
         if (!container) return;
@@ -116,7 +226,6 @@ export class Game {
             }
         }
     }
-
 }
 
 // Initialization

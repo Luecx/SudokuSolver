@@ -7,7 +7,7 @@
             "rules": []
         },
         {
-            "type": "Cage",
+            "type": "Killer",
             "fields": {
                 "NumberCanRepeat": false
             },

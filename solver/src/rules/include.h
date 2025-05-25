@@ -1,6 +1,6 @@
 #include "rule_anti_chess.h"
 #include "rule_arrow.h"
-#include "rule_cage.h"
+#include "rule_killer.h"
 #include "rule_chevron.h"
 #include "rule_clone.h"
 #include "rule_diagonal.h"

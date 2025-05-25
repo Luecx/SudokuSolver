@@ -3,9 +3,9 @@ import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
-export class CageHandler extends RuleTypeHandler {
+export class KillerHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Cage", board);
+        super("Killer", board);
         this.tag = "Killer";
         this.can_create_rules = true;
     }
@@ -91,7 +91,7 @@ export class CageHandler extends RuleTypeHandler {
         `;
     }
     getDescriptionPlayHTML() {
-        let desc = "In a <b>Cage Sudoku</b>, digits inside a cage must sum to the value shown in the top-left corner of the cage.";
+        let desc = "In a <b>Killer Sudoku</b>, digits inside a cage must sum to the value shown in the top-left corner of the cage.";
         if (this.fields?.NumberCanRepeat) {
             desc += " In this puzzle, <b>digits may repeat</b> within a cage if they appear in different cells.";
         } else {

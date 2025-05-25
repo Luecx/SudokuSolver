@@ -14,10 +14,130 @@ export class Cell {
         this.valueLayer = null;
         this.candidateLayer = null;
         this.centeredCandidateLayer = null;
+
+        this.colorMap = [
+            "rgba(230,  25,  75, 0.5)", "rgba( 60, 180,  75, 0.5)", "rgba(255, 225,  25, 0.5)", 
+            "rgba( 67,  99, 216, 0.5)", "rgba(245, 130,  49, 0.5)", "rgba(145,  30, 180, 0.5)",
+            "rgba( 70, 240, 240, 0.5)", "rgba(240,  50, 230, 0.5)", "rgba(188, 246,  12, 0.5)",
+        ];
     }
 
     hasValue() {
         return this.value !== null;
+    }
+
+    hasCandidates() {
+        return this.ordinaryCandidates.length > 0 || this.centeredCandidates.length > 0;
+    }
+
+    hasColors() {
+        return this.colors.length > 0;
+    }
+
+    /*
+     *  Compression right now isnt really for board sizes greater 9
+     */
+
+    // returns the value, colors and candidates as a compressed string
+    compressedString() {
+        const val = this.value ? this.value : null;
+
+        // compress candidates array ([1,2,3,5,6] -> "1-356")
+        const compressArray = (arr) => {
+            if (!arr.length) return '';
+            let compressed = '';
+            let start = arr[0], prev = arr[0];
+            
+            for (let i = 1; i <= arr.length; i++) {
+                const current = arr[i];
+                if (current === prev + 1) {
+                    prev = current;
+                } else {
+                    // Only use range notation if range is at least 3 numbers
+                    if (prev - start >= 2)
+                        compressed += `${start}-${prev}`;
+                    else if (prev === start)
+                        compressed += start;
+                    else
+                        compressed += `${start}${prev}`; // Adjacent pairs like 2,3 become "23" not "2-3"
+                    
+                    start = prev = current;
+                }
+            }
+            return compressed;
+        };
+
+        const ord = compressArray(this.ordinaryCandidates.sort((a, b) => a - b));        
+        const cen = compressArray(this.centeredCandidates.sort((a, b) => a - b));
+        // colors represented as indices
+        const colors = compressArray(
+            this.colors.map(c => this.colorMap.indexOf(c) + 1).sort((a, b) => a - b)
+        );
+
+        let compressed = `r${this.idx.r};c${this.idx.c}`;
+
+        if (val)
+            compressed += `;n${val}`;
+        if (ord)
+            compressed += `;o${ord}`;
+        if (cen)
+            compressed += `;z${cen}`; // z = zentriert
+        if (colors)
+            compressed += `;f${colors}`; // f = farbe
+
+        // format: "c,ord,cen,colors"
+        return compressed;
+    }
+
+    fromCompressedString(str) {
+        if (!str) return;
+
+        const splitted = str.split(";");
+
+        const extract = (prefix) => {
+            const part = splitted.find(s => s[0] === prefix);
+            return part ? part.slice(1) : null;
+        };
+
+        const expandCompressedArray = (compressed) => {
+            if (!compressed) return [];
+            let result = [];
+            let i = 0;
+            while (i < compressed.length) {
+                const c = compressed[i];
+                if (/^\d$/.test(c)) {
+                    result.push(parseInt(c, 10));
+                } else if (c === "-") {
+                    const last = result[result.length - 1];
+                    const next = parseInt(compressed[i + 1], 10);
+                    for (let j = last + 1; j <= next; j++) result.push(j);
+                    i++;
+                }
+                i++;
+            }
+            return result.sort((a, b) => a - b);
+        };
+
+        this.idx.r = parseInt(extract("r"), 10);
+        this.idx.c = parseInt(extract("c"), 10);
+
+        const value = extract("n");
+        if (value) 
+            this.value = parseInt(value, 10);
+        
+        const ord = extract("o");
+        const cen = extract("z");
+        const colors = extract("f");
+
+        this.ordinaryCandidates = expandCompressedArray(ord);
+        this.centeredCandidates = expandCompressedArray(cen);
+
+        if (colors) {
+            const colorIndices = expandCompressedArray(colors);
+            this.colors = colorIndices.map(i => this.colorMap[i - 1]);
+        } else {
+            this.colors = [];
+        }
     }
 
     clear() {
@@ -55,6 +175,12 @@ export class BoardNumberLayer {
         this.generateEmptyBoard();
     }
 
+    isSolved() {
+        return this.cells.every(cell => {
+            return cell.hasValue();
+        });
+    }
+
     generateEmptyBoard() {
         this.cells = [];
         for (let r = 0; r < this.gridSize; r++) {
@@ -78,6 +204,33 @@ export class BoardNumberLayer {
         }
 
         return solution;
+    }
+
+loadState(state) {
+    for (const cellState of state) {
+        // Extract r and c from the compressed string format "r0;c0;..."
+        const splitted = cellState.split(';');
+        const r = parseInt(splitted[0].slice(1));
+        const c = parseInt(splitted[1].slice(1));
+
+        const cell = this.cells.find(cell => cell.idx.r === r && cell.idx.c === c);
+        if (cell) {
+            cell.fromCompressedString(cellState);
+            this.updateCell(cell);
+        }
+    }
+}
+
+    getState() {
+        let state = [];
+        for (const cell of this.cells)
+        {
+            // only store cells that have a value, candidates or colors and are not fixed
+            if (cell.fixed || !(cell.hasValue() || cell.hasCandidates() || cell.hasColors()))
+                continue;
+            state.push(cell.compressedString());
+        }
+        return state;
     }
 
     _generate(cellSize, usedSize, gridOffset) {
@@ -181,7 +334,6 @@ export class BoardNumberLayer {
         // Wieder anzeigen, falls vorher versteckt
         centeredCandidateLayer.style.display = "flex";
     }
-
 
     computeBackground(colors) {
         if (!colors || colors.length === 0) return "transparent";
