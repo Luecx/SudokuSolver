@@ -6,10 +6,10 @@ import {SandwichHandler} from "./rule_sandwich.js";
 import {ArrowHandler} from "./rule_arrow.js";
 import {ParityHandler} from "./rule_parity.js";
 import {PalindromeHandler} from "./rule_palindrome.js";
-import {ThermometerHandler} from "./rule_thermo.js";
+import {ThermoHandler} from "./rule_thermo.js";
 import {RenbanHandler} from "./rule_renban.js";
 import { WhisperHandler} from "./rule_whisper.js";
-import { CageHandler } from "./rule_cage.js";
+import { KillerHandler } from "./rule_killer.js";
 import { ChevronHandler } from "./rule_chevron.js";
 import { AntiChessRuleHandler } from "./rule_anti_chess.js";
 import { MagicSquareHandler } from "./rule_magic_square.js";
@@ -30,10 +30,10 @@ export function createAllRuleHandlers(board) {
         new ArrowHandler(board),
         new ParityHandler(board),
         new PalindromeHandler(board),
-        new ThermometerHandler(board),
+        new ThermoHandler(board),
         new RenbanHandler(board),
         new WhisperHandler(board),
-        new CageHandler(board),
+        new KillerHandler(board),
         new ChevronHandler(board),
         new AntiChessRuleHandler(board),
         new MagicSquareHandler(board),

@@ -1,7 +1,7 @@
 #include <utility>
 
 #include "../board/board.h"
-#include "rule_cage.h"
+#include "rule_killer.h"
 
 
 namespace sudoku {
@@ -52,9 +52,9 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
     return {min, max};
 }
 
-// RuleCage methods
+// RuleKiller methods
 
-bool RuleCage::number_changed(CellIdx pos) {
+bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
 
     for (const auto &pair: cage_pair_) {
@@ -71,21 +71,21 @@ bool RuleCage::number_changed(CellIdx pos) {
     return changed;
 }
 
-bool RuleCage::candidates_changed() {
+bool RuleKiller::candidates_changed() {
     bool changed = false;
     for (auto &pair: cage_pair_)
         changed |= check_cage(pair);
     return changed;
 }
 
-bool RuleCage::valid() {
+bool RuleKiller::valid() {
     for (auto &pair: cage_pair_)
         if (!check_group(pair))
             return false;
     return true;
 }
 
-void RuleCage::from_json(JSON &json) {
+void RuleKiller::from_json(JSON &json) {
     cage_pair_.clear();
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("NumberCanRepeat"))
@@ -114,7 +114,7 @@ void RuleCage::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleCage::check_cage(CagePair &pair) {
+bool RuleKiller::check_cage(CagePair &pair) {
     const int board_size = board_->size();
     remaining_cells.clear();
 
@@ -174,7 +174,7 @@ bool RuleCage::check_cage(CagePair &pair) {
     return changed;
 }
 
-bool RuleCage::check_group(const CagePair &pair) const {
+bool RuleKiller::check_group(const CagePair &pair) const {
     int sum = 0;
     sudoku::NumberSet seen_values(board_->size());
 
