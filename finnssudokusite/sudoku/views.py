@@ -210,11 +210,17 @@ def user_profile(request, username):
 
 # === Finished and Ongoing Puzzles === #
 
-@login_required
 @require_POST
 def save_puzzle_state(request):
     """Saves the current state of a puzzle or marks it as completed."""
     try:
+        # Handle non-authenticated users
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                "status": "no_auth",
+                "message": "User not authenticated - use local storage"
+            })
+
         data = json.loads(request.body)
         sudoku_id = data.get("sudoku_id")
         board_state = data.get("board_state")
@@ -293,14 +299,18 @@ def save_puzzle_state(request):
         print(f"Error saving puzzle state: {e}")
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
-@login_required
 def load_puzzle_state(request, sudoku_id):
     """Loads the saved state of a puzzle."""
     try:
+        # Handle non-authenticated users
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                "status": "no_auth",
+                "message": "User not authenticated - use local storage"
+            })
+        
         sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
         
-        print("f");
-
         # First check if puzzle is already completed
         try:
             done_puzzle = UserSudokuDone.objects.get(user=request.user, sudoku=sudoku)
