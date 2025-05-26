@@ -415,15 +415,15 @@ def game_selection_view(request):
 
 def modal_login(request):
     form = AuthenticationForm()
-    return render(request, 'modals/login.html', {'form': form})
+    return render(request, 'sudoku/modals/login.html', {'form': form})
 
 def modal_register(request):
     form = UserCreationForm()
-    return render(request, 'modals/register.html', {'form': form})
+    return render(request, 'sudoku/modals/register.html', {'form': form})
 
 def modal_forgot_password(request):
     form = PasswordResetForm()
-    return render(request, 'modals/forgot_password.html', {'form': form})
+    return render(request, 'sudoku/modals/forgot_password.html', {'form': form})
 
 
 #nur zum Testen
