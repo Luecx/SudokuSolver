@@ -34,25 +34,21 @@ export class Game {
         this.board.initBoard();
 
         const jsonData = window.puzzle_data;
-        if (jsonData) {
-            this.sudokuId = jsonData.id;
-            this.board.loadBoard(jsonData.board);
-            
-            // check if puzzle is completed or load saved state
-            await this.loadGameState();
-            // set up auto-save if puzzle is not completed
-            if (!this.isCompleted) 
-                this.setupAutoSave();
-        }
+        if (!jsonData) return;
 
-        if (!this.isCompleted)
-            this.timer.init();
+        this.sudokuId = jsonData.id;
+        this.board.loadBoard(jsonData.board);
+
+        let state = await this.loadGameState();
         new InputGrid(this.keyboard);
 
         this.setupPageUnloadHandlers();
         this.setupThemeMenu();
         this.renderRuleDescriptions();
+
+        await this.handleInitialModal(state);
     }
+
 
     // page unload related
 
@@ -189,37 +185,39 @@ export class Game {
     // server related
 
     async loadGameState() {
-        if (!this.sudokuId) return;
+        if (!this.sudokuId) return "unknown";
 
         try {
             const response = await fetch(`/load-puzzle-state/${this.sudokuId}/`);
             const data = await response.json();
 
             if (data.status === "no_auth") {
-                // user not authenticated, load from localStorage
                 this.loadFromCache();
-                return;
+                return this.isCompleted ? "completed" : "resume";
             }
 
             if (data.status === "success" || data.status === "completed") {
-                if (data.board_state) 
+                if (data.board_state)
                     this.board.contentLayer.loadState(data.board_state);
 
                 const timeValue = data.status === "completed" ? data.completion_time : data.time;
                 this.timer.setTimer(timeValue || 0);
-                
+
                 if (data.status === "completed") {
                     this.isCompleted = true;
                     this.showCompletedState(data);
-                } else {
-                    console.log("Loaded saved game state from server");
+                    return "completed";
                 }
+                return "resume";
             }
+
+            return "new";
         } catch (error) {
-            console.log("Error loading from server, trying cache:", error);
             this.loadFromCache();
+            return this.isCompleted ? "completed" : "resume";
         }
     }
+
 
     async saveGameState() {
         if (!this.sudokuId || this.isCompleted) return;
@@ -373,6 +371,46 @@ export class Game {
             }
         }
     }
+
+    async handleInitialModal(state) {
+        const modal = new bootstrap.Modal(document.getElementById("sudokuInfoModal"));
+        const messageBox = document.getElementById("sudoku-info-message");
+        const startButton = document.getElementById("start-sudoku-button");
+
+        if (!modal || !messageBox || !startButton) {
+            console.warn("Modal-Elemente nicht gefunden");
+            this.timer.init();
+            return;
+        }
+
+        let message = "";
+
+        switch (state) {
+            case "new":
+            case "unknown":
+                message = "Dies ist dein erster Versuch dieses Sudokus. Viel Erfolg!";
+                break;
+            case "resume":
+                message = "Dieses Sudoku wurde bereits begonnen. Du kannst jetzt weiterspielen.";
+                break;
+            case "completed":
+                message = "Dieses Sudoku wurde bereits abgeschlossen. Es wird nicht erneut gezählt, kann aber nochmal gespielt werden.";
+                break;
+        }
+
+        messageBox.textContent = message;
+
+        return new Promise(resolve => {
+            startButton.addEventListener("click", () => {
+                modal.hide();
+                if (!this.isCompleted) this.timer.init();
+                resolve();
+            }, { once: true });
+
+            modal.show();
+        });
+    }
+
 }
 
 // Initialization
