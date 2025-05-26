@@ -339,9 +339,8 @@ export class BoardNumberLayer {
     }
 
     clearRegion(region, force = false, canClearFixed = false) {
-
-        console.log("clear region");
-        const cells = this._filterCells(region).filter(cell => canClearFixed || !cell.fixed);
+        const allCells = this._filterCells(region); // for checking
+        const cells    = allCells.filter(cell => canClearFixed || !cell.fixed);
 
         if (cells.length === 0) return;
 
@@ -353,20 +352,23 @@ export class BoardNumberLayer {
             return;
         }
 
-        const anyHasValue = cells.some(c => c.value !== null);
+        const anyHasValue = cells.some(c => c.value !== null); // check all, even fixed
         const anyHasCandidate = !anyHasValue && cells.some(c =>
             c.ordinaryCandidates.length > 0 || c.centeredCandidates.length > 0
         );
 
-        for (const cell of cells) {
-            if (anyHasValue) {
-                cell.value = null;
-            } else if (anyHasCandidate) {
-                cell.ordinaryCandidates = [];
-                cell.centeredCandidates = [];
-            } else {
-                cell.colors = [];
-            }
+        if (anyHasValue) {
+            cells.forEach(c => c.value = null);
+        } else if (anyHasCandidate) {
+            cells.forEach(c => {
+                c.ordinaryCandidates = [];
+                c.centeredCandidates = [];
+            });
+        } else {
+            allCells.forEach(c => c.colors = []);
+        }
+
+        for (const cell of allCells) {
             this.updateCell(cell);
         }
     }
