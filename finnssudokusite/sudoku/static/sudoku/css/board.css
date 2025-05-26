@@ -120,7 +120,6 @@
     font-weight: bold;
     user-select: none;
     overflow: hidden;
-    filter: blur(0.4px);
 }
 
 .cell-content.multi-color-background {
