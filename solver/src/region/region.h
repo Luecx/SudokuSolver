@@ -188,6 +188,8 @@ public:
      */
     const std::vector<IdxT> &items() const { return items_; }
 
+    std::vector<IdxT> &items() { return items_; }
+
     /**
      * @brief Parses a Region from JSON, validating type information.
      *

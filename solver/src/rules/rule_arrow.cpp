@@ -44,6 +44,16 @@ bool RuleArrow::valid() {
     return true;
 }
 
+void RuleArrow::update_impact(ImpactMap &map) {
+    for (const auto &arrow_pair: arrow_pairs_) {
+        const Region<CellIdx> &base = arrow_pair.base;
+        const Region<CellIdx> &path = arrow_pair.arrow_path;
+
+        map.increment_region(base);
+        map.increment_region(path);
+    }
+}
+
 void RuleArrow::from_json(JSON &json) {
     arrow_pairs_.clear();
 
@@ -65,6 +75,17 @@ void RuleArrow::from_json(JSON &json) {
         Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
 
         if (base.size() > 0 && path.size() > 0) {
+            // sort base regions by row if horizontal, or by column if vertical
+            if (base.size() == 2) {
+                if (base.items()[0].r == base.items()[1].r) { // horizontal arrow
+                    std::sort(base.items().begin(), base.items().end(),
+                              [](const CellIdx &a, const CellIdx &b) { return a.c < b.c; });
+                } else { // vertical arrow
+                    std::sort(base.items().begin(), base.items().end(),
+                              [](const CellIdx &a, const CellIdx &b) { return a.r < b.r; });
+                }
+            }
+
             ArrowPair arrow_pair;
             arrow_pair.base = base;
             arrow_pair.arrow_path = path;
@@ -93,6 +114,7 @@ bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
     if (base.size() == 1) {
         if (cell1.is_solved())
             return false;
+
         path_lb = std::clamp(path_lb, 1, cell1.max_number + 1);
         changed |= cell1.only_allow_candidates(NumberSet::greaterEqThan(cell1.max_number, path_lb));
     } else {
@@ -103,7 +125,7 @@ bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
         NumberSet cands1(cell1.max_number);
         NumberSet cands2(cell2.max_number);
 
-        for (int i = path_lb; i <= path_ub; ++i) {
+        for (int i = path_lb; i <= path_ub; i++) {
             if (i > 10)
                 cands1.add(i / 10);
             if (i % 10 > 0)
@@ -133,12 +155,11 @@ bool RuleArrow::determine_path_options(ArrowPair &arrow_pair) {
         if (cell.is_solved())
             continue;
 
-        // compute the lb and ub of the remaining cells
-        int rest_lb = path_lb - cell.candidates.lowest();
-        int rest_ub = path_ub - cell.candidates.highest();
+        int lb_rest = path_lb - cell.candidates.lowest();
+        int ub_rest = path_ub - cell.candidates.highest();
 
-        int lb = std::clamp(base_lb - rest_ub, 1, cell.max_number + 1);
-        int ub = std::clamp(base_ub - rest_lb, -1, cell.max_number - 1);
+        int ub = std::clamp(base_ub - lb_rest, -1, cell.max_number - 1);
+        int lb = std::clamp(base_lb - ub_rest, 1, cell.max_number + 1);
 
         NumberSet mask = NumberSet::greaterEqThan(cell.max_number, lb) & NumberSet::lessEqThan(cell.max_number, ub);
         changed |= cell.only_allow_candidates(mask);
