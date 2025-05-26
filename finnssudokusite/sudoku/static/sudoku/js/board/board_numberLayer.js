@@ -26,6 +26,14 @@ export class Cell {
         return this.value !== null;
     }
 
+    hasCandidates() {
+        return this.ordinaryCandidates.length > 0 || this.centeredCandidates.length > 0;
+    }
+
+    hasColors() {
+        return this.colors.length > 0;
+    }
+
     /*
      *  Compression right now isnt really for board sizes greater 9
      */
