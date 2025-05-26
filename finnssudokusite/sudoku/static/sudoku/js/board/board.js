@@ -94,6 +94,7 @@ export function createBoard(container) {
                                                        eventManager.emit("ev_color_changed", region)},
         toggleColors:    (region,col,force=false)  => {numberLayer.toggleColors(region,col,force);
                                                        eventManager.emit("ev_color_changed", region)},
+        clearRegion:     (region, force=false, canClearFixed = false) => {numberLayer.clearRegion(region, force, canClearFixed)},
 
         // ----─  CONTENT-LAYER APIs END ────────────────────────────────────────
         resetBoard,

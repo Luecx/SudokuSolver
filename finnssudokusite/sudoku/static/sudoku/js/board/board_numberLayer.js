@@ -1,5 +1,5 @@
 import { CellIdx } from "../region/CellIdx.js";
-import {Solution} from "../solution/solution.js";
+import { Solution } from "../solution/solution.js";
 
 export class Cell {
     constructor(r, c) {
@@ -34,11 +34,9 @@ export class BoardNumberLayer {
         this.container = container;
         this.gridSize = gridSize;
         this.board = null;
-
         this.cells = [];
         this.grid = null;
         this.useSolutionStyle = false;
-
     }
 
     init(board) {
@@ -59,24 +57,18 @@ export class BoardNumberLayer {
         this.cells = [];
         for (let r = 0; r < this.gridSize; r++) {
             for (let c = 0; c < this.gridSize; c++) {
-                const cell = new Cell(r, c);
-                this.cells.push(cell);
+                this.cells.push(new Cell(r, c));
             }
         }
     }
 
     getFixedNumbers() {
-        let solution = new Solution(this.board.gridSize);
-
+        const solution = new Solution(this.board.gridSize);
         for (const cell of this.cells) {
-            const idx   = cell.idx;
-            const value = cell.value;
-            const fixed = cell.fixed;
-            if (fixed && value !== null) {
-                solution.set(idx, value);
+            if (cell.fixed && cell.value !== null) {
+                solution.set(cell.idx, cell.value);
             }
         }
-
         return solution;
     }
 
@@ -95,6 +87,7 @@ export class BoardNumberLayer {
             div.dataset.r = cell.idx.r;
             div.dataset.c = cell.idx.c;
             div.style.gridArea = `${cell.idx.r + 1} / ${cell.idx.c + 1}`;
+            div.style.position = "relative"; // critical for absolute children
 
             const valueLayer = document.createElement("div");
             valueLayer.className = "value-layer";
@@ -118,87 +111,90 @@ export class BoardNumberLayer {
         }
     }
 
-
     updateCell(cell) {
+        this.updateBackground(cell);
+        this.updateValue(cell);
+        this.updateCandidates(cell);
+        this.updateCenteredCandidates(cell);
+    }
+
+    updateBackground(cell) {
         if (!cell.element) return;
-
-        const valueLayer = cell.valueLayer;
-        const candidateLayer = cell.candidateLayer;
-        const centeredCandidateLayer = cell.centeredCandidateLayer;
-
-        // --- Hintergrund aktualisieren ---
         cell.element.style.background = this.computeBackground(cell.colors);
         cell.element.classList.toggle("multi-color-background", cell.colors.length > 1);
+    }
 
-        // --- Reset Inhalt & Klassen ---
+    updateValue(cell) {
+        const valueLayer = cell.valueLayer;
         valueLayer.textContent = "";
         valueLayer.classList.remove("fixed", "editable", "solution-style");
-        candidateLayer.innerHTML = "";
-        centeredCandidateLayer.textContent = "";
-        centeredCandidateLayer.className = "centered-candidate-layer"; // reset size class
 
-        const cellSize = this.board.getCellSize();
-
-        // --- Zahlenwert ---
         if (cell.hasValue()) {
-            valueLayer.textContent    = cell.value;
-            valueLayer.style.fontSize = cellSize * 0.8 + "px"
+            const cellSize = this.board.getCellSize();
+            valueLayer.textContent = cell.value;
+            valueLayer.style.fontSize = `${cellSize * 0.8}px`;
             valueLayer.classList.add(cell.fixed ? "fixed" : "editable");
             if (!cell.fixed && this.useSolutionStyle) {
                 valueLayer.classList.add("solution-style");
             }
         }
+    }
 
-        // --- Kandidaten (3×3) ---
+    updateCandidates(cell) {
+        const candidateLayer = cell.candidateLayer;
+        candidateLayer.innerHTML = "";
+
         const candidateOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         const candidateColor = this.useSolutionStyle ? "red" : "#222";
-
+        const cellSize = this.board.getCellSize();
         const candidateSize = (cellSize * 0.7) / 3;
 
         for (let n of candidateOrder) {
             const candidate = document.createElement("div");
             candidate.className = "candidate-cell";
-            candidate.style.fontSize = `${candidateSize * 0.7}px`; // behalten für pixelpräzise Darstellung
+            candidate.style.fontSize = `${candidateSize * 0.7}px`;
             candidate.style.color = candidateColor;
-
             if (cell.ordinaryCandidates.includes(n)) {
                 candidate.textContent = n;
             }
-
             candidateLayer.appendChild(candidate);
         }
+    }
 
-        // --- Centered Candidates ---
-        if (cell.centeredCandidates.length > 0) {
-            const count = Math.min(cell.centeredCandidates.length, 9);
-            centeredCandidateLayer.classList.add(`cc-size-${count}`);
-            centeredCandidateLayer.textContent = cell.centeredCandidates.sort().join("");
-        } else {
-            centeredCandidateLayer.style.display = "none";
+    updateCenteredCandidates(cell) {
+        const layer = cell.centeredCandidateLayer;
+        layer.textContent = "";
+        layer.className = "centered-candidate-layer";
+
+        if (cell.centeredCandidates.length === 0) {
+            layer.style.display = "none";
             return;
         }
 
-        // Wieder anzeigen, falls vorher versteckt
-        centeredCandidateLayer.style.display = "flex";
+        const count = Math.min(cell.centeredCandidates.length, 9);
+        layer.classList.add(`cc-size-${count}`);
+        layer.textContent = cell.centeredCandidates.sort().join("");
+        layer.style.display = "flex";
     }
-
 
     computeBackground(colors) {
         if (!colors || colors.length === 0) return "transparent";
         if (colors.length === 1) return colors[0];
 
         const slice = 360 / colors.length;
-        const offset = 38; // Adjust this value to control starting angle
+        const offset = 38;
         return `conic-gradient(from ${offset}deg, ${colors.map((c, i) =>
             `${c} ${slice * i}deg ${slice * (i + 1)}deg`
         ).join(", ")})`;
     }
 
-
-    // --- Single cell operations ---
     setValue(idx, value, fixed = false) {
         const cell = this.getCell(idx);
         if (!cell) return;
+
+        // Prevent changing fixed cells unless replacing with another fixed value
+        if (cell.fixed && !fixed) return;
+
         cell.value = value;
         cell.fixed = fixed;
         cell.ordinaryCandidates = [];
@@ -208,199 +204,176 @@ export class BoardNumberLayer {
 
     setCandidate(idx, candidate, centered = false) {
         const cell = this.getCell(idx);
-        if (!cell) return;
+        if (!cell || cell.fixed || cell.value != null) return;
 
         const list = centered ? cell.centeredCandidates : cell.ordinaryCandidates;
         if (!list.includes(candidate)) {
             list.push(candidate);
             list.sort((a, b) => a - b);
         }
-        if (!centered) {
-            cell.value = null;
-        }
+        if (!centered) cell.value = null;
         this.updateCell(cell);
     }
 
     unsetCandidate(idx, candidate, centered = false) {
         const cell = this.getCell(idx);
-        if (!cell) return;
+        if (!cell || cell.fixed || cell.value != null) return;
 
         const list = centered ? cell.centeredCandidates : cell.ordinaryCandidates;
         const i = list.indexOf(candidate);
-        if (i !== -1) {
-            list.splice(i, 1);
-            list.sort((a, b) => a - b);
-        }
+        if (i !== -1) list.splice(i, 1);
         this.updateCell(cell);
     }
 
     toggleCandidate(idx, candidate, centered = false) {
         const cell = this.getCell(idx);
-        if (!cell) return;
-
+        if (!cell || cell.fixed) return;
         const list = centered ? cell.centeredCandidates : cell.ordinaryCandidates;
         const i = list.indexOf(candidate);
-
-        if (i !== -1) {
-            list.splice(i, 1);
-        } else {
-            list.push(candidate);
-        }
+        i !== -1 ? list.splice(i, 1) : list.push(candidate);
         list.sort((a, b) => a - b);
-
-        if (!centered) {
-            cell.value = null;
-        }
+        if (!centered) cell.value = null;
         this.updateCell(cell);
     }
 
     setColor(idx, color) {
         const cell = this.getCell(idx);
-        if (!cell) return;
-
-        if (!cell.colors.includes(color)) {
-            cell.colors.push(color);
-            cell.colors.sort();
-        }
-        this.updateCell(cell);
+        if (!cell || cell.colors.includes(color)) return;
+        cell.colors.push(color);
+        cell.colors.sort();
+        this.updateBackground(cell);
     }
 
     unsetColor(idx, color) {
         const cell = this.getCell(idx);
         if (!cell) return;
-
         const i = cell.colors.indexOf(color);
         if (i !== -1) {
             cell.colors.splice(i, 1);
             cell.colors.sort();
+            this.updateBackground(cell);
         }
-        this.updateCell(cell);
     }
 
     toggleColor(idx, color, forceSet = false) {
         const cell = this.getCell(idx);
         if (!cell) return;
-
         const i = cell.colors.indexOf(color);
-        if (i !== -1) {
-            if (!forceSet) {
-                cell.colors.splice(i, 1);
-            }
-        } else {
+        if (i !== -1 && !forceSet) {
+            cell.colors.splice(i, 1);
+        } else if (i === -1) {
             cell.colors.push(color);
         }
         cell.colors.sort();
-        this.updateCell(cell);
+        this.updateBackground(cell);
     }
 
-    // --- Region-wide operations ---
+    _filterCells(region) {
+        return region.items.filter(i => i instanceof CellIdx).map(i => this.getCell(i)).filter(Boolean);
+    }
 
     setValues(region, value, fixed = false) {
-        console.log("setValues", region, value, fixed);
-        region.forEach(idx => {
-            if (idx instanceof CellIdx) {
-                this.setValue(idx, value, fixed);
-            }
-        });
+        this._filterCells(region).forEach(c => this.setValue(c.idx, value, fixed));
     }
 
     unsetValues(region) {
-        console.log("unsetValues", region);
-        region.forEach(idx => {
-            if (idx instanceof CellIdx) {
-                this.setValue(idx, null, false);
-            }
-        });
+        this._filterCells(region).forEach(c => this.setValue(c.idx, null, false));
     }
 
     toggleValues(region, value, fixed = false) {
-        console.log("", region, value, fixed);
-        // smart‐toggle: if every cell already === value, clear all; else set all
-        const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
-        const allHave = cells.every(c => c.value === value && (value === null || c.fixed === fixed));
+        const cells = this._filterCells(region);
 
-        cells.forEach(cell => {
-            const idx = cell.idx;
-            if (allHave) {
-                this.setValue(idx, null, false);
-            } else {
-                this.setValue(idx, value, fixed);
-            }
+        const filtered = cells.filter(c => {
+            if (fixed === true) return c.fixed;
+            return !c.fixed;
+        });
+
+        const allHave = filtered.every(c => c.value === value && (value === null || c.fixed === fixed));
+
+        filtered.forEach(c => {
+            this.setValue(c.idx, allHave ? null : value, allHave ? false : fixed);
         });
     }
 
+
     setCandidates(region, candidate, centered = false) {
-        region.forEach(idx => {
-            if (idx instanceof CellIdx) {
-                this.setCandidate(idx, candidate, centered);
-            }
-        });
+        this._filterCells(region).forEach(c => this.setCandidate(c.idx, candidate, centered));
     }
 
     unsetCandidates(region, candidate, centered = false) {
-        region.forEach(idx => {
-            if (idx instanceof CellIdx) {
-                this.unsetCandidate(idx, candidate, centered);
-            }
-        });
+        this._filterCells(region).forEach(c => this.unsetCandidate(c.idx, candidate, centered));
     }
 
     toggleCandidates(region, candidate, centered = false) {
-        // smart‐toggle across region
-        const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
-        const allHave = cells.every(c => {
-            const list = centered ? c.centeredCandidates : c.ordinaryCandidates;
-            return list.includes(candidate);
-        });
+        const cells = this._filterCells(region);
+        const relevantCells = cells.filter(c => c.value === null); // only empty cells
+        const allHave = relevantCells.every(c =>
+            (centered ? c.centeredCandidates : c.ordinaryCandidates).includes(candidate)
+        );
 
-        cells.forEach(cell => {
-            const idx = cell.idx;
+        cells.forEach(c => {
             if (allHave) {
-                this.unsetCandidate(idx, candidate, centered);
+                this.unsetCandidate(c.idx, candidate, centered);
             } else {
-                this.setCandidate(idx, candidate, centered);
+                this.setCandidate(c.idx, candidate, centered);
             }
         });
     }
 
     setColors(region, color) {
-        region.forEach(idx => {
-            if (idx instanceof CellIdx) {
-                this.setColor(idx, color);
-            }
-        });
+        this._filterCells(region).forEach(c => this.setColor(c.idx, color));
     }
 
     unsetColors(region, color) {
-        region.forEach(idx => {
-            if (idx instanceof CellIdx) {
-                this.unsetColor(idx, color);
-            }
-        });
+        this._filterCells(region).forEach(c => this.unsetColor(c.idx, color));
     }
 
     toggleColors(region, color, forceSet = false) {
-        if (forceSet) {
-            this.setColors(region, color);
-            return;
-        }
-
-        const cells = region.items.filter(idx => idx instanceof CellIdx).map(idx => this.getCell(idx)).filter(c => c);
+        if (forceSet) return this.setColors(region, color);
+        const cells = this._filterCells(region);
         const allHave = cells.every(c => c.colors.includes(color));
-
-        cells.forEach(cell => {
-            const idx = cell.idx;
-            if (allHave) {
-                this.unsetColor(idx, color);
-            } else {
-                this.setColor(idx, color);
-            }
+        cells.forEach(c => {
+            if (allHave) this.unsetColor(c.idx, color);
+            else this.setColor(c.idx, color);
         });
     }
 
+    clearRegion(region, force = false, canClearFixed = false) {
 
-    getCell(cellIdx) {
-        return this.cells.find(cell => cell.idx.equals(cellIdx));
+        console.log("clear region");
+        const cells = this._filterCells(region).filter(cell => canClearFixed || !cell.fixed);
+
+        if (cells.length === 0) return;
+
+        if (force) {
+            for (const cell of cells) {
+                cell.clear();
+                this.updateCell(cell);
+            }
+            return;
+        }
+
+        const anyHasValue = cells.some(c => c.value !== null);
+        const anyHasCandidate = !anyHasValue && cells.some(c =>
+            c.ordinaryCandidates.length > 0 || c.centeredCandidates.length > 0
+        );
+
+        for (const cell of cells) {
+            if (anyHasValue) {
+                cell.value = null;
+            } else if (anyHasCandidate) {
+                cell.ordinaryCandidates = [];
+                cell.centeredCandidates = [];
+            } else {
+                cell.colors = [];
+            }
+            this.updateCell(cell);
+        }
+    }
+
+
+    getCell(idx) {
+        return this.cells.find(cell => cell.idx.equals(idx));
     }
 
     resetContent() {
@@ -412,9 +385,7 @@ export class BoardNumberLayer {
 
     setSolutionStyle(enabled = true) {
         this.useSolutionStyle = enabled;
-        for (const cell of this.cells) {
-            this.updateCell(cell);
-        }
+        this.cells.forEach(c => this.updateCell(c));
     }
 
     toggleStyle() {
@@ -422,21 +393,15 @@ export class BoardNumberLayer {
     }
 
     show() {
-        if (this.grid) {
-            this.grid.classList.remove("hidden");
-        }
+        if (this.grid) this.grid.classList.remove("hidden");
     }
 
     hide() {
-        if (this.grid) {
-            this.grid.classList.add("hidden");
-        }
+        if (this.grid) this.grid.classList.add("hidden");
     }
 
     toggleVisibility() {
-        if (this.grid) {
-            this.grid.classList.toggle("hidden");
-        }
+        if (this.grid) this.grid.classList.toggle("hidden");
     }
 
     isVisible() {
@@ -445,19 +410,13 @@ export class BoardNumberLayer {
 
     saveFixedCells() {
         return this.cells
-            .filter(cell => cell.hasValue() && cell.fixed)
-            .map(cell => ({
-                r: cell.idx.r,
-                c: cell.idx.c,
-                value: cell.value
-            }));
+            .filter(c => c.hasValue() && c.fixed)
+            .map(c => ({ r: c.idx.r, c: c.idx.c, value: c.value }));
     }
 
     loadFixedCells(data) {
         for (const { r, c, value } of data) {
-            console.log("loadFixedCells", r, c, value);
-            let cell_idx = new CellIdx(r, c);
-            this.setValue(cell_idx, value, true);
+            this.setValue(new CellIdx(r, c), value, true);
         }
     }
 }

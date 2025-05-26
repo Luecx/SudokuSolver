@@ -20,8 +20,8 @@ export class InputKeyboard {
         };
 
         this.specialBindings = {
-            'Backspace': () => this.board.unsetValues(this.board.getSelectedRegion()),
-            'Delete': () => this.board.unsetValues(this.board.getSelectedRegion()),
+            'Backspace': () => this.board.clearRegion(this.board.getSelectedRegion()),
+            'Delete'   : () => this.board.clearRegion(this.board.getSelectedRegion()),
         };
 
         this.setEnabled(true); // Enable keyboard input by default
