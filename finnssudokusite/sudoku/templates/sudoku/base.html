@@ -1,5 +1,6 @@
-{% load static %}
+{% load form_filters %}
 {% load i18n %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +18,28 @@
 	<!-- Font Awesome -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="{% static 'sudoku/css/style.css' %}">
+	
+	<style>
+		.modal-dialog {
+			width: 100%;
+			max-width: 500px;
+			transition: max-width 0.4s ease;
+		}
+		#modalContentContainer {
+			opacity: 1;
+			transition: opacity 0.3s ease;
+		}
+		#modalContentContainer.fade-out {
+			opacity: 0;
+		}
+		.modal-content {
+			opacity: 1;
+			transition: opacity 0.3s ease;
+		}
+		.modal-content.fade-out {
+			opacity: 0;
+		}
+	</style>
 	
 	{% block extra_css %}
 	{% endblock %}
@@ -116,6 +139,55 @@
 	{% block content %}{% endblock %}
 </div>
 {% endblock %}
+
+
+<!-- Login Modal -->
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border rounded-5 shadow-sm">
+			<div class="modal-body p-4" id="modalContentContainer">
+				<script>
+					function loadModalContent(url) {
+						const container = document.getElementById('modalContentContainer');
+						const modalDialog = document.querySelector('#loginModal .modal-dialog');
+						const modalContent = document.querySelector('#loginModal .modal-content');
+						
+						const widthMap = {
+							'/modals/forgot-password/': '400px',
+							'/modals/login/': '400px',
+							'/modals/register/': '600px',
+						};
+						
+						const targetWidth = widthMap[url] || '500px';
+						
+						// 1. Modal-Gesamtinhalt ausblenden
+						modalContent.classList.add('fade-out');
+						
+						setTimeout(() => {
+							// 2. Breite anpassen
+							modalDialog.style.maxWidth = targetWidth;
+							
+							// 3. Inhalt austauschen
+							fetch(url)
+								.then(response => response.text())
+								.then(html => {
+									container.innerHTML = html;
+									// 4. Wieder einblenden
+									modalContent.classList.remove('fade-out');
+								})
+								.catch(error => {
+									container.innerHTML = "<div class='alert alert-danger'>Fehler beim Laden des Inhalts.</div>";
+									console.error("Modal-Fehler:", error);
+									modalContent.classList.remove('fade-out');
+								});
+						}, 300);
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
 
 <!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

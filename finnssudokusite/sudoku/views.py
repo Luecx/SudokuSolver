@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, update_session_auth_hash, get_user_model
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm, PasswordResetForm, UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -410,6 +410,21 @@ def activate(request, uid, token):
 
 def game_selection_view(request):
     return render(request, 'sudoku/game_selection.html')
+
+
+
+def modal_login(request):
+    form = AuthenticationForm()
+    return render(request, 'modals/login.html', {'form': form})
+
+def modal_register(request):
+    form = UserCreationForm()
+    return render(request, 'modals/register.html', {'form': form})
+
+def modal_forgot_password(request):
+    form = PasswordResetForm()
+    return render(request, 'modals/forgot_password.html', {'form': form})
+
 
 #nur zum Testen
 def help(request):
