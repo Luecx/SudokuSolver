@@ -20,8 +20,8 @@ export class InputKeyboard {
         };
 
         this.specialBindings = {
-            'Backspace': () => this.board.unsetValues(this.board.getSelectedRegion()),
-            'Delete': () => this.board.unsetValues(this.board.getSelectedRegion()),
+            'Backspace': () => this.board.clearRegion(this.board.getSelectedRegion()),
+            'Delete'   : () => this.board.clearRegion(this.board.getSelectedRegion()),
         };
 
         this.setEnabled(true); // Enable keyboard input by default
@@ -43,11 +43,16 @@ export class InputKeyboard {
 
             const numberBlock = document.getElementById("number-block");
             if (numberBlock) {
+                const rot = localStorage.getItem("rotationNumberPad");
+
                 if (mode === InputMode.CandidateRegular) {
-                    numberBlock.classList.add("toCorner");
+                    if (localStorage.getItem("rotationNumberPad") === "true" ) {numberBlock.classList.add("toCorner-rotation");}
+                    else {numberBlock.classList.add("toCorner");}
                 } else {
                     numberBlock.classList.remove("toCorner");
+                    numberBlock.classList.remove("toCorner-rotation");
                 }
+
                 if (mode === InputMode.CandidateCentered) {
                     numberBlock.classList.add("toCenter");
                 } else {

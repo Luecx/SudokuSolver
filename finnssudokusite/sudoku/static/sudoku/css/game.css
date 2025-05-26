@@ -23,13 +23,12 @@ html, body {
 }
 .btn-number { position: relative; }
 
-.grid-a-X .btn-gear,
-.grid-a-Y .btn-gear{
+.btn-gear {
 	max-height: 3rem;
 	max-width: 3rem;
 }
 
-.left-pane {
+.board-pane {
 	position: relative; /* Wichtig für absolute Positionierung der Kinder */
 }
 
@@ -69,9 +68,72 @@ html, body {
 	--border: 1rem;
 }
 
+.grid-b {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-rows: repeat(3, minmax(0, 1fr));
+	width: 100%;
+	min-width: 0;
+	min-height: 0;
+	aspect-ratio: 1 / 1;
+	padding: 0;
+	margin: 0;
+	gap: .5rem;
+}
+
+.grid-b.normal {
+	grid-template-areas:
+		"one   two   three"
+		"four  five  six"
+		"seven eight nine";
+}
+
+.grid-b.reversed {
+	grid-template-areas:
+		"seven eight nine"
+		"four  five  six"
+		"one   two   three";
+}
+
+.grid-a-superX {
+	grid-template-columns: repeat(4, 1fr) 1rem repeat(3, 1fr);
+	grid-template-rows: repeat(3, 1fr);
+	grid-template-areas:
+		"info    info   info    gear   col1  NB  NB  NB"
+		"undo    redo   rules   clear  col1  NB  NB  NB"
+		"number  top    center  color  col1  NB  NB  NB";
+}
+
+.grid-a-X {
+	grid-template-columns: repeat(4, 1fr) 1rem 1fr 1fr;
+	grid-template-rows:  repeat(5, 1fr);
+	grid-template-areas:
+		"info info info info col1  .       gear"
+		"NB   NB   NB 	NB   col1  number  rules"
+		"NB   NB   NB 	NB   col1  top     undo"
+		"NB   NB   NB 	NB   col1  center  redo"
+		"NB   NB   NB 	NB   col1  color   clear";
+}
+
+.grid-a-Y {
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
+	grid-template-areas:
+		"info   info  info   gear"
+		"undo   redo  rules  clear"
+		"row1   row1  row1   row1"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"NB     NB    NB     NB"
+		"row2   row2  row2   row2"
+		"number top   center color";
+}
+
+
 @media (min-aspect-ratio: 1/1) {  /* Landscape */
 	
-	.grid-container { /* Landscape */
+	.grid-container {  /* Landscape */
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
@@ -82,7 +144,7 @@ html, body {
 		max-height: 100%;
 	}
 	
-	.left-pane { /* Landscape */
+	.board-pane { /* Landscape */
 		width: min(100%, calc(100dvh - var(--menü-height) - 2 * var(--border)));
 		max-width: 100%;
 		max-height: 100%;
@@ -92,7 +154,7 @@ html, body {
 		justify-content: center;
 	}
 	
-	.right-pane { /* Landscape */
+	.keypad-pane { /* Landscape */
 		min-width: var(--min-spaceX);
 		height: 100%;
 		display: flex;
@@ -108,52 +170,6 @@ html, body {
 		gap: .5rem;
 		padding: 1rem;
 	}
-	
-	.grid-a-X {
-		grid-template-columns: repeat(4, 1fr) 1rem 1fr 1fr;
-		grid-template-rows: 1fr repeat(4, 1fr);
-		grid-template-areas:
-		"info info info info col1  .       gear"
-		"NB   NB   NB 	NB   col1  number  rules"
-		"NB   NB   NB 	NB   col1  top     undo"
-		"NB   NB   NB 	NB   col1  center  redo"
-		"NB   NB   NB 	NB   col1  color   clear";
-	}
-	
-	.grid-a-Y {
-		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
-		grid-template-areas:
-		"info   info  info   gear"
-		"undo   redo  rules  clear"
-		"row1   row1  row1   row1"
-		"NB     NB    NB     NB"
-		"NB     NB    NB     NB"
-		"NB     NB    NB     NB"
-		"NB     NB    NB     NB"
-		"row2   row2  row2   row2"
-		"number top   center color";
-	}
-	
-	.grid-b {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		grid-template-rows: repeat(3, minmax(0, 1fr));
-		width: 100%;
-		min-width: 0;
-		min-height: 0;
-		aspect-ratio: 1 / 1;
-		padding: 0;
-		margin: 0;
-		gap: .5rem;
-		grid-template-areas:
-    		"one   two   three"
-			"four  five  six"
-			"seven eight nine";
-	}
-	
-	.only_portrait {display: none;}
-	.only_landscape {display: block;}
 }
 
 
@@ -168,7 +184,7 @@ html, body {
 		max-height: 100%;
 	}
 	
-	.left-pane { /* Portrait */
+	.board-pane { /* Portrait */
 		height: min(calc(100vw - 2 * var(--border)) , calc(100dvh - var(--menü-height) - 2 * var(--border) - var(--min-spaceY) - var(--grid-container-gap)) );
 		max-width: 100%;
 		max-height: 100%;
@@ -177,7 +193,7 @@ html, body {
 		align-items: center;
 	}
 	
-	.right-pane { /* Portrait */
+	.keypad-pane { /* Portrait */
 		height: 100%;
 		min-height: var(--min-spaceY);
 		min-width: 0;
@@ -193,62 +209,7 @@ html, body {
 		gap: .5rem;
 		padding: 1rem;
 	}
-	
-	.grid-a-superX {
-		grid-template-columns: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
-		grid-template-rows: repeat(4, 1fr);
-		grid-template-areas:
-		"info    info   col1  NB  NB  NB  NB  col2  number"
-		"rules   gear   col1  NB  NB  NB  NB  col2  top   "
-		"undo    redo   col1  NB  NB  NB  NB  col2  center"
-		".       clear  col1  NB  NB  NB  NB  col2  color ";
-	}
-	
-	.grid-a-X {
-		grid-template-columns: repeat(4, 1fr) 1rem 1fr 1fr;
-		grid-template-rows:  repeat(5, 1fr);
-		grid-template-areas:
-		"info info info info col1  .       gear"
-		"NB   NB   NB 	NB   col1  number  rules"
-		"NB   NB   NB 	NB   col1  top     undo"
-		"NB   NB   NB 	NB   col1  center  redo"
-		"NB   NB   NB 	NB   col1  color   clear";
-	}
-	
-	.grid-a-Y {
-		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: 1fr 1fr 1rem repeat(4, 1fr) 1rem 1fr;
-		grid-template-areas:
-		"info   info  info   gear"
-		"undo   redo  rules  clear"
-		"row1   row1  row1   row1"
-		"NB     NB    NB     NB"
-		"NB     NB    NB     NB"
-		"NB     NB    NB     NB"
-		"NB     NB    NB     NB"
-		"row2   row2  row2   row2"
-		"number top   center color";
-	}
-	
-	.grid-b {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		grid-template-rows: repeat(3, minmax(0, 1fr));
-		width: 100%;
-		min-width: 0;
-		min-height: 0;
-		aspect-ratio: 1 / 1;
-		padding: 0;
-		margin: 0;
-		gap: .5rem;
-		grid-template-areas:
-    		"one   two   three"
-			"four  five  six"
-			"seven eight nine";
-	}
-	
 }
-
 
 #number-block {
 	position:relative;
@@ -257,7 +218,13 @@ html, body {
 	grid-column: span 4;
 	height: 100%;
 }
-/* Orientation numbers in buttons*/
+
+.grid-a-superX #number-block {
+	grid-row: span 3;
+	grid-column: span 3;
+}
+
+	/* Orientation numbers in buttons*/
 .toCorner .cornerPos1 { position: absolute; left: 20%; top:20%; transform: translate(-50%, -50%);}
 .toCorner .cornerPos2 { position: absolute; left: 50%; top:20%; transform: translate(-50%, -50%);}
 .toCorner .cornerPos3 { position: absolute; left: 80%; top:20%; transform: translate(-50%, -50%);}
@@ -267,6 +234,16 @@ html, body {
 .toCorner .cornerPos7 { position: absolute; left: 20%; top:80%; transform: translate(-50%, -50%);}
 .toCorner .cornerPos8 { position: absolute; left: 50%; top:80%; transform: translate(-50%, -50%);}
 .toCorner .cornerPos9 { position: absolute; left: 80%; top:80%; transform: translate(-50%, -50%);}
+
+.toCorner-rotation .cornerPos1 { position: absolute; left: 20%; top:80%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos2 { position: absolute; left: 50%; top:80%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos3 { position: absolute; left: 80%; top:80%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos4 { position: absolute; left: 20%; top:50%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos5 { position: absolute; left: 50%; top:50%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos6 { position: absolute; left: 80%; top:50%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos7 { position: absolute; left: 20%; top:20%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos8 { position: absolute; left: 50%; top:20%; transform: translate(-50%, -50%);}
+.toCorner-rotation .cornerPos9 { position: absolute; left: 80%; top:20%; transform: translate(-50%, -50%);}
 
 .toCenter .cornerPos1 { position: absolute; left: 20.0%; top:50%; transform: translate(-50%, -50%);}
 .toCenter .cornerPos2 { position: absolute; left: 27.5%; top:50%; transform: translate(-50%, -50%);}
@@ -288,7 +265,8 @@ html, body {
 .grid-a-Y #gap-col2,
 
 .grid-a-superX #gap-row1,
-.grid-a-superX #gap-row2 {display: none;}
+.grid-a-superX #gap-row2,
+.grid-a-superX #gap-col2 {display: none;}
 
 
 #gap-row1{
@@ -486,4 +464,33 @@ html, body {
 	border-left: 3px solid #aaa;
 	background: #f8f9fa;
 }
+
+/* gear-description */
+.gear-description-wrapper .form-group-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 1rem;
+}
+
+.gear-description-wrapper .form-group-row label {
+	width: 50%;
+	text-align: left;
+	padding-left: 0;
+}
+
+.gear-description-wrapper .form-group-row input[type="range"],
+.gear-description-wrapper .form-group-row select,
+.gear-description-wrapper .form-group-row .mycheck {
+	width: 45%;
+	text-align: left;
+	margin-left: auto;
+}
+
+.gear-description-wrapper .form-group-row input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-left: .5rem;
+	cursor: pointer;
+}
+.gear-description-wrapper .form-switch { padding-left: 0;}
 

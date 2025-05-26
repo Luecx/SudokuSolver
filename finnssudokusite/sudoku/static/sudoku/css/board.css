@@ -114,14 +114,15 @@
 }
 
 .cell-content {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     user-select: none;
     overflow: hidden;
-    filter: blur(0.4px);
 }
+
 
 .cell-content.multi-color-background {
     transition: background 0.3s ease;
