@@ -201,15 +201,15 @@ class Creator {
             }
 
             let msg = `
-  <div style="max-width: 260px; white-space: normal; word-wrap: break-word;">
-    <div style="margin-bottom: 0.25em;">${summary}</div>
-    <small>
-      <div><strong>Solutions:</strong> ${solutionText}</div>
-      <div><strong>Nodes:</strong> ${nodes_explored}</div>
-      <div><strong>Time:</strong> ${time_taken_ms.toFixed(1)} ms</div>
-    </small>
-  </div>
-`;
+              <div style="max-width: 260px; white-space: normal; word-wrap: break-word;">
+                <div style="margin-bottom: 0.25em;">${summary}</div>
+                <small>
+                  <div><strong>Solutions:</strong> ${solutionText}</div>
+                  <div><strong>Nodes:</strong> ${nodes_explored}</div>
+                  <div><strong>Time:</strong> ${time_taken_ms.toFixed(1)} ms</div>
+                </small>
+              </div>
+            `;
 
             this.renderAlert("danger", "Multiple solutions", msg);
             this.displaySolutions(solutions);
