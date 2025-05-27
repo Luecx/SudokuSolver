@@ -114,25 +114,28 @@ export class Game {
         try {
             const cacheKey = `sudoku_${this.sudokuId}`;
             const cachedData = localStorage.getItem(cacheKey);
-            
+
             if (cachedData) {
                 const data = JSON.parse(cachedData);
-                
-                if (data.board_state) 
+
+                if (data.board_state)
                     this.board.contentLayer.loadState(data.board_state);
 
                 this.timer.setTimer(data.time || 0);
-                
+
                 if (data.status === "completed") {
                     this.isCompleted = true;
                     this.showCompletedState(data);
+                    return "completed";
                 } else {
                     console.log("Loaded cached game state");
+                    return "resume";
                 }
             }
         } catch (error) {
             console.log("No cached state found or error loading:", error);
         }
+        return "new";  // <— ganz wichtig!
     }
 
     saveToCache(currentTime, status) {

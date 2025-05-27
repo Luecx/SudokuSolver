@@ -163,6 +163,7 @@ class Creator {
     }
 
     finishSolverRun() {
+
         const solutions = this.solutions_temp_list;
         this.solverRunning = false;
 
@@ -185,16 +186,32 @@ class Creator {
             this.displaySolutions(solutions);
             this.checkIfCanSubmit();
         } else {
-            let msg = "";
+            let summary = "";
+            let solutionText = "";
+
             if (interrupted_by_solution_limit) {
-                msg = `⚠️ At least ${solutions_found} solutions found (solution limit reached).`;
+                summary = "⚠️ Solution limit reached";
+                solutionText = `At least ${solutions_found}`;
             } else if (interrupted_by_node_limit) {
-                msg = `⚠️ At least ${solutions_found} solutions found (node limit reached).`;
+                summary = "⚠️ Node limit reached";
+                solutionText = `At least ${solutions_found}`;
             } else {
-                msg = `❌ Found ${solutions_found} solutions.`;
+                summary = "❌ Multiple solutions found";
+                solutionText = `${solutions_found}`;
             }
-            msg += `<br><small>${nodes_explored} nodes, ${time_taken_ms.toFixed(1)} ms</small>`;
-            this.renderAlert("danger", "Multiple solutions", `<p>${msg}</p>`);
+
+            let msg = `
+  <div style="max-width: 260px; white-space: normal; word-wrap: break-word;">
+    <div style="margin-bottom: 0.25em;">${summary}</div>
+    <small>
+      <div><strong>Solutions:</strong> ${solutionText}</div>
+      <div><strong>Nodes:</strong> ${nodes_explored}</div>
+      <div><strong>Time:</strong> ${time_taken_ms.toFixed(1)} ms</div>
+    </small>
+  </div>
+`;
+
+            this.renderAlert("danger", "Multiple solutions", msg);
             this.displaySolutions(solutions);
             this.analysisUnlocked = true;
         }
