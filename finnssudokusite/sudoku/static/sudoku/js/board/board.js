@@ -173,6 +173,11 @@ export function createBoard(container) {
         //     }, 'image/webp', quality);
         // }
 
+        console.log(serializeObject({
+            fixedCells: numberLayer.saveFixedCells(),
+            rules: ruleManager.saveRules()
+        }));
+
         return serializeObject({
             fixedCells: numberLayer.saveFixedCells(),
             rules: ruleManager.saveRules()
