@@ -433,8 +433,6 @@ export class BoardNumberLayer {
     }
 
     toggleValues(region, value, fixed = false) {
-
-        console.log("toggling values", region, value, fixed);
         const cells = this._filterCells(region);
 
         const filtered = cells.filter(c => {
