@@ -58,7 +58,7 @@
             "rules": []
         },
         {
-            "type": "Thermometer",
+            "type": "Thermos",
             "fields": {},
             "rules": [
                 {
