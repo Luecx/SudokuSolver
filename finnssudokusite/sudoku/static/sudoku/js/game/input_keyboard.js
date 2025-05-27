@@ -71,11 +71,15 @@ export class InputKeyboard {
         const region = this.board.getSelectedRegion();
         if (!this.board.isDefaultMode() || !region || region.length === 0) return;
 
+        console.log("handling input");
+
         switch (this.mode) {
             case InputMode.NumberRegular:
+                console.log("regular number");
                 this.board.toggleValues(region, val, false);
                 break;
             case InputMode.NumberFixed:
+                console.log("fixed number");
                 this.board.toggleValues(region, val, true);
                 break;
             case InputMode.CandidateRegular:

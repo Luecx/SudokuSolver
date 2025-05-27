@@ -433,17 +433,19 @@ export class BoardNumberLayer {
     }
 
     toggleValues(region, value, fixed = false) {
+
+        console.log("toggling values", region, value, fixed);
         const cells = this._filterCells(region);
 
         const filtered = cells.filter(c => {
-            if (fixed === true) return c.fixed;
+            if (fixed === true) return true;
             return !c.fixed;
         });
 
         const allHave = filtered.every(c => c.value === value && (value === null || c.fixed === fixed));
 
         filtered.forEach(c => {
-            this.setValue(c.idx, allHave ? null : value, allHave ? false : fixed);
+            this.setValue(c.idx, allHave ? null : value, fixed);
         });
     }
 
