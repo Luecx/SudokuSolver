@@ -13,7 +13,7 @@
 
 
 int main(int argc, char *argv[]) {
-    bench::bench(argv[1], 1, 16384, false);
+    bench::bench(argv[1], 17, 16384, true);
     return 0;
 }
 
