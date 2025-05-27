@@ -1,11 +1,11 @@
 // game.js
 
 import { createBoard } from "../board/board.js";
+import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "./input_keyboard.js";
 import { InputMode } from "./input_constants.js";
 import { InputGrid } from "./input_grid.js";
 import { Timer } from "./timer.js";
-import { getCSRFToken } from "../csrf/csrf.js";
 
 export class Game {
     constructor(options = {}) {
