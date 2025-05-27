@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Sudoku Play{% endblock %}
+{% block title %}{{ page_title|default:"Sudoku Play" }}{% endblock %}
 
 {% block extra_css %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,8 +27,8 @@
 			<div class="control-container">
 				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
 				<div id="info">
-					<span class="content_name">PUZZLENAME</span><br>
-					<span class="content_creator">Terminator3</span>
+					<span class="content_name">{{ page_title|default:"Unnamed Puzzle" }}</span><br>
+					<span class="content_creator">by {{ creator_name|default:"Unknown" }}</span>
 				</div>
 				<button id="btn-gear" class="btn btn-secondary btn-gear" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
 				<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>

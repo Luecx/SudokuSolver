@@ -43,8 +43,9 @@ def index(request):
 
 
 def game(request):
-    """Renders the general Sudoku game page."""
+    """Renders the general Sudoku game page (without specific puzzle loaded)."""
     return render(request, "sudoku/game.html")
+
 
 
 def puzzles_view(request):
@@ -140,6 +141,8 @@ def play_sudoku(request, sudoku_id):
             "title": sudoku.title,
             "board": puzzle_data,
         }),
+        "page_title": sudoku.title,
+        "creator_name": sudoku.created_by.username if sudoku.created_by else "Unknown",
     })
 
 
