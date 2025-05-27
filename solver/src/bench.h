@@ -105,7 +105,7 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
             board.from_json(root);
 
             SolverStats stats;
-            auto sol = solve_complete ? board.solve_complete(&stats) : board.solve(max_solutions, max_nodes, &stats);
+            auto sol = solve_complete ? board.solve_complete(&stats, max_nodes) : board.solve(max_solutions, max_nodes, &stats);
             std::cout << stats << std::endl;
 
             total_solutions += stats.solutions_found;

@@ -101,7 +101,6 @@ void RuleArrow::from_json(JSON &json) {
 // and the other is the possible numbers inside the path
 bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
     bool changed = false;
-
     Region<CellIdx> &base = arrow_pair.base;
     Region<CellIdx> &path = arrow_pair.arrow_path;
 
@@ -116,6 +115,7 @@ bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
             return false;
 
         path_lb = std::clamp(path_lb, 1, cell1.max_number + 1);
+        // cant clip upper bound because we don't know if all path cells are solved
         changed |= cell1.only_allow_candidates(NumberSet::greaterEqThan(cell1.max_number, path_lb));
     } else {
         Cell &cell2 = board_->get_cell(base.items()[1]);
@@ -158,10 +158,12 @@ bool RuleArrow::determine_path_options(ArrowPair &arrow_pair) {
         int lb_rest = path_lb - cell.candidates.lowest();
         int ub_rest = path_ub - cell.candidates.highest();
 
-        int ub = std::clamp(base_ub - lb_rest, -1, cell.max_number - 1);
         int lb = std::clamp(base_lb - ub_rest, 1, cell.max_number + 1);
+        int ub = std::clamp(base_ub - lb_rest, -1, cell.max_number - 1);
 
-        NumberSet mask = NumberSet::greaterEqThan(cell.max_number, lb) & NumberSet::lessEqThan(cell.max_number, ub);
+        NumberSet mask = NumberSet::greaterEqThan(cell.max_number, lb);
+        if (base.size() != 2)
+            mask &= NumberSet::lessEqThan(cell.max_number, ub);
         changed |= cell.only_allow_candidates(mask);
     }
 
