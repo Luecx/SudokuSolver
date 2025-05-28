@@ -28,6 +28,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(
         template_name='sudoku/login/login.html'
     ), name='login'),
+
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # Password Reset Workflow
@@ -54,9 +55,4 @@ urlpatterns = [
 
     path('save-puzzle-state/', views.save_puzzle_state, name='save_puzzle_state'),
     path('load-puzzle-state/<int:sudoku_id>/', views.load_puzzle_state, name='load_puzzle_state'),
-
-    path('modals/login/', views.modal_login, name='modal_login'),
-    path('modals/register/', views.modal_register, name='modal_register'),
-    path('modals/forgot-password/', views.modal_forgot_password, name='modal_forgot_password'),
-
 ]

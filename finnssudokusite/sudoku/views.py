@@ -60,6 +60,7 @@ def puzzles_view(request):
     if tag_names:
         sudokus = sudokus.filter(tags__name__in=tag_names).distinct()
 
+    sudokus = Sudoku.objects.all().order_by('-id')
     paginator = Paginator(sudokus, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -423,20 +424,6 @@ def activate(request, uid, token):
 
 def game_selection_view(request):
     return render(request, 'sudoku/game_selection.html')
-
-
-
-def modal_login(request):
-    form = AuthenticationForm()
-    return render(request, 'sudoku/modals/login.html', {'form': form})
-
-def modal_register(request):
-    form = UserCreationForm()
-    return render(request, 'sudoku/modals/register.html', {'form': form})
-
-def modal_forgot_password(request):
-    form = PasswordResetForm()
-    return render(request, 'sudoku/modals/forgot_password.html', {'form': form})
 
 
 #nur zum Testen
