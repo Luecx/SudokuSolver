@@ -1,7 +1,7 @@
-{% if created_puzzles %}
 {% load formatting star_rating %}
 {% load form_filters %}
 {% load static %}
+{% if created_puzzles %}
 
 <!-- Shared Search & Tag Filter -->
 {% include "sudoku/profile/search_filter.html" with search_id="searchInput" tag_class="tag-filter" tag_prefix="tag" %}
