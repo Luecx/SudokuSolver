@@ -74,6 +74,8 @@ export function createBoard(container) {
 
         // solver related
         getFixedNumbers         : () => numberLayer.getFixedNumbers(),
+        getUserNumbers          : () => numberLayer.getUserNumbers(),
+        getAllNumbers           : () => numberLayer.getAllNumbers(),
 
         // ───  CONTENT-LAYER APIs ────────────────────────────────────────
         setValues:       (region,val,fixed=false)  => {numberLayer.setValues(region,val,fixed);

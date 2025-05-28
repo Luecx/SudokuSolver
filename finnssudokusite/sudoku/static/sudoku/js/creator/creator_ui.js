@@ -355,10 +355,14 @@ class Creator {
             box.style.display = "block";
             text.textContent = "Encoding Sudoku as JSON...";
 
+            if (this.solutions.list.length !== 1) {
+                throw new Error("Expected exactly one solution before saving.");
+            }
+
             const payload = {
                 title: document.querySelector("input[name='sudoku_name']").value || "Untitled Sudoku",
                 board: this.board.saveBoard(),
-                solution: null,
+                solution: this.solutions.list[0].toFlatString(),
                 tags: this.board.getTags()
             };
 

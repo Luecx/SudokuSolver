@@ -98,7 +98,19 @@ export class Solution {
     }
 
     /**
+     * Converts the solution to a flat comma-separated string using 0 for empty cells.
+     * @returns {string}
+     */
+    toFlatString() {
+        return this.values
+            .flat()
+            .map(v => v === NO_NUMBER ? 0 : v)
+            .join(",");
+    }
+
+    /**
      * Creates a new Solution instance from a flat comma-separated string.
+     * Interprets 0 as NO_NUMBER.
      * @param {string} flatStr - A string of comma-separated numbers (length = size^2).
      * @param {number} size - Board size (e.g., 9 for 9x9).
      * @returns {Solution}
@@ -109,17 +121,20 @@ export class Solution {
             const trimmed = s.trim();
             const n = Number(trimmed);
             if (isNaN(n)) console.warn(`Invalid number at index ${i}: '${trimmed}'`);
-            return n;
+            return n === 0 ? NO_NUMBER : n;
         });
+
         if (values.length !== size * size) {
             throw new Error(`Invalid input length: expected ${size * size} values.`);
         }
+
         const sol = new Solution(size);
         for (let i = 0; i < values.length; i++) {
             const r = Math.floor(i / size);
             const c = i % size;
-            sol.set(new CellIdx(r,c), values[i]);
+            sol.set(new CellIdx(r, c), values[i]);
         }
+
         return sol;
     }
 }

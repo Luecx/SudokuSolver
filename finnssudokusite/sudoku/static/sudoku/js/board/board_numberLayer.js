@@ -215,13 +215,24 @@ export class BoardNumberLayer {
     }
 
     getFixedNumbers() {
-        const solution = new Solution(this.board.gridSize);
-        for (const cell of this.cells) {
-            if (cell.fixed && cell.value !== null) {
-                solution.set(cell.idx, cell.value);
-            }
-        }
-        return solution;
+        return this.cells.reduce((s, c) => {
+            if (c.fixed && c.value != null) s.set(c.idx, c.value);
+            return s;
+        }, new Solution(this.board.gridSize));
+    }
+
+    getUserNumbers() {
+        return this.cells.reduce((s, c) => {
+            if (!c.fixed && c.value != null) s.set(c.idx, c.value);
+            return s;
+        }, new Solution(this.board.gridSize));
+    }
+
+    getAllNumbers() {
+        return this.cells.reduce((s, c) => {
+            if (c.value != null) s.set(c.idx, c.value);
+            return s;
+        }, new Solution(this.board.gridSize));
     }
 
     _generate(cellSize, usedSize, gridOffset) {
