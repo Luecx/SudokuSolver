@@ -60,6 +60,7 @@ def puzzles_view(request):
     if tag_names:
         sudokus = sudokus.filter(tags__name__in=tag_names).distinct()
 
+    sudokus = Sudoku.objects.all().order_by('-id')
     paginator = Paginator(sudokus, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
