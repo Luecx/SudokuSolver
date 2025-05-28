@@ -1,6 +1,7 @@
 {% extends 'sudoku/base.html' %}
 {% load i18n %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block title %}Sudoku{% endblock %}
 
@@ -43,7 +44,7 @@
 			<a href="{% url 'game_selection' %}" class="link link--io my-text-btn">{% trans "CHOOSE A PUZZLE TO PLAY" %}</a>
 			{% if not user.is_authenticated %}
 			<span class="mx-3">OR</span>
-			<a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" onclick="loadModalContent('/modals/login/')">{% trans "LOGIN" %}</a>
+			<a class="link link--io my-text-btn" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" onclick="loadModalContent('/modals/login/')">{% trans "LOGIN" %}</a>
 			{% endif %}
 		</div>
 	</div>
