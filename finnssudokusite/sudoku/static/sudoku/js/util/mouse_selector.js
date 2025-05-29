@@ -1,13 +1,46 @@
+/**
+ * @file mouse_selector.js
+ * @description
+ * General-purpose mouse-based selection utility.
+ *
+ * Supports single or multiple selection modes for interactive UIs.
+ * Handles mouse events with support for shift/control key modifiers and drag gestures.
+ *
+ * Usage example:
+ * ```js
+ * const selector = new MouseSelector({
+ *   getKeyFromEvent: e => e.target.dataset.key,
+ *   onSelect: key => ...,
+ *   onDeselect: key => ...,
+ *   onClear: () => ...,
+ *   onIsSelected: key => ...,
+ *   mode: SelectionMode.MULTIPLE
+ * });
+ * ```
+ */
+
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class MouseSelector {
+    /**
+     * Constructs a MouseSelector instance.
+     *
+     * @param {Object} options
+     * @param {(e: MouseEvent) => string | null} options.getKeyFromEvent - Maps mouse event to a selection key.
+     * @param {(key: string) => void} options.onSelect - Called when a key is selected.
+     * @param {(key: string) => void} options.onDeselect - Called when a key is deselected.
+     * @param {() => void} options.onClear - Called to clear the current selection.
+     * @param {(key: string) => boolean} options.onIsSelected - Checks if a key is already selected.
+     * @param {() => void=} options.onStartSelection - Optional hook when selection starts.
+     * @param {SelectionMode} [options.mode=SelectionMode.MULTIPLE] - Selection behavior (SINGLE or MULTIPLE).
+     */
     constructor({
-                    getKeyFromEvent,       // (MouseEvent e) => string | null
-                    onSelect,              // (key: string) => void
-                    onDeselect,            // (key: string) => void
-                    onClear,               // () => void
-                    onIsSelected,          // (key: string) => boolean
-                    onStartSelection = null,  // () => void (optional)
+                    getKeyFromEvent,
+                    onSelect,
+                    onDeselect,
+                    onClear,
+                    onIsSelected,
+                    onStartSelection = null,
                     mode = SelectionMode.MULTIPLE,
                 }) {
         this.getKeyFromEvent = getKeyFromEvent;
@@ -25,11 +58,13 @@ export class MouseSelector {
         this._shouldClear = false;
     }
 
+    /**
+     * Handle mouse down event. Starts tracking for click/drag detection.
+     * @param {MouseEvent} e
+     */
     onMouseDown(e) {
         const key = this.getKeyFromEvent(e);
         if (!key) return;
-
-        console.log(e.shiftKey)
 
         this._mouseDown = true;
         this._mouseDownPos = { x: e.clientX, y: e.clientY };
@@ -40,11 +75,13 @@ export class MouseSelector {
             ? !(e.shiftKey || e.ctrlKey)
             : true;
 
-        console.log("Mouse down", this._shouldClear);
-
         this.onStartSelection?.();
     }
 
+    /**
+     * Handle mouse move event. Performs drag-based selection.
+     * @param {MouseEvent} e
+     */
     onMouseMove(e) {
         if (!this._mouseDown) return;
 
@@ -73,6 +110,10 @@ export class MouseSelector {
         }
     }
 
+    /**
+     * Handle mouse up event. Determines if a selection should occur.
+     * @param {MouseEvent} e
+     */
     onMouseUp(e) {
         if (!this._mouseDown) return;
 
@@ -82,6 +123,7 @@ export class MouseSelector {
 
         if (key && isClick) {
             const alreadySelected = this.onIsSelected(key);
+
             if (this.mode === SelectionMode.SINGLE) {
                 if (alreadySelected) {
                     this.onDeselect(key);
@@ -91,8 +133,11 @@ export class MouseSelector {
                 }
             } else {
                 if (shift) {
-                    if (alreadySelected) this.onDeselect(key);
-                    else this.onSelect(key);
+                    if (alreadySelected) {
+                        this.onDeselect(key);
+                    } else {
+                        this.onSelect(key);
+                    }
                 } else {
                     if (alreadySelected && this._onlyOneSelected()) {
                         this.onDeselect(key);
@@ -110,5 +155,11 @@ export class MouseSelector {
         this._dragged.clear();
     }
 
+    /**
+     * Override this method to determine if only one item is selected.
+     * Used for deselecting the last selected item.
+     *
+     * @returns {boolean}
+     */
     _onlyOneSelected = () => false;
 }

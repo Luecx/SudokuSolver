@@ -9,6 +9,10 @@ from django.contrib.auth.decorators import login_required
 
 from ..models import Sudoku, UserSudokuDone, UserSudokuOngoing
 
+def game(request):
+    """Renders the general Sudoku game page (without specific puzzle loaded)."""
+    return render(request, "sudoku/game.html")
+
 
 def play_sudoku(request, sudoku_id):
     """Renders the game page for a specific Sudoku puzzle."""

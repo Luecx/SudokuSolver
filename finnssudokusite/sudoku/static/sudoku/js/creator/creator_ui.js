@@ -5,7 +5,8 @@ import { CreatorRuleManager } from "./creator_rule_manager.js";
 import { getCSRFToken } from "../csrf/csrf.js";
 import { InputKeyboard } from "../game/input_keyboard.js";
 import { InputMode } from "../game/input_constants.js";
-import { Solution, Solutions } from "../solution/solution.js";
+import { Solution } from "../solution/solution.js";
+import { Solutions } from "../solution/solutions.js";
 
 class Creator {
     constructor() {

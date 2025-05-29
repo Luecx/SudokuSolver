@@ -1,8 +1,13 @@
-// === solution.js ===
+/**
+ * @file solution.js
+ * @description
+ * Represents a completed Sudoku board as a 2D array.
+ * Each cell contains a single number or NO_NUMBER if unset.
+ * Provides serialization, comparison, and analysis methods.
+ */
 
 import { NO_NUMBER } from '../number/number.js';
-import { NumberSet } from '../number/number_set.js';
-import {CellIdx} from "../region/CellIdx.js";
+import { CellIdx } from '../region/CellIdx.js';
 
 /**
  * Represents a completed Sudoku board.
@@ -19,17 +24,17 @@ export class Solution {
 
     /**
      * Sets the value of a cell.
-     * @param {CellIdx} idx - CellIdx index.
+     * @param {CellIdx} idx - Cell index.
      * @param {number} value - Value to assign.
      */
     set(idx, value) {
-        this.values[idx.r][idx.c] = value
+        this.values[idx.r][idx.c] = value;
     }
 
     /**
      * Gets the value of a cell.
-     * @param {CellIdx} idx - CellIdx index.
-     * @returns {number} - The value at the given position.
+     * @param {CellIdx} idx - Cell index.
+     * @returns {number}
      */
     get(idx) {
         return this.values[idx.r][idx.c];
@@ -52,8 +57,8 @@ export class Solution {
     /**
      * Counts the number of differences between this solution and another.
      * Only compares non-zero entries (ignores NO_NUMBER values).
-     * @param {Solution} other - The other solution to compare with.
-     * @returns {number} - Number of differing cells.
+     * @param {Solution} other
+     * @returns {number}
      */
     difference(other) {
         if (this.size !== other.size) {
@@ -66,13 +71,9 @@ export class Solution {
                 const pos = new CellIdx(r, c);
                 const thisValue = this.get(pos);
                 const otherValue = other.get(pos);
-                
-                // only compare if both values are not NO_NUMBER
-                if (thisValue === NO_NUMBER || otherValue === NO_NUMBER)
-                    continue;
 
-                if (thisValue !== otherValue)
-                    count++;
+                if (thisValue === NO_NUMBER || otherValue === NO_NUMBER) continue;
+                if (thisValue !== otherValue) count++;
             }
         }
         return count;
@@ -80,25 +81,25 @@ export class Solution {
 
     /**
      * Counts how many times a specific number appears in the solution.
-     * @param {number} value - The number to count (1 to size).
-     * @returns {number} - Count of the specified number.
+     * @param {number} value
+     * @returns {number}
      */
     countNumber(value) {
-        if (value < 0 || value > this.size) {
+        if (value < 1 || value > this.size) {
             throw new Error(`Invalid value: ${value}. Must be between 1 and ${this.size}.`);
         }
 
         let count = 0;
-        for (let r = 0; r < this.size; r++) 
-            for (let c = 0; c < this.size; c++) 
-                if (this.get(new CellIdx(r, c)) === value) 
-                    count++;
-                
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
+                if (this.get(new CellIdx(r, c)) === value) count++;
+            }
+        }
         return count;
     }
 
     /**
-     * Converts the solution to a flat comma-separated string using 0 for empty cells.
+     * Converts the solution to a flat comma-separated string (0 = empty).
      * @returns {string}
      */
     toFlatString() {
@@ -111,8 +112,8 @@ export class Solution {
     /**
      * Creates a new Solution instance from a flat comma-separated string.
      * Interprets 0 as NO_NUMBER.
-     * @param {string} flatStr - A string of comma-separated numbers (length = size^2).
-     * @param {number} size - Board size (e.g., 9 for 9x9).
+     * @param {string} flatStr
+     * @param {number} size
      * @returns {Solution}
      */
     static fromFlatString(flatStr, size = 9) {
@@ -136,60 +137,5 @@ export class Solution {
         }
 
         return sol;
-    }
-}
-
-/**
- * Represents a collection of multiple Sudoku solutions,
- * and determines the candidate numbers for each cell based
- * on all provided solutions.
- */
-export class Solutions {
-    /**
-     * @param {Solution[]} list - Array of Solution instances.
-     */
-    constructor(list) {
-        if (!list.length) {
-            throw new Error("Solutions must be constructed with at least one Solution.");
-        }
-
-        this.list = list;
-        this.size = list[0].size;
-
-        // Initialize board of NumberSet to collect possible values at each cell
-        this.candidates = Array.from({ length: this.size }, () =>
-            Array.from({ length: this.size }, () => new NumberSet(this.size))
-        );
-
-        for (const sol of list) {
-            if (sol.size !== this.size) {
-                throw new Error("All solutions must have the same board size.");
-            }
-            for (let r = 0; r < this.size; r++) {
-                for (let c = 0; c < this.size; c++) {
-                    const value = sol.get(new CellIdx(r, c));
-                    if (value !== NO_NUMBER) {
-                        this.candidates[r][c].add(value);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the NumberSet of possible values at the given cell.
-     * @param {CellIdx} idx
-     * @returns {NumberSet}
-     */
-    getCandidates(idx) {
-        return this.candidates[idx.r][idx.c];
-    }
-
-    /**
-     * Returns the number of stored solutions.
-     * @returns {number}
-     */
-    count() {
-        return this.list.length;
     }
 }

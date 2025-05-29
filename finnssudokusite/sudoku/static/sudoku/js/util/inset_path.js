@@ -1,3 +1,34 @@
+/**
+ * @file inset_path.js
+ * @description
+ * Extracts polygon boundaries from grid-based regions and applies an inset offset.
+ *
+ * Given a list of `{x, y}` cell coordinates and an inset value, this module:
+ *  1. Groups side-connected cells into contiguous regions.
+ *  2. Extracts edges of each cell in the region.
+ *  3. Removes shared/internal edges to leave outer boundaries.
+ *  4. Traces those boundaries into closed polygon loops.
+ *  5. Applies an inward offset (inset) to each loop.
+ *  6. Sorts loops by area (descending).
+ *
+ * Intended for rendering soft-margined cage outlines in logic puzzles like Sudoku.
+ *
+ * @example
+ * const cells = [{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 0}];
+ * const polygons = buildInsetPath(cells, 0.05); // returns inset polygon loops
+ */
+
+/**
+ * @typedef {{x: number, y: number}} Point
+ * @typedef {{x: number, y: number}} GridCell
+ */
+
+/**
+ * Main entry point. Builds inset boundary paths around input cells.
+ * @param {GridCell[]} cells - List of cell coordinates.
+ * @param {number} inset - Distance to inset the boundary inward.
+ * @returns {Point[][]} Array of inset polygon loops.
+ */
 export function buildInsetPath(cells, inset) {
     const groups = groupConnectedRegions(cells);
 
@@ -15,7 +46,7 @@ export function buildInsetPath(cells, inset) {
     return allInsetLoops;
 }
 
-// --- STEP 0: Group cell regions based on side adjacency ---
+// === STEP 0: Group cell regions based on side adjacency ===
 function groupConnectedRegions(cells) {
     const visited = new Set();
     const groups = [];
@@ -56,7 +87,7 @@ function groupConnectedRegions(cells) {
     return groups;
 }
 
-// STEP 1: Extract all edges and remember their origin cell
+// === STEP 1: Extract all cell edges with original cell reference ===
 function extractAllCellEdges(cells) {
     const allEdges = [];
 
@@ -78,7 +109,7 @@ function extractAllCellEdges(cells) {
     return allEdges;
 }
 
-// STEP 2: Remove internal edges
+// === STEP 2: Remove internal edges shared between adjacent cells ===
 function removeInternalEdges(edges) {
     const remaining = [];
 
@@ -92,7 +123,7 @@ function removeInternalEdges(edges) {
                 (pointEquals(a1, b2) && pointEquals(b1, a2)) ||
                 (pointEquals(a1, a2) && pointEquals(b1, b2))
             ) {
-                remaining.splice(i, 1); // Remove matching opposite
+                remaining.splice(i, 1); // Remove internal pair
                 found = true;
                 break;
             }
@@ -106,7 +137,7 @@ function removeInternalEdges(edges) {
     return remaining;
 }
 
-// STEP 3: Trace closed polygon loops with cell-aware preference
+// === STEP 3: Trace closed boundary loops from edges ===
 function traceClosedLoops(edges) {
     const edgeMap = new Map();
 
@@ -135,7 +166,7 @@ function traceClosedLoops(edges) {
 
             const candidates = edgeMap.get(pointKey(current)) || [];
 
-            // Prefer edges from the same original cell
+            // Prefer edges from same original cell
             let nextEdge = candidates.find(
                 e => !pointEquals(e.to, prev) && e.cellKey === currentCell
             );
@@ -158,7 +189,8 @@ function traceClosedLoops(edges) {
 
     return loops;
 }
-// --- STEP 4: Inset a loop polygon ---
+
+// === STEP 4: Apply inward offset to each polygon loop ===
 function applyInsetToLoop(loop, inset) {
     const len = loop.length;
     const offsetSegments = [];
@@ -201,7 +233,7 @@ function applyInsetToLoop(loop, inset) {
     return insetLoop;
 }
 
-// --- STEP 5: Sort loops by area (largest first) ---
+// === STEP 5: Sort loops by area descending ===
 function sortLoops(loops) {
     function loopArea(loop) {
         let area = 0;
@@ -216,7 +248,7 @@ function sortLoops(loops) {
     return loops.slice().sort((a, b) => loopArea(b) - loopArea(a));
 }
 
-// --- Helpers ---
+// === Geometric Utilities ===
 function pointEquals(p1, p2) {
     return p1.x === p2.x && p1.y === p2.y;
 }

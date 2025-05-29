@@ -116,9 +116,6 @@ export class GameState {
             }
         } catch { /* ignore */ }
 
-        if (serverData.board_state) 
-            console.log(serverData.board_state);
-
         // Pick entry with lower time
         let selected = null;
         if (serverData && cacheData) {

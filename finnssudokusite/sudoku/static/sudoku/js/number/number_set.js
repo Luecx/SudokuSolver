@@ -1,16 +1,25 @@
 /**
- * NumberSet.js
+ * @file NumberSet.js
+ * @description
+ * Bitmask-based utility class to represent sets of digits in logic puzzles like Sudoku.
+ * Supports efficient operations such as union, intersection, symmetric difference, and iteration.
+ * Especially useful for candidate management in constraint-based puzzles.
  *
- * Represents a set of digits (1 to max) using a bitmask.
- * Efficient for logic puzzles and general numeric filtering.
+ * Digits are stored in the range [1, max], where `max` defaults to 9.
+ * Internally, digits are stored as bitmask values for performance.
  *
- * Example usage:
- *   const s = new NumberSet(9);
- *   s.allow(5);
- *   console.log([...s]); // → [5]
- *   const odds = NumberSet.odd(9);
- *   const even = NumberSet.even(9);
- *   const all = odds.or(even);
+ * Example:
+ * ```js
+ * const s = new NumberSet(9);
+ * s.add(5);
+ * console.log([...s]);           // → [5]
+ * const odds = NumberSet.odd(9);
+ * const evens = NumberSet.even(9);
+ * const union = odds.or(evens); // full set
+ * ```
+ *
+ * Designed for performance and clarity.
+ * Author: Finn Eggers
  */
 
 export class NumberSet {
