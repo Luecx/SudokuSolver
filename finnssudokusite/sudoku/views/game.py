@@ -1,3 +1,29 @@
+"""
+views_game.py
+
+Handles rendering and API logic for Sudoku gameplay.
+
+Includes:
+- Rendering the Sudoku game page (generic or puzzle-specific)
+- Saving in-progress puzzle state
+- Marking puzzles as completed
+- Loading prior saved state (completed or ongoing)
+
+Board data is always stored and transmitted as a compressed string (zlib).
+Parsing is handled client-side.
+
+Expected request JSON:
+- sudoku_id: int (required)
+- board_state: str (raw encoded board string)
+- time: int (optional, in seconds)
+- rating: int (optional, 1–5)
+
+Responses use JSON:
+- status: "success", "error", "completed", "no_state"
+- message: optional text
+- board_state: str (raw board string)
+"""
+
 import zlib
 import json
 from django.shortcuts import render, get_object_or_404
@@ -9,17 +35,31 @@ from django.contrib.auth.decorators import login_required
 
 from ..models import Sudoku, UserSudokuDone, UserSudokuOngoing
 
+
 def game(request):
-    """Renders the general Sudoku game page (without specific puzzle loaded)."""
+    """
+    Renders the generic Sudoku game page without loading a specific puzzle.
+    """
     return render(request, "sudoku/game.html")
 
 
 def play_sudoku(request, sudoku_id):
-    """Renders the game page for a specific Sudoku puzzle."""
+    """
+    Renders the game page for a specific Sudoku puzzle.
+
+    Context passed to template:
+    - puzzle_data_json: JSON string with:
+        - id: int
+        - title: str
+        - board: str (raw board string)
+        - solution: str (flattened solution string)
+    - page_title: str
+    - creator_name: str
+    """
     sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
 
     try:
-        puzzle_data = _decompress_board(sudoku.puzzle)
+        puzzle_data = _decompress(sudoku.puzzle)
     except Exception:
         raise Http404("Invalid puzzle data.")
 
@@ -39,15 +79,24 @@ def play_sudoku(request, sudoku_id):
 @login_required
 def save_ongoing_state(request):
     """
-    Saves an ongoing Sudoku state (not yet completed).
-    Creates or updates a UserSudokuOngoing entry.
-    Sets 'was_previously_completed' if user has already completed this puzzle.
+    Saves an in-progress puzzle to UserSudokuOngoing.
+
+    Request:
+    - JSON with: sudoku_id (int), board_state (str), time (int)
+
+    Behavior:
+    - Creates or updates ongoing save
+    - Also marks whether this puzzle was already completed
+
+    Response:
+    - { status: "success", message: str } on success
+    - { status: "error", message: str } on failure
     """
     try:
         data = _parse_request_data(request)
         sudoku = get_object_or_404(Sudoku, pk=data["sudoku_id"])
 
-        state_compressed = _compress_board(data["board_state"])
+        state_compressed = _compress(data["board_state"])
         time = data["time"]
 
         was_previously_completed = UserSudokuDone.objects.filter(user=request.user, sudoku=sudoku).exists()
@@ -81,15 +130,25 @@ def save_ongoing_state(request):
 @transaction.atomic
 def mark_sudoku_completed(request):
     """
-    Marks a Sudoku as completed.
-    Saves to UserSudokuDone, updates Sudoku aggregate statistics,
-    and removes any ongoing entry.
+    Marks a puzzle as completed, updates aggregates, removes ongoing save.
+
+    Request:
+    - JSON with: sudoku_id (int), board_state (str), time (int), rating (optional int)
+
+    Behavior:
+    - Creates or updates UserSudokuDone
+    - Updates Sudoku.solve stats (solve count, time, rating avg)
+    - Deletes any ongoing state for this user
+
+    Response:
+    - { status: "success", message: str }
+    - { status: "error", message: str } on failure
     """
     try:
         data = _parse_request_data(request)
         sudoku = get_object_or_404(Sudoku, pk=data["sudoku_id"])
 
-        state_compressed = _compress_board(data["board_state"])
+        state_compressed = _compress(data["board_state"])
         time = data["time"]
         rating = data.get("rating", None)
 
@@ -105,14 +164,12 @@ def mark_sudoku_completed(request):
         )
 
         if created:
-            # First-time solve — update aggregates
             sudoku.solves += 1
             sudoku.sum_time += time
             if rating is not None:
                 sudoku.sum_ratings += rating
                 sudoku.ratings_count += 1
         else:
-            # Updating an existing solve — adjust delta
             sudoku.sum_time += time - done.time
             if rating is not None:
                 if done.rating is not None:
@@ -144,15 +201,40 @@ def mark_sudoku_completed(request):
 @login_required
 def load_puzzle_state(request, sudoku_id):
     """
-    Loads the current state of a puzzle, either from the completed or ongoing state.
+    Returns the most recent puzzle state (completed or ongoing).
+
+    Returns JSON:
+    - If completed:
+        {
+            status: "completed",
+            message: "Puzzle already completed",
+            board_state: str,
+            completion_time: int,
+            rating: int or null,
+            completed_date: ISO string
+        }
+
+    - If ongoing:
+        {
+            status: "success",
+            board_state: str,
+            time: int,
+            last_saved: ISO string,
+            was_previously_completed: bool
+        }
+
+    - If no data found:
+        { status: "no_state", message: str }
+
+    - On failure:
+        { status: "error", message: str }
     """
     try:
         sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
 
-        # Try completed first
         try:
             done = UserSudokuDone.objects.get(user=request.user, sudoku=sudoku)
-            board_state = _decompress_board(done.state) if done.state else None
+            board_state = _decompress(done.state) if done.state else None
 
             return JsonResponse({
                 "status": "completed",
@@ -165,10 +247,9 @@ def load_puzzle_state(request, sudoku_id):
         except UserSudokuDone.DoesNotExist:
             pass
 
-        # Try ongoing
         try:
             ongoing = UserSudokuOngoing.objects.get(user=request.user, sudoku=sudoku)
-            board_state = _decompress_board(ongoing.state) if ongoing.state else None
+            board_state = _decompress(ongoing.state) if ongoing.state else None
 
             return JsonResponse({
                 "status": "success",
@@ -184,14 +265,86 @@ def load_puzzle_state(request, sudoku_id):
         return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
 
+@login_required
+def get_ongoing_state(request, sudoku_id):
+    """
+    Loads the ongoing puzzle state for the user, if it exists.
+
+    Returns:
+    - If found:
+        {
+            "status": "success",
+            "board_state": str,
+            "time": int,
+            "last_saved": ISO string,
+            "was_previously_completed": bool
+        }
+    - If not:
+        {
+            "status": "no_state",
+            "message": "No ongoing state found"
+        }
+    - On failure:
+        {
+            "status": "error",
+            "message": str
+        }
+    """
+    try:
+        sudoku      = get_object_or_404(Sudoku, pk=sudoku_id)
+
+        ongoing     = UserSudokuOngoing.objects.get(user=request.user, sudoku=sudoku)
+        board_state = _decompress(ongoing.state) if ongoing.state else None
+
+        return JsonResponse({
+            "status": "success",
+            "board_state": board_state,
+            "time": ongoing.time,
+            "last_saved": ongoing.date.isoformat() if ongoing.date else None,
+            "was_previously_completed": ongoing.was_previously_completed,
+        })
+
+    except UserSudokuOngoing.DoesNotExist:
+        return JsonResponse({"status": "no_state", "message": "No ongoing state found"})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+
+@login_required
+def has_solved(request, sudoku_id):
+    """
+    Checks whether the logged-in user has completed the given puzzle.
+
+    Returns:
+    {
+        "status": "success",
+        "solved": true | false
+    }
+    """
+    try:
+        sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
+        solved = UserSudokuDone.objects.filter(user=request.user, sudoku=sudoku).exists()
+        return JsonResponse({"status": "success", "solved": solved})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
 
 # --- Internal utility functions --- #
 
 def _parse_request_data(request):
     """
-    Parses JSON body from request and extracts necessary fields.
-    Raises KeyError or ValueError on failure.
+    Parses a request containing JSON or form-encoded puzzle data.
+
+    Returns:
+    - {
+        sudoku_id: int,
+        board_state: str,
+        time: int,
+        rating: int | None
+      }
+
+    Raises:
+    - ValueError if data is missing or invalid
     """
     if request.content_type == 'application/json':
         data = json.loads(request.body)
@@ -206,27 +359,27 @@ def _parse_request_data(request):
 
     return {
         "sudoku_id": data["sudoku_id"],
-        "board_state": data.get("board_state", ""),  # ✅ Already a string
+        "board_state": data.get("board_state", ""),
         "time": data.get("time", 0),
         "rating": data.get("rating", None),
     }
 
 
-def _compress_board(board_data):
+def _compress(board_str):
     """
-    Compresses a board state using zlib.
-    Converts to JSON string if not already a string.
+    Compresses board data to zlib bytes.
+
+    - board_str: str
+    - Returns: bytes
     """
-    if isinstance(board_data, str):
-        board_str = board_data
-    else:
-        board_str = json.dumps(board_data)
-    
     return zlib.compress(board_str.encode('utf-8'))
 
 
-def _decompress_board(blob):
+def _decompress(blob):
     """
-    Decompresses a zlib blob to retrieve the board state string.
+    Decompresses zlib-compressed board state.
+
+    - blob: bytes
+    - Returns: str
     """
     return zlib.decompress(blob).decode('utf-8')
