@@ -208,11 +208,16 @@ def _parse_request_data(request):
     }
 
 
-def _compress_board(board_str):
+def _compress_board(board_data):
     """
-    Compresses a board state string using zlib.
-    Assumes the board is already a serialized string.
+    Compresses a board state using zlib.
+    Converts to JSON string if not already a string.
     """
+    if isinstance(board_data, str):
+        board_str = board_data
+    else:
+        board_str = json.dumps(board_data)
+    
     return zlib.compress(board_str.encode('utf-8'))
 
 
