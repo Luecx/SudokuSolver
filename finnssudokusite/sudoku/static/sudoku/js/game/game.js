@@ -7,6 +7,7 @@ import { InputMode } from "./input_constants.js";
 import { InputGrid } from "./input_grid.js";
 import { Timer } from "./timer.js";
 import { Solution } from "../solution/solution.js";
+import { GameState } from "./game_state.js";
 
 export class Game {
     constructor(options = {}) {
@@ -19,12 +20,11 @@ export class Game {
             InputMode.Color
         ]);
 
-        this.isSaveTriggered = false;
         this.timer = new Timer("timer");
         this.sudokuId = null;
-        this.isCompleted = false;
-        this.saveTimer = null;
-        // Array of finished image paths – adjust as needed
+        this.state = null;
+
+        // Array of finished image paths
         this.finishedImages = [
             "/static/sudoku/img/done/1.png",
             "/static/sudoku/img/done/2.png",
@@ -46,24 +46,27 @@ export class Game {
     }
     async init() {
         this.board.initBoard();
-
         const jsonData = window.puzzle_data;
-
-        console.log(jsonData);
-
         if (!jsonData) return;
 
         this.sudokuId = jsonData.id;
         this.board.loadBoard(jsonData.board);
 
-        const solutionStr = jsonData.solution;  // ✅ fixed: no longer inside `board`
-        if (solutionStr) {
-            this.solution = Solution.fromFlatString(solutionStr, this.board.gridSize);
-        } else {
-            this.solution = null;
-        }
+        this.solution = jsonData.solution
+            ? Solution.fromFlatString(jsonData.solution, this.board.gridSize)
+            : null;
 
-        // Hook into changes: when a number is changed, check if the puzzle is finished
+        this.state = new GameState();
+        await this.state.load(this.sudokuId, this.board, this.timer);
+
+
+        new InputGrid(this.keyboard);
+        this.setupPageUnloadHandlers();
+        this.setupThemeMenu();
+        this.renderRuleDescriptions();
+
+        await this.handleInitialModal();
+
         this.board.onEvent("ev_number_changed", () => {
             if (this.board.contentLayer.isSolved()) {
                 this.onSudokuFinished();
@@ -74,48 +77,28 @@ export class Game {
         if (validateBtn) {
             validateBtn.addEventListener("click", () => this.validateProgress());
         }
-
-        let state = await this.loadGameState();
-        new InputGrid(this.keyboard);
-
-        this.setupPageUnloadHandlers();
-        this.setupThemeMenu();
-        this.renderRuleDescriptions();
-
-        await this.handleInitialModal(state);
     }
 
 
     // --- New function that is triggered when the sudoku is completed ---
     onSudokuFinished() {
-        // Optionally, add any game-complete logic here.
         console.log("Sudoku Completed!");
+        this.state.save_completed(this.sudokuId, this.board, this.timer);
         this.showFinishedModal();
     }
 
     // --- Modal functions ---
     showFinishedModal() {
-        // Pick a random image from the finishedImages array
         const imgSrc = this.finishedImages[
             Math.floor(Math.random() * this.finishedImages.length)
             ];
-
-        // Find the modal container – ensure this exists in your HTML with id "finishedModal"
         const modalEl = document.getElementById("finishedModal");
-        if (!modalEl) {
-            console.warn("Finished modal element not found!");
-            return;
-        }
-
-        // Set the modal content to show the image
+        if (!modalEl) return;
         const modalBody = modalEl.querySelector(".modal-body");
         if (modalBody) {
             modalBody.innerHTML = `<img src="${imgSrc}" alt="Finished!" style="width: 100%;">`;
         }
-
-        // Show the modal using bootstrap
-        const modal = new bootstrap.Modal(modalEl);
-        modal.show();
+        new bootstrap.Modal(modalEl).show();
     }
 
     showValidationModal(message) {
@@ -125,11 +108,8 @@ export class Game {
             return;
         }
         const modalBody = modalEl.querySelector(".modal-body");
-        if (modalBody) {
-            modalBody.textContent = message;
-        }
-        const modal = new bootstrap.Modal(modalEl);
-        modal.show();
+        if (modalBody) modalBody.textContent = message;
+        new bootstrap.Modal(modalEl).show();
     }
 
     // Called when the "Check My Progress" button is clicked.
@@ -139,16 +119,13 @@ export class Game {
             return;
         }
 
-        // Expecting that board.getUserNumbers returns a Solution object of user-entered numbers.
-        // Adjust if necessary based on your implementation.
-        const userInput = this.board.getUserNumbers ? this.board.getUserNumbers() : null;
+        const userInput = this.board.getUserNumbers?.();
         if (!userInput) {
             alert("User input extraction not available.");
             return;
         }
 
         const diff = userInput.difference(this.solution);
-
         const message = diff === 0
             ? "✅ Everything looks good so far!"
             : `❌ ${diff} number${diff === 1 ? '' : 's'} are incorrect.`;
@@ -158,19 +135,18 @@ export class Game {
 
     // --- Rest of your methods remain unchanged ---
     setupPageUnloadHandlers() {
-        window.addEventListener('beforeunload', () => {
-            this.saveGameStateSync();
-        });
-
+        const syncSave = () => {
+            if (this.sudokuId && !this.board.contentLayer.isSolved()) {
+                this.state.save_state(this.sudokuId, this.board, this.timer);
+            }
+        };
+        window.addEventListener('beforeunload', syncSave);
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden')
-                this.saveGameStateSync();
+            if (document.visibilityState === 'hidden') syncSave();
         });
-
-        window.addEventListener('blur', () => {
-            this.saveGameStateSync();
-        });
+        window.addEventListener('blur', syncSave);
     }
+
 
     saveGameStateSync() {
         if (!this.sudokuId || this.isCompleted) return;
@@ -274,7 +250,7 @@ export class Game {
     async loadGameState() {
         if (!this.sudokuId) return "unknown";
         try {
-            const response = await fetch(`/load-puzzle-state/${this.sudokuId}/`);
+            const response = await fetch(`/load-state/${this.sudokuId}/`);
             const data = await response.json();
             if (data.status === "no_auth") {
                 this.loadFromCache();
@@ -297,55 +273,6 @@ export class Game {
             this.loadFromCache();
             return this.isCompleted ? "completed" : "resume";
         }
-    }
-
-    async saveGameState() {
-        if (!this.sudokuId || this.isCompleted) return;
-        this.isSaveTriggered = true;
-        try {
-            const currentTime = this.timer.getDuration() || 0;
-            const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
-            const payload = {
-                sudoku_id: this.sudokuId,
-                time: parseInt(currentTime),
-                status: status,
-                board_state: this.board.contentLayer.getState(),
-            };
-            const response = await fetch('/save-puzzle-state/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if (data.status === "no_auth") {
-                this.saveToCache(currentTime, status);
-                return;
-            }
-            if (data.status === "success") {
-                if (status === "completed") {
-                    this.isCompleted = true;
-                    this.showCompletedState();
-                } else {
-                    console.log("Game state saved to server");
-                }
-            }
-        } catch (error) {
-            console.error("Error saving to server, saving to cache:", error);
-            const currentTime = this.timer.getDuration() || 0;
-            const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
-            this.saveToCache(currentTime, status);
-        }
-    }
-
-    setupAutoSave() {
-        if (!this.sudokuId || this.isCompleted) return;
-        setInterval(() => {
-            if (!this.isSaveTriggered) return;
-            this.saveGameState();
-        }, 2 * 60 * 1000);
     }
 
     showCompletedState(data = null) {
@@ -427,33 +354,28 @@ export class Game {
         }
     }
 
-    async handleInitialModal(state) {
+    async handleInitialModal() {
         const modal = new bootstrap.Modal(document.getElementById("sudokuInfoModal"));
         const messageBox = document.getElementById("sudoku-info-message");
         const startButton = document.getElementById("start-sudoku-button");
+
         if (!modal || !messageBox || !startButton) {
-            console.warn("Modal-Elemente nicht gefunden");
             this.timer.init();
             return;
         }
-        let message = "";
-        switch (state) {
-            case "new":
-            case "unknown":
-                message = "Dies ist dein erster Versuch dieses Sudokus. Viel Erfolg!";
-                break;
-            case "resume":
-                message = "Dieses Sudoku wurde bereits begonnen. Du kannst jetzt weiterspielen.";
-                break;
-            case "completed":
-                message = "Dieses Sudoku wurde bereits abgeschlossen. Es wird nicht erneut gezählt, kann aber nochmal gespielt werden.";
-                break;
+
+        let message = "Dies ist dein erster Versuch dieses Sudokus. Viel Erfolg!";
+        if (this.state.completed_before) {
+            message = "Dieses Sudoku wurde bereits abgeschlossen. Es wird nicht erneut gezählt, kann aber nochmal gespielt werden.";
+        } else if (this.state.resumed) {
+            message = "Dieses Sudoku wurde bereits begonnen. Du kannst jetzt weiterspielen.";
         }
+
         messageBox.textContent = message;
         return new Promise(resolve => {
             startButton.addEventListener("click", () => {
                 modal.hide();
-                if (!this.isCompleted) this.timer.init();
+                if (!this.state.completed_before) this.timer.init();
                 resolve();
             }, { once: true });
             modal.show();
