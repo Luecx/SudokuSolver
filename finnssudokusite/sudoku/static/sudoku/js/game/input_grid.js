@@ -6,6 +6,7 @@ export class InputGrid {
         this.modeButtons = {};
         this.numberButtons = [];
         this.currentMode = this.keyboard.getMode();
+        this.disabled = false; // Add disabled state
 
         this.init();
     }
@@ -31,9 +32,10 @@ export class InputGrid {
             const btn = document.getElementById(id);
             if (btn) {
                 this.modeButtons[mode] = btn;
-                btn.classList.add("btn-square", "btn-statebtn"); // mark as state button
+                btn.classList.add("btn-square", "btn-statebtn");
 
                 btn.addEventListener('click', () => {
+                    if (this.disabled) return; // Block clicks when disabled
                     this.keyboard.setMode(mode);
                     btn.blur();
                 });
@@ -50,9 +52,8 @@ export class InputGrid {
     initNumberButtons() {
         this.numberButtons = Array.from(document.getElementsByClassName("btn-number"));
         this.numberButtons.forEach((btn, i) => {
-            // btn.classList.add("btn-square"); // ensure same base styling
-
             btn.addEventListener("click", () => {
+                if (this.disabled) return; // Block clicks when disabled
                 this.keyboard.handleInput(i + 1);
             });
             this.addClickEffect(btn);
@@ -81,11 +82,13 @@ export class InputGrid {
         };
 
         btnPlus?.addEventListener('click', () => {
+            if (this.disabled) return; // Block clicks when disabled
             currentFontSize += 0.2;
             currentSvgSize += 3;
             updateFontSize();
         });
         btnMinus?.addEventListener('click', () => {
+            if (this.disabled) return; // Block clicks when disabled
             currentFontSize = Math.max(0.3, currentFontSize - 0.2);
             currentSvgSize = Math.max(1, currentSvgSize - 3);
             updateFontSize();
@@ -93,6 +96,41 @@ export class InputGrid {
 
         this.addClickEffect(btnPlus);
         this.addClickEffect(btnMinus);
+    }
+
+    disable() {
+        this.disabled = true;
+        this.updateButtonStates();
+    }
+
+    enable() {
+        this.disabled = false;
+        this.updateButtonStates();
+    }
+
+    isDisabled() {
+        return this.disabled;
+    }
+
+    updateButtonStates() {
+        const allButtons = [
+            ...Object.values(this.modeButtons),
+            ...this.numberButtons,
+            document.getElementById('btn-plus'),
+            document.getElementById('btn-minus')
+        ].filter(btn => btn); // Remove null elements
+
+        allButtons.forEach(btn => {
+            if (this.disabled) {
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.5';
+                btn.classList.add('btn-disabled');
+            } else {
+                btn.style.pointerEvents = '';
+                btn.style.opacity = '';
+                btn.classList.remove('btn-disabled');
+            }
+        });
     }
 
     updateModeButtons(activeMode) {
@@ -139,10 +177,10 @@ export class InputGrid {
         }
     }
 
-
     addClickEffect(btn) {
         if (!btn) return;
         btn.addEventListener("click", () => {
+            if (this.disabled) return; // Block effects when disabled
             btn.blur();
             btn.classList.add("btn-hovered");
             setTimeout(() => btn.classList.remove("btn-hovered"), 150);

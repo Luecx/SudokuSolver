@@ -14,6 +14,21 @@ export class Timer {
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
+    getCompletionTimeString() {
+        const totalSeconds = this.seconds;
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+
+        if (h > 0) {
+            return `${h} hour${h !== 1 ? 's' : ''}, ${m} minute${m !== 1 ? 's' : ''}, and ${s} second${s !== 1 ? 's' : ''}`;
+        } else if (m > 0) {
+            return `${m} minute${m !== 1 ? 's' : ''} and ${s} second${s !== 1 ? 's' : ''}`;
+        } else {
+            return `${s} second${s !== 1 ? 's' : ''}`;
+        }
+    }
+
     start() {
         if (!this.timerElement || this.timerInterval) return;
         this.timerInterval = setInterval(() => {

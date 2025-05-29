@@ -18,7 +18,7 @@ export class Game {
             InputMode.CandidateCentered,
             InputMode.Color
         ]);
-
+        this.inputGrid = new InputGrid(this.keyboard);
         this.isSaveTriggered = false;
         this.timer = new Timer("timer");
         this.sudokuId = null;
@@ -44,6 +44,7 @@ export class Game {
             this.init();
         }, 250); // wait till everything initializes before rendering the board
     }
+
     async init() {
         this.board.initBoard();
 
@@ -56,6 +57,15 @@ export class Game {
         this.sudokuId = jsonData.id;
         this.board.loadBoard(jsonData.board);
 
+        let state = await this.loadGameState();
+        await this.handleInitialModal(state);
+
+        if (this.isCompleted)
+        {
+            this.disable();
+            return;
+        }
+
         const solutionStr = jsonData.solution;  // ✅ fixed: no longer inside `board`
         if (solutionStr) {
             this.solution = Solution.fromFlatString(solutionStr, this.board.gridSize);
@@ -64,9 +74,14 @@ export class Game {
         }
 
         // Hook into changes: when a number is changed, check if the puzzle is finished
-        this.board.onEvent("ev_number_changed", () => {
-            if (this.board.contentLayer.isSolved()) {
+        this.board.onEvent("ev_number_changed", async () => {
+            if (!this.board.contentLayer.isSolved()) return;
+            
+            if (this.validateBoardSolution()) {
+                await this.saveGameState();
                 this.onSudokuFinished();
+            } else {
+                this.validateProgress();
             }
         });
 
@@ -75,19 +90,20 @@ export class Game {
             validateBtn.addEventListener("click", () => this.validateProgress());
         }
 
-        let state = await this.loadGameState();
-        new InputGrid(this.keyboard);
-
         this.setupPageUnloadHandlers();
         this.setupThemeMenu();
         this.renderRuleDescriptions();
-
-        await this.handleInitialModal(state);
     }
 
+    disable() {
+        this.inputGrid.disable();
+        this.keyboard.setEnabled(false);
+        this.timer.stop();
+    }
 
     // --- New function that is triggered when the sudoku is completed ---
     onSudokuFinished() {
+        this.disable();
         // Optionally, add any game-complete logic here.
         console.log("Sudoku Completed!");
         this.showFinishedModal();
@@ -100,20 +116,26 @@ export class Game {
             Math.floor(Math.random() * this.finishedImages.length)
             ];
 
-        // Find the modal container – ensure this exists in your HTML with id "finishedModal"
+        const totalTime = this.timer.getCompletionTimeString();
+
         const modalEl = document.getElementById("finishedModal");
         if (!modalEl) {
             console.warn("Finished modal element not found!");
             return;
         }
 
-        // Set the modal content to show the image
         const modalBody = modalEl.querySelector(".modal-body");
         if (modalBody) {
-            modalBody.innerHTML = `<img src="${imgSrc}" alt="Finished!" style="width: 100%;">`;
+            modalBody.innerHTML = `
+                <img src="${imgSrc}" alt="Finished!" style="width: 100%; margin-bottom: 20px;">
+                <div style="text-align: center;">
+                    <h4>Congratulations!</h4>
+                    <p><strong>Completion in</strong> ${totalTime}</p>
+                    <a href="/" class="btn btn-primary">Back to Home</a>
+                </div>
+            `;
         }
 
-        // Show the modal using bootstrap
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
     }
@@ -130,6 +152,18 @@ export class Game {
         }
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
+    }
+
+    validateBoardSolution() {
+        if (!this.solution) 
+            return false;
+    
+        const userInput = this.board.getUserNumbers ? this.board.getUserNumbers() : null;
+        if (!userInput)
+            return false;
+
+        const diff = userInput.difference(this.solution);
+        return diff === 0;
     }
 
     // Called when the "Check My Progress" button is clicked.
@@ -176,9 +210,9 @@ export class Game {
         if (!this.sudokuId || this.isCompleted) return;
 
         const currentTime = this.timer.getDuration() || 0;
-        const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
+        const status = this.validateBoardSolution() ? "completed" : "ongoing";
         this.saveToCache(currentTime, status);
-
+        
         try {
             const payload = {
                 sudoku_id: this.sudokuId,
@@ -304,7 +338,7 @@ export class Game {
         this.isSaveTriggered = true;
         try {
             const currentTime = this.timer.getDuration() || 0;
-            const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
+            const status = this.validateBoardSolution() ? "completed" : "ongoing";
             const payload = {
                 sudoku_id: this.sudokuId,
                 time: parseInt(currentTime),
@@ -335,16 +369,16 @@ export class Game {
         } catch (error) {
             console.error("Error saving to server, saving to cache:", error);
             const currentTime = this.timer.getDuration() || 0;
-            const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
+            const status = this.validateBoardSolution() ? "completed" : "ongoing";
             this.saveToCache(currentTime, status);
         }
     }
 
     setupAutoSave() {
         if (!this.sudokuId || this.isCompleted) return;
-        setInterval(() => {
+        setInterval(async () => {
             if (!this.isSaveTriggered) return;
-            this.saveGameState();
+            await this.saveGameState();
         }, 2 * 60 * 1000);
     }
 
