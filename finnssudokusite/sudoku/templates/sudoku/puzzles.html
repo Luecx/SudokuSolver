@@ -44,7 +44,7 @@
         <tr>
             <th onclick="sortAllTable(0)">{% trans "Name" %} <span class="sort-indicator"></span></th>
             <th onclick="sortAllTable(1)">{% trans "Creator" %} <span class="sort-indicator"></span></th>
-            <th onclick="sortAllTable(2)">{% trans "Solved / Attempts" %} <span class="sort-indicator"></span></th>
+            <th onclick="sortAllTable(2)">{% trans "Solved" %} <span class="sort-indicator"></span></th>
             <th onclick="sortAllTable(3)">{% trans "Rating" %} <span class="sort-indicator"></span></th>
             <th onclick="sortAllTable(4)">{% trans "Avg Time" %} <span class="sort-indicator"></span></th>
             <th>{% trans "Tags" %}</th>
@@ -56,9 +56,8 @@
             data-name="{{ s.title|lower }}"
             data-creator="{{ s.created_by.username|default_if_none:' ' }}"
             data-solves="{{ s.solves }}"
-            data-attempts="{{ s.attempts }}"
-            data-rating="{{ s.average_rating|default:0 }}"
-            data-avgtime="{{ s.average_time|floatformat:0 }}">
+            data-rating="{{ s.average_rating }}"
+            data-avgtime="{{ s.average_time }}">
             <td>
                 <a href="{% url 'play_sudoku' s.id %}">{{ s.title }}</a>
             </td>
@@ -73,7 +72,7 @@
                 —
                 {% endif %}
             </td>
-            <td>{{ s.solves }} / {{ s.attempts }}</td>
+            <td>{{ s.solves }} </td>
             <td>{% render_starbar s.average_rating %}</td>
             <td>{{ s.average_time|humantime }}</td>
             <td>
@@ -141,8 +140,8 @@
                 case 0: valA = a.dataset.name; valB = b.dataset.name; break;
                 case 1: valA = a.dataset.creator; valB = b.dataset.creator; break;
                 case 2:
-                    valA = parseFloat(a.dataset.solves) / Math.max(1, parseFloat(a.dataset.attempts));
-                    valB = parseFloat(b.dataset.solves) / Math.max(1, parseFloat(b.dataset.attempts));
+                    valA = parseFloat(a.dataset.solves);
+                    valB = parseFloat(b.dataset.solves);
                     break;
                 case 3: valA = parseFloat(a.dataset.rating); valB = parseFloat(b.dataset.rating); break;
                 case 4: valA = parseFloat(a.dataset.avgtime); valB = parseFloat(b.dataset.avgtime); break;

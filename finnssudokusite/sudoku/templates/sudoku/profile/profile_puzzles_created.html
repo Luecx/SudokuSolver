@@ -12,7 +12,7 @@
     <thead>
     <tr>
       <th data-key="name">Name <span class="sort-indicator"></span></th>
-      <th data-key="solves">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th data-key="solves">Solves <span class="sort-indicator"></span></th>
       <th data-key="rating">Rating <span class="sort-indicator"></span></th>
       <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
       <th>Tags</th>
@@ -23,13 +23,13 @@
     <tr data-name="{{ puzzle.title|lower }}"
         data-solves="{{ puzzle.solves }}"
         data-attempts="{{ puzzle.attempts }}"
-        data-rating="{{ puzzle.average_rating|default:0 }}"
-        data-avgtime="{{ puzzle.average_time|floatformat:0 }}"
+        data-rating="{{ puzzle.average_rating }}"
+        data-avgtime="{{ puzzle.average_time }}"
         data-tags="{{ puzzle.tags.all|join:','|lower }}">
       <td>
         <a href="{% url 'play_sudoku' puzzle.id %}">{{ puzzle.title }}</a>
       </td>
-      <td>{{ puzzle.solves }} / {{ puzzle.attempts }}</td>
+      <td>{{ puzzle.solves }}</td>
       <td>{% render_starbar puzzle.average_rating %}</td>
       <td>{{ puzzle.average_time|humantime }}</td>
       <td>

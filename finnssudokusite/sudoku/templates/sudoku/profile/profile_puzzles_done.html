@@ -13,7 +13,7 @@
     <tr>
       <th data-key="name">Name <span class="sort-indicator"></span></th>
       <th data-key="creator">Creator <span class="sort-indicator"></span></th>
-      <th data-key="solves">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th data-key="solves">Solves <span class="sort-indicator"></span></th>
       <th data-key="rating">{% if is_own_profile %}Your Rating{% else %}Their Rating{% endif %} <span class="sort-indicator"></span></th>
       <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
       <th data-key="besttime">Completion Time <span class="sort-indicator"></span></th>
@@ -26,7 +26,6 @@
     <tr data-name="{{ stat.sudoku.title|lower }}"
         data-creator="{{ stat.sudoku.created_by.username }}"
         data-solves="{{ stat.sudoku.solves }}"
-        data-attempts="{{ stat.sudoku.attempts }}"
         data-rating="{{ stat.rating|default:0 }}"
         data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
         data-besttime="{{ stat.time }}"
@@ -52,7 +51,7 @@
     </td>
 
     <!-- Solve ratio -->
-    <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
+    <td>{{ stat.sudoku.solves }} </td>
 
     <!-- Rating -->
     <td>{% render_starbar stat.rating %}</td>

@@ -17,80 +17,106 @@ class Tag(models.Model):
 
 class Sudoku(models.Model):
     """
-    Sudoku puzzle model.
+    Represents a published Sudoku puzzle.
 
-    - puzzle: Stores zipped JSON containing the puzzle definition.
-    - solution_string: Stores the solution as an 81-character string (row-wise).
-    - is_public: Whether the Sudoku is visible to everyone.
-    - tags: Types/features of this Sudoku (linked to Tag model).
-    - Stats: Auto-updated from user stats.
-    - created_by: Optional link to the creator (user).
+    - Stores the puzzle data (as compressed JSON), the solution, and metadata like title and tags.
+    - Maintains aggregate statistics for performance:
+        * solves: how many users completed this puzzle
+        * sum_time: sum of all completion times (in seconds)
+        * sum_ratings: sum of all submitted ratings
+        * ratings_count: how many ratings were submitted
+    - Averages are calculated from these sums on-demand.
     """
 
-    # Metadata
-    title          = models.CharField(max_length=100)
-    created_by     = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="sudokus_created")
-    created_at     = models.DateTimeField(default=timezone.now)
-    last_attempted = models.DateTimeField(null=True, blank=True)
+    # --- Metadata ---
+    title           = models.CharField(max_length=100)
+    created_by      = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="sudokus_created"
+    )
+    created_at      = models.DateTimeField(default=timezone.now)
+    last_attempted  = models.DateTimeField(null=True, blank=True)
 
-    # Puzzle content
-    puzzle           = models.BinaryField(null=True, blank=True)  # zipped JSON
-    solution_string  = models.TextField(null=True, blank=True)    # 🆕 flat string like "123...789"
-    is_public        = models.BooleanField(default=True)
-
-    canonical_hash = models.CharField(
-        max_length=64,
-        unique=True,
-        db_index=True,
-        null=True,
-        blank=True
+    # --- Puzzle data ---
+    puzzle          = models.BinaryField(null=True, blank=True)     # Compressed JSON (zlib)
+    solution_string = models.TextField(null=True, blank=True)       # Flat 81-character string
+    is_public       = models.BooleanField(default=True)
+    canonical_hash  = models.CharField(
+        max_length=64, unique=True, db_index=True, null=True, blank=True
     )
 
-    # Tags (types/features)
+    # --- Tags ---
     tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")
 
-    # Aggregate stats
-    attempts        = models.PositiveIntegerField(default=0)
-    solves          = models.PositiveIntegerField(default=0)
-    total_time      = models.PositiveIntegerField(default=0)
-    average_time    = models.FloatField(default=0.0)
-    average_rating  = models.FloatField(default=0.0)
-    ratings_count   = models.PositiveIntegerField(default=0)
+    # --- Aggregated statistics ---
+    solves          = models.PositiveIntegerField(default=0)        # Total completed
+    sum_time        = models.PositiveBigIntegerField(default=0)     # Sum of solve times in seconds
+    sum_ratings     = models.PositiveBigIntegerField(default=0)     # Sum of all ratings
+    ratings_count   = models.PositiveIntegerField(default=0)        # Number of ratings submitted
 
     def __str__(self):
         return self.title
 
+    @property
+    def average_time(self):
+        """
+        Returns the average solve time in seconds, or 0 if not solved yet.
+        """
+        return self.sum_time / self.solves if self.solves else 0
+
+    @property
+    def average_rating(self):
+        """
+        Returns the average rating (1-10), or 0 if no ratings were submitted.
+        """
+        return self.sum_ratings / self.ratings_count if self.ratings_count else 0
+
 
 class AbstractUserSudoku(models.Model):
+    """
+    Abstract base class for user–sudoku relationships,
+    shared by both ongoing and completed puzzle models.
+    """
     user   = models.ForeignKey(User, on_delete=models.CASCADE)
     sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE)
-    time   = models.PositiveIntegerField(default=0)
+    time   = models.PositiveIntegerField(default=0)  # Time in seconds
     date   = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True
 
+
 class UserSudokuDone(AbstractUserSudoku):
-    rating = models.PositiveSmallIntegerField(null=True, blank=True)
-    state = models.BinaryField(null=True, blank=True)
+    """
+    Represents a completed Sudoku puzzle by a specific user.
+    Stores final state, time spent, and optional rating.
+    """
+    rating  = models.PositiveSmallIntegerField(null=True, blank=True)
+    state   = models.BinaryField(null=True, blank=True)
+
+    # Needed for reverse lookup like sudoku.user_sudoku_done.all()
+    sudoku = models.ForeignKey(Sudoku, on_delete=models.CASCADE, related_name='user_sudoku_done')
 
     class Meta:
         unique_together = ('user', 'sudoku')
+
+    def __str__(self):
+        return f"Done: {self.sudoku} by {self.user}"
+
 
 class UserSudokuOngoing(AbstractUserSudoku):
+    """
+    Represents an in-progress Sudoku puzzle by a specific user.
+    Stores current state and time spent so far.
+
+    - `was_previously_completed` marks whether this ongoing entry is a replay of a completed puzzle.
+    - This helps the frontend prevent resubmission of time/rating.
+    """
     state = models.BinaryField(null=True, blank=True)
+    was_previously_completed = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('user', 'sudoku')
 
+    def __str__(self):
+        return f"Ongoing: {self.sudoku} by {self.user}"
 
-"""
-NOTES:
-- related_name="..." allows you to do things like:
-    tag_instance.sudokus.all()          # All sudokus with a specific tag
-    user_instance.sudoku_stats.all()    # All sudoku stats for a user
-    sudoku_instance.user_stats.all()    # All user stats for a sudoku
-
-- puzzle field is now a BinaryField to store zipped JSON (use Python's zlib + json libs).
-- difficulty can be derived later (e.g., via attempts/solves).
-"""
