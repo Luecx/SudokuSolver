@@ -11,6 +11,11 @@ import { GameState } from "./game_state.js";
 
 export class Game {
     constructor(options = {}) {
+        this.ratingGiven = null;
+        this.isCompleted = false;
+        this.modalClosed = false;
+
+
         const container = document.querySelector(".board-container");
         this.board = createBoard(container);
         this.keyboard = new InputKeyboard(this.board, [
@@ -39,6 +44,7 @@ export class Game {
             "/static/sudoku/img/done/12.png",
             "/static/sudoku/img/done/13.png"
         ];
+
 
         setTimeout(() => {
             this.init();
@@ -89,17 +95,56 @@ export class Game {
 
     // --- Modal functions ---
     showFinishedModal() {
-        const imgSrc = this.finishedImages[
-            Math.floor(Math.random() * this.finishedImages.length)
-            ];
         const modalEl = document.getElementById("finishedModal");
         if (!modalEl) return;
-        const modalBody = modalEl.querySelector(".modal-body");
-        if (modalBody) {
-            modalBody.innerHTML = `<img src="${imgSrc}" alt="Finished!" style="width: 100%;">`;
+
+        const img = modalEl.querySelector("#finishedImage");
+        const timeText = modalEl.querySelector("#finishedTimeText");
+        const starContainer = modalEl.querySelector("#rating-stars");
+        const doneButton = modalEl.querySelector("#done-button");
+
+        // Set random image
+        if (img) {
+            const imgSrc = this.finishedImages[Math.floor(Math.random() * this.finishedImages.length)];
+            img.src = imgSrc;
         }
+
+        // Show timer
+        const seconds = this.timer.getDuration() || 0;
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        if (timeText) {
+            timeText.textContent = `⏱️ Zeit: ${min}m ${sec}s`;
+        }
+
+        // Show rating stars if it's the user's first time
+        if (this.state && !this.state.completed_before && starContainer) {
+            starContainer.innerHTML = this.renderStarRatingHTML();
+            this.setupStarRatingEvents(starContainer);
+        } else if (starContainer) {
+            starContainer.innerHTML = "";
+        }
+
+        // Submit only once
+        const submitOnce = () => {
+            if (!this.modalClosed) {
+                this.submitCompletion();
+                this.modalClosed = true;
+            }
+        };
+
+        // Modal closed (via button or backdrop)
+        modalEl.addEventListener("hidden.bs.modal", submitOnce, { once: true });
+
+        // Done button click
+        if (doneButton) {
+            doneButton.addEventListener("click", submitOnce, { once: true });
+        }
+
+        // Show modal
         new bootstrap.Modal(modalEl).show();
     }
+
 
     showValidationModal(message) {
         const modalEl = document.getElementById("validationModal");
@@ -135,149 +180,28 @@ export class Game {
 
     // --- Rest of your methods remain unchanged ---
     setupPageUnloadHandlers() {
-        const syncSave = () => {
-            if (this.sudokuId && !this.board.contentLayer.isSolved()) {
-                this.state.save_state(this.sudokuId, this.board, this.timer);
+        const syncSaveOrSubmit = () => {
+            if (this.sudokuId) {
+                if (this.board.contentLayer.isSolved()) {
+                    this.submitCompletion();
+                } else {
+                    this.state.save_state(this.sudokuId, this.board, this.timer);
+                }
             }
         };
-        window.addEventListener('beforeunload', syncSave);
+
+        window.addEventListener('beforeunload', syncSaveOrSubmit);
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') syncSave();
+            if (document.visibilityState === 'hidden') syncSaveOrSubmit();
         });
-        window.addEventListener('blur', syncSave);
+        window.addEventListener('blur', syncSaveOrSubmit);
+
+        // Optional: submit on internal link click
+        document.addEventListener('click', (e) => {
+            if (e.target.closest("a")) syncSaveOrSubmit();
+        });
     }
 
-
-    saveGameStateSync() {
-        if (!this.sudokuId || this.isCompleted) return;
-
-        const currentTime = this.timer.getDuration() || 0;
-        const status = this.board.contentLayer.isSolved() ? "completed" : "ongoing";
-        this.saveToCache(currentTime, status);
-
-        try {
-            const payload = {
-                sudoku_id: this.sudokuId,
-                time: parseInt(currentTime),
-                status: status,
-                board_state: this.board.contentLayer.getState(),
-            };
-
-            if (navigator.sendBeacon) {
-                const formData = new FormData();
-                formData.append('data', JSON.stringify(payload));
-                formData.append('csrfmiddlewaretoken', getCSRFToken());
-                navigator.sendBeacon('/save-puzzle-state/', formData);
-            } else {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/save-puzzle-state/', false);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-CSRFToken', getCSRFToken());
-                xhr.send(JSON.stringify(payload));
-            }
-        } catch (error) {
-            console.error("Error saving on page unload:", error);
-        }
-    }
-
-    loadFromCache() {
-        try {
-            const cacheKey = `sudoku_${this.sudokuId}`;
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                if (data.board_state)
-                    this.board.contentLayer.loadState(data.board_state);
-                this.timer.setTimer(data.time || 0);
-                if (data.status === "completed") {
-                    this.isCompleted = true;
-                    this.showCompletedState(data);
-                    return "completed";
-                } else {
-                    console.log("Loaded cached game state");
-                    return "resume";
-                }
-            }
-        } catch (error) {
-            console.log("No cached state found or error loading:", error);
-        }
-        return "new";
-    }
-
-    saveToCache(currentTime, status) {
-        try {
-            const cacheData = {
-                sudoku_id: this.sudokuId,
-                time: parseInt(currentTime),
-                status: status,
-                board_state: this.board.contentLayer.getState(),
-                timestamp: Date.now()
-            };
-
-            const cacheKey = `sudoku_${this.sudokuId}`;
-            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-
-            if (status === "completed") {
-                this.isCompleted = true;
-                this.showCompletedState();
-            } else {
-                console.log("Game state saved to cache");
-            }
-            this.cleanOldCacheEntries();
-        } catch (error) {
-            console.error("Error saving game state to cache:", error);
-        }
-    }
-
-    cleanOldCacheEntries() {
-        const maxAge = 30 * 24 * 60 * 60 * 1000;
-        const now = Date.now();
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('sudoku_')) {
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    if (data.timestamp && (now - data.timestamp) > maxAge) {
-                        localStorage.removeItem(key);
-                    }
-                } catch (error) {
-                    localStorage.removeItem(key);
-                }
-            }
-        }
-    }
-
-    async loadGameState() {
-        if (!this.sudokuId) return "unknown";
-        try {
-            const response = await fetch(`/load-state/${this.sudokuId}/`);
-            const data = await response.json();
-            if (data.status === "no_auth") {
-                this.loadFromCache();
-                return this.isCompleted ? "completed" : "resume";
-            }
-            if (data.status === "success" || data.status === "completed") {
-                if (data.board_state)
-                    this.board.contentLayer.loadState(data.board_state);
-                const timeValue = data.status === "completed" ? data.completion_time : data.time;
-                this.timer.setTimer(timeValue || 0);
-                if (data.status === "completed") {
-                    this.isCompleted = true;
-                    this.showCompletedState(data);
-                    return "completed";
-                }
-                return "resume";
-            }
-            return "new";
-        } catch (error) {
-            this.loadFromCache();
-            return this.isCompleted ? "completed" : "resume";
-        }
-    }
-
-    showCompletedState(data = null) {
-        console.log("Puzzle is completed - disabling interaction");
-    }
 
     setupThemeMenu() {
         const backgrounds = {
@@ -364,14 +288,25 @@ export class Game {
             return;
         }
 
-        let message = "Dies ist dein erster Versuch dieses Sudokus. Viel Erfolg!";
+        const messages = [];
+
+        // --- Message 1: Completion status ---
         if (this.state.completed_before) {
-            message = "Dieses Sudoku wurde bereits abgeschlossen. Es wird nicht erneut gezählt, kann aber nochmal gespielt werden.";
-        } else if (this.state.resumed) {
-            message = "Dieses Sudoku wurde bereits begonnen. Du kannst jetzt weiterspielen.";
+            messages.push("✔️ Dieses Sudoku wurde bereits abgeschlossen. Ein weiteres Lösen wird nicht erneut gezählt.");
+        } else {
+            messages.push("🧩 Dies ist dein erster Versuch dieses Sudokus. Viel Erfolg!");
         }
 
-        messageBox.textContent = message;
+        // --- Message 2: Resume status ---
+        if (this.state.resumed) {
+            messages.push("💾 Es wurde ein gespeicherter Zustand gefunden. Du kannst jetzt weiterspielen.");
+        } else {
+            messages.push("🆕 Es wurde kein gespeicherter Zustand gefunden. Du beginnst von vorne.");
+        }
+
+        // Combine all messages with line breaks
+        messageBox.innerHTML = messages.map(m => `<p>${m}</p>`).join("");
+
         return new Promise(resolve => {
             startButton.addEventListener("click", () => {
                 modal.hide();
@@ -381,6 +316,67 @@ export class Game {
             modal.show();
         });
     }
+
+    renderStarRatingHTML() {
+        return Array.from({ length: 5 }, (_, i) =>
+            `<i class="bi star bi-star${i < (this.ratingGiven || 0) ? "-fill" : ""}" data-rating="${i + 1}" style="font-size: 1.75rem; cursor: pointer; margin: 0 5px;"></i>`
+        ).join("");
+    }
+
+    setupStarRatingEvents(container) {
+        container.querySelectorAll(".star").forEach(star => {
+            star.addEventListener("click", () => {
+                this.ratingGiven = parseInt(star.dataset.rating);
+                container.innerHTML = this.renderStarRatingHTML();
+                this.setupStarRatingEvents(container);  // rebind
+            });
+        });
+    }
+
+    submitCompletion() {
+        if (!this.sudokuId || this.isCompleted) return;
+        this.isCompleted = true;
+
+        const payload = {
+            sudoku_id: this.sudokuId,
+            time: parseInt(this.timer.getDuration() || 0),
+            board_state: this.board.contentLayer.getState()
+        };
+
+        if (!this.state.completed_before && this.ratingGiven != null) {
+            payload.rating = this.ratingGiven;
+        }
+
+        // --- Clear local cache immediately ---
+        try {
+            const key = `sudoku_${this.sudokuId}`;
+            localStorage.removeItem(key);
+        } catch (e) {
+            console.warn("Failed to clear local cache:", e);
+        }
+
+        // --- Submit to server ---
+        try {
+            if (navigator.sendBeacon) {
+                const formData = new FormData();
+                formData.append("data", JSON.stringify(payload));
+                formData.append("csrfmiddlewaretoken", getCSRFToken());
+                navigator.sendBeacon("/complete/", formData);
+            } else {
+                fetch("/complete/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
+        } catch (e) {
+            console.warn("Submission failed:", e);
+        }
+    }
+
 }
 
 // --- Initialization ---

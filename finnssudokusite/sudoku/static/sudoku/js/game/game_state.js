@@ -20,7 +20,6 @@ export class GameState {
             board_state: board.contentLayer.getState(),
             timestamp: Date.now(),
             status: "ongoing",
-            completed_before: this.completed_before === true
         };
 
         // Save to localStorage
@@ -84,64 +83,68 @@ export class GameState {
 
     async load(sudokuId, board, timer) {
         const key = this.getKey(sudokuId);
-
-        let serverData = null;
+        let hasSolved = false;
+        let serverOngoing = null;
         let cacheData = null;
 
-        // Load from server
+        // --- Fetch has-solved status ---
         try {
-            const res = await fetch(`/load-state/${sudokuId}/`);
+            const res = await fetch(`/has-solved/${sudokuId}/`);
             const json = await res.json();
-            if (json.status === "success" || json.status === "completed") {
-                serverData = {
-                    time: json.time ?? json.completion_time ?? 0,
-                    status: json.status,
+            if (json.status === "success") {
+                hasSolved = json.solved === true;
+            }
+        } catch {
+            // If unauthenticated, we assume not solved
+        }
+
+        this.completed_before = hasSolved;
+
+        // --- Try to load ongoing from server ---
+        try {
+            const res = await fetch(`/ongoing-state/${sudokuId}/`);
+            const json = await res.json();
+            if (json.status === "success") {
+                serverOngoing = {
+                    time: json.time || 0,
                     board_state: json.board_state,
-                    completed_before: json.status === "completed"
+                    was_previously_completed: json.was_previously_completed === true,
                 };
             }
         } catch { /* ignore */ }
 
-        // Load from cache
+        // --- Try to load from local cache ---
         try {
-            const local = localStorage.getItem(key);
-            if (local) {
-                const parsed = JSON.parse(local);
+            const cached = localStorage.getItem(key);
+            if (cached) {
+                const parsed = JSON.parse(cached);
                 cacheData = {
                     time: parsed.time,
-                    status: parsed.status,
                     board_state: parsed.board_state,
                     completed_before: parsed.completed_before === true
                 };
             }
         } catch { /* ignore */ }
 
-        // Pick entry with lower time
+        // --- Decide which state to load ---
         let selected = null;
-        if (serverData && cacheData) {
-            selected = serverData.time <= cacheData.time ? serverData : cacheData;
+        if (serverOngoing && cacheData) {
+            selected = serverOngoing.time >= cacheData.time ? serverOngoing : cacheData;
         } else {
-            selected = serverData || cacheData;
+            selected = serverOngoing || cacheData;
         }
 
-        if (selected) {
-            if (selected.board_state) {
-                let boardState = selected.board_state;
-                if (typeof boardState === 'string') {
-                    try {
-                        boardState = JSON.parse(boardState);
-                    } catch (e) {
-                        console.error("Failed to parse board_state:", e);
-                        boardState = [];
-                    }
-                }
-                board.contentLayer.loadState(boardState);
+        if (selected && selected.board_state) {
+            try {
+                let parsed = selected.board_state;
+                if (typeof parsed === "string") parsed = JSON.parse(parsed);
+                board.contentLayer.loadState(parsed);
+            } catch (e) {
+                console.warn("Failed to parse board_state:", e);
             }
             timer.setTimer(selected.time || 0);
-            this.completed_before = selected.completed_before === true;
-            this.resumed = selected.status === "ongoing";
+            this.resumed = true;
         } else {
-            this.completed_before = false;
             this.resumed = false;
         }
     }
