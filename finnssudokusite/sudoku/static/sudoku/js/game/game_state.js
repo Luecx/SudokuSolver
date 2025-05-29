@@ -116,7 +116,8 @@ export class GameState {
             }
         } catch { /* ignore */ }
 
-        console.log(serverData.board_state);
+        if (serverData.board_state) 
+            console.log(serverData.board_state);
 
         // Pick entry with lower time
         let selected = null;
@@ -128,7 +129,16 @@ export class GameState {
 
         if (selected) {
             if (selected.board_state) {
-                board.contentLayer.loadState(selected.board_state);
+                let boardState = selected.board_state;
+                if (typeof boardState === 'string') {
+                    try {
+                        boardState = JSON.parse(boardState);
+                    } catch (e) {
+                        console.error("Failed to parse board_state:", e);
+                        boardState = [];
+                    }
+                }
+                board.contentLayer.loadState(boardState);
             }
             timer.setTimer(selected.time || 0);
             this.completed_before = selected.completed_before === true;
