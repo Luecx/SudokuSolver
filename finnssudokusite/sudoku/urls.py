@@ -1,8 +1,8 @@
 from django.urls import path
-from . import views
 from django.contrib.auth import views as auth_views
 from sudoku.forms import UsernameOrEmailPasswordResetForm
 from django.urls import reverse_lazy
+from . import views as views
 
 urlpatterns = [
     # Core views
@@ -15,7 +15,6 @@ urlpatterns = [
     path('creator/', views.creator, name='creator'),
     path('save-sudoku/', views.save_sudoku, name='save_sudoku'),
     path('play-sudoku/<int:sudoku_id>/', views.play_sudoku, name='play_sudoku'),
-    path('game/', views.game, name='game'),
     path('game_selection/', views.game_selection_view, name='game_selection'),
 
     # nur zum testen
