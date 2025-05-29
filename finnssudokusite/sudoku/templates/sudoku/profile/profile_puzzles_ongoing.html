@@ -11,7 +11,7 @@
     <tr>
       <th data-key="name">Name <span class="sort-indicator"></span></th>
       <th data-key="creator">Creator <span class="sort-indicator"></span></th>
-      <th data-key="solves">Solved / Attempts <span class="sort-indicator"></span></th>
+      <th data-key="solves">Solves <span class="sort-indicator"></span></th>
       <th data-key="rating">Rating <span class="sort-indicator"></span></th>
       <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
       <th data-key="mytime">Your Time <span class="sort-indicator"></span></th>
@@ -23,7 +23,6 @@
     <tr data-name="{{ stat.sudoku.title|lower }}"
         data-creator="{{ stat.sudoku.created_by.username }}"
         data-solves="{{ stat.sudoku.solves }}"
-        data-attempts="{{ stat.sudoku.attempts }}"
         data-rating="{{ stat.sudoku.average_rating|default:0 }}"
         data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
         data-mytime="{{ stat.time }}"
@@ -42,7 +41,7 @@
         —
         {% endif %}
       </td>
-      <td>{{ stat.sudoku.solves }} / {{ stat.sudoku.attempts }}</td>
+      <td>{{ stat.sudoku.solves }} </td>
       <td>{% render_starbar stat.sudoku.average_rating %}</td>
       <td>{{ stat.sudoku.average_time|humantime }}</td>
       <td>{{ stat.time|humantime }}</td>

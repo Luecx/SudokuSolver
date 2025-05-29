@@ -1,8 +1,7 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
 from sudoku.forms import UsernameOrEmailPasswordResetForm
-from django.urls import reverse_lazy
-from . import views as views
+from . import views as views  # assumes views/__init__.py exposes everything
 
 urlpatterns = [
     # Core views
@@ -17,7 +16,7 @@ urlpatterns = [
     path('play-sudoku/<int:sudoku_id>/', views.play_sudoku, name='play_sudoku'),
     path('game_selection/', views.game_selection_view, name='game_selection'),
 
-    # nur zum testen
+    # Help
     path('help/', views.help, name='help'),
 
     # Activation
@@ -52,6 +51,8 @@ urlpatterns = [
         template_name='sudoku/password/password_reset_complete.html'
     ), name='password_reset_complete'),
 
-    path('save-puzzle-state/', views.save_puzzle_state, name='save_puzzle_state'),
-    path('load-puzzle-state/<int:sudoku_id>/', views.load_puzzle_state, name='load_puzzle_state'),
+    # State management
+    path('save-ongoing/', views.save_ongoing_state, name='save_ongoing_state'),
+    path('complete/', views.mark_sudoku_completed, name='mark_sudoku_completed'),
+    path('load-state/<int:sudoku_id>/', views.load_puzzle_state, name='load_puzzle_state'),
 ]

@@ -40,9 +40,10 @@ def _compute_weights(stat, now):
     w_rec = 2 ** (-days_since / HALF_LIFE_DAYS)
 
     # Difficulty weight: based on solve ratio
-    solves = min(puzzle.solves or 0, puzzle.attempts or 0)
-    attempts = puzzle.attempts or 0
-    q = (solves + ALPHA) / (attempts + ALPHA + BETA)
+    solves = puzzle.solves or 0
+    # attempts = puzzle.attempts or 0
+    # q = (solves + ALPHA) / (attempts + ALPHA + BETA)
+    q = 1
     w_diff = 1 + (1 - q) ** DIFF_EXP
 
     # Speed bonus: positive only if faster than average

@@ -26,7 +26,6 @@ from ..util.leaderboard import compute_leaderboard_scores
 
 def index(request):
     sudokus = Sudoku.objects.annotate(
-        attempts_count=Count('attempts'),
         solves_count=Count('solves')
     )
     user_stats = {}
