@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Sudoku Play{% endblock %}
+{% block title %}{{ page_title|default:"Sudoku Play" }}{% endblock %}
 
 {% block extra_css %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,24 +27,24 @@
 			<div class="control-container">
 				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
 				<div id="info">
-					<span class="content_name">PUZZLENAME</span><br>
-					<span class="content_creator">Terminator3</span>
+					<span class="content_name">{{ page_title|default:"Unnamed Puzzle" }}</span><br>
+					<span class="content_creator">by {{ creator_name|default:"Unknown" }}</span>
 				</div>
 				<button id="btn-gear" class="btn btn-secondary btn-gear" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
 				<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>
 				<button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button>
 				<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
 				<button id="btn-clear" class="btn btn-custom-white btn-clear"><i class="bi bi-trash"></i></button>
-				<div id="number-block" class="grid-b">
-					<button id="btn-one"   class="btn btn-custom-white btn-square btn-number"><span class="cornerPos1">1</span></button>
-					<button id="btn-two"   class="btn btn-custom-white btn-square btn-number"><span class="cornerPos2">2</span></button>
-					<button id="btn-three" class="btn btn-custom-white btn-square btn-number"><span class="cornerPos3">3</span></button>
-					<button id="btn-four"  class="btn btn-custom-white btn-square btn-number"><span class="cornerPos4">4</span></button>
-					<button id="btn-five"  class="btn btn-custom-white btn-square btn-number"><span class="cornerPos5">5</span></button>
-					<button id="btn-six"   class="btn btn-custom-white btn-square btn-number"><span class="cornerPos6">6</span></button>
-					<button id="btn-seven" class="btn btn-custom-white btn-square btn-number"><span class="cornerPos7">7</span></button>
-					<button id="btn-eight" class="btn btn-custom-white btn-square btn-number"><span class="cornerPos8">8</span></button>
-					<button id="btn-nine"  class="btn btn-custom-white btn-square btn-number"><span class="cornerPos9">9</span></button>
+				<div id="number-block" class="grid-b normal">
+					<button id="btn-one"   class="btn btn-custom-white btn-number"><span class="cornerPos1">1</span></button>
+					<button id="btn-two"   class="btn btn-custom-white btn-number"><span class="cornerPos2">2</span></button>
+					<button id="btn-three" class="btn btn-custom-white btn-number"><span class="cornerPos3">3</span></button>
+					<button id="btn-four"  class="btn btn-custom-white btn-number"><span class="cornerPos4">4</span></button>
+					<button id="btn-five"  class="btn btn-custom-white btn-number"><span class="cornerPos5">5</span></button>
+					<button id="btn-six"   class="btn btn-custom-white btn-number"><span class="cornerPos6">6</span></button>
+					<button id="btn-seven" class="btn btn-custom-white btn-number"><span class="cornerPos7">7</span></button>
+					<button id="btn-eight" class="btn btn-custom-white btn-number"><span class="cornerPos8">8</span></button>
+					<button id="btn-nine"  class="btn btn-custom-white btn-number"><span class="cornerPos9">9</span></button>
 				</div>
 				<div id="gap-row1"></div>
 				<div id="gap-row2"></div>
@@ -56,9 +56,13 @@
 				<button id="btn-colorMode" class="btn btn-custom-white btn-square">
 					<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon"/>
 				</button>
-				
+
+
 				<!-- </div></div><div class="block-part" data-block="bottom"></div>-->
 			</div>
+			<button id="validate-btn" class="btn btn-outline-primary mt-3">
+				Check My Progress
+			</button>
 		</div>
 		
 		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasGear" aria-labelledby="offcanvasGearLabel">
@@ -103,6 +107,51 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="sudokuInfoModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content p-3">
+			<div class="modal-body" id="sudoku-info-message">
+			</div>
+			<div class="modal-footer justify-content-center">
+				<button type="button" class="btn btn-primary" id="start-sudoku-button">Los geht's!</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Completion Modal -->
+<div class="modal fade" id="finishedModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- Optional header – leave empty if not needed -->
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body text-center">
+				<!-- The random image will be injected here -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Validation Modal -->
+<div class="modal fade" id="validationModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Puzzle Check</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<!-- Validation message will be injected here -->
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
 
 {% endblock %}
 

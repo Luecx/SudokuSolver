@@ -33,6 +33,7 @@
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(9, 1fr);
     cursor: default;
+    touch-action: none; /* Prevent browser gestures */
 }
 
 .cell {

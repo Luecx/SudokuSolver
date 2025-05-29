@@ -34,9 +34,10 @@ class Sudoku(models.Model):
     last_attempted = models.DateTimeField(null=True, blank=True)
 
     # Puzzle content
-    puzzle          = models.BinaryField(null=True, blank=True)
-    is_public       = models.BooleanField(default=True)
-    # field to support uniqueness checking
+    puzzle           = models.BinaryField(null=True, blank=True)  # zipped JSON
+    solution_string  = models.TextField(null=True, blank=True)    # 🆕 flat string like "123...789"
+    is_public        = models.BooleanField(default=True)
+
     canonical_hash = models.CharField(
         max_length=64,
         unique=True,
@@ -46,15 +47,15 @@ class Sudoku(models.Model):
     )
 
     # Tags (types/features)
-    tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")  # related_name = access all sudokus of a tag
+    tags = models.ManyToManyField(Tag, blank=True, related_name="sudokus")
 
     # Aggregate stats
-    attempts       = models.PositiveIntegerField(default=0)
-    solves         = models.PositiveIntegerField(default=0)
-    total_time     = models.PositiveIntegerField(default=0)  # Sum of all solve times (in seconds)
-    average_time   = models.FloatField(default=0.0)          # Average time to solve (in seconds)
-    average_rating = models.FloatField(default=0.0)          # Average user rating (1-5 stars)
-    ratings_count  = models.PositiveIntegerField(default=0)  # Number of ratings
+    attempts        = models.PositiveIntegerField(default=0)
+    solves          = models.PositiveIntegerField(default=0)
+    total_time      = models.PositiveIntegerField(default=0)
+    average_time    = models.FloatField(default=0.0)
+    average_rating  = models.FloatField(default=0.0)
+    ratings_count   = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title

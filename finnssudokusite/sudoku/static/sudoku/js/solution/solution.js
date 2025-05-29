@@ -50,7 +50,67 @@ export class Solution {
     }
 
     /**
+     * Counts the number of differences between this solution and another.
+     * Only compares non-zero entries (ignores NO_NUMBER values).
+     * @param {Solution} other - The other solution to compare with.
+     * @returns {number} - Number of differing cells.
+     */
+    difference(other) {
+        if (this.size !== other.size) {
+            throw new Error("Cannot compare solutions of different sizes.");
+        }
+
+        let count = 0;
+        for (let r = 0; r < this.size; r++) {
+            for (let c = 0; c < this.size; c++) {
+                const pos = new CellIdx(r, c);
+                const thisValue = this.get(pos);
+                const otherValue = other.get(pos);
+                
+                // only compare if both values are not NO_NUMBER
+                if (thisValue === NO_NUMBER || otherValue === NO_NUMBER)
+                    continue;
+
+                if (thisValue !== otherValue)
+                    count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Counts how many times a specific number appears in the solution.
+     * @param {number} value - The number to count (1 to size).
+     * @returns {number} - Count of the specified number.
+     */
+    countNumber(value) {
+        if (value < 0 || value > this.size) {
+            throw new Error(`Invalid value: ${value}. Must be between 1 and ${this.size}.`);
+        }
+
+        let count = 0;
+        for (let r = 0; r < this.size; r++) 
+            for (let c = 0; c < this.size; c++) 
+                if (this.get(new CellIdx(r, c)) === value) 
+                    count++;
+                
+        return count;
+    }
+
+    /**
+     * Converts the solution to a flat comma-separated string using 0 for empty cells.
+     * @returns {string}
+     */
+    toFlatString() {
+        return this.values
+            .flat()
+            .map(v => v === NO_NUMBER ? 0 : v)
+            .join(",");
+    }
+
+    /**
      * Creates a new Solution instance from a flat comma-separated string.
+     * Interprets 0 as NO_NUMBER.
      * @param {string} flatStr - A string of comma-separated numbers (length = size^2).
      * @param {number} size - Board size (e.g., 9 for 9x9).
      * @returns {Solution}
@@ -61,17 +121,20 @@ export class Solution {
             const trimmed = s.trim();
             const n = Number(trimmed);
             if (isNaN(n)) console.warn(`Invalid number at index ${i}: '${trimmed}'`);
-            return n;
+            return n === 0 ? NO_NUMBER : n;
         });
+
         if (values.length !== size * size) {
             throw new Error(`Invalid input length: expected ${size * size} values.`);
         }
+
         const sol = new Solution(size);
         for (let i = 0; i < values.length; i++) {
             const r = Math.floor(i / size);
             const c = i % size;
-            sol.set(new CellIdx(r,c), values[i]);
+            sol.set(new CellIdx(r, c), values[i]);
         }
+
         return sol;
     }
 }

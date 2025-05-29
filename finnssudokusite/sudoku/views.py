@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, update_session_auth_hash, get_user_model
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm, PasswordResetForm, UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -43,8 +43,9 @@ def index(request):
 
 
 def game(request):
-    """Renders the general Sudoku game page."""
+    """Renders the general Sudoku game page (without specific puzzle loaded)."""
     return render(request, "sudoku/game.html")
+
 
 
 def puzzles_view(request):
@@ -59,6 +60,7 @@ def puzzles_view(request):
     if tag_names:
         sudokus = sudokus.filter(tags__name__in=tag_names).distinct()
 
+    sudokus = Sudoku.objects.all().order_by('-id')
     paginator = Paginator(sudokus, 50)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -98,23 +100,33 @@ def save_sudoku(request):
     """Handles saving a new Sudoku puzzle."""
     try:
         data = json.loads(request.body)
+
         title = data.get("title", "Untitled Sudoku")
-        board_object = data.get("board", {})
+        board_json = data.get("board")
+        solution_str = data.get("solution")
         tag_names = data.get("tags", [])
 
-        if not board_object:
-            return JsonResponse({"status": "error", "message": "No board data provided."}, status=400)
+        # Validate board is a JSON string
+        if not isinstance(board_json, str):
+            return JsonResponse({"status": "error", "message": "Board must be a JSON string."}, status=400)
 
-        board_json = json.dumps(board_object)
-        board_zip = zlib.compress(board_json.encode('utf-8'))
+        # Validate solution
+        if not isinstance(solution_str, str):
+            return JsonResponse({"status": "error", "message": "Invalid or missing solution string."}, status=400)
 
+        # Compress the board string
+        board_zip = zlib.compress(board_json.encode("utf-8"))
+
+        # Save to database
         sudoku = Sudoku.objects.create(
             title=title,
             puzzle=board_zip,
+            solution_string=solution_str,
             created_by=request.user,
             is_public=True,
         )
 
+        # Add tags
         for tag_name in tag_names:
             tag_obj, _ = Tag.objects.get_or_create(name=tag_name)
             sudoku.tags.add(tag_obj)
@@ -130,7 +142,7 @@ def play_sudoku(request, sudoku_id):
     sudoku = get_object_or_404(Sudoku, pk=sudoku_id)
 
     try:
-        puzzle_data = json.loads(zlib.decompress(sudoku.puzzle).decode('utf-8'))
+        puzzle_data = zlib.decompress(sudoku.puzzle).decode('utf-8')
     except Exception:
         raise Http404("Invalid puzzle data.")
 
@@ -139,9 +151,11 @@ def play_sudoku(request, sudoku_id):
             "id": sudoku.id,
             "title": sudoku.title,
             "board": puzzle_data,
+            "solution": sudoku.solution_string,
         }),
+        "page_title": sudoku.title,
+        "creator_name": sudoku.created_by.username if sudoku.created_by else "Unknown",
     })
-
 
 # === Profile Views === #
 
@@ -410,6 +424,7 @@ def activate(request, uid, token):
 
 def game_selection_view(request):
     return render(request, 'sudoku/game_selection.html')
+
 
 #nur zum Testen
 def help(request):

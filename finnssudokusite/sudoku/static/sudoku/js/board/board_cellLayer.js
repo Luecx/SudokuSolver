@@ -44,9 +44,26 @@ export class CellLayer {
 
         this.selector._onlyOneSelected = () => this.selected_region.size() === 1;
 
-        this.grid.addEventListener("mousedown", (e) => this.selector.onMouseDown(e));
-        this.grid.addEventListener("mousemove", (e) => this.selector.onMouseMove(e));
-        window.addEventListener("mouseup", (e) => this.selector.onMouseUp(e));
+        this.grid.addEventListener("pointerdown", e => {
+            if (e.pointerType === "touch" || e.pointerType === "mouse") {
+                e.preventDefault();
+                this.selector.onMouseDown(e);
+            }
+        });
+
+        this.grid.addEventListener("pointermove", e => {
+            if (e.pointerType === "touch" || e.pointerType === "mouse") {
+                e.preventDefault();
+                this.selector.onMouseMove(e);
+            }
+        });
+
+        window.addEventListener("pointerup", e => {
+            if (e.pointerType === "touch" || e.pointerType === "mouse") {
+                e.preventDefault();
+                this.selector.onMouseUp(e);
+            }
+        });
 
         // any changes shall cause a redraw
         this.board.addRenderCall("render_selection", this._renderSelection.bind(this), 1000);

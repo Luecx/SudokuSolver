@@ -1,7 +1,7 @@
-{% if ongoing_stats %}
 {% load form_filters %}
 {% load static %}
 {% load formatting star_rating %}
+{% if ongoing_stats %}
 
 {% include "sudoku/profile/search_filter.html" with search_id="ongoingSearch" tag_class="ongoing-tag-filter" tag_prefix="ongoing-tag" %}
 

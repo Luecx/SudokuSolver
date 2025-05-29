@@ -20,8 +20,10 @@ export class InputKeyboard {
         };
 
         this.specialBindings = {
-            'Backspace': () => this.board.clearRegion(this.board.getSelectedRegion()),
-            'Delete'   : () => this.board.clearRegion(this.board.getSelectedRegion()),
+            'Backspace': () => this.board.clearRegion(this.board.getSelectedRegion(),
+                this.mode === InputMode.NumberFixed, this.mode === InputMode.NumberFixed),
+            'Delete'   : () => this.board.clearRegion(this.board.getSelectedRegion(),
+                this.mode === InputMode.NumberFixed, this.mode === InputMode.NumberFixed),
         };
 
         this.setEnabled(true); // Enable keyboard input by default
@@ -71,11 +73,15 @@ export class InputKeyboard {
         const region = this.board.getSelectedRegion();
         if (!this.board.isDefaultMode() || !region || region.length === 0) return;
 
+        console.log("handling input");
+
         switch (this.mode) {
             case InputMode.NumberRegular:
+                console.log("regular number");
                 this.board.toggleValues(region, val, false);
                 break;
             case InputMode.NumberFixed:
+                console.log("fixed number");
                 this.board.toggleValues(region, val, true);
                 break;
             case InputMode.CandidateRegular:

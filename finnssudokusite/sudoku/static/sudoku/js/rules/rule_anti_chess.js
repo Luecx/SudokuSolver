@@ -27,26 +27,26 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
                 key: "enabled",
                 type: "boolean",
                 label: `Enabled`,
-                default: true
+                default: false
             },
             {
                 key: "region",
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Cage Region"
+                label: "Optional: Cage Region"
             },
             {
                 key: "NumberCanRepeat",
                 type: "boolean",
-                label: `Numbers can repeat within a cage`,
+                label: `Optional: Numbers can repeat`,
                 default: true
             },
             {
                 key: "sums",
                 type: "string",
                 default: "",
-                label: "Forbidden Cage Sums (comma-separated)"
+                label: "Optional: Forbidden Sums (comma-sep)"
             }
         ]; 
     }
@@ -106,23 +106,51 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
     }
 
     getDescriptionPlayHTML() {
-        let desc = "In an <b>Anti-Chess Sudoku</b>,";
-        const king = this.fields?.antiKing;
-        const knight = this.fields?.antiKnight;
+        let desc = "<b>Anti-Chess Sudoku</b>: ";
+        const parts = [];
 
-        if (king && knight) {
-            desc += " no two identical digits may be a king's move or a knight's move apart.";
-        } else if (king) {
-            desc += " no two identical digits may be a king's move apart.";
-        } else if (knight) {
-            desc += " no two identical digits may be a knight's move apart.";
-        } else {
-            desc += " chess constraints are disabled.";
+        for (const label of ["Anti-Knight", "Anti-King"]) {
+            const rules = this.rules.filter(r => r.label === label && r.fields?.enabled);
+            if (rules.length === 0) continue;
+
+            for (const rule of rules) {
+                const region = rule.fields?.region;
+                const regionSet = region?.items?.length > 0;
+                const allowRepeats = rule.fields?.NumberCanRepeat !== false;
+                const sums = rule.fields?.sums?.trim();
+                const hasForbiddenSums = sums && sums.length > 0;
+
+                const piece = label === "Anti-Knight" ? "knight's move" : "king's move";
+                const scope = regionSet
+                    ? "within a specified region"
+                    : "anywhere on the board";
+
+                let text = `no two identical digits may be a ${piece} apart ${scope}`;
+
+                if (regionSet) {
+                    const extras = [];
+
+                    if (hasForbiddenSums)
+                        extras.push(`must not sum to ${sums}`);
+
+                    if (!allowRepeats)
+                        extras.push("must be distinct");
+
+                    if (extras.length > 0)
+                        text += `, and digits ${extras.join(" and ")}`;
+                }
+
+                text += ".";
+                parts.push(text);
+            }
         }
 
-        return desc;
-    }
+        if (parts.length === 0) {
+            return desc + "no constraints are active.";
+        }
 
+        return desc + parts.join(" ");
+    }
 
     render(rule, ctx) {
         const region = rule.fields.region;
