@@ -26,9 +26,18 @@ export class Game {
         this.saveTimer = null;
         // Array of finished image paths – adjust as needed
         this.finishedImages = [
-            "static/sudoku/done/1.png",
-            "static/sudoku/done/2.png",
-            "static/sudoku/done/3.png"
+            "/static/sudoku/img/done/1.png",
+            "/static/sudoku/img/done/2.png",
+            "/static/sudoku/img/done/4.png",
+            "/static/sudoku/img/done/5.png",
+            "/static/sudoku/img/done/6.png",
+            "/static/sudoku/img/done/7.png",
+            "/static/sudoku/img/done/8.png",
+            "/static/sudoku/img/done/9.png",
+            "/static/sudoku/img/done/10.png",
+            "/static/sudoku/img/done/11.png",
+            "/static/sudoku/img/done/12.png",
+            "/static/sudoku/img/done/13.png"
         ];
 
         setTimeout(() => {
