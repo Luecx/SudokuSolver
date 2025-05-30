@@ -17,7 +17,7 @@ export class GameState {
         const data = {
             sudoku_id: sudokuId,
             time: parseInt(timer.getDuration() || 0),
-            board_state: board.contentLayer.getState(),
+            board_state: JSON.stringify(board.contentLayer.getState()), // convert to string
             timestamp: Date.now(),
             status: "ongoing",
         };
@@ -31,7 +31,7 @@ export class GameState {
 
         // Save to server
         try {
-            await fetch("/save-ongoing/", {
+            const response = await fetch("/save-ongoing/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -40,9 +40,14 @@ export class GameState {
                 body: JSON.stringify({
                     sudoku_id: data.sudoku_id,
                     time: data.time,
-                    board_state: data.board_state
+                    board_state: data.board_state // Now it's a string
                 })
             });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Server error:", response.status, errorText);
+            }
         } catch (e) {
             console.warn("Saving ongoing state to server failed:", e);
         }
@@ -111,7 +116,9 @@ export class GameState {
                     was_previously_completed: json.was_previously_completed === true,
                 };
             }
-        } catch { /* ignore */ }
+        } catch (e) { 
+            console.error("Failed to load ongoing state from server:", e);
+        }
 
         // --- Try to load from local cache ---
         try {
