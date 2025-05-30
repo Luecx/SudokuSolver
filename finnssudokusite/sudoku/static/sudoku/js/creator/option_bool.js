@@ -6,18 +6,18 @@ export class BooleanOption {
         this.onDone = onDone;
 
         this.wrapper = document.createElement("div");
-        this.wrapper.classList.add("form-check", "mb-2");
+        this.wrapper.classList.add("form-check", "m-2");
 
         this.input = document.createElement("input");
         this.input.className = "form-check-input";
         this.input.type = "checkbox";
         this.input.checked = defaultValue;
-        if (id) this.input.id = id;
+        this.input.id = this.id;
 
         this.label = document.createElement("label");
         this.label.className = "form-check-label";
         this.label.innerHTML = label;
-        if (id) this.label.htmlFor = id;
+        this.label.htmlFor = this.id;
 
         this.wrapper.appendChild(this.input);
         this.wrapper.appendChild(this.label);

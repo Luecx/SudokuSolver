@@ -13,7 +13,7 @@ export class RegionSelectorOption {
         this.onStartPostSelecting = onStartPostSelecting;
 
         this.wrapper = document.createElement("div");
-        this.wrapper.classList.add("mb-2");
+        this.wrapper.classList.add("m-2");
 
         this.label = document.createElement("label");
         this.label.className = "form-label";
