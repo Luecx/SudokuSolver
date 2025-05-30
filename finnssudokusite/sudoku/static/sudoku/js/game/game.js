@@ -26,6 +26,7 @@ export class Game {
             InputMode.Color
         ]);
 
+        this.inputGrid = new InputGrid(this.keyboard);
         this.timer = new Timer("timer");
         this.sudokuId = null;
         this.state = null;
@@ -77,9 +78,10 @@ export class Game {
                         this.board.contentLayer.setValue(idx, value);
                 }
             }
+
+            this.disablePlay();
         }
 
-        new InputGrid(this.keyboard);
         this.setupPageUnloadHandlers();
         this.setupThemeMenu();
         this.renderRuleDescriptions();
@@ -91,6 +93,7 @@ export class Game {
             
             if (this.isBoardSolved()) {
                 this.onSudokuFinished();
+                this.disablePlay();
             } else {
                 this.validateProgress();
             }
@@ -117,11 +120,17 @@ export class Game {
         return diff === 0;
     }
 
+    disablePlay() {
+        this.inputGrid.disable();
+        this.keyboard.setEnabled(false);
+    }
+
     // --- New function that is triggered when the sudoku is completed ---
     onSudokuFinished() {
         console.log("Sudoku Completed!");
         this.state.save_completed(this.sudokuId, this.board, this.timer);
         this.showFinishedModal();
+        this.disablePlay();
     }
 
     // --- Modal functions ---
@@ -214,6 +223,7 @@ export class Game {
             if (this.sudokuId) {
                 if (this.isBoardSolved()) {
                     this.submitCompletion();
+                    this.disablePlay();
                 } else {
                     this.state.save_state(this.sudokuId, this.board, this.timer);
                 }
