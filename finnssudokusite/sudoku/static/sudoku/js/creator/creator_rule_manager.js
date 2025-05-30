@@ -330,7 +330,6 @@ export class CreatorRuleManager {
     _createFieldComponent(desc, handler, rule) {
         const shared = {
             label: desc.label,
-            id: `${handler.name}-${rule?.id ?? "global"}-${desc.key}`,
             defaultValue: rule?.fields?.[desc.key] ?? handler.fields?.[desc.key],
             onChange: ({ value }) => {
                 if (rule) {
