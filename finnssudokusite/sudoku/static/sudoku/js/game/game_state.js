@@ -111,9 +111,7 @@ export class GameState {
                     was_previously_completed: json.was_previously_completed === true,
                 };
             }
-        } catch (e) { 
-            console.error("Failed to load ongoing state from server:", e);
-        }
+        } catch { /* ignore */ }
 
         // --- Try to load from local cache ---
         try {

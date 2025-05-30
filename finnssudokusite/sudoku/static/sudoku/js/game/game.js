@@ -123,6 +123,10 @@ export class Game {
     disablePlay() {
         this.inputGrid.disable();
         this.keyboard.setEnabled(false);
+
+        const validateBtn = document.getElementById("validate-btn");
+        if (validateBtn)
+            validateBtn.disabled = true;
     }
 
     // --- New function that is triggered when the sudoku is completed ---
