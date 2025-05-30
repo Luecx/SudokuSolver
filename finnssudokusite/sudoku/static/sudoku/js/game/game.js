@@ -8,13 +8,14 @@ import { InputGrid } from "./input_grid.js";
 import { Timer } from "./timer.js";
 import { Solution } from "../solution/solution.js";
 import { GameState } from "./game_state.js";
+import { CellIdx } from "../region/CellIdx.js";
+import { NO_NUMBER } from "../number/number.js";
 
 export class Game {
     constructor(options = {}) {
         this.ratingGiven = null;
         this.isCompleted = false;
         this.modalClosed = false;
-
 
         const container = document.querySelector(".board-container");
         this.board = createBoard(container);
@@ -50,6 +51,7 @@ export class Game {
             this.init();
         }, 250); // wait till everything initializes before rendering the board
     }
+
     async init() {
         this.board.initBoard();
         const jsonData = window.puzzle_data;
@@ -65,6 +67,17 @@ export class Game {
         this.state = new GameState();
         await this.state.load(this.sudokuId, this.board, this.timer);
 
+        if (this.state.completed_before && this.solution) {
+            // set all solution values to board            
+            for (let r = 0; r < this.board.contentLayer.gridSize; r++) {
+                for (let c = 0; c < this.board.contentLayer.gridSize; c++) {
+                    const idx = new CellIdx(r, c);
+                    const value = this.solution.get(idx);
+                    if (value !== NO_NUMBER) 
+                        this.board.contentLayer.setValue(idx, value);
+                }
+            }
+        }
 
         new InputGrid(this.keyboard);
         this.setupPageUnloadHandlers();
@@ -73,9 +86,13 @@ export class Game {
 
         await this.handleInitialModal();
 
-        this.board.onEvent("ev_number_changed", () => {
-            if (this.board.contentLayer.isSolved()) {
+        this.board.onEvent("ev_number_changed", () => {   
+            if (!this.board.contentLayer.allCellsFilled()) return;
+            
+            if (this.isBoardSolved()) {
                 this.onSudokuFinished();
+            } else {
+                this.validateProgress();
             }
         });
 
@@ -85,6 +102,20 @@ export class Game {
         }
     }
 
+    isBoardSolved() {
+        if (!this.board.contentLayer.allCellsFilled())
+            return false;
+
+        if (!this.solution) 
+            return false;
+    
+        const userInput = this.board.getUserNumbers ? this.board.getUserNumbers() : null;
+        if (!userInput)
+            return false;
+
+        const diff = userInput.difference(this.solution);
+        return diff === 0;
+    }
 
     // --- New function that is triggered when the sudoku is completed ---
     onSudokuFinished() {
@@ -145,7 +176,6 @@ export class Game {
         new bootstrap.Modal(modalEl).show();
     }
 
-
     showValidationModal(message) {
         const modalEl = document.getElementById("validationModal");
         if (!modalEl) {
@@ -182,7 +212,7 @@ export class Game {
     setupPageUnloadHandlers() {
         const syncSaveOrSubmit = () => {
             if (this.sudokuId) {
-                if (this.board.contentLayer.isSolved()) {
+                if (this.isBoardSolved()) {
                     this.submitCompletion();
                 } else {
                     this.state.save_state(this.sudokuId, this.board, this.timer);
@@ -201,7 +231,6 @@ export class Game {
             if (e.target.closest("a")) syncSaveOrSubmit();
         });
     }
-
 
     setupThemeMenu() {
         const backgrounds = {

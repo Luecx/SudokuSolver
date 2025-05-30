@@ -173,7 +173,7 @@ export class BoardNumberLayer {
         this.generateEmptyBoard();
     }
 
-    isSolved() {
+    allCellsFilled() {
         return this.cells.every(cell => {
             return cell.hasValue();
         });
