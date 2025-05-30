@@ -59,6 +59,7 @@ export function createBoard(container) {
         isDefaultMode           : () => selectionManager.isDefaultMode(),
         revertSelection         : () => selectionManager.revertSelection(),
         resetSelectionToDefault : () => selectionManager.resetSelectionToDefault(),
+        shiftSelection          : (dy, dx) => selectionManager.shiftSelection(dy, dx),
 
         // renderer related functions
         addRenderCall           : (name, func, layer) => renderer.addRenderCall(name, func, layer),

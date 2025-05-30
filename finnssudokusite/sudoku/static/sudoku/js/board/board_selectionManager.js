@@ -1,6 +1,7 @@
 import { SelectionMode } from "./board_selectionEnums.js";
 import { RegionType } from "../region/RegionType.js";
 import { createSelectionConfig } from "./board_selectionConfig.js";
+import { Region } from "../region/Region.js"
 
 export class SelectionManager {
     constructor() {
@@ -183,4 +184,41 @@ export class SelectionManager {
             this.board.hintRCLayer.clearSelection();
         }
     }
+
+    /**
+     * Shifts the currently selected cell region by (dx, dy).
+     * Cells that move out of bounds are discarded.
+     * Emits `ev_selected_region_changed` or `ev_selected_region_cleared`.
+     * @param {number} dy - Vertical shift in rows.
+     * @param {number} dx - Horizontal shift in columns.
+     */
+    shiftSelection(dy, dx) {
+        console.log(this.selectionConfig?.target, dy, dy);
+        if (this.selectionConfig?.target !== RegionType.CELLS) return;
+
+        const region = this.getSelectedRegion();
+        console.log(region);
+        if (!region || region.type !== RegionType.CELLS || region.size() === 0) return;
+
+        console.log(region);
+        const rows = this.board.getGridSize();
+        const cols = rows;
+        const CellIdxClass = region.itemClass;
+
+        const shiftedItems = region.items
+            .map(cell => new CellIdxClass(cell.r + dy, cell.c + dx))
+            .filter(cell =>
+                cell.r >= 0 && cell.r < rows &&
+                cell.c >= 0 && cell.c < cols
+            );
+
+        if (shiftedItems.length === 0) {
+            return;
+        }
+
+        const newRegion = new Region(RegionType.CELLS, shiftedItems);
+        this.setSelectedRegion(newRegion);
+        this.board.emitEvent("ev_selected_region_changed", newRegion);
+    }
+
 }

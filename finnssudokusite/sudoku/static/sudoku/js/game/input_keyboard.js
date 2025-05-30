@@ -24,6 +24,11 @@ export class InputKeyboard {
                 this.mode === InputMode.NumberFixed, this.mode === InputMode.NumberFixed),
             'Delete'   : () => this.board.clearRegion(this.board.getSelectedRegion(),
                 this.mode === InputMode.NumberFixed, this.mode === InputMode.NumberFixed),
+
+            'ArrowUp': ()    => this.board.shiftSelection(-1,  0),
+            'ArrowDown': ()  => this.board.shiftSelection( 1,  0),
+            'ArrowLeft': ()  => this.board.shiftSelection( 0, -1),
+            'ArrowRight': () => this.board.shiftSelection( 0,  1),
         };
 
         this.setEnabled(true); // Enable keyboard input by default
@@ -73,15 +78,11 @@ export class InputKeyboard {
         const region = this.board.getSelectedRegion();
         if (!this.board.isDefaultMode() || !region || region.length === 0) return;
 
-        console.log("handling input");
-
         switch (this.mode) {
             case InputMode.NumberRegular:
-                console.log("regular number");
                 this.board.toggleValues(region, val, false);
                 break;
             case InputMode.NumberFixed:
-                console.log("fixed number");
                 this.board.toggleValues(region, val, true);
                 break;
             case InputMode.CandidateRegular:
@@ -114,6 +115,8 @@ export class InputKeyboard {
             event.preventDefault();
             return;
         }
+
+        console.log(event.key, this.specialBindings[event.key]);
 
         if (this.specialBindings[event.key]) {
             this.specialBindings[event.key]();
