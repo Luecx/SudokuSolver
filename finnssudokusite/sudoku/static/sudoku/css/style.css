@@ -113,3 +113,19 @@ h1, h2, h3 {margin-bottom: 1rem;}
 }
 .my-text-btn:hover,
 .my-text-btn:focus { color:#005792;}
+
+#modalContentContainer {
+    opacity: 1;
+    transition: all 0.5s ease-in-out;
+}
+#modalContentContainer.fade-out {
+    opacity: 0;
+}
+.modal-content, .modalBody {
+    opacity: 1;
+    transition: all 0.5s ease-in-out;
+}
+.modal-content.fade-out,
+.modalBody.fade-out {
+    opacity: 0;
+}

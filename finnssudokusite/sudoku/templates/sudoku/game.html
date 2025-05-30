@@ -1,4 +1,4 @@
-{% extends 'sudoku/base.html' %}
+{% extends 'sudoku/baseForGame.html' %}
 {% load i18n %}
 {% load static %}
 
@@ -26,11 +26,13 @@
 		<div class="keypad-pane my_control_style">
 			<div class="control-container">
 				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
-				<div id="info">
-					<span class="content_name">{{ page_title|default:"Unnamed Puzzle" }}</span><br>
-					<span class="content_creator">by {{ creator_name|default:"Unknown" }}</span>
-				</div>
-				<button id="btn-gear" class="btn btn-secondary btn-gear" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
+				
+				<div id="game-name" class="text-custom-white">{{ page_title|default:"Unnamed Puzzle" }}</div>
+				<div id="game-creator" class="text-custom-white">by {{ creator_name|default:"Unknown" }}</div>
+				<button id="btn-gear" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
+				<button id="btn-menu" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
+				<button id="validate-btn" class="btn btn-custom-white btn-validate"><span>Check 28</span></button>
+				
 				<button id="btn-undo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-fill"></i></button>
 				<button id="btn-redo" class="btn btn-custom-white btn-square "><i class="bi bi-backspace-reverse"></i></button>
 				<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
@@ -60,11 +62,73 @@
 
 				<!-- </div></div><div class="block-part" data-block="bottom"></div>-->
 			</div>
-			<button id="validate-btn" class="btn btn-outline-primary mt-3">
-				Check My Progress
-			</button>
+			
 		</div>
 		
+		<!-- Menu Canvas -->
+		<div class="offcanvas offcanvas-end" style="width: 20rem;" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+			<div class="offcanvas-header">
+				{% if user.is_authenticated %}
+				<b>{{ user.username }}</b>
+				{% endif %}
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<nav class="nav flex-column">
+					{% if user.is_authenticated %}
+						<a class="nav-link myNavLink" href="{% url 'profile' %}"><i class="fas fa-user-circle me-1"></i>{% trans "Your profile" %}</a>
+					{% endif %}
+					<hr>
+					<a class="nav-link myNavLink" href="{% url 'puzzles' %}">
+						<i class="fas fa-th-list me-1"></i>{% trans "Puzzles" %}
+					</a>
+					<a class="nav-link myNavLink" href="{% url 'leaderboard' %}">
+						<i class="fas fa-trophy me-1"></i>{% trans "Leaderboards" %}
+					</a>
+					<a class="nav-link myNavLink" href="{% url 'creator' %}">
+						<i class="fas fa-pencil-alt me-1"></i>{% trans "Sudoku Creator" %}
+					</a>
+					<a class="nav-link myNavLink" href="{% url 'index' %}">
+						<i class="fas fa-th-list me-1"></i>{% trans "About us" %}
+					</a>
+					
+					
+					{% get_current_language as LANGUAGE_CODE %}
+					<!-- Sprachwahl mit Select-Feld -->
+					<div class="myNavOption d-flex align-items-center">
+						<i class="fas fa-globe"></i>
+						<select id="languageSelect" class="form-select">
+							<option value="en"{% if LANGUAGE_CODE == 'en' %} selected{% endif %}>English</option>
+							<option value="de"{% if LANGUAGE_CODE == 'de' %} selected{% endif %}>Deutsch</option>
+							<option value="ja"{% if LANGUAGE_CODE == 'ja' %} selected{% endif %}>日本語</option>
+						</select>
+					</div>
+					<!-- Unsichtbares Formular für die Sprachumschaltung -->
+					<form id="languageForm" method="post" action="{% url 'set_language' %}" style="display: none;">
+					  {% csrf_token %}
+					  <input type="hidden" name="language" id="languageInput">
+					  <input type="hidden" name="next" value="{{ request.path }}">
+					</form>
+					
+					<script>
+					  document.addEventListener("DOMContentLoaded", function () {
+					    const select = document.getElementById("languageSelect");
+					    const form = document.getElementById("languageForm");
+					    const input = document.getElementById("languageInput");
+					    if (select && form && input) {
+					      select.addEventListener("change", function () {
+					        input.value = select.value;
+					        form.submit();
+					      });
+					    }
+					  });
+					</script>
+					
+				</nav>
+			</div>
+		</div>
+		
+		<!-- Gear Canvas -->
 		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasGear" aria-labelledby="offcanvasGearLabel">
 			<div class="offcanvas-header">
 				<h5 class="offcanvas-title" id="offcanvasGearLabel">Design & Settings</h5>
@@ -96,6 +160,7 @@
 			</div>
 		</div>
 		
+		<!-- Rules Canvas -->
 		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRules" aria-labelledby="offcanvasRulesLabel">
 			<div class="offcanvas-header">
 				<h5 class="offcanvas-title" id="offcanvasRulesLabel">Rules</h5>
@@ -108,6 +173,7 @@
 	</div>
 </div>
 
+<!-- Playinfo Modal -->
 <div class="modal fade" id="sudokuInfoModal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content p-3">
@@ -160,23 +226,18 @@
 		</div>
 	</div>
 </div>
-
-
-
-
 {% endblock %}
 
 {% block extra_scripts %}
 <script>window.puzzle_data={{puzzle_data_json | safe}};</script>
 <script type="module" src="{% static 'sudoku/js/game/game.js' %}"></script>
-
 <script>
 	function updateControlContainerGrid() {
 		const container = document.querySelector(".control-container");
 		if (!container) return;
 
 		// Layout constants
-		const menuHeight = 60;         // px
+		const menuHeight = 0;          // px
 		const border = 16;             // 1rem = 16px
 		const gap = 16;                // 1rem
 		const aspectRatios = {
@@ -262,7 +323,8 @@
 		const scaleBase = scaleBaseGrid[layout] || 300;  // fallback to 300 if layout unknown
 		const scaleFactor = width / scaleBase;
 		const fontSize = Math.max(0.8, Math.min(3.0, 1.4 * scaleFactor)); // clamp between 0.8rem and 3.0rem
-
+		const infoSize = fontSize * 0.5;
+		
 		container.querySelectorAll(".btn").forEach(btn => {
 			btn.style.fontSize = `${fontSize}rem`;
 		});
@@ -273,11 +335,10 @@
 			colorBtnImg.style.width = `${imageSize}px`;
 			colorBtnImg.style.height = `${imageSize}px`;
 		}
-		const info = document.getElementById("info");
-		if (info) {
-			const infoSize = fontSize * 0.75;
-			info.style.fontSize = `${infoSize}rem`;
-		}
+		
+		container.querySelectorAll(".text-custom-white").forEach(t => {
+			t.style.fontSize = `${infoSize}rem`;
+		});
 	}
 
 	// Execute after full load (including fonts/images/layout)
@@ -285,5 +346,4 @@
 	window.addEventListener("resize", updateControlContainerGrid);
 
 </script>
-
 {% endblock %}
