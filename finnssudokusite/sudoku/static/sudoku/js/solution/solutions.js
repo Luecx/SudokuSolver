@@ -8,7 +8,7 @@
 import { NO_NUMBER } from '../number/number.js';
 import { NumberSet } from '../number/number_set.js';
 import { CellIdx } from '../region/CellIdx.js';
-import { Solution } from './solution';
+import { Solution } from './solution.js';
 
 /**
  * Represents a collection of multiple Sudoku solutions.
