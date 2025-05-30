@@ -8,14 +8,13 @@ import { InputGrid } from "./input_grid.js";
 import { Timer } from "./timer.js";
 import { Solution } from "../solution/solution.js";
 import { GameState } from "./game_state.js";
-import { CellIdx } from "../region/CellIdx.js";
-import { NO_NUMBER } from "../number/number.js";
 
 export class Game {
     constructor(options = {}) {
         this.ratingGiven = null;
         this.isCompleted = false;
         this.modalClosed = false;
+
 
         const container = document.querySelector(".board-container");
         this.board = createBoard(container);
@@ -26,7 +25,6 @@ export class Game {
             InputMode.Color
         ]);
 
-        this.inputGrid = new InputGrid(this.keyboard);
         this.timer = new Timer("timer");
         this.sudokuId = null;
         this.state = null;
@@ -68,32 +66,19 @@ export class Game {
         this.state = new GameState();
         await this.state.load(this.sudokuId, this.board, this.timer);
 
-        if (this.state.completed_before && this.solution) {
-            // set all solution values to board            
-            for (let r = 0; r < this.board.contentLayer.gridSize; r++) {
-                for (let c = 0; c < this.board.contentLayer.gridSize; c++) {
-                    const idx = new CellIdx(r, c);
-                    const value = this.solution.get(idx);
-                    if (value !== NO_NUMBER) 
-                        this.board.contentLayer.setValue(idx, value);
-                }
-            }
 
-            this.disablePlay();
-        }
-
+        new InputGrid(this.keyboard);
         this.setupPageUnloadHandlers();
         this.setupThemeMenu();
         this.renderRuleDescriptions();
 
         await this.handleInitialModal();
 
-        this.board.onEvent("ev_number_changed", () => {   
+        this.board.onEvent("ev_number_changed", () => {
             if (!this.board.contentLayer.allCellsFilled()) return;
-            
+
             if (this.isBoardSolved()) {
                 this.onSudokuFinished();
-                this.disablePlay();
             } else {
                 this.validateProgress();
             }
@@ -120,21 +105,11 @@ export class Game {
         return diff === 0;
     }
 
-    disablePlay() {
-        this.inputGrid.disable();
-        this.keyboard.setEnabled(false);
-
-        const validateBtn = document.getElementById("validate-btn");
-        if (validateBtn)
-            validateBtn.disabled = true;
-    }
-
     // --- New function that is triggered when the sudoku is completed ---
     onSudokuFinished() {
         console.log("Sudoku Completed!");
         this.state.save_completed(this.sudokuId, this.board, this.timer);
         this.showFinishedModal();
-        this.disablePlay();
     }
 
     // --- Modal functions ---
@@ -189,6 +164,7 @@ export class Game {
         new bootstrap.Modal(modalEl).show();
     }
 
+
     showValidationModal(message) {
         const modalEl = document.getElementById("validationModal");
         if (!modalEl) {
@@ -227,7 +203,6 @@ export class Game {
             if (this.sudokuId) {
                 if (this.isBoardSolved()) {
                     this.submitCompletion();
-                    this.disablePlay();
                 } else {
                     this.state.save_state(this.sudokuId, this.board, this.timer);
                 }
@@ -245,6 +220,7 @@ export class Game {
             if (e.target.closest("a")) syncSaveOrSubmit();
         });
     }
+
 
     setupThemeMenu() {
         const backgrounds = {

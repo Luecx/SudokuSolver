@@ -145,10 +145,10 @@ def mark_sudoku_completed(request):
     - { status: "error", message: str } on failure
     """
     try:
-        data = _parse_request_data(request)        
+        data = _parse_request_data(request)
         sudoku = get_object_or_404(Sudoku, pk=data["sudoku_id"])
 
-        state_compressed = _compress(data["board_state"])        
+        state_compressed = _compress(data["board_state"])
         time = data["time"]
         rating = data.get("rating", None)
 
