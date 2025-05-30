@@ -529,7 +529,6 @@ html, body {
 	font-weight: 300;
 }
 .myNavLink i {padding-right: 1rem;}
-
 .myNavLink:hover,
 .myNavOption:hover {
 	background-color: #f1f2f3;

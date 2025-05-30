@@ -21,24 +21,6 @@
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="{% static 'sudoku/css/style.css' %}">
 	
-	<style>
-		#modalContentContainer {
-			opacity: 1;
-			transition: all 0.5s ease-in-out;
-		}
-		#modalContentContainer.fade-out {
-			opacity: 0;
-		}
-		.modal-content, .modalBody {
-			opacity: 1;
-			transition: all 0.5s ease-in-out;
-		}
-		.modal-content.fade-out,
-		.modalBody.fade-out {
-			opacity: 0;
-		}
-	</style>
-	
 	{% block extra_css %}
 	{% endblock %}
 
@@ -140,7 +122,6 @@
 
 
 <!-- Login Modal -->
-
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content border rounded-5 shadow-sm">
@@ -158,61 +139,7 @@
 <!-- zusätzliche Scripts hier -->
 {% endblock %}
 
-<script>
-	function openModalWithContent(url) {
-		const container = document.getElementById('modalContentContainer');
-		const modalDialog = document.querySelector('#loginModal .modal-dialog');
-		modalDialog.className = 'modal-dialog modal-dialog-centered';
-		
-		fetch(url)
-			.then(response => response.text())
-			.then(html => {
-				container.innerHTML = html;
-			})
-			.catch(error => {
-				container.innerHTML = "<div class='alert alert-danger'>Fehler beim Laden des Inhalts.</div>";
-				console.error("Modal-Error: ", error);
-			});
-	}
-	
-	function switchModalContent(url, size = null) {
-		const container = document.getElementById('modalContentContainer');
-		const modalDialog = document.querySelector('#loginModal .modal-dialog');
-		const modalContent = document.querySelector('#loginModal .modal-content');
-		const modalBody = document.querySelector('#loginModal .modal-body');
-		const sizeMap = {
-			'S': 'modal-sm',
-			'L': 'modal-lg',
-			'XL': '.modal-xl',
-		};
-		
-		const targetClass = sizeMap[size] || '';
-		modalBody.classList.add('fade-out');
-		setTimeout(() => {
-			modalDialog.className = 'modal-dialog modal-dialog-centered ' + targetClass;
-			
-			fetch(url)
-				.then(response => response.text())
-				.then(html => {
-					container.innerHTML = html;
-					modalBody.classList.remove('fade-out');
-				})
-				.catch(error => {
-					container.innerHTML = "<div class='alert alert-danger'>Fehler beim Laden des Inhalts.</div>";
-					console.error("Modal-Error: ", error);
-					modalBody.classList.remove('fade-out');
-				});
-		}, 500);
-	}
-	
-	document.querySelectorAll('.lang-btn').forEach(btn => {
-		btn.addEventListener('click', function () {
-			const langCode = this.getAttribute('data-lang');
-			document.getElementById('languageInput').value = langCode;
-			document.getElementById('languageForm').submit();
-		});
-	});
-</script>
+<script src="{% static 'sudoku/js/base_loginModal.js' %}"></script>
 
 </body>
 </html>
