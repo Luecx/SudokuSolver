@@ -6,7 +6,7 @@ export class InputGrid {
         this.modeButtons = {};
         this.numberButtons = [];
         this.currentMode = this.keyboard.getMode();
-        this.disabled = false;
+
         this.init();
     }
 
@@ -34,7 +34,6 @@ export class InputGrid {
                 btn.classList.add("btn-square", "btn-statebtn"); // mark as state button
 
                 btn.addEventListener('click', () => {
-                    if (this.disabled) return;
                     this.keyboard.setMode(mode);
                     btn.blur();
                 });
@@ -54,7 +53,6 @@ export class InputGrid {
             // btn.classList.add("btn-square"); // ensure same base styling
 
             btn.addEventListener("click", () => {
-                if (this.disabled) return; 
                 this.keyboard.handleInput(i + 1);
             });
             this.addClickEffect(btn);
@@ -83,13 +81,11 @@ export class InputGrid {
         };
 
         btnPlus?.addEventListener('click', () => {
-            if (this.disabled) return; 
             currentFontSize += 0.2;
             currentSvgSize += 3;
             updateFontSize();
         });
         btnMinus?.addEventListener('click', () => {
-            if (this.disabled) return; 
             currentFontSize = Math.max(0.3, currentFontSize - 0.2);
             currentSvgSize = Math.max(1, currentSvgSize - 3);
             updateFontSize();
@@ -97,41 +93,6 @@ export class InputGrid {
 
         this.addClickEffect(btnPlus);
         this.addClickEffect(btnMinus);
-    }
-
-    disable() {
-        this.disabled = true;
-        this.updateButtonStates();
-    }
-
-    enable() {
-        this.disabled = false;
-        this.updateButtonStates();
-    }
-
-    isDisabled() {
-        return this.disabled;
-    }
-
-    updateButtonStates() {
-        const allButtons = [
-            ...Object.values(this.modeButtons),
-            ...this.numberButtons,
-            document.getElementById('btn-plus'),
-            document.getElementById('btn-minus')
-        ].filter(btn => btn); // Remove null elements
-
-        allButtons.forEach(btn => {
-            if (this.disabled) {
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.5';
-                btn.classList.add('btn-disabled');
-            } else {
-                btn.style.pointerEvents = '';
-                btn.style.opacity = '';
-                btn.classList.remove('btn-disabled');
-            }
-        });
     }
 
     updateModeButtons(activeMode) {
@@ -155,6 +116,7 @@ export class InputGrid {
         });
     }
 
+
     flashNumberButton(val) {
         const map = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
         const id = `btn-${map[val]}`;
@@ -177,10 +139,10 @@ export class InputGrid {
         }
     }
 
+
     addClickEffect(btn) {
         if (!btn) return;
         btn.addEventListener("click", () => {
-            if (this.disabled) return;
             btn.blur();
             btn.classList.add("btn-hovered");
             setTimeout(() => btn.classList.remove("btn-hovered"), 150);

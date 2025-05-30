@@ -43,9 +43,7 @@ export class GameState {
                     board_state: data.board_state
                 })
             });
-        } catch (e) {
-            console.warn("Saving ongoing state to server failed:", e);
-        }
+        } catch { /* ignore */ }
     }
 
     async save_completed(sudokuId, board, timer, rating = null) {
@@ -76,9 +74,7 @@ export class GameState {
                 },
                 body: JSON.stringify(data)
             });
-        } catch (e) {
-            console.error("Saving completed state to server failed:", e);
-        }
+        } catch { /* ignore */ }
     }
 
     async load(sudokuId, board, timer) {
