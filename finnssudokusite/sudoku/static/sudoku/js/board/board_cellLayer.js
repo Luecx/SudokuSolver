@@ -161,7 +161,7 @@ export class CellLayer {
                 this.board.emitEvent("ev_selected_region_el_added", [this.selected_region, cellIdx]);
             }
 
-            this._updateHighlights();
+            this.updateHighlights();
         }
     }
 
@@ -176,7 +176,7 @@ export class CellLayer {
                 this.board.emitEvent("ev_selected_region_el_removed", [this.selected_region, cellIdx]);
             }
 
-            this._updateHighlights();
+            this.updateHighlights();
         }
     }
 
@@ -285,7 +285,7 @@ export class CellLayer {
         }
     }
 
-    _updateHighlights() {
+    updateHighlights() {
         this._clearAllHighlights();
         
         if (this.selected_region.size() === 1) {
@@ -396,26 +396,26 @@ export class CellLayer {
     // Public API for enabling/disabling highlights
     enableRowHighlight(val) { 
         this.highlights.row.enable(val);
-        this._updateHighlights();
+        this.updateHighlights();
     }
     
     enableColumnHighlight(val) { 
         this.highlights.column.enable(val);
-        this._updateHighlights();
+        this.updateHighlights();
     }
     
     enableBlockHighlight(val) { 
         this.highlights.block.enable(val);
-        this._updateHighlights();
+        this.updateHighlights();
     }
     
     enableNumberHighlight(val) { 
         this.highlights.number.enable(val);
-        this._updateHighlights();
+        this.updateHighlights();
     }
     
     enableCandidatesHighlight(val) { 
         this.highlights.candidates.enable(val);
-        this._updateHighlights();
+        this.updateHighlights();
     }
 }
