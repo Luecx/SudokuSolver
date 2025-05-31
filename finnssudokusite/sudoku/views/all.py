@@ -183,6 +183,9 @@ def register(request):
             })
             send_mail(subject, message, 'noreply@sudoku.com', [user.email])
             return render(request, 'sudoku/login/activation_sent.html')
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return render(request, 'sudoku/login/register.html', {'form': form})
     else:
         form = UserRegisterForm()
 
