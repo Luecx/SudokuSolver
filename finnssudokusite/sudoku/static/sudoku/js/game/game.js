@@ -88,6 +88,27 @@ export class Game {
         if (validateBtn) {
             validateBtn.addEventListener("click", () => this.validateProgress());
         }
+
+        // highlight toggles
+        document.getElementById('highlightRow').addEventListener('change', (e) => {
+            this.board.cellLayer.enableRowHighlight(e.target.checked);
+        });
+
+        document.getElementById('highlightColumn').addEventListener('change', (e) => {
+            this.board.cellLayer.enableColumnHighlight(e.target.checked);
+        });
+
+        document.getElementById('highlightBlock').addEventListener('change', (e) => {
+            this.board.cellLayer.enableBlockHighlight(e.target.checked);
+        });
+
+        document.getElementById('highlightNumber').addEventListener('change', (e) => {
+            this.board.cellLayer.enableNumberHighlight(e.target.checked);
+        });
+
+        document.getElementById('highlightCandidates').addEventListener('change', (e) => {
+            this.board.cellLayer.enableCandidatesHighlight(e.target.checked);
+        });
     }
 
     isBoardSolved() {
@@ -220,7 +241,6 @@ export class Game {
             if (e.target.closest("a")) syncSaveOrSubmit();
         });
     }
-
 
     setupThemeMenu() {
         const backgrounds = {
