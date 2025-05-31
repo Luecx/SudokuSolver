@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.db import transaction
 
 from sudoku.models import Sudoku
+from sudoku.models import Tag
 
 
 class Command(BaseCommand):
@@ -99,8 +100,13 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def import_file(self, puzzle_json, title, user, solution_string):
+        tags = []
+        for rule in puzzle_json['rules']:
+            if 'type' in rule and rule['type']:
+                tags.append(rule['type'])
+
         compressed = zlib.compress(json.dumps(puzzle_json).encode("utf-8"))
-        Sudoku.objects.create(
+        sudoku = Sudoku.objects.create(
             title=title,
             created_by=user,
             created_at=timezone.now(),
@@ -108,3 +114,10 @@ class Command(BaseCommand):
             solution_string=solution_string,
             is_public=True,
         )
+
+        tag_objects = []
+        for tag_name in tags:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            tag_objects.append(tag)
+        sudoku.tags.set(tag_objects)
+        
