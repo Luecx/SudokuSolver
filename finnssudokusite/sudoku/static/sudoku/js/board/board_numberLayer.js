@@ -536,7 +536,6 @@ export class BoardNumberLayer {
         }
     }
 
-
     getCell(idx) {
         return this.cells.find(cell => cell.idx.equals(idx));
     }
@@ -583,5 +582,10 @@ export class BoardNumberLayer {
         for (const { r, c, value } of data) {
             this.setValue(new CellIdx(r, c), value, true);
         }
+    }
+
+    getCellsByValue(value) {
+        return this.cells.filter(c => c.value === value && c.value !== null)
+            .map(c => c.idx);
     }
 }
