@@ -4,6 +4,7 @@
 #include <functional>
 #include <random>
 #include <unordered_set>
+#include <cstdlib>  // for std::atoi
 
 #include "bench.h"
 #include "board/board.h"
@@ -11,10 +12,83 @@
 #include "rules/include.h"
 #include "solver_stats.h"
 
+extern "C" {
+    void solve(const char *json, int max_solutions, int max_nodes);
+    void solveComplete(const char *json, int unused, int max_nodes);
+}
+
+void print_help() {
+    std::cout << "Usage:\n"
+              << "  ./solver solve <json_path> <solution_limit> <node_limit>\n"
+              << "  ./solver complete <json_path> <node_limit>\n"
+              << "  ./solver bench <json_path>\n";
+}
+
 
 int main(int argc, char *argv[]) {
-    bench::bench(argv[1], 1, 16384, false);
-    return 0;
+    if (argc < 2) {
+        std::cerr << "Error: No command provided.\n";
+        print_help();
+        return 1;
+    }
+
+    std::string command = argv[1];
+
+    if (command == "solve") {
+        if (argc != 5) {
+            std::cerr << "Error: 'solve' requires <json_path> <solution_limit> <node_limit>\n";
+            print_help();
+            return 1;
+        }
+
+        const char *json_path = argv[2];
+        int max_solutions = std::atoi(argv[3]);
+        int max_nodes = std::atoi(argv[4]);
+
+        std::ifstream in(json_path);
+        if (!in) {
+            std::cerr << "Error: Cannot open file '" << json_path << "'\n";
+            return 1;
+        }
+        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        solve(json.c_str(), max_solutions, max_nodes);
+        return 0;
+    }
+
+    if (command == "complete") {
+        if (argc != 4) {
+            std::cerr << "Error: 'complete' requires <json_path> <node_limit>\n";
+            print_help();
+            return 1;
+        }
+
+        const char *json_path = argv[2];
+        int max_nodes = std::atoi(argv[3]);
+
+        std::ifstream in(json_path);
+        if (!in) {
+            std::cerr << "Error: Cannot open file '" << json_path << "'\n";
+            return 1;
+        }
+        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        solveComplete(json.c_str(), 0, max_nodes);
+        return 0;
+    }
+
+    if (command == "bench") {
+        if (argc != 3) {
+            std::cerr << "Error: 'bench' requires <json_path>\n";
+            print_help();
+            return 1;
+        }
+
+        bench::bench(argv[2], 1, 16384, false);
+        return 0;
+    }
+
+    std::cerr << "Error: Unknown command '" << command << "'\n";
+    print_help();
+    return 1;
 }
 
 extern "C" {
