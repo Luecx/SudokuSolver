@@ -392,4 +392,30 @@ export class CellLayer {
             div.style.fontWeight = 'normal';
         });
     }
+
+    // Public API for enabling/disabling highlights
+    enableRowHighlight(val) { 
+        this.highlights.row.enable(val);
+        this._updateHighlights();
+    }
+    
+    enableColumnHighlight(val) { 
+        this.highlights.column.enable(val);
+        this._updateHighlights();
+    }
+    
+    enableBlockHighlight(val) { 
+        this.highlights.block.enable(val);
+        this._updateHighlights();
+    }
+    
+    enableNumberHighlight(val) { 
+        this.highlights.number.enable(val);
+        this._updateHighlights();
+    }
+    
+    enableCandidatesHighlight(val) { 
+        this.highlights.candidates.enable(val);
+        this._updateHighlights();
+    }
 }
