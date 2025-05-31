@@ -98,6 +98,17 @@ export class CellLayer {
         this.board.addRenderCall("render_selection", this._renderSelection.bind(this), 1000);
         this.board.addRenderCall("render_highlight", this._renderHighlight.bind(this), 1000);
         this.board.onEvent("ev_selected_region_changed", () => {board.triggerRender()});
+
+        // highlight updates
+        this.board.onEvent("ev_number_changed", () => {
+            this.updateHighlights();
+            this.board.triggerRender();
+        });
+
+        this.board.onEvent("ev_candidates_changed", () => {
+            this.updateHighlights();
+            this.board.triggerRender();
+        });
     }
 
     show(config) {
