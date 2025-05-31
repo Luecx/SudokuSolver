@@ -291,12 +291,12 @@ class Creator {
     }
 
     initAnalysisButtons() {
-        const normalBtn = this.get("start-normal-analysis-btn");
-        const completeBtn = this.get("start-complete-analysis-btn");
-        const clearBtn = this.get("clear-analysis-btn");
-        const debugBtn = this.get("debug-analysis-btn");
-        const toggleDefinite = this.get("toggle-definite");
-        const toggleUncertain = this.get("toggle-uncertain");
+        const normalBtn         = this.get("start-normal-analysis-btn");
+        const completeBtn       = this.get("start-complete-analysis-btn");
+        const clearBtn          = this.get("clear-analysis-btn");
+        const debugBtn          = this.get("debug-analysis-btn");
+        const toggleDefinite    = this.get("toggle-definite");
+        const toggleUncertain   = this.get("toggle-uncertain");
 
         completeBtn.disabled = true;
         clearBtn.disabled = true;
