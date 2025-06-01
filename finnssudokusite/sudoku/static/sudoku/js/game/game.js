@@ -84,27 +84,6 @@ export class Game {
         document.getElementById("validate-btn")?.addEventListener("click", () => {
             this.validateProgress();
         });
-
-        // highlight toggles
-        document.getElementById('highlightRow').addEventListener('change', (e) => {
-            this.board.cellLayer.enableRowHighlight(e.target.checked);
-        });
-
-        document.getElementById('highlightColumn').addEventListener('change', (e) => {
-            this.board.cellLayer.enableColumnHighlight(e.target.checked);
-        });
-
-        document.getElementById('highlightBlock').addEventListener('change', (e) => {
-            this.board.cellLayer.enableBlockHighlight(e.target.checked);
-        });
-
-        document.getElementById('highlightNumber').addEventListener('change', (e) => {
-            this.board.cellLayer.enableNumberHighlight(e.target.checked);
-        });
-
-        document.getElementById('highlightCandidates').addEventListener('change', (e) => {
-            this.board.cellLayer.enableCandidatesHighlight(e.target.checked);
-        });
     }
 
     isBoardSolved() {
