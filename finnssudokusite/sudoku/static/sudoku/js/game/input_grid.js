@@ -148,4 +148,20 @@ export class InputGrid {
             setTimeout(() => btn.classList.remove("btn-hovered"), 150);
         });
     }
+
+    enable() {
+        this.disabled = false;
+        document.querySelectorAll('.disable-group').forEach(el => {
+            el.disabled = false;
+            el.classList.remove('disabled');
+        });
+    }
+
+    disable() {
+        this.disabled = true;
+        document.querySelectorAll('.disable-group').forEach(el => {
+            el.disabled = true;
+            el.classList.add('disabled');
+        });
+    }
 }
