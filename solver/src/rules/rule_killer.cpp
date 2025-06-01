@@ -104,7 +104,7 @@ void RuleKiller::from_json(JSON &json) {
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0) {
-            CagePair cage_pair;
+            KillerPair cage_pair;
             cage_pair.region = region;
             cage_pair.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
             cage_pair_.push_back(cage_pair);
@@ -114,12 +114,15 @@ void RuleKiller::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleKiller::check_cage(CagePair &pair) {
+bool RuleKiller::check_cage(KillerPair &pair) {
     const int board_size = board_->size();
     remaining_cells.clear();
 
     int sum = 0;
     NumberSet seen_values(board_size);
+
+    Number min_candidate = board_size;
+    Number max_candidate = 1;
 
     for (const auto &item: pair.region) {
         Cell &cell = board_->get_cell(item);
@@ -135,21 +138,8 @@ bool RuleKiller::check_cage(CagePair &pair) {
                 seen_values.add(cell.value);
         } else {
             remaining_cells.add(cell.pos);
-        }
-    }
-
-    Number min_candidate = board_size;
-    Number max_candidate = 1;
-
-    for (const auto &item: remaining_cells) {
-        Cell &cell = board_->get_cell(item);
-        // putting this loop inside the "else" block
-        // with reamining_cells.add() won't be a speedup
-        for (Number d = 1; d <= board_size; ++d) {
-            if (!cell.candidates.test(d))
-                continue;
-            min_candidate = std::min(min_candidate, d);
-            max_candidate = std::max(max_candidate, d);
+            min_candidate = std::min(min_candidate, cell.candidates.lowest());
+            max_candidate = std::max(max_candidate, cell.candidates.highest());
         }
     }
 
@@ -174,7 +164,7 @@ bool RuleKiller::check_cage(CagePair &pair) {
     return changed;
 }
 
-bool RuleKiller::check_group(const CagePair &pair) const {
+bool RuleKiller::check_group(const KillerPair &pair) const {
     int sum = 0;
     sudoku::NumberSet seen_values(board_->size());
 
