@@ -64,8 +64,6 @@ export class SelectionManager {
         if (target === RegionType.DIAGONAL && region.type === RegionType.ROWCOL) {
             this.board.hintDiagLayer.selected_region = region;
         }
-
-        this.board.cellLayer.updateHighlights();
     }
 
     /**

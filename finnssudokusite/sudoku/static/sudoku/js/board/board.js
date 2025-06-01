@@ -10,6 +10,7 @@ import { serializeObject, deserializeObject } from "../util/jsonify.js";
 import { CellIdx } from "../region/CellIdx.js";
 import { NO_NUMBER } from "../number/number.js";
 import { HintDiagLayer } from "./board_hintDiagLayer.js";
+import { HighlightLayer } from "./board_highlightLayer.js";
 
 export function createBoard(container) {
     const gridSize = 9;
@@ -25,6 +26,7 @@ export function createBoard(container) {
     const ruleManager        = new RuleManager();
     const eventManager       = new EventManager();
     const renderer           = new BoardRenderer(canvas, gridSize, paddingRatio);
+    const highlightLayer     = new HighlightLayer(renderer);
     const numberLayer        = new BoardNumberLayer(container, renderer);
     const solutionLayer      = new BoardNumberLayer(container, renderer);
     const hintLayer          = new HintEdgeLayer(container, renderer);
@@ -114,7 +116,7 @@ export function createBoard(container) {
         hintRCLayer,
         hintDiagLayer,
         contentLayer: numberLayer,
-
+        highlightLayer
     };
 
     function initBoard() {
@@ -124,6 +126,7 @@ export function createBoard(container) {
         cellLayer.init(board);
         numberLayer.init(board);
         solutionLayer.init(board);
+        highlightLayer.init(board);
         selectionManager.setup(board);
         ruleManager.registerDefaults(board);
 
