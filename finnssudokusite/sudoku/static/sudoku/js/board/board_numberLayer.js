@@ -1,3 +1,4 @@
+import { NO_NUMBER } from "../number/number.js";
 import { CellIdx } from "../region/CellIdx.js";
 import { Solution } from "../solution/solution.js";
 
@@ -282,7 +283,7 @@ export class BoardNumberLayer {
     }
 
     updateBackground(cell) {
-        if (!cell.element) return;
+        if (!cell.element || cell.value) return;
         cell.element.style.background = this.computeBackground(cell.colors);
         cell.element.classList.toggle("multi-color-background", cell.colors.length > 1);
     }
