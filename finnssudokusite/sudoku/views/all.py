@@ -40,7 +40,7 @@ def index(request):
 
 
 def game(request):
-    return render(request, "sudoku/game.html")
+    return render(request, "sudoku/game/game.html")
 
 
 def puzzles_view(request):
