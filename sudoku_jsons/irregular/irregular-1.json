@@ -103,7 +103,7 @@
     ],
     "rules": [
         {
-            "type": "Irregular Regions",
+            "type": "Irregular-Regions",
             "fields": {
                 "region1": {
                     "__type__": "Region",

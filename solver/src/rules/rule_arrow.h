@@ -8,7 +8,7 @@ namespace sudoku {
 
 struct ArrowPair {
     Region<CellIdx> base;
-    Region<CellIdx> arrow_path;
+    Region<CellIdx> path;
 };
 
 /*

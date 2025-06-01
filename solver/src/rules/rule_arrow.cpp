@@ -10,7 +10,7 @@ bool RuleArrow::number_changed(CellIdx pos) {
     bool changed = false;
     for (auto &arrow_pair: arrow_pairs_) {
         const Region<CellIdx> &base = arrow_pair.base;
-        const Region<CellIdx> &path = arrow_pair.arrow_path;
+        const Region<CellIdx> &path = arrow_pair.path;
         // check if the changed cell is in the base or path
         if (!base.has(pos) && !path.has(pos))
             continue;
@@ -32,7 +32,7 @@ bool RuleArrow::candidates_changed() {
 bool RuleArrow::valid() {
     for (const auto &arrow_pair: arrow_pairs_) {
         const Region<CellIdx> &base = arrow_pair.base;
-        const Region<CellIdx> &path = arrow_pair.arrow_path;
+        const Region<CellIdx> &path = arrow_pair.path;
 
         auto [base_lb, base_ub] = bounds_base(base);
         auto [path_lb, path_ub] = bounds_path(path);
@@ -47,7 +47,7 @@ bool RuleArrow::valid() {
 void RuleArrow::update_impact(ImpactMap &map) {
     for (const auto &arrow_pair: arrow_pairs_) {
         const Region<CellIdx> &base = arrow_pair.base;
-        const Region<CellIdx> &path = arrow_pair.arrow_path;
+        const Region<CellIdx> &path = arrow_pair.path;
 
         map.increment_region(base);
         map.increment_region(path);
@@ -88,7 +88,7 @@ void RuleArrow::from_json(JSON &json) {
 
             ArrowPair arrow_pair;
             arrow_pair.base = base;
-            arrow_pair.arrow_path = path;
+            arrow_pair.path = path;
 
             arrow_pairs_.push_back(arrow_pair);
         }
@@ -97,19 +97,14 @@ void RuleArrow::from_json(JSON &json) {
 
 // private member functions
 
-// we need to differentiate between a few cases, one is estimating the possible numbers in the base
-// and the other is the possible numbers inside the path
 bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
     bool changed = false;
     Region<CellIdx> &base = arrow_pair.base;
-    Region<CellIdx> &path = arrow_pair.arrow_path;
+    Region<CellIdx> &path = arrow_pair.path;
 
-    // we first need to estimate the possible range of numbers in the path
     auto [path_lb, path_ub] = bounds_path(path);
-
     Cell &cell1 = board_->get_cell(base.items()[0]);
 
-    // next, we need to differentiate between the amount of base cells
     if (base.size() == 1) {
         if (cell1.is_solved())
             return false;
@@ -118,6 +113,8 @@ bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
         // cant clip upper bound because we don't know if all path cells are solved
         changed |= cell1.only_allow_candidates(NumberSet::greaterEqThan(cell1.max_number, path_lb));
     } else {
+        return false;
+
         Cell &cell2 = board_->get_cell(base.items()[1]);
         if (cell1.is_solved() && cell2.is_solved())
             return false;
@@ -139,21 +136,23 @@ bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {
     return changed;
 }
 
-// this function is used to determine the possible numbers in the path
 bool RuleArrow::determine_path_options(ArrowPair &arrow_pair) {
     bool changed = false;
 
+    return false;
     Region<CellIdx> &base = arrow_pair.base;
-    Region<CellIdx> &path = arrow_pair.arrow_path;
+    Region<CellIdx> &path = arrow_pair.path;
+
+    if (base.size() == 2)
+        return false;
 
     auto [base_lb, base_ub] = bounds_base(base);
     auto [path_lb, path_ub] = bounds_path(path);
 
-    // go through each empty cell in the path
     for (const auto &pos: path.items()) {
         Cell &cell = board_->get_cell(pos);
         if (cell.is_solved())
-            continue;
+            continue; // skip solved cells
 
         int lb_rest = path_lb - cell.candidates.lowest();
         int ub_rest = path_ub - cell.candidates.highest();
@@ -175,10 +174,8 @@ std::pair<int, int> RuleArrow::bounds_base(const Region<CellIdx> &base) {
     int ub = 0;
     Cell &cell1 = board_->get_cell(base.items()[0]);
 
-    // if there are two base cells, we need to determine the range of numbers
     if (base.size() == 2) {
         Cell &cell2 = board_->get_cell(base.items()[1]);
-
         lb = cell1.candidates.lowest() * 10 + cell2.candidates.lowest();
         ub = cell1.candidates.highest() * 10 + cell2.candidates.highest();
     } else {
