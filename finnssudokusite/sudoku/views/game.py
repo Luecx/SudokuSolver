@@ -40,7 +40,7 @@ def game(request):
     """
     Renders the generic Sudoku game page without loading a specific puzzle.
     """
-    return render(request, "sudoku/game.html")
+    return render(request, "sudoku/game/game.html")
 
 
 def play_sudoku(request, sudoku_id):
@@ -63,7 +63,7 @@ def play_sudoku(request, sudoku_id):
     except Exception:
         raise Http404("Invalid puzzle data.")
 
-    return render(request, "sudoku/game.html", {
+    return render(request, "sudoku/game/game.html", {
         "puzzle_data_json": json.dumps({
             "id": sudoku.id,
             "title": sudoku.title,

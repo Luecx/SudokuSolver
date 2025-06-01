@@ -1,0 +1,202 @@
+{% extends 'sudoku/game/game_base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Sudoku Play" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'sudoku/css/game.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/game_rule_description.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
+{% endblock %}
+
+{% block container %}
+<div class="fullwindow">
+	<div class="grid-container">
+		<div class="board-pane my_board_style">
+			<div class="board-container"></div>
+			<div class="timer-container">
+				<div class="timer" id="timer">00:00:00</div>
+			</div>
+		</div>
+		
+		<div class="keypad-pane my_control_style">
+			<div class="control-container">
+				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
+				
+				<div id="game-name" class="text-custom-white">{{ page_title|default:"Unnamed Puzzle" }}</div>
+				<div id="game-creator" class="text-custom-white">by {{ creator_name|default:"Unknown" }}</div>
+				<button id="btn-gear" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
+				<button id="btn-menu" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
+				<button id="validate-btn" class="btn btn-custom-white btn-validate disable-group"><span>Check 28</span></button>
+				
+				<button id="btn-undo" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-backspace-fill"></i></button>
+				<button id="btn-redo" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-backspace-reverse"></i></button>
+				<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
+				<button id="btn-clear" class="btn btn-custom-white btn-clear disable-group"><i class="bi bi-trash"></i></button>
+				<div id="number-block" class="grid-b normal">
+					<button id="btn-one"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos1">1</span></button>
+					<button id="btn-two"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos2">2</span></button>
+					<button id="btn-three" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos3">3</span></button>
+					<button id="btn-four"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos4">4</span></button>
+					<button id="btn-five"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos5">5</span></button>
+					<button id="btn-six"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos6">6</span></button>
+					<button id="btn-seven" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos7">7</span></button>
+					<button id="btn-eight" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos8">8</span></button>
+					<button id="btn-nine"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos9">9</span></button>
+				</div>
+				<div id="gap-row1"></div>
+				<div id="gap-row2"></div>
+				<div id="gap-col1"></div>
+				<div id="gap-col2"></div>
+				<button id="btn-numberMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-pencil-square"></i></button>
+				<button id="btn-topMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-arrow-up-left-square"></i></button>
+				<button id="btn-centerMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-dash-square"></i></button>
+				<button id="btn-colorMode" class="btn btn-custom-white btn-square disable-group">
+					<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon"/>
+				</button>
+			</div>
+			
+		</div>
+		
+		<!-- Menu Canvas -->
+		{% include "sudoku/game/game_offcanvas_menu.html" %}
+
+		<!-- Gear Canvas -->
+		{% include "sudoku/game/game_offcanvas_settings.html" %}
+
+		<!-- Rules Canvas -->
+		{% include "sudoku/game/game_offcanvas_rules.html" %}
+	</div>
+</div>
+
+<!-- Playinfo Modal -->
+
+{% include "sudoku/game/game_modal_start.html" %}
+{% include "sudoku/game/game_modal_validation.html" %}
+{% include "sudoku/game/game_modal_completion.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>window.puzzle_data={{puzzle_data_json | safe}};</script>
+<script type="module" src="{% static 'sudoku/js/game/game.js' %}"></script>
+<script>
+	function updateControlContainerGrid() {
+		const container = document.querySelector(".control-container");
+		if (!container) return;
+
+		// Layout constants
+		const menuHeight = 0;          // px
+		const border = 16;             // 1rem = 16px
+		const gap = 16;                // 1rem
+		const aspectRatios = {
+			"grid-a-Y": 300 / 540,
+			"grid-a-X": 384 / 304,
+			"grid-a-superX": 440 / 192,
+		};
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+		let layout = "";
+		let width, height;
+		
+		// Remove existing layout classes
+		container.classList.remove("grid-a-X", "grid-a-Y", "grid-a-superX");
+		
+		if (window.matchMedia("(min-aspect-ratio: 1/1)").matches) {
+			// Landscape layout
+			const minRightSize = 250;
+			const availableHeight = vh - menuHeight - 2 * border;
+			const availableRightPane = vw - availableHeight - gap;
+			const ratio = availableRightPane / availableHeight;
+
+			layout = ratio < 1 ? "grid-a-Y" : "grid-a-X";
+
+			container.classList.add(layout);
+
+			const targetRatio = aspectRatios[layout];
+			let maxWidth = availableRightPane - 2 * border;
+			const maxHeight = availableHeight;
+
+			if (layout === "grid-a-Y" && maxWidth < minRightSize) {
+				maxWidth = minRightSize;
+			}
+
+			if (maxWidth / maxHeight > targetRatio) {
+				// Height constrains
+				height = maxHeight;
+				width = height * targetRatio;
+			} else {
+				// Width constrains
+				width = maxWidth;
+				height = width / targetRatio;
+			}
+
+		}
+		else {
+			// Portrait mode
+			const minRightSize = 200;
+			const availableWidth = vw - 2 * border;
+			let leftPaneSize = Math.min(availableWidth, vh - menuHeight - 2 * border - gap - minRightSize);
+			
+			const availableHeight = vh - leftPaneSize - menuHeight - 2 * border - gap;
+			const ratio = availableWidth / availableHeight;
+
+			layout = ratio < 2 ? "grid-a-X" : "grid-a-superX";
+			
+			container.classList.add(layout);
+
+			const targetRatio = aspectRatios[layout];
+			let maxWidth = availableWidth;
+			let maxHeight = Math.max(availableHeight, minRightSize);
+			
+			if (maxWidth / maxHeight > targetRatio) {
+				height = maxHeight;
+				width = height * targetRatio;
+			} else {
+				width = maxWidth;
+				height = width / targetRatio;
+			}
+		} // ENDE portrait mode
+
+		
+		// Apply computed size styles
+		container.style.width = `${width}px`;
+		container.style.height = `${height}px`;
+
+		// Adjust font size and image size dynamically
+		const scaleBaseGrid = {
+			"grid-a-Y": 300,
+			"grid-a-X": 500,
+			"grid-a-superX": 500,
+		};
+		const scaleBase = scaleBaseGrid[layout] || 300;  // fallback to 300 if layout unknown
+		const scaleFactor = width / scaleBase;
+		const fontSize = Math.max(0.8, Math.min(3.0, 1.4 * scaleFactor)); // clamp between 0.8rem and 3.0rem
+		const infoSize = fontSize * 0.5;
+		
+		container.querySelectorAll(".btn").forEach(btn => {
+			btn.style.fontSize = `${fontSize}rem`;
+		});
+
+		const imageSize = Math.round(20 * scaleFactor); // proportional image size
+		const colorBtnImg = document.querySelector("#btn-colorMode img");
+		if (colorBtnImg) {
+			colorBtnImg.style.width = `${imageSize}px`;
+			colorBtnImg.style.height = `${imageSize}px`;
+		}
+		
+		container.querySelectorAll(".text-custom-white").forEach(t => {
+			t.style.fontSize = `${infoSize}rem`;
+		});
+	}
+
+	// Execute after full load (including fonts/images/layout)
+	window.addEventListener("load", updateControlContainerGrid);
+	window.addEventListener("resize", updateControlContainerGrid);
+
+</script>
+{% endblock %}
