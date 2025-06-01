@@ -21,6 +21,7 @@
 	<!-- Font Awesome -->
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="{% static 'sudoku/css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'sudoku/css/style-menu.css' %}">
 	
 	{% block extra_css %}
 	{% endblock %}
@@ -28,7 +29,7 @@
 </head>
 <body>
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg my_navColors" style="z-index: 1000">
+<nav class="navbar navbar-expand-lg " style="z-index: 1000">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/">
 			<img src="{% static 'sudoku/img/brain-white-32.png' %}" alt="Logo" width="32" height="32" class="align-middle me-2">
@@ -42,22 +43,22 @@
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'game_selection' %}">
-						<i class="fas fa-trophy"></i>{% trans "Play" %}
+						<i class="bi bi-emoji-smile me-2"></i>{% trans "Play" %}
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'puzzles' %}">
-						<i class="fas fa-th-list"></i>{% trans "Puzzles" %}
+						<i class="fas fa-th-list me-2"></i>{% trans "Puzzles" %}
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'leaderboard' %}">
-						<i class="fas fa-trophy"></i>{% trans "Leaderboards" %}
+						<i class="fas fa-trophy me-2"></i>{% trans "Leaderboards" %}
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'creator' %}">
-						<i class="fas fa-pencil-alt"></i>{% trans "Sudoku Creator" %}
+						<i class="fas fa-pencil-alt me-2"></i>{% trans "Sudoku Creator" %}
 					</a>
 				</li>
 			</ul>
@@ -89,16 +90,18 @@
 					<a class="nav-link" id="userDropdown" href="{% url 'profile' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user"></i></a>
 					
 					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-						<li class="infotext">{{ user.username }}</li>
+						<li>
+							<span class="nav-dropdowntext mx-3">{{ user.username }}</span>
+						</li>
 						<hr>
 						<li>
-							<a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i>{% trans "Your profile" %}</a>
+							<a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>{% trans "Your profile" %}</a>
 						</li>
 						<li>
 							<form method="post" action="{% url 'logout' %}" class="m-0">
 								{% csrf_token %}
 								<button type="submit" class="dropdown-item">
-									<i class="fas fa-sign-out-alt"></i>{% trans "Logout" %}
+									<i class="fas fa-sign-out-alt me-2"></i>{% trans "Logout" %}
 								</button>
 							</form>
 						</li>
