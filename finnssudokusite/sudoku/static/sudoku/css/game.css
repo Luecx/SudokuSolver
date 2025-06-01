@@ -483,13 +483,6 @@ html, body {
 	display: block;
 }
 
-.rule-description {
-	margin-bottom: 1em;
-	padding: 0.5em;
-	border-left: 3px solid #aaa;
-	background: #f8f9fa;
-}
-
 /* gear-description */
 .gear-description-wrapper .form-group-row {
 	display: flex;
@@ -560,3 +553,32 @@ html, body {
 }
 
 .gear-description-wrapper .form-switch { padding-left: 0;}
+
+.rule-description {
+	position: relative;
+	background: white;
+	border: 1px solid #ccc;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	margin-bottom: 1rem;
+}
+
+
+/* Badge in corner */
+.rule-badge {
+	position: absolute;
+	top: -0.6rem;
+	left: -0.6rem;
+	background-color: #0d6efd; /* Bootstrap primary */
+	color: white;
+	border-radius: 50%;
+	width: 1.8rem;
+	height: 1.8rem;
+	font-size: 0.9rem;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 0 0.25rem rgba(0,0,0,0.2);
+	z-index: 1;
+}

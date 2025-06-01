@@ -372,32 +372,33 @@ export class Game {
     }
 
     renderRuleDescriptions() {
-        // --- Get the container for rule descriptions ---
         const container = document.getElementById("rules-description");
-
         if (!container)
             throw new Error("Element not found: #rules-description");
 
-        // --- Clear any existing descriptions ---
         container.innerHTML = "";
 
-        // --- Loop through all rule handlers attached to the board ---
-        for (const handler of this.board.getAllHandlers()) {
-            if (!handler.enabled)
-                continue;  // Skip disabled handlers
-
+        const handlers = this.board.getAllHandlers().filter(h => h.enabled);
+        handlers.forEach((handler, index) => {
             const html = handler.getDescriptionPlayHTML();
-            if (!html)
-                continue;  // Skip if no description is provided
+            if (!html) return;
 
-            // --- Create and append a wrapper for the description HTML ---
-            const wrapper       = document.createElement("div");
-            wrapper.innerHTML   = html;
-            wrapper.className   = "rule-description";
+            const wrapper = document.createElement("div");
+            wrapper.className = "rule-description";
 
+            const badge = document.createElement("div");
+            badge.className = "rule-badge";
+            badge.textContent = index + 1;
+            wrapper.appendChild(badge);
+
+            const contentWrapper = document.createElement("div");
+            contentWrapper.innerHTML = html;
+
+            wrapper.appendChild(contentWrapper);
             container.appendChild(wrapper);
-        }
+        });
     }
+
 
 
     setupStarRatingEvents(container) {
