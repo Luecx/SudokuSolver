@@ -371,6 +371,35 @@ export class Game {
         return stars.join("");
     }
 
+    renderRuleDescriptions() {
+        // --- Get the container for rule descriptions ---
+        const container = document.getElementById("rules-description");
+
+        if (!container)
+            throw new Error("Element not found: #rules-description");
+
+        // --- Clear any existing descriptions ---
+        container.innerHTML = "";
+
+        // --- Loop through all rule handlers attached to the board ---
+        for (const handler of this.board.getAllHandlers()) {
+            if (!handler.enabled)
+                continue;  // Skip disabled handlers
+
+            const html = handler.getDescriptionPlayHTML();
+            if (!html)
+                continue;  // Skip if no description is provided
+
+            // --- Create and append a wrapper for the description HTML ---
+            const wrapper       = document.createElement("div");
+            wrapper.innerHTML   = html;
+            wrapper.className   = "rule-description";
+
+            container.appendChild(wrapper);
+        }
+    }
+
+
     setupStarRatingEvents(container) {
         const stars = container.querySelectorAll(".star");
         stars.forEach(star => {
