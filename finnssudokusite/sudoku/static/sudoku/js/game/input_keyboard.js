@@ -116,8 +116,6 @@ export class InputKeyboard {
             return;
         }
 
-        console.log(event.key, this.specialBindings[event.key]);
-
         if (this.specialBindings[event.key]) {
             this.specialBindings[event.key]();
             event.preventDefault();
@@ -140,6 +138,14 @@ export class InputKeyboard {
             document.removeEventListener('keydown', this._boundKeyHandler);
             this.enabled = false;
         }
+    }
+
+    enable() {
+        this.setEnabled(true);
+    }
+
+    disable() {
+        this.setEnabled(false);
     }
 
     on(eventName, callback) {

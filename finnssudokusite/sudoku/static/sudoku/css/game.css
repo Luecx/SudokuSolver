@@ -549,3 +549,11 @@ html, body {
 	font-weight: 300;
 	border: none;
 }
+
+.disable-group.disabled,
+.disable-group:disabled {
+	opacity: 0.4;
+	pointer-events: none;
+	cursor: default;
+	box-shadow: none;
+}
