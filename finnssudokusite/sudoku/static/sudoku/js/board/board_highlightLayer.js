@@ -60,55 +60,25 @@ export class HighlightLayer {
         });
 
         // highlight toggles
-        const highlightRowEl = document.getElementById('highlightRow');
-        if (highlightRowEl) {
-            highlightRowEl.addEventListener('change', (e) => {
-                this.highlights.row.enable(e.target.checked);
-                this.updateHighlights();
-            });
-        } else {
-            this.highlights.row.enable(false);
-        }
+        const highlightTypes = [
+            { id: 'highlightRow', type: 'row' },
+            { id: 'highlightColumn', type: 'column' },
+            { id: 'highlightBlock', type: 'block' },
+            { id: 'highlightNumber', type: 'number' },
+            { id: 'highlightCandidates', type: 'candidates' }
+        ];
 
-        const highlightColumnEl = document.getElementById('highlightColumn');
-        if (highlightColumnEl) {
-            highlightColumnEl.addEventListener('change', (e) => {
-                this.highlights.column.enable(e.target.checked);
-                this.updateHighlights();
-            });
-        } else {
-            this.highlights.column.enable(false);
-        }
-
-        const highlightBlockEl = document.getElementById('highlightBlock');
-        if (highlightBlockEl) {
-            highlightBlockEl.addEventListener('change', (e) => {
-                this.highlights.block.enable(e.target.checked);
-                this.updateHighlights();
-            });
-        } else {
-            this.highlights.block.enable(false);
-        }
-
-        const highlightNumberEl = document.getElementById('highlightNumber');
-        if (highlightNumberEl) {
-            highlightNumberEl.addEventListener('change', (e) => {
-                this.highlights.number.enable(e.target.checked);
-                this.updateHighlights();
-            });
-        } else {
-            this.highlights.number.enable(false);
-        }
-
-        const highlightCandidatesEl = document.getElementById('highlightCandidates');
-        if (highlightCandidatesEl) {
-            highlightCandidatesEl.addEventListener('change', (e) => {
-                this.highlights.candidates.enable(e.target.checked);
-                this.updateHighlights();
-            });
-        } else {
-            this.highlights.candidates.enable(false);
-        }
+        highlightTypes.forEach(({ id, type }) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', (e) => {
+                    this.highlights[type].enable(e.target.checked);
+                    this.updateHighlights();
+                });
+            } else {
+                this.highlights[type].enable(false);
+            }
+        });
     }
 
     _renderHighlight(ctx) {
