@@ -11,6 +11,7 @@ import { CellIdx } from "../region/CellIdx.js";
 import { NO_NUMBER } from "../number/number.js";
 import { HintDiagLayer } from "./board_hintDiagLayer.js";
 import { HighlightLayer } from "./board_highlightLayer.js";
+import { CandidateRemover } from "./board_removeCandidates.js";
 
 export function createBoard(container) {
     const gridSize = 9;
@@ -34,6 +35,7 @@ export function createBoard(container) {
     const hintDiagLayer      = new HintDiagLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);
     const selectionManager   = new SelectionManager(ruleManager, renderer);
+    const candidateRemover   = new CandidateRemover();
 
     solutionLayer.useSolutionStyle = true;
 
@@ -116,7 +118,8 @@ export function createBoard(container) {
         hintRCLayer,
         hintDiagLayer,
         contentLayer: numberLayer,
-        highlightLayer
+        highlightLayer,
+        candidateRemover,
     };
 
     function initBoard() {
@@ -129,6 +132,8 @@ export function createBoard(container) {
         highlightLayer.init(board);
         selectionManager.setup(board);
         ruleManager.registerDefaults(board);
+        candidateRemover.init(board);
+
 
         function resizeAndRebuild() {
             renderer.setup(container);
