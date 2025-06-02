@@ -8,7 +8,7 @@ export class InputKeyboard {
         this.events = new EventTarget();
 
         this.enabled = false;
-        this._boundKeyHandler = this._handleKeyDown.bind(this);
+        this._boundKeyHandler = this._handleKey.bind(this);
 
         this.keyToValue = {
             '1': 1, '2': 2, '3': 3,
@@ -22,16 +22,18 @@ export class InputKeyboard {
         this.specialBindings = {
             'Backspace': () => this.board.clearRegion(this.board.getSelectedRegion(),
                 this.mode === InputMode.NumberFixed, this.mode === InputMode.NumberFixed),
-            'Delete'   : () => this.board.clearRegion(this.board.getSelectedRegion(),
+            'Delete': () => this.board.clearRegion(this.board.getSelectedRegion(),
                 this.mode === InputMode.NumberFixed, this.mode === InputMode.NumberFixed),
-
-            'ArrowUp': ()    => this.board.shiftSelection(-1,  0),
-            'ArrowDown': ()  => this.board.shiftSelection( 1,  0),
-            'ArrowLeft': ()  => this.board.shiftSelection( 0, -1),
-            'ArrowRight': () => this.board.shiftSelection( 0,  1),
+            'ArrowUp': () => this.board.shiftSelection(-1, 0),
+            'ArrowDown': () => this.board.shiftSelection(1, 0),
+            'ArrowLeft': () => this.board.shiftSelection(0, -1),
+            'ArrowRight': () => this.board.shiftSelection(0, 1),
         };
 
-        this.setEnabled(true); // Enable keyboard input by default
+        this.previousMode = null;
+        this.modifierState = { ctrl: false, alt: false };
+
+        this.setEnabled(true);
     }
 
     getAvailableModes() {
@@ -53,8 +55,11 @@ export class InputKeyboard {
                 const rot = localStorage.getItem("rotationNumberPad");
 
                 if (mode === InputMode.CandidateRegular) {
-                    if (localStorage.getItem("rotationNumberPad") === "true" ) {numberBlock.classList.add("toCorner-rotation");}
-                    else {numberBlock.classList.add("toCorner");}
+                    if (rot === "true") {
+                        numberBlock.classList.add("toCorner-rotation");
+                    } else {
+                        numberBlock.classList.add("toCorner");
+                    }
                 } else {
                     numberBlock.classList.remove("toCorner");
                     numberBlock.classList.remove("toCorner-rotation");
@@ -66,6 +71,7 @@ export class InputKeyboard {
                     numberBlock.classList.remove("toCenter");
                 }
             }
+
             this.events.dispatchEvent(new CustomEvent('modechange', { detail: { mode } }));
         }
     }
@@ -100,15 +106,55 @@ export class InputKeyboard {
         this.events.dispatchEvent(new CustomEvent('keyinput', { detail: { val } }));
     }
 
-    _handleKeyDown(event) {
+    _handleKey(event) {
         const target = event.target;
         const isTypingField = (
             target.tagName === 'INPUT' ||
             target.tagName === 'TEXTAREA' ||
             target.isContentEditable
         );
+        if (isTypingField) return;
 
-        if (isTypingField) return; // Don't handle keys while typing in inputs
+        const isKeyDown = event.type === 'keydown';
+
+        // Handle Ctrl
+        if (event.key === 'Control') {
+            if (isKeyDown && !this.modifierState.ctrl) {
+                this.modifierState.ctrl = true;
+                if (this.allowedModes.includes(InputMode.CandidateRegular)) {
+                    this.previousMode = this.mode;
+                    this.setMode(InputMode.CandidateRegular);
+                }
+            } else if (!isKeyDown && this.modifierState.ctrl) {
+                this.modifierState.ctrl = false;
+                if (this.previousMode && this.allowedModes.includes(this.previousMode)) {
+                    this.setMode(this.previousMode);
+                    this.previousMode = null;
+                }
+            }
+            return;
+        }
+
+        // Handle Alt
+        if (event.key === 'Alt') {
+            if (isKeyDown && !this.modifierState.alt) {
+                this.modifierState.alt = true;
+                if (this.allowedModes.includes(InputMode.CandidateCentered)) {
+                    this.previousMode = this.mode;
+                    this.setMode(InputMode.CandidateCentered);
+                }
+            } else if (!isKeyDown && this.modifierState.alt) {
+                this.modifierState.alt = false;
+                if (this.previousMode && this.allowedModes.includes(this.previousMode)) {
+                    this.setMode(this.previousMode);
+                    this.previousMode = null;
+                }
+            }
+            return;
+        }
+
+        // Only handle keys once (on keydown)
+        if (!isKeyDown) return;
 
         if (event.code === 'Space') {
             this.cycleMode();
@@ -129,13 +175,14 @@ export class InputKeyboard {
         }
     }
 
-
     setEnabled(enabled) {
         if (enabled && !this.enabled) {
             document.addEventListener('keydown', this._boundKeyHandler);
+            document.addEventListener('keyup', this._boundKeyHandler);
             this.enabled = true;
         } else if (!enabled && this.enabled) {
             document.removeEventListener('keydown', this._boundKeyHandler);
+            document.removeEventListener('keyup', this._boundKeyHandler);
             this.enabled = false;
         }
     }

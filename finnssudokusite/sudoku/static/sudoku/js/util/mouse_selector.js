@@ -72,7 +72,7 @@ export class MouseSelector {
         this._dragged.clear();
 
         this._shouldClear = this.mode === SelectionMode.MULTIPLE
-            ? !(e.shiftKey || e.ctrlKey)
+            ? !(e.shiftKey)
             : true;
 
         this.onStartSelection?.();
@@ -119,7 +119,7 @@ export class MouseSelector {
 
         const key = this.getKeyFromEvent(e);
         const isClick = !this._isDragging;
-        const shift = e.shiftKey || e.ctrlKey;
+        const shift = e.shiftKey;
 
         if (key && isClick) {
             const alreadySelected = this.onIsSelected(key);
