@@ -28,6 +28,31 @@
 .nav-dropdowntext {color: #aaaaaa; font-weight: 600; font-size: 1.2rem;}
 
 
+/*  CREATOR  */
+.myNavTabStyle .nav-link.active {
+  border-left-color: #cccccc;
+  border-top-color: #cccccc;
+  border-right-color: #cccccc;
+}
+
+.myNavTabStyle .nav-link:not(.active) {
+  background-color: #494949;
+  color: #ffffff;
+  border-color: #1e1e1e;
+}
+.myNavTabStyle .nav-link:not(.active):hover {
+  color: #a0bcff;
+}
+
+.myNavTabStyle .tab-content {
+  background: white;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  -moz-border-radius-bottomleft: 0.25rem;
+  -moz-border-radius-bottomright: 0.25rem;
+}
+
   /*  BOOTSTRAP  */
   .navbar {
     background-color: #494949;

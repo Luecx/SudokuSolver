@@ -9,106 +9,108 @@
 
 <!-- Solved Puzzles Table -->
 <div class="table-responsive" style="min-height: 400px;">
-  <table class="table table-striped table-hover small align-middle" id="doneTable">
-    <thead>
-    <tr>
-      <th data-key="name">{% trans "Name" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="creator">{% trans "Creator" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="solves">{% trans "Solves" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="rating">{% if is_own_profile %}{% trans "Your Rating" %}{% else %}{% trans "Their Rating" %}{% endif %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="avgtime">{% trans "Avg Time" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="besttime">{% trans "Completion Time" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="datesolved">{% trans "Date Completed" %}<span class="sort-indicator ms-2"></span></th>
-      <th>Tags</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for stat in attempted_stats %}
-    <tr data-name="{{ stat.sudoku.title|lower }}"
-        data-creator="{{ stat.sudoku.created_by.username }}"
-        data-solves="{{ stat.sudoku.solves }}"
-        data-rating="{{ stat.rating|default:0 }}"
-        data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
-        data-besttime="{{ stat.time }}"
-        data-datesolved="{{ stat.date|date:"U" }}"
-    data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
-
-    <!-- Title -->
-    <td>
-      <a href="{% url 'play_sudoku' stat.sudoku.id %}">{{ stat.sudoku.title }}</a>
-    </td>
-
-    <!-- Creator -->
-    <td>
-      {% if stat.sudoku.created_by %}
-      {% if stat.sudoku.created_by.username == request.user.username %}
-      <a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
-      {% else %}
-      <a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
-      {% endif %}
-      {% else %}
-      —
-      {% endif %}
-    </td>
-
-    <!-- Solve ratio -->
-    <td>{{ stat.sudoku.solves }} </td>
-
-    <!-- Rating -->
-    <td>{% render_starbar stat.rating %}</td>
-
-    <!-- Average Time -->
-    <td>{{ stat.sudoku.average_time|humantime }}</td>
-
-    <!-- Completion Time with badge -->
-    <td>
-      {% if stat.time < stat.sudoku.average_time %}
-      <span class="badge bg-success">{{ stat.time|humantime }}</span>
-      {% else %}
-      <span class="badge bg-warning text-dark">{{ stat.time|humantime }}</span>
-      {% endif %}
-    </td>
-
-    <!-- Date Solved -->
-    <td>{{ stat.date|date:"Y-m-d H:i" }}</td>
-
-    <!-- Tags -->
-    <td>
-      {% for tag in stat.sudoku.tags.all %}
-      <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
-      {% endfor %}
-    </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+	<table class="table table-striped table-hover small align-middle" id="doneTable">
+		<thead>
+		<tr>
+			<th data-key="name">{% trans "Name" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="creator">{% trans "Creator" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="solves">{% trans "Solves" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="rating">{% if is_own_profile %}{% trans "Your Rating" %}{% else %}{% trans "Their Rating" %}{% endif %}<span class="sort-indicator ms-2"></span>
+			</th>
+			<th data-key="avgtime">{% trans "Avg Time" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="besttime">{% trans "Completion Time" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="datesolved">{% trans "Date Completed" %}<span class="sort-indicator ms-2"></span></th>
+			<th>Tags</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for stat in attempted_stats %}
+		<tr data-name="{{ stat.sudoku.title|lower }}"
+			data-creator="{{ stat.sudoku.created_by.username }}"
+			data-solves="{{ stat.sudoku.solves }}"
+			data-rating="{{ stat.rating|default:0 }}"
+			data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
+			data-besttime="{{ stat.time }}"
+			data-datesolved="{{ stat.date|date:" U
+		" }}"
+		data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
+		
+		<!-- Title -->
+		<td>
+			<a href="{% url 'play_sudoku' stat.sudoku.id %}">{{ stat.sudoku.title }}</a>
+		</td>
+		
+		<!-- Creator -->
+		<td>
+			{% if stat.sudoku.created_by %}
+			{% if stat.sudoku.created_by.username == request.user.username %}
+			<a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
+			{% else %}
+			<a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
+			{% endif %}
+			{% else %}
+			—
+			{% endif %}
+		</td>
+		
+		<!-- Solve ratio -->
+		<td>{{ stat.sudoku.solves }}</td>
+		
+		<!-- Rating -->
+		<td>{% render_starbar stat.rating %}</td>
+		
+		<!-- Average Time -->
+		<td>{{ stat.sudoku.average_time|humantime }}</td>
+		
+		<!-- Completion Time with badge -->
+		<td>
+			{% if stat.time < stat.sudoku.average_time %}
+			<span class="badge bg-success">{{ stat.time|humantime }}</span>
+			{% else %}
+			<span class="badge bg-warning text-dark">{{ stat.time|humantime }}</span>
+			{% endif %}
+		</td>
+		
+		<!-- Date Solved -->
+		<td>{{ stat.date|date:"Y-m-d H:i" }}</td>
+		
+		<!-- Tags -->
+		<td>
+			{% for tag in stat.sudoku.tags.all %}
+			<span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
+			{% endfor %}
+		</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
 </div>
 
 <!-- Pagination Placeholder -->
 <nav>
-  <ul class="pagination justify-content-center mt-3" id="doneTable-pagination"></ul>
+	<ul class="pagination justify-content-center mt-3" id="doneTable-pagination"></ul>
 </nav>
 
 <!-- JS Hook -->
 <script type="module">
-  import { initTableFilter } from "/static/sudoku/js/util/table_filter.js";
-
-  initTableFilter({
-    tableId: "doneTable",
-    searchInputId: "doneSearch",
-    tagClass: "done-tag-filter",
-    tagAttribute: "data-tags",
-    columns: ["name", "creator", "solves", "rating", "avgtime", "besttime", "datesolved"],
-    rowsPerPage: 10
-  });
+	import {initTableFilter} from "/static/sudoku/js/util/table_filter.js";
+	
+	initTableFilter({
+		tableId: "doneTable",
+		searchInputId: "doneSearch",
+		tagClass: "done-tag-filter",
+		tagAttribute: "data-tags",
+		columns: ["name", "creator", "solves", "rating", "avgtime", "besttime", "datesolved"],
+		rowsPerPage: 10
+	});
 </script>
 
 {% else %}
-<p>
-  {% if is_own_profile %}
-	{% trans "You haven’t finished any puzzles yet." %}
-  {% else %}
-  {{ target_user.username }}&nbsp;{% trans "hasn’t finished any puzzles yet." %}
-  {% endif %}
+<p class="p-4 text-center">
+	{% if is_own_profile %}
+		{% trans "You haven’t finished any puzzles yet." %}
+	{% else %}
+		{{ target_user.username }}&nbsp;{% trans "hasn’t finished any puzzles yet." %}
+	{% endif %}
 </p>
 {% endif %}

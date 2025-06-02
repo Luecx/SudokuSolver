@@ -1,0 +1,150 @@
+<!-- profile_user.html -->
+{% load form_filters %}
+{% load i18n %}
+
+<div class="card border-0">
+	<div class="card-body">
+		<h3 class="card-title text-center mb-4">{% trans "Your profile" %}</h3>
+		
+		<!-- User Info -->
+		<div class="mb-4">
+			<label class="form-label">{% trans "User name" %}</label>
+			<div class="position-relative">
+				<input type="text" class="form-control" value="{{ request.user.username }}" disabled>
+				<a href="#" class="position-absolute top-50 end-0 translate-middle-y me-3 text-decoration-none" style="font-size: 1.5rem;">
+					<i class="bi bi-pencil"></i>
+				</a>
+			</div>
+		</div>
+		<div class="mb-5">
+			<label class="form-label">Email</label>
+			<div class="position-relative">
+				<input type="text" class="form-control" value="{{ request.user.email }}" disabled>
+				<a href="#" class="position-absolute top-50 end-0 translate-middle-y me-3 text-decoration-none" style="font-size: 1.5rem;">
+					<i class="bi bi-pencil"></i>
+				</a>
+			</div>
+		</div>
+		
+		<!-- Password Change  - Button open the Modal -->
+		<div class="text-center mb-3">
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#password_change">{% trans "Change password" %}</button>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="password_change" tabindex="-1" aria-labelledby="passwordChangeLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content p-3">
+					
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h5 class="modal-title" id="passwordChangeLabel">{% trans "Change password" %}</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+					</div>
+					
+					<!-- Modal Body mit Formular -->
+					<div class="modal-body py-3">
+						<form method="post" novalidate>
+							{% csrf_token %}
+							{% if form.non_field_errors %}
+							<div class="alert alert-danger">
+								{{ form.non_field_errors }}
+							</div>
+							{% endif %}
+							
+							{% for field in form %}
+							<div class="py-3">
+								<label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+								{{ field|add_class:"form-control" }}
+								
+								{% if field.name == "new_password1" %}
+								<!-- Passwortstärke-Anzeige -->
+								<div class="mt-2">
+									<div class="progress">
+										<div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+									</div>
+									<small id="passwordStrengthText" class="form-text text-muted"></small>
+								</div>
+								{% endif %}
+								
+								{% if field.help_text %}
+								<div class="form-text">{{ field.help_text }}</div>
+								{% endif %}
+								{% for error in field.errors %}
+								<div class="invalid-feedback d-block">{{ error }}</div>
+								{% endfor %}
+							</div>
+							{% endfor %}
+							
+							<div class="py-3">
+								<button type="submit" class="btn btn-primary w-100">{% trans "Change password" %}</button>
+							</div>
+						</form>
+					</div>
+				
+				</div>
+			</div>
+		</div>
+	
+	</div>
+</div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const passwordInput = document.querySelector('#id_new_password1');
+		const strengthBar = document.getElementById('passwordStrengthBar');
+		const strengthText = document.getElementById('passwordStrengthText');
+		
+		if (passwordInput) {
+			passwordInput.addEventListener('input', function () {
+				const val = passwordInput.value;
+				const result = checkPasswordStrength(val);
+				
+				// Setze Farbe und Breite
+				strengthBar.style.width = result.percent + '%';
+				strengthBar.className = 'progress-bar bg-' + result.color;
+				
+				// Text anzeigen
+				strengthText.textContent = result.message;
+			});
+		}
+		
+		function checkPasswordStrength(password) {
+			const minLength = 8;
+			let strength = 0;
+			
+			const patterns = [
+				/[a-z]/,         // Kleinbuchstaben
+				/[A-Z]/,         // Großbuchstaben
+				/\d/,            // Zahlen
+				/[^A-Za-z0-9]/   // Sonderzeichen
+			];
+			
+			patterns.forEach(pattern => {
+				if (pattern.test(password)) strength++;
+			});
+			
+			// Mindestlänge prüfen
+			if (password.length < minLength) {
+				return {
+					percent: 10,
+					color: 'danger',
+					message: 'Zu kurz (min. 8 Zeichen)'
+				};
+			}
+			
+			// Stärke abhängig von Vielfalt an Zeichenarten
+			switch (strength) {
+				case 0:
+				case 1:
+					return { percent: 25, color: 'danger', message: 'Very weak' };
+				case 2:
+					return { percent: 50, color: 'warning', message: 'Weak' };
+				case 3:
+					return { percent: 75, color: 'info', message: 'Good' };
+				case 4:
+					return { percent: 100, color: 'success', message: 'Very strong' };
+			}
+		}
+		
+	});
+</script>

@@ -8,79 +8,79 @@
 {% include "sudoku/profile/search_filter.html" with search_id="ongoingSearch" tag_class="ongoing-tag-filter" tag_prefix="ongoing-tag" %}
 
 <div class="table-responsive" style="min-height: 400px;">
-  <table class="table table-striped table-hover small align-middle" id="ongoingTable">
-    <thead>
-    <tr>
-      <th data-key="name">{% trans "Name" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="creator">{% trans "Creator" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="solves">{% trans "Solves" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="rating">{% trans "Rating" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="avgtime">{% trans "Avg Time" %}<span class="sort-indicator ms-2"></span></th>
-      <th data-key="mytime">{% trans "Your Time" %}<span class="sort-indicator ms-2"></span></th>
-      <th>Tags</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for stat in ongoing_stats %}
-    <tr data-name="{{ stat.sudoku.title|lower }}"
-        data-creator="{{ stat.sudoku.created_by.username }}"
-        data-solves="{{ stat.sudoku.solves }}"
-        data-rating="{{ stat.sudoku.average_rating|default:0 }}"
-        data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
-        data-mytime="{{ stat.time }}"
-        data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
-      <td>
-        <a href="{% url 'play_sudoku' stat.sudoku.id %}">{{ stat.sudoku.title }}</a>
-      </td>
-      <td>
-        {% if stat.sudoku.created_by %}
-        {% if stat.sudoku.created_by.username == request.user.username %}
-        <a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
-        {% else %}
-        <a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
-        {% endif %}
-        {% else %}
-        —
-        {% endif %}
-      </td>
-      <td>{{ stat.sudoku.solves }} </td>
-      <td>{% render_starbar stat.sudoku.average_rating %}</td>
-      <td>{{ stat.sudoku.average_time|humantime }}</td>
-      <td>{{ stat.time|humantime }}</td>
-      <td>
-        {% for tag in stat.sudoku.tags.all %}
-        <span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
-        {% endfor %}
-      </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+	<table class="table table-striped table-hover small align-middle" id="ongoingTable">
+		<thead>
+		<tr>
+			<th data-key="name">{% trans "Name" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="creator">{% trans "Creator" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="solves">{% trans "Solves" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="rating">{% trans "Rating" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="avgtime">{% trans "Avg Time" %}<span class="sort-indicator ms-2"></span></th>
+			<th data-key="mytime">{% trans "Your Time" %}<span class="sort-indicator ms-2"></span></th>
+			<th>Tags</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for stat in ongoing_stats %}
+		<tr data-name="{{ stat.sudoku.title|lower }}"
+			data-creator="{{ stat.sudoku.created_by.username }}"
+			data-solves="{{ stat.sudoku.solves }}"
+			data-rating="{{ stat.sudoku.average_rating|default:0 }}"
+			data-avgtime="{{ stat.sudoku.average_time|floatformat:0 }}"
+			data-mytime="{{ stat.time }}"
+			data-tags="{{ stat.sudoku.tags.all|join:','|lower }}">
+			<td>
+				<a href="{% url 'play_sudoku' stat.sudoku.id %}">{{ stat.sudoku.title }}</a>
+			</td>
+			<td>
+				{% if stat.sudoku.created_by %}
+				{% if stat.sudoku.created_by.username == request.user.username %}
+				<a href="{% url 'profile' %}">{{ stat.sudoku.created_by.username }}</a>
+				{% else %}
+				<a href="{% url 'user_profile' stat.sudoku.created_by.username %}">{{ stat.sudoku.created_by.username }}</a>
+				{% endif %}
+				{% else %}
+				—
+				{% endif %}
+			</td>
+			<td>{{ stat.sudoku.solves }}</td>
+			<td>{% render_starbar stat.sudoku.average_rating %}</td>
+			<td>{{ stat.sudoku.average_time|humantime }}</td>
+			<td>{{ stat.time|humantime }}</td>
+			<td>
+				{% for tag in stat.sudoku.tags.all %}
+				<span class="badge me-1 mb-1 p-1 badge-{{ tag.name }}">{{ tag.name }}</span>
+				{% endfor %}
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
 </div>
 
 <!-- Pagination -->
 <nav>
-  <ul class="pagination justify-content-center mt-3" id="ongoingTable-pagination"></ul>
+	<ul class="pagination justify-content-center mt-3" id="ongoingTable-pagination"></ul>
 </nav>
 
 <script type="module">
-  import { initTableFilter } from "/static/sudoku/js/util/table_filter.js";
-
-  initTableFilter({
-    tableId: "ongoingTable",
-    searchInputId: "ongoingSearch",
-    tagClass: "ongoing-tag-filter",
-    tagAttribute: "data-tags",
-    columns: ["name", "creator", "solves", "rating", "avgtime", "mytime"],
-    rowsPerPage: 10
-  });
+	import {initTableFilter} from "/static/sudoku/js/util/table_filter.js";
+	
+	initTableFilter({
+		tableId: "ongoingTable",
+		searchInputId: "ongoingSearch",
+		tagClass: "ongoing-tag-filter",
+		tagAttribute: "data-tags",
+		columns: ["name", "creator", "solves", "rating", "avgtime", "mytime"],
+		rowsPerPage: 10
+	});
 </script>
 {% else %}
-<p>
-  {% if is_own_profile %}
-	{% trans "You don’t have any ongoing puzzles." %}
-  {% else %}
-  {{ target_user.username }}&nbsp;{% trans "doesn’t have any ongoing puzzles." %}
-  {% endif %}
+<p class="p-4 text-center">
+	{% if is_own_profile %}
+		{% trans "You don’t have any ongoing puzzles." %}
+	{% else %}
+		{{ target_user.username }}&nbsp;{% trans "doesn’t have any ongoing puzzles." %}
+	{% endif %}
 </p>
 {% endif %}
