@@ -22,11 +22,14 @@
 				<div class="board-container">
 				</div>
 			</div>
-		<div class="input-pane">
+		<div class="input-pane myNavCreatorStyle">
 			<nav>
 				<div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
 					<button class="nav-link active" id="nav-Create-tab" data-bs-toggle="tab" data-bs-target="#nav-Create"
 							type="button" role="tab" aria-controls="nav-Create" aria-selected="true">{% trans "Create" %}
+					</button>
+					<button class="nav-link" id="nav-numbers-tab" data-bs-toggle="tab" data-bs-target="#nav-numbers"
+							type="button" role="tab" aria-controls="nav-numbers" aria-selected="true">{% trans "Edit" %}
 					</button>
 					<button class="nav-link" id="nav-Analyse-tab" data-bs-toggle="tab" data-bs-target="#nav-Analyse"
 							type="button" role="tab" aria-controls="nav-Analyse" aria-selected="false">
@@ -58,6 +61,17 @@
 					
 					<div class="mt-2 flex-fill overflow-auto">
 						<div id="accordionContainer" class="accordion w-100 flex-fill"></div>
+					</div>
+				</div>
+				
+				<!--	Numbers 	-->
+				<div id="nav-numbers" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-numbers-tab" tabindex="0">
+					<div class="d-flex flex-column h-100">
+						<div class="d-grid gap-2" style="grid-template-columns: repeat(3, 1fr); display: grid; width: 100%; max-width:300px; height:100%; max-height:300px; margin: auto;">
+							{% for i in "123456789" %}
+								<button id="nav-btn{{ i }}" class="btn btn-outline-primary py-2" type="button">{{ i }}</button>
+							{% endfor %}
+						</div>
 					</div>
 				</div>
 				
@@ -195,5 +209,16 @@
 			e.stopPropagation(); // Prevent dropdown from closing when clicking inside
 		});
 	});
+	
+	
+	/*const numbersTab = document.getElementById('nav-numbers');
+	const numbersTabButton = document.getElementById('nav-numbers-tab');
+	if ('ontouchstart' in document.documentElement) {
+		if (numbersTab) numbersTab.style.display = '';
+		if (numbersTabButton) numbersTabButton.style.display = '';
+	} else {
+		if (numbersTab) numbersTab.style.display = 'none';
+		if (numbersTabButton) numbersTabButton.style.display = 'none';
+	}*/
 </script>
 {% endblock %}

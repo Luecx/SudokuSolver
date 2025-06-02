@@ -1,0 +1,401 @@
+{% extends 'sudoku/baseForGame.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Sudoku Play" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'sudoku/css/game.css' %}">
+<link rel="stylesheet" href="{% static 'sudoku/css/board.css' %}">
+{% endblock %}
+
+{% block container %}
+<div class="fullwindow">
+	<div class="grid-container">
+		<div class="board-pane my_board_style">
+			<div class="board-container"></div>
+			<div class="timer-container">
+				<div class="timer" id="timer">00:00:00</div>
+			</div>
+		</div>
+		
+		<div class="keypad-pane my_control_style">
+			<div class="control-container">
+				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
+				
+				<div id="game-name" class="text-custom-white">{{ page_title|default:"Unnamed Puzzle" }}</div>
+				<div id="game-creator" class="text-custom-white">by {{ creator_name|default:"Unknown" }}</div>
+				<button id="btn-gear" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
+				<button id="btn-menu" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
+				<button id="validate-btn" class="btn btn-custom-white btn-validate disable-group"><span>Check 28</span></button>
+				
+				<button id="btn-undo" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-backspace-fill"></i></button>
+				<button id="btn-redo" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-backspace-reverse"></i></button>
+				<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
+				<button id="btn-clear" class="btn btn-custom-white btn-clear disable-group"><i class="bi bi-trash"></i></button>
+				<div id="number-block" class="grid-b normal">
+					<button id="btn-one"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos1">1</span></button>
+					<button id="btn-two"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos2">2</span></button>
+					<button id="btn-three" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos3">3</span></button>
+					<button id="btn-four"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos4">4</span></button>
+					<button id="btn-five"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos5">5</span></button>
+					<button id="btn-six"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos6">6</span></button>
+					<button id="btn-seven" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos7">7</span></button>
+					<button id="btn-eight" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos8">8</span></button>
+					<button id="btn-nine"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos9">9</span></button>
+				</div>
+				<div id="gap-row1"></div>
+				<div id="gap-row2"></div>
+				<div id="gap-col1"></div>
+				<div id="gap-col2"></div>
+				<button id="btn-numberMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-pencil-square"></i></button>
+				<button id="btn-topMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-arrow-up-left-square"></i></button>
+				<button id="btn-centerMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-dash-square"></i></button>
+				<button id="btn-colorMode" class="btn btn-custom-white btn-square disable-group">
+					<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon"/>
+				</button>
+
+
+				<!-- </div></div><div class="block-part" data-block="bottom"></div>-->
+			</div>
+			
+		</div>
+		
+		<!-- Menu Canvas -->
+		<div class="offcanvas offcanvas-end myNav" style="width: 20rem;" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+			<div class="offcanvas-header">
+				{% if user.is_authenticated %}
+				<span class="nav-dropdowntext ms-2">{{ user.username }}</span>
+				{% endif %}
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<nav class="nav flex-column">
+					{% if user.is_authenticated %}
+						<a class="nav-link " href="{% url 'profile' %}"><i class="fas fa-user-circle me-3"></i>{% trans "Your profile" %}</a>
+						<form method="post" action="{% url 'logout' %}" class="m-0">
+							{% csrf_token %}
+							<button type="submit" class="nav-link">
+								<i class="fas fa-sign-out-alt me-3"></i>{% trans "Logout" %}
+							</button>
+						</form>
+					{% endif %}
+					<hr>
+					<a class="nav-link" href="{% url 'index' %}">
+						<i class="bi bi-house me-3"></i>{% trans "Home" %}
+					</a>
+					<a class="nav-link" href="{% url 'puzzles' %}">
+						<i class="fas fa-th-list me-3"></i>{% trans "Puzzles" %}
+					</a>
+					<a class="nav-link" href="{% url 'leaderboard' %}">
+						<i class="fas fa-trophy me-3"></i>{% trans "Leaderboards" %}
+					</a>
+					<a class="nav-link" href="{% url 'creator' %}">
+						<i class="fas fa-pencil-alt me-3"></i>{% trans "Sudoku Creator" %}
+					</a>
+					<a class="nav-link" href="{% url 'index' %}">
+						<i class="fas fa-th-list me-3"></i>{% trans "About us" %}
+					</a>
+					
+					
+					{% get_current_language as LANGUAGE_CODE %}
+					<!-- Sprachwahl mit Select-Feld -->
+					<div class="nav-link d-flex align-items-center">
+						<i class="fas fa-globe me-1"></i>
+						<select id="languageSelect" class="form-select">
+							<option value="en"{% if LANGUAGE_CODE == 'en' %} selected{% endif %}>English</option>
+							<option value="de"{% if LANGUAGE_CODE == 'de' %} selected{% endif %}>Deutsch</option>
+							<option value="ja"{% if LANGUAGE_CODE == 'ja' %} selected{% endif %}>日本語</option>
+						</select>
+					</div>
+					<!-- Unsichtbares Formular für die Sprachumschaltung -->
+					<form id="languageForm" method="post" action="{% url 'set_language' %}" style="display: none;">
+					  {% csrf_token %}
+					  <input type="hidden" name="language" id="languageInput">
+					  <input type="hidden" name="next" value="{{ request.path }}">
+					</form>
+					
+					<script>
+					  document.addEventListener("DOMContentLoaded", function () {
+					    const select = document.getElementById("languageSelect");
+					    const form = document.getElementById("languageForm");
+					    const input = document.getElementById("languageInput");
+					    if (select && form && input) {
+					      select.addEventListener("change", function () {
+					        input.value = select.value;
+					        form.submit();
+					      });
+					    }
+					  });
+					</script>
+					
+				</nav>
+			</div>
+		</div>
+		
+		<!-- Gear Canvas -->
+		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasGear" aria-labelledby="offcanvasGearLabel">
+			<div class="offcanvas-header">
+				<h5 class="offcanvas-title" id="offcanvasGearLabel">Design & Settings</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<div id="gear-description" class="gear-description-wrapper px-2">
+					
+					<!-- Background Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">Appearance</div>
+					<div class="form-group-row mb-3">
+						<label for="theme-menu" class="form-label">Choose Background</label>
+						<select id="theme-menu" class="form-select">
+							<option value="classic">Classic</option>
+							<option value="cement">Cement</option>
+							<option value="glow">Glow</option>
+							<option value="stone">Stone</option>
+							<option value="wood">Wood</option>
+						</select>
+					</div>
+					<div class="form-group-row mb-3">
+						<label for="transparency-range" class="form-label">Transparency</label>
+						<input type="range" class="form-range" id="transparency-range" min="0" max="100" step="10" value="100">
+					</div>
+
+					<hr class="my-3">
+
+					<!-- Input Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">Input</div>
+					<div class="form-group-row form-check form-switch mb-3">
+						<label class="form-check-label" for="rotationNumberPad">Rotation Numberpad</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="rotationNumberPad">
+						</div>
+					</div>
+
+					<hr class="my-3">
+
+					<!-- Highlight Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">Highlights</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightRow">Highlight Row</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightRow" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightColumn">Highlight Column</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightColumn" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightBlock">Highlight Block</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightBlock" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightNumber">Highlight Numbers</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightNumber" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightCandidates">Highlight Candidates</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightCandidates" checked>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		
+		<!-- Rules Canvas -->
+		<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRules" aria-labelledby="offcanvasRulesLabel">
+			<div class="offcanvas-header">
+				<h5 class="offcanvas-title" id="offcanvasRulesLabel">Rules</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body">
+				<div id="rules-description" class="rules-description-wrapper"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Playinfo Modal -->
+<div class="modal fade" id="sudokuInfoModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content p-3">
+			<div class="modal-body" id="sudoku-info-message">
+			</div>
+			<div class="modal-footer justify-content-center">
+				<button type="button" class="btn btn-primary" id="start-sudoku-button">Los geht's!</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Completion Modal -->
+<div class="modal fade" id="finishedModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+
+			<div class="modal-header border-0">
+				<h5 class="modal-title w-100 text-center">🎉 Sudoku abgeschlossen</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+			</div>
+
+			<div class="modal-body text-center">
+				<img id="finishedImage" src="" alt="Fertig!" class="img-fluid mb-3" style="max-height: 200px;">
+				<p id="finishedTimeText" class="fs-5"></p>
+				<div id="rating-stars" class="my-2">
+					<!-- Stars will be dynamically injected -->
+				</div>
+			</div>
+
+			<div class="modal-footer justify-content-center border-0">
+				<button type="button" class="btn btn-primary" id="done-button" data-bs-dismiss="modal">Fertig</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<!-- Validation Modal -->
+<div class="modal fade" id="validationModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Puzzle Check</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<!-- Validation message will be injected here -->
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>window.puzzle_data={{puzzle_data_json | safe}};</script>
+<script type="module" src="{% static 'sudoku/js/game/game.js' %}"></script>
+<script>
+	function updateControlContainerGrid() {
+		const container = document.querySelector(".control-container");
+		if (!container) return;
+
+		// Layout constants
+		const menuHeight = 0;          // px
+		const border = 16;             // 1rem = 16px
+		const gap = 16;                // 1rem
+		const aspectRatios = {
+			"grid-a-Y": 300 / 540,
+			"grid-a-X": 384 / 304,
+			"grid-a-superX": 440 / 192,
+		};
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+		let layout = "";
+		let width, height;
+		
+		// Remove existing layout classes
+		container.classList.remove("grid-a-X", "grid-a-Y", "grid-a-superX");
+		
+		if (window.matchMedia("(min-aspect-ratio: 1/1)").matches) {
+			// Landscape layout
+			const minRightSize = 250;
+			const availableHeight = vh - menuHeight - 2 * border;
+			const availableRightPane = vw - availableHeight - gap;
+			const ratio = availableRightPane / availableHeight;
+
+			layout = ratio < 1 ? "grid-a-Y" : "grid-a-X";
+
+			container.classList.add(layout);
+
+			const targetRatio = aspectRatios[layout];
+			let maxWidth = availableRightPane - 2 * border;
+			const maxHeight = availableHeight;
+
+			if (layout === "grid-a-Y" && maxWidth < minRightSize) {
+				maxWidth = minRightSize;
+			}
+
+			if (maxWidth / maxHeight > targetRatio) {
+				// Height constrains
+				height = maxHeight;
+				width = height * targetRatio;
+			} else {
+				// Width constrains
+				width = maxWidth;
+				height = width / targetRatio;
+			}
+
+		}
+		else {
+			// Portrait mode
+			const minRightSize = 200;
+			const availableWidth = vw - 2 * border;
+			let leftPaneSize = Math.min(availableWidth, vh - menuHeight - 2 * border - gap - minRightSize);
+			
+			const availableHeight = vh - leftPaneSize - menuHeight - 2 * border - gap;
+			const ratio = availableWidth / availableHeight;
+
+			layout = ratio < 2 ? "grid-a-X" : "grid-a-superX";
+			
+			container.classList.add(layout);
+
+			const targetRatio = aspectRatios[layout];
+			let maxWidth = availableWidth;
+			let maxHeight = Math.max(availableHeight, minRightSize);
+			
+			if (maxWidth / maxHeight > targetRatio) {
+				height = maxHeight;
+				width = height * targetRatio;
+			} else {
+				width = maxWidth;
+				height = width / targetRatio;
+			}
+		} // ENDE portrait mode
+
+		
+		// Apply computed size styles
+		container.style.width = `${width}px`;
+		container.style.height = `${height}px`;
+
+		// Adjust font size and image size dynamically
+		const scaleBaseGrid = {
+			"grid-a-Y": 300,
+			"grid-a-X": 500,
+			"grid-a-superX": 500,
+		};
+		const scaleBase = scaleBaseGrid[layout] || 300;  // fallback to 300 if layout unknown
+		const scaleFactor = width / scaleBase;
+		const fontSize = Math.max(0.8, Math.min(3.0, 1.4 * scaleFactor)); // clamp between 0.8rem and 3.0rem
+		const infoSize = fontSize * 0.5;
+		
+		container.querySelectorAll(".btn").forEach(btn => {
+			btn.style.fontSize = `${fontSize}rem`;
+		});
+
+		const imageSize = Math.round(20 * scaleFactor); // proportional image size
+		const colorBtnImg = document.querySelector("#btn-colorMode img");
+		if (colorBtnImg) {
+			colorBtnImg.style.width = `${imageSize}px`;
+			colorBtnImg.style.height = `${imageSize}px`;
+		}
+		
+		container.querySelectorAll(".text-custom-white").forEach(t => {
+			t.style.fontSize = `${infoSize}rem`;
+		});
+	}
+
+	// Execute after full load (including fonts/images/layout)
+	window.addEventListener("load", updateControlContainerGrid);
+	window.addEventListener("resize", updateControlContainerGrid);
+
+</script>
+{% endblock %}
