@@ -36,7 +36,7 @@
 }
 
 .myNavTabStyle .nav-link:not(.active) {
-  background-color: #494949;
+  background-color: #818181;
   color: #ffffff;
   border-color: #1e1e1e;
 }

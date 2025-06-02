@@ -219,7 +219,8 @@ export class Game {
     }
 
     setupThemeMenu() {
-        // Define available backgrounds
+
+    // Define available backgrounds
         const backgrounds = {
             stone:   "url('/static/sudoku/img/game/stone.jpg')",
             glow:    "url('/static/sudoku/img/game/glow.jpg')",
@@ -228,23 +229,31 @@ export class Game {
             classic: "none"
         };
 
-        // Apply background theme by ID
-        const applyTheme = (id) => {
-            if (!backgrounds.hasOwnProperty(id)) return;
-            document.body.style.backgroundImage = backgrounds[id];
-            localStorage.setItem("selectedTheme", id);
-        };
-
-        // Set up theme select dropdown
-        const select      = document.getElementById("theme-menu");
+        const select= document.getElementById("theme-menu");
         const savedTheme  = localStorage.getItem("selectedTheme") || "classic";
-
         if (!select) return;
 
         select.value = savedTheme;
         applyTheme(savedTheme);
 
-        // Set up transparency slider for right pane
+    // 1. Theme anwenden
+        function applyTheme(id) {
+            if (!backgrounds.hasOwnProperty(id)) return;
+            document.body.style.backgroundImage = backgrounds[id];
+            localStorage.setItem("selectedTheme", id);
+        }
+
+    // 💡 2. Initialwert setzen
+        select.value = savedTheme;
+        applyTheme(savedTheme);
+
+    // 💡 3. Listener aktivieren (nach Definition von applyTheme!)
+        select.addEventListener("change", () => {
+            applyTheme(select.value);
+        });
+
+
+    // Set up transparency slider for right pane
         const transparencySlider = document.getElementById("transparency-range");
         const rightPane          = document.querySelector(".keypad-pane");
 
@@ -269,12 +278,8 @@ export class Game {
             });
         }
 
-        // Listen for theme selection changes
-        select.addEventListener("change", () => {
-            applyTheme(select.value);
-        });
 
-        // Set up number pad rotation
+    // Set up number pad rotation
         const rotationCheckbox = document.getElementById("rotationNumberPad");
         const gridB            = document.getElementById("number-block");
 
@@ -401,8 +406,6 @@ export class Game {
             container.appendChild(wrapper);
         });
     }
-
-
 
     setupStarRatingEvents(container) {
         const stars = container.querySelectorAll(".star");

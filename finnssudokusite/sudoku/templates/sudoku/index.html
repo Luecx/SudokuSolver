@@ -7,7 +7,7 @@
 {% block title %}Sudoku{% endblock %}
 
 {% block extra_css %}
-<link href="../../static/sudoku/css/index.css" rel="stylesheet" />
+<link href="{% static 'sudoku/css/index.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block container %}
@@ -61,7 +61,7 @@
 			<!-- Links -->
 			<div class="col-md-4 order-2 order-md-1 mb-3">
 				<div class="card sides text-center rounded-5">
-					<img src="../../static/sudoku/img/index/marc.jpg" class="card-img-top square-img" alt="Left" />
+					<img src="{% static 'sudoku/img/index/marc.jpg' %}" class="card-img-top square-img" alt="Left" />
 					<div class="card-body">
 						<h5 class="card-title">Marc</h5>
 						<div class="faehnchen">CSS / Visuals</div>
@@ -72,7 +72,7 @@
 			<!-- Mitte -->
 			<div class="col-md-4 order-1 order-md-2 mb-3">
 				<div class="card text-center rounded-5">
-					<img src="../../static/sudoku/img/index/finn.png" class="card-img-top square-img" alt="Middle" />
+					<img src="{% static 'sudoku/img/index/finn.png' %}" class="card-img-top square-img" alt="Middle" />
 					<div class="card-body">
 						<h5 class="card-title">Finn</h5>
 						<div class="faehnchen">Lead</div>
@@ -83,7 +83,7 @@
 			<!-- Rechts -->
 			<div class="col-md-4 order-3 order-md-3 mb-3">
 				<div class="card sides text-center rounded-5">
-					<img src="../../static/sudoku/img/index/semih.png" class="card-img-top square-img" alt="Right" />
+					<img src="{% static 'sudoku/img/index/semih.png' %}" class="card-img-top square-img" alt="Right" />
 					<div class="card-body">
 						<h5 class="card-title">Semih</h5>
 						<div class="faehnchen">Backend</div>
