@@ -1,7 +1,8 @@
 {% extends "sudoku/base.html" %}
+{% load i18n %}
 {% block content %}
 <div class="container mt-5 text-center">
-    <h3>Invalid Link</h3>
-    <p>That activation link is invalid or expired.</p>
+    <h3>{% trans "Invalid Link" %}</h3>
+    <p>{% trans "That activation link is invalid or expired." %}</p>
 </div>
 {% endblock %}

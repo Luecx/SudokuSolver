@@ -25,7 +25,7 @@
 }
 .myNav .nav select{background-color: #494949; color: #ffffff; border: none;}
 .myNav .nav select:hover {cursor: pointer; color: #a0bcff;}
-.myNav .nav-dropdowntext {color: #aaaaaa; font-weight: 600; font-size: 1.2rem;}
+.nav-dropdowntext {color: #aaaaaa; font-weight: 600; font-size: 1.2rem;}
 
 
   /*  BOOTSTRAP  */
