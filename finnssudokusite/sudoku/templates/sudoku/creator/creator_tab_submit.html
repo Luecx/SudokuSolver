@@ -1,0 +1,50 @@
+{% load i18n %}
+{% load static %}
+
+<!-- PUBLISH -->
+<div id="nav-Publish" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Publish-tab" tabindex="0">
+    <form id="sudoku-publish-form">
+        <input type="text" class="form-control mb-2" name="sudoku_name" id="sudoku-name-input" placeholder="Enter Sudoku name...">
+        <div id="active-tags-container" class="mt-2"></div>
+
+        <hr class="my-3">
+
+        <div class="d-flex justify-content-around align-items-center text-center mb-3">
+            <div id="status-name">
+                <i class="fa fa-times text-danger fa-lg"></i><br>
+                <small class="text-muted">Name Provided</small>
+            </div>
+            <div id="status-solution">
+                <i class="fa fa-times text-danger fa-lg"></i><br>
+                <small class="text-muted">Unique Solution</small>
+            </div>
+            <div id="status-unique">
+                <i class="fa fa-times text-danger fa-lg"></i><br>
+                <small class="text-muted">Unique Puzzle</small>
+            </div>
+        </div>
+
+        <button type="button" id="check-uniqueness-btn" class="btn btn-outline-secondary w-100 mb-3">
+            <i class="fas fa-magic me-1"></i> Check Uniqueness
+        </button>
+
+        <hr class="my-3">
+
+        <button type="button" id="submit-sudoku-btn" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalSave">
+            <i class="fas fa-upload me-1"></i> Save Sudoku
+        </button>
+
+        <div id="upload-loading-box" class="mt-4" style="display: none;">
+            <div class="progress mb-2" role="progressbar" style="height: 28px;">
+                <div id="upload-progress-bar"
+                     class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width: 0%; background-color: gold;">
+                    Uploading Sudoku...
+                </div>
+            </div>
+            <div id="upload-progress-text" class="text-center text-muted small">
+                Preparing...
+            </div>
+        </div>
+    </form>
+</div>

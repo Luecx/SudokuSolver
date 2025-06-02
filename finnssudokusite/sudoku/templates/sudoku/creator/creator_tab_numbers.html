@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load static %}
+
+<!--	Numbers 	-->
+<div id="nav-numbers" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-numbers-tab" tabindex="0">
+    <div class="d-flex flex-column h-100">
+        <div class="d-grid gap-2" style="grid-template-columns: repeat(3, 1fr); display: grid; width: 100%; max-width:300px; height:100%; max-height:300px; margin: auto;">
+            {% for i in "123456789" %}
+            <button id="nav-btn{{ i }}" class="btn btn-outline-primary py-2" type="button">{{ i }}</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>

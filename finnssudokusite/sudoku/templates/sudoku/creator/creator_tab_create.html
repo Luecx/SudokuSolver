@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load static %}
+
+<!--	CREATOR	-->
+<div id="nav-Create" class="tab-pane fade show active" role="tabpanel"
+     aria-labelledby="nav-Create-tab" tabindex="0">
+    <h3 class="text-center mt-2">{% trans "Create Your Sudoku" %}</h3>
+
+    <div class="position-relative">
+        <input type="text" id="ruleSearchInput" class="form-control" placeholder="Start typing..."
+               autocomplete="off">
+        <ul id="ruleDropdown" class="list-group position-absolute rounded overflow-auto w-100"
+            style="z-index: 1000;"></ul>
+    </div>
+
+    <div class="mt-2 flex-fill overflow-auto">
+        <div id="accordionContainer" class="accordion w-100 flex-fill"></div>
+    </div>
+</div>

@@ -1,0 +1,69 @@
+
+{% load i18n %}
+{% load static %}
+<!--	ANALYSE	-->
+<div id="nav-Analyse" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-Analyse-tab" tabindex="0">
+    <div class="d-flex flex-column h-100">
+
+        <!-- Top Controls (buttons) -->
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-2 flex-shrink-0">
+            <div class="d-flex gap-2">
+                <button id="start-normal-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button id="start-complete-analysis-btn" class="btn btn-success square-btn" data-bs-toggle="tooltip" title="Start Analysis">
+                    <i class="fas fa-forward"></i>
+                </button>
+                <button id="clear-analysis-btn" class="btn btn-danger square-btn" data-bs-toggle="tooltip" title="Clear Results">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+                <button id="toggle-definite" class="btn square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Definite Squares">
+                    <i class="fas fa-check-square"></i>
+                </button>
+                <button id="toggle-uncertain" class="btn square-btn toggle-btn" data-bs-toggle="tooltip" title="Toggle Uncertain Squares">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+
+                <div class="dropdown" id="solver-settings">
+                    <button class="btn btn-light square-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Solver Settings">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <div class="dropdown-menu p-3 keep-open" style="min-width: 240px;">
+                        <label for="normal-depth-select" class="form-label d-flex align-items-center">
+                            Normal Depth
+                            <i class="fas fa-info-circle ms-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Normal analysis performs a single backtracking search and stops after a certain number of nodes or when more than 32 solutions are found."></i>
+                        </label>
+                        <select id="normal-depth-select" class="form-select mb-2">
+                            <option value="1024">Shallow [1024]</option>
+                            <option value="16384">Medium [16384]</option>
+                            <option value="128000">Deep [128000]</option>
+                            <option value="1000000">Ultra [1000000]</option>
+                        </select>
+
+                        <label for="complete-depth-select" class="form-label d-flex align-items-center">
+                            Complete Depth
+                            <i class="fas fa-info-circle ms-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Complete analysis tries every number on every square. For each case, a backtracking search checks if a valid solution exists. This reveals which values are possible or impossible per cell. This performs many backtracking searches and takes longer."></i>
+                        </label>
+                        <select id="complete-depth-select" class="form-select">
+                            <option value="128">Minimal [128]</option>
+                            <option value="1024">Light [1024]</option>
+                            <option value="16384">Solid [16384]</option>
+                            <option value="128000">Thorough [128000]</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="alertBox" class="flex-shrink-0 mb-2"></div>
+
+        <div class="flex-grow-1 overflow-auto">
+            <ul id="solutionList" class="list-group"></ul>
+        </div>
+    </div>
+</div>
