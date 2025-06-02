@@ -1,8 +1,9 @@
 {% load formatting star_rating %}
 {% load form_filters %}
 {% load static %}
-{% if created_puzzles %}
+{% load i18n %}
 
+{% if created_puzzles %}
 <!-- Shared Search & Tag Filter -->
 {% include "sudoku/profile/search_filter.html" with search_id="searchInput" tag_class="tag-filter" tag_prefix="tag" %}
 
@@ -11,10 +12,10 @@
   <table class="table table-striped table-hover small align-middle" id="createdTable">
     <thead>
     <tr>
-      <th data-key="name">Name <span class="sort-indicator"></span></th>
-      <th data-key="solves">Solves <span class="sort-indicator"></span></th>
-      <th data-key="rating">Rating <span class="sort-indicator"></span></th>
-      <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
+      <th data-key="name">{% trans "Name" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="solves">{% trans "Solves" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="rating">{% trans "Rating" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="avgtime">{% trans "Avg Time" %}<span class="sort-indicator ms-2"></span></th>
       <th>Tags</th>
     </tr>
     </thead>
@@ -65,9 +66,9 @@
 {% else %}
 <p>
   {% if is_own_profile %}
-  You haven’t created any puzzles yet.
+	{% trans "You haven’t created any puzzles yet." %}
   {% else %}
-  {{ target_user.username }} hasn’t created any puzzles yet.
+  {{ target_user.username }}&nbsp;{% trans "hasn’t created any puzzles yet." %}
   {% endif %}
 </p>
 {% endif %}

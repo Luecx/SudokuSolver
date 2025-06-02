@@ -1,11 +1,13 @@
 
+{% load i18n %}
+
 <!-- Completion Modal -->
 <div class="modal fade" id="finishedModal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 
 			<div class="modal-header border-0">
-				<h5 class="modal-title w-100 text-center">🎉 Sudoku abgeschlossen</h5>
+				<h5 class="modal-title w-100 text-center">🎉 {% trans "Sudoku completed" %}</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
 			</div>
 
@@ -18,7 +20,7 @@
 			</div>
 
 			<div class="modal-footer justify-content-center border-0">
-				<button type="button" class="btn btn-primary" id="done-button" data-bs-dismiss="modal">Fertig</button>
+				<button type="button" class="btn btn-primary" id="done-button" data-bs-dismiss="modal">{% trans "Finish" %}</button>
 			</div>
 
 		</div>

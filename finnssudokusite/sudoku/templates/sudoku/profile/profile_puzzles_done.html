@@ -1,8 +1,9 @@
 {% load form_filters %}
 {% load static %}
 {% load formatting star_rating %}
-{% if attempted_stats %}
+{% load i18n %}
 
+{% if attempted_stats %}
 <!-- Shared Search & Tag Filter -->
 {% include "sudoku/profile/search_filter.html" with search_id="doneSearch" tag_class="done-tag-filter" tag_prefix="done-tag" %}
 
@@ -11,13 +12,13 @@
   <table class="table table-striped table-hover small align-middle" id="doneTable">
     <thead>
     <tr>
-      <th data-key="name">Name <span class="sort-indicator"></span></th>
-      <th data-key="creator">Creator <span class="sort-indicator"></span></th>
-      <th data-key="solves">Solves <span class="sort-indicator"></span></th>
-      <th data-key="rating">{% if is_own_profile %}Your Rating{% else %}Their Rating{% endif %} <span class="sort-indicator"></span></th>
-      <th data-key="avgtime">Avg Time <span class="sort-indicator"></span></th>
-      <th data-key="besttime">Completion Time <span class="sort-indicator"></span></th>
-      <th data-key="datesolved">Date Completed <span class="sort-indicator"></span></th>
+      <th data-key="name">{% trans "Name" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="creator">{% trans "Creator" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="solves">{% trans "Solves" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="rating">{% if is_own_profile %}{% trans "Your Rating" %}{% else %}{% trans "Their Rating" %}{% endif %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="avgtime">{% trans "Avg Time" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="besttime">{% trans "Completion Time" %}<span class="sort-indicator ms-2"></span></th>
+      <th data-key="datesolved">{% trans "Date Completed" %}<span class="sort-indicator ms-2"></span></th>
       <th>Tags</th>
     </tr>
     </thead>
@@ -105,9 +106,9 @@
 {% else %}
 <p>
   {% if is_own_profile %}
-  You haven’t finished any puzzles yet.
+	{% trans "You haven’t finished any puzzles yet." %}
   {% else %}
-  {{ target_user.username }} hasn’t finished any puzzles yet.
+  {{ target_user.username }}&nbsp;{% trans "hasn’t finished any puzzles yet." %}
   {% endif %}
 </p>
 {% endif %}

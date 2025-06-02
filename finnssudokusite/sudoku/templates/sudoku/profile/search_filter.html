@@ -1,5 +1,7 @@
+{% load i18n %}
+
 <div class="mb-4">
-    <label class="form-label fw-semibold">Search puzzles:</label>
+    <label class="form-label fw-semibold">{% trans "Search puzzles:" %}</label>
     <div class="input-group">
         <input type="text" id="{{ search_id }}" class="form-control" placeholder="Search by puzzle name...">
         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">

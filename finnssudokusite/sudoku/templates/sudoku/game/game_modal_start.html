@@ -1,10 +1,11 @@
+{% load i18n %}
 <div class="modal fade" id="sudokuInfoModal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content p-3">
 			<div class="modal-body" id="sudoku-info-message">
 			</div>
 			<div class="modal-footer justify-content-center">
-				<button type="button" class="btn btn-primary" id="start-sudoku-button">Los geht's!</button>
+				<button type="button" class="btn btn-primary" id="start-sudoku-button">{% trans "Let's go!" %}</button>
 			</div>
 		</div>
 	</div>
