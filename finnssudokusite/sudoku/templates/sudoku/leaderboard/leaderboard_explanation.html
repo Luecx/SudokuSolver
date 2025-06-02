@@ -1,0 +1,116 @@
+{% load i18n %}
+
+<div class="modal-body px-4 py-3">
+    <p>
+        {% blocktrans %}
+        The leaderboard uses the
+        <strong>Sudoku Power Index (SPI)</strong> — a score from 0 to 100 that rewards
+        <em>fast</em> solves on <em>difficult</em> puzzles, values
+        <em>recency</em>, and favors consistent performance.
+        {% endblocktrans %}
+    </p>
+
+    <hr class="my-4">
+
+    <h6 class="fw-bold mb-2">{% trans "Per‑puzzle contribution" %}</h6>
+    <p>
+        {% blocktrans %}
+        Each time you solve a puzzle, you earn a score \( S_{u,s} \) that reflects your relative performance:
+        {% endblocktrans %}
+    </p>
+
+    <div class="text-center mb-3">
+        <p class="text-primary">\[\displaystyle S_{u,s} = w(\Delta_s) \cdot \bar{t}_s \cdot \frac{\bar{t}_s}{t_{u,s}}\]</p>
+    </div>
+
+    <p>
+        {% blocktrans %}
+        The reward \( S_{u,s} \) increases when you solve a puzzle faster than the average, when the puzzle is difficult (as measured by solve time),
+        and when the solve is recent.
+        {% endblocktrans %}
+    </p>
+
+    <table class="table table-sm table-bordered w-auto mx-auto my-4">
+        <thead class="table-light">
+        <tr>
+            <th>{% trans "Symbol" %}</th>
+            <th>{% trans "Meaning" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>\( \bar{t}_s \)</td>
+            <td>{% trans "Average solve time for puzzle \(s\)" %}</td>
+        </tr>
+        <tr>
+            <td>\( t_{u,s} \)</td>
+            <td>{% trans "Your time to solve puzzle \(s\)" %}</td>
+        </tr>
+        <tr>
+            <td>\( \Delta_s \)</td>
+            <td>{% trans "Days since you solved puzzle \(s\)" %}</td>
+        </tr>
+        <tr>
+            <td>\( w(\Delta_s) \)</td>
+            <td>{% trans "Recency weight: newer solves are more valuable" %}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>{% trans "The recency weight is given by exponential decay:" %}</p>
+    <div class="text-center mb-4">
+        <p class="text-primary">\[\displaystyle w(\Delta_s) = \alpha^{\Delta_s} \quad \text{with } \alpha = 0.95\]</p>
+    </div>
+
+    <hr class="my-4">
+
+    <h6 class="fw-bold mb-2">{% trans "User rating" %}</h6>
+    <p>
+        {% blocktrans %}
+        Your overall rating \( R_u \) is computed as the geometric mean of your per-puzzle rewards \( S_{u,s} \), across all puzzles you’ve solved:
+        {% endblocktrans %}
+    </p>
+
+    <div class="text-center mb-4">
+        <p class="text-primary">\[\displaystyle R_u = \left( \prod_{s \in S_u} S_{u,s} \right)^{1 / |S_u|}\]</p>
+    </div>
+
+    <p>
+        {% blocktrans %}
+        This balances individual performance and avoids inflation from a few easy or lucky solves.
+        {% endblocktrans %}
+    </p>
+
+    <hr class="my-4">
+
+    <h6 class="fw-bold mb-2">{% trans "Leaderboard score" %}</h6>
+    <p>
+        {% blocktrans %}
+        To compare ratings across players, we normalize all user ratings onto a 0–100 scale.
+        The top player's score is always 100:
+        {% endblocktrans %}
+    </p>
+    <div class="text-center mb-4">
+        <p class="text-primary">\[\displaystyle \text{SPI}_u = 100 \cdot \frac{R_u}{\max\limits_v R_v}\]</p>
+    </div>
+
+    <p>
+        {% blocktrans %}
+        Everyone else is scored proportionally. A strong performance today can lift you up quickly —
+        but you'll have to keep playing to stay on top.
+        {% endblocktrans %}
+    </p>
+
+    <hr class="my-4">
+
+    <h6 class="fw-bold mb-2">{% trans "Why exponential decay?" %}</h6>
+    <p>
+        {% blocktrans %}
+        To keep the leaderboard dynamic. Recent solves matter more — older ones slowly fade. For instance, with \(\alpha = 0.95\), a solve
+        from 60 days ago counts for less than 5% of its original value:
+        {% endblocktrans %}
+    </p>
+    <div class="text-center mb-4">
+        <p class="text-primary">\[\displaystyle w(60) = 0.95^{60} \approx 0.045\]</p>
+    </div>
+</div>

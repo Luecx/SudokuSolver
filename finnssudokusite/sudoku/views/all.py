@@ -77,7 +77,7 @@ def leaderboard(request):
     for entry in leaderboard_data:
         entry["user"] = User.objects.get(username=entry["user"])
 
-    return render(request, "sudoku/leaderboard.html", {"leaderboard": leaderboard_data})
+    return render(request, "sudoku/leaderboard/leaderboard.html", {"leaderboard": leaderboard_data})
 
 
 def creator(request):

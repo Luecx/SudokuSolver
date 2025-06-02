@@ -2,10 +2,10 @@
 Leaderboard computation using the Sudoku Power Index (SPI).
 
 This module computes user scores and rankings based on:
-- Recency of solves (exponential decay)
-- Puzzle difficulty (based on solve ratio)
-- Speed (bonus for fast solves)
-- Volume (small bonus for playing more puzzles)
+- Recency of solves (exponential decay with alpha = 0.95)
+- Puzzle difficulty (average time as proxy)
+- Speed (relative to average)
+- Geometric mean across all puzzles
 
 If no puzzles have been played, the leaderboard will be empty.
 """
@@ -18,86 +18,67 @@ from ..models import UserSudokuDone
 
 
 # === Constants === #
-HALF_LIFE_DAYS = 60       # Half-life for recency weight
-LAMBDA_VOL = 0.04         # Volume bonus factor
-ALPHA, BETA = 1, 2        # Difficulty smoothing constants
-DIFF_EXP = 1.7            # Exponent in difficulty formula
+ALPHA = 0.95  # Recency decay base (stronger decay)
+EPS = 1e-8    # Small number to avoid divide-by-zero
 
 
-def _compute_weights(stat, now):
-    """Compute recency, difficulty, and speed weights for a given stat record."""
+def _compute_contribution(stat, now):
+    """Compute score S_{u,s} for a given puzzle solve."""
     puzzle = stat.sudoku
-
-    # Recency weight: exponential decay using stat.date
-    if not stat.date:
+    if not stat.date or not puzzle or not puzzle.average_time:
         return None
 
-    last_solve = stat.date
-    if is_naive(last_solve):
-        last_solve = make_aware(last_solve, timezone=timezone.utc)
+    # Recency weight
+    solve_time = stat.date
+    if is_naive(solve_time):
+        solve_time = make_aware(solve_time, timezone=timezone.utc)
+    days_since = (now - solve_time).days
+    w_rec = ALPHA ** days_since
 
-    days_since = (now - last_solve).days
-    w_rec = 2 ** (-days_since / HALF_LIFE_DAYS)
+    # Difficulty (proxy): average time
+    avg_t = max(puzzle.average_time, EPS)
+    user_t = max(stat.time, EPS)
 
-    # Difficulty weight: based on solve ratio
-    solves = puzzle.solves or 0
-    # attempts = puzzle.attempts or 0
-    # q = (solves + ALPHA) / (attempts + ALPHA + BETA)
-    q = 1
-    w_diff = 1 + (1 - q) ** DIFF_EXP
-
-    # Speed bonus: positive only if faster than average
-    user_t = max(stat.time, 1e-8)
-    avg_t = max(puzzle.average_time or 0, 1e-8)
-
-    try:
-        delta_speed = max(0.0, math.log(avg_t / user_t))
-    except Exception:
-        delta_speed = 0.0
-
-    return w_rec, w_diff, delta_speed
+    # Final contribution
+    score = w_rec * avg_t * (avg_t / user_t)
+    return score
 
 
-def _compute_raw_scores(stats, now):
-    """Aggregate raw performance scores for each user."""
-    players = defaultdict(lambda: {'P': 0.0, 'N': 0.0, 'solved': 0})
+def _compute_user_scores(stats, now):
+    """Collect all scores S_{u,s} per user."""
+    user_scores = defaultdict(list)
 
     for stat in stats:
-        puzzle = stat.sudoku
-        if not puzzle or (puzzle.average_time or 0) <= 0:
-            continue
+        score = _compute_contribution(stat, now)
+        if score is not None:
+            user_scores[stat.user.username].append(score)
 
-        weights = _compute_weights(stat, now)
-        if not weights:
-            continue
-
-        w_rec, w_diff, delta_speed = weights
-        p_ui = w_rec * w_diff * (1 + delta_speed)
-
-        user_record = players[stat.user.username]
-        user_record['P'] += p_ui
-        user_record['N'] += w_rec
-        user_record['solved'] += 1
-
-    return players
+    return user_scores
 
 
-def _convert_to_leaderboard(players):
-    """Convert raw scores to leaderboard entries with SPI normalized to 100."""
-    raw_scores = {}
+def _geometric_mean(values):
+    """Compute geometric mean of a list of values."""
+    if not values:
+        return 0.0
+    log_sum = sum(math.log(v) for v in values if v > 0)
+    return math.exp(log_sum / len(values))
+
+
+def _normalize_scores(user_scores):
+    """Convert raw geometric means to leaderboard entries."""
+    ratings = {}
     R_max = 0.0
 
-    for user, data in players.items():
-        P, N = data['P'], data['N']
-        sqrt_N = math.sqrt(N) if N >= 0 else 0
-        R = P * (1 + LAMBDA_VOL * sqrt_N)
-        R = R.real if isinstance(R, complex) else R
-
-        raw_scores[user] = {'R': R, 'solved': data['solved']}
-        R_max = max(R_max, R)
+    for user, scores in user_scores.items():
+        R_u = _geometric_mean(scores)
+        ratings[user] = {
+            'R': R_u,
+            'solved': len(scores)
+        }
+        R_max = max(R_max, R_u)
 
     leaderboard = []
-    for user, vals in raw_scores.items():
+    for user, vals in ratings.items():
         spi = 100 * vals['R'] / R_max if R_max > 0 else 0
         leaderboard.append({
             'user': user,
@@ -111,7 +92,7 @@ def _convert_to_leaderboard(players):
 
 def compute_leaderboard_scores():
     """
-    Computes the leaderboard using all solve records with time > 0.
+    Computes the leaderboard using all valid solve records.
 
     Returns:
         A sorted list of dictionaries:
@@ -131,5 +112,5 @@ def compute_leaderboard_scores():
         return []
 
     now = datetime.now(timezone.utc)
-    raw_players = _compute_raw_scores(stats, now)
-    return _convert_to_leaderboard(raw_players)
+    user_scores = _compute_user_scores(stats, now)
+    return _normalize_scores(user_scores)
