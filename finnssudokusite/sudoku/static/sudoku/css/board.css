@@ -166,7 +166,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 200;
+    font-weight: normal !important;
 }
 
 .centered-candidate-layer {
@@ -178,7 +178,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 200;
+    font-weight: normal !important;
     color: gray;
     pointer-events: none;
     text-align: center;

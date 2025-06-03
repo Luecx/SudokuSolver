@@ -309,7 +309,7 @@ export class BoardNumberLayer {
         candidateLayer.innerHTML = "";
 
         const candidateOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const candidateColor = this.useSolutionStyle ? "red" : "#222";
+        const candidateColor = this.useSolutionStyle ? "red" : "#111111";
         const cellSize = this.board.getCellSize();
         const candidateSize = (cellSize * 0.7) / 3;
 
