@@ -1,84 +1,94 @@
 {% load i18n %}
 <!-- Gear Canvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasGear" aria-labelledby="offcanvasGearLabel">
-	<div class="offcanvas-header">
-		<h5 class="offcanvas-title" id="offcanvasGearLabel">{% trans "Design & Settings" %}</h5>
-		<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-	</div>
-	<div class="offcanvas-body">
-		<div id="gear-description" class="gear-description-wrapper px-2">
-
-			<!-- Background Section -->
-			<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Appearance" %}</div>
-			<div class="form-group-row mb-3">
-				<label for="theme-menu" class="form-label">{% trans "Choose Background" %}</label>
-				<select id="theme-menu" class="form-select">
-					<option value="classic">{% trans "Classic" %}</option>
-					<option value="cement">{% trans "Cement" %}</option>
-					<option value="glow">{% trans "Glow" %}</option>
-					<option value="stone">{% trans "Stone" %}</option>
-					<option value="wood">{% trans "Wood" %}</option>
-				</select>
+<div class="modal fade" id="gameSettingsModal" tabindex="-1" aria-labelledby="gameSettingsModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="gameSettingsModalLabel">{% trans "Design & Settings" %}</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="form-group-row mb-3">
-				<label for="transparency-range" class="form-label">{% trans "Transparency" %}</label>
-				<input type="range" class="form-range" id="transparency-range" min="0" max="100" step="10" value="100">
-			</div>
-
-			<hr class="my-3">
-
-			<!-- Input Section -->
-			<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Input" %}</div>
-			<div class="form-group-row form-check form-switch mb-3">
-				<label class="form-check-label" for="rotationNumberPad">{% trans " Rotate number pad" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="rotationNumberPad">
-				</div>
-			</div>
-
-			<hr class="my-3">
-
-			<!-- Highlight Section -->
-			<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Highlights" %}</div>
-			<div class="form-group-row form-check form-switch mb-2">
-				<label class="form-check-label" for="highlightRow">{% trans "Highlight Row" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="highlightRow" checked>
-				</div>
-			</div>
-			<div class="form-group-row form-check form-switch mb-2">
-				<label class="form-check-label" for="highlightColumn">{% trans "Highlight Column" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="highlightColumn" checked>
-				</div>
-			</div>
-			<div class="form-group-row form-check form-switch mb-2">
-				<label class="form-check-label" for="highlightBlock">{% trans "Highlight Block" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="highlightBlock" checked>
-				</div>
-			</div>
-			<div class="form-group-row form-check form-switch mb-2">
-				<label class="form-check-label" for="highlightNumber">{% trans "Highlight Numbers" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="highlightNumber" checked>
-				</div>
-			</div>
-			<div class="form-group-row form-check form-switch mb-2">
-				<label class="form-check-label" for="highlightCandidates">{% trans "Highlight Candidates" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="highlightCandidates" checked>
-				</div>
-			</div>
-
-			<hr class="my-3">
-
-			<!-- Candidates Section -->
-			<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Candidates" %}</div>
-			<div class="form-group-row form-check form-switch mb-2">
-				<label class="form-check-label" for="autoRemoveCandidates">{% trans "Auto-remove on input" %}</label>
-				<div class="mycheck">
-					<input class="form-check-input" type="checkbox" id="autoRemoveCandidates" checked>
+			<div class="modal-body">
+				<div id="gear-description" class="gear-description-wrapper px-2">
+					
+					<!-- Background Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Appearance" %}</div>
+					<div class="form-group-row mb-3">
+						<label for="theme-menu" class="form-label">{% trans "Choose Background" %}</label>
+						<select id="theme-menu" class="form-select">
+							<option value="classic">{% trans "Classic" %}</option>
+							<option value="cement">{% trans "Cement" %}</option>
+							<option value="glow">{% trans "Glow" %}</option>
+							<option value="stone">{% trans "Stone" %}</option>
+							<option value="wood">{% trans "Wood" %}</option>
+						</select>
+					</div>
+					<div class="form-group-row mb-3">
+						<label for="transparency-range" class="form-label">{% trans "Transparency" %}</label>
+						<input type="range" class="form-range" id="transparency-range" min="0" max="100" step="10" value="100">
+					</div>
+					
+					<hr class="my-3">
+					
+					<!-- Input Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Input" %}</div>
+					<div class="form-group-row form-check form-switch mb-3">
+						<label class="form-check-label" for="rotationNumberPad">{% trans " Rotate number pad" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="rotationNumberPad">
+						</div>
+					</div>
+					<div class="form-group-row mb-3">
+						<label for="fontsize-range" class="form-label">{% trans "Fontsize" %}</label>
+						<input type="range" class="form-range" id="fontsize-range" min=".5" max="1.5" step=".1" value="1">
+					</div>
+					
+					<hr class="my-3">
+					
+					<!-- Highlight Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Highlights" %}</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightRow">{% trans "Highlight Row" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightRow" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightColumn">{% trans "Highlight Column" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightColumn" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightBlock">{% trans "Highlight Block" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightBlock" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightNumber">{% trans "Highlight Numbers" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightNumber" checked>
+						</div>
+					</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="highlightCandidates">{% trans "Highlight Candidates" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="highlightCandidates" checked>
+						</div>
+					</div>
+					
+					<hr class="my-3">
+					
+					<!-- Candidates Section -->
+					<div class="section-label mt-2 mb-1 fw-bold text-uppercase small text-muted">{% trans "Candidates" %}</div>
+					<div class="form-group-row form-check form-switch mb-2">
+						<label class="form-check-label" for="autoRemoveCandidates">{% trans "Auto-remove on input" %}</label>
+						<div class="mycheck">
+							<input class="form-check-input" type="checkbox" id="autoRemoveCandidates" checked>
+						</div>
+					</div>
+				
+				
 				</div>
 			</div>
 

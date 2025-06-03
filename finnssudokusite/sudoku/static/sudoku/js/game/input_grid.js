@@ -21,7 +21,7 @@ export class InputGrid {
 
     initModeButtons() {
         const modeMap = {
-            [InputMode.NumberRegular]: 'btn-numberMode',
+            [InputMode.NumberRegular]: 'number-btn-styleMode',
             [InputMode.CandidateRegular]: 'btn-topMode',
             [InputMode.CandidateCentered]: 'btn-centerMode',
             [InputMode.Color]: 'btn-colorMode'
@@ -48,7 +48,7 @@ export class InputGrid {
     }
 
     initNumberButtons() {
-        this.numberButtons = Array.from(document.getElementsByClassName("btn-number"));
+        this.numberButtons = Array.from(document.getElementsByClassName("number-btn-style"));
         this.numberButtons.forEach((btn, i) => {
             // btn.classList.add("btn-square"); // ensure same base styling
 

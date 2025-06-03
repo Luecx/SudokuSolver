@@ -81,7 +81,7 @@ export class Game {
             }
         });
 
-        document.getElementById("validate-btn")?.addEventListener("click", () => {
+        document.getElementById("btn-validation").addEventListener("click", () => {
             this.validateProgress();
         });
     }
@@ -216,90 +216,6 @@ export class Game {
         document.addEventListener('click', (e) => {
             if (e.target.closest("a")) syncSaveOrSubmit();
         });
-    }
-
-    setupThemeMenu() {
-
-    // Define available backgrounds
-        const backgrounds = {
-            stone:   "url('/static/sudoku/img/game/stone.jpg')",
-            glow:    "url('/static/sudoku/img/game/glow.jpg')",
-            cement:  "url('/static/sudoku/img/game/cement.jpg')",
-            wood:    "url('/static/sudoku/img/game/wood.jpg')",
-            classic: "none"
-        };
-
-        const select= document.getElementById("theme-menu");
-        const savedTheme  = localStorage.getItem("selectedTheme") || "classic";
-        if (!select) return;
-
-        select.value = savedTheme;
-        applyTheme(savedTheme);
-
-    // 1. Theme anwenden
-        function applyTheme(id) {
-            if (!backgrounds.hasOwnProperty(id)) return;
-            document.body.style.backgroundImage = backgrounds[id];
-            localStorage.setItem("selectedTheme", id);
-        }
-
-    // 💡 2. Initialwert setzen
-        select.value = savedTheme;
-        applyTheme(savedTheme);
-
-    // 💡 3. Listener aktivieren (nach Definition von applyTheme!)
-        select.addEventListener("change", () => {
-            applyTheme(select.value);
-        });
-
-
-    // Set up transparency slider for right pane
-        const transparencySlider = document.getElementById("transparency-range");
-        const rightPane          = document.querySelector(".keypad-pane");
-
-        if (transparencySlider && rightPane) {
-            const applyTransparency = (value) => {
-                const alpha = Math.max(0, Math.min(1, value / 100));
-                rightPane.style.backgroundColor = `rgba(255, 255, 255, ${alpha})`;
-            };
-
-            const savedTransparency = localStorage.getItem("transparencyValue");
-            const initialValue      = savedTransparency !== null
-                ? parseInt(savedTransparency, 10)
-                : transparencySlider.value;
-
-            transparencySlider.value = initialValue;
-            applyTransparency(initialValue);
-
-            transparencySlider.addEventListener("input", () => {
-                const value = transparencySlider.value;
-                applyTransparency(value);
-                localStorage.setItem("transparencyValue", value);
-            });
-        }
-
-
-    // Set up number pad rotation
-        const rotationCheckbox = document.getElementById("rotationNumberPad");
-        const gridB            = document.getElementById("number-block");
-
-        const applyRotationSetting = (enabled) => {
-            if (!gridB) return;
-            gridB.classList.toggle("reversed", enabled);
-            gridB.classList.toggle("normal", !enabled);
-        };
-
-        if (rotationCheckbox && gridB) {
-            const saved = localStorage.getItem("rotationNumberPad") === "true";
-            rotationCheckbox.checked = saved;
-            applyRotationSetting(saved);
-
-            rotationCheckbox.addEventListener("change", () => {
-                const enabled = rotationCheckbox.checked;
-                localStorage.setItem("rotationNumberPad", enabled);
-                applyRotationSetting(enabled);
-            });
-        }
     }
 
     async handleInitialModal() {
@@ -466,6 +382,89 @@ export class Game {
         }
     }
 
+    setupThemeMenu() {
+
+        // Define available backgrounds
+        const backgrounds = {
+            stone:   "url('/static/sudoku/img/game/stone.jpg')",
+            glow:    "url('/static/sudoku/img/game/glow.jpg')",
+            cement:  "url('/static/sudoku/img/game/cement.jpg')",
+            wood:    "url('/static/sudoku/img/game/wood.jpg')",
+            classic: "none"
+        };
+
+        const select= document.getElementById("theme-menu");
+        const savedTheme  = localStorage.getItem("selectedTheme") || "classic";
+        if (!select) return;
+
+        select.value = savedTheme;
+        applyTheme(savedTheme);
+
+        // 1. Theme anwenden
+        function applyTheme(id) {
+            if (!backgrounds.hasOwnProperty(id)) return;
+            document.body.style.backgroundImage = backgrounds[id];
+            localStorage.setItem("selectedTheme", id);
+        }
+
+        // 💡 2. Initialwert setzen
+        select.value = savedTheme;
+        applyTheme(savedTheme);
+
+        // 💡 3. Listener aktivieren (nach Definition von applyTheme!)
+        select.addEventListener("change", () => {
+            applyTheme(select.value);
+        });
+
+
+        // Set up transparency slider for right pane
+        const transparencySlider = document.getElementById("transparency-range");
+        const rightPane          = document.querySelector(".keypad-pane");
+
+        if (transparencySlider && rightPane) {
+            const applyTransparency = (value) => {
+                const alpha = Math.max(0, Math.min(1, value / 100));
+                rightPane.style.backgroundColor = `rgba(255, 255, 255, ${alpha})`;
+            };
+
+            const savedTransparency = localStorage.getItem("transparencyValue");
+            const initialValue      = savedTransparency !== null
+                ? parseInt(savedTransparency, 10)
+                : transparencySlider.value;
+
+            transparencySlider.value = initialValue;
+            applyTransparency(initialValue);
+
+            transparencySlider.addEventListener("input", () => {
+                const value = transparencySlider.value;
+                applyTransparency(value);
+                localStorage.setItem("transparencyValue", value);
+            });
+        }
+
+
+        // Set up number pad rotation
+        const rotationCheckbox = document.getElementById("rotationNumberPad");
+        const gridB            = document.getElementById("number-block");
+
+        const applyRotationSetting = (enabled) => {
+            if (!gridB) return;
+            gridB.classList.toggle("reversed", enabled);
+            gridB.classList.toggle("normal", !enabled);
+        };
+
+        if (rotationCheckbox && gridB) {
+            const saved = localStorage.getItem("rotationNumberPad") === "true";
+            rotationCheckbox.checked = saved;
+            applyRotationSetting(saved);
+
+            rotationCheckbox.addEventListener("change", () => {
+                const enabled = rotationCheckbox.checked;
+                localStorage.setItem("rotationNumberPad", enabled);
+                applyRotationSetting(enabled);
+            });
+        }
+    }
 
 }
 

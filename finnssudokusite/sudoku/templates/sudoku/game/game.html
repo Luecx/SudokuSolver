@@ -21,6 +21,9 @@
 				<button id="help-button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
 					<i class="bi bi-question-circle"></i>
 				</button>
+				<button id="gear-button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#gameSettingsModal">
+					<i class="bi bi-gear"></i>
+				</button>
 			</div>
 			<div class="timer-container">
 				<div class="timer" id="timer">00:00:00</div>
@@ -31,35 +34,33 @@
 			<div class="control-container">
 				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
 				
-				<div id="game-name" class="text-custom-white">{{ page_title|default:"Unnamed Puzzle" }}</div>
-				<div id="game-creator" class="text-custom-white">by {{ creator_name|default:"Unknown" }}</div>
-				<button id="btn-gear" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasGear" aria-controls="offcanvasGear"><i class="bi bi-gear"></i></button>
-				<button id="btn-menu" class="btn btn-custom-white btn-validate" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
-				<button id="validate-btn" class="btn btn-custom-white btn-validate disable-group"><span>Check</span></button>
+				<div id="game-info" class="info-style">{{ page_title|default:"Unnamed Puzzle" }}<br><span style="color: #343a40">by {{ creator_name|default:"Unknown" }}</span></div>
+				<button id="btn-validation" class="btn btn-custom-white check-btn-style disable-group">Check</button>
+				<button id="btn-menu" class="btn btn-custom-white icon-btn-style" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
 				
-				<button id="btn-undo" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-backspace-fill"></i></button>
-				<button id="btn-redo" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-backspace-reverse"></i></button>
-				<button id="btn-rules" class="btn btn-custom-white btn-square " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
-				<button id="btn-clear" class="btn btn-custom-white btn-clear disable-group"><i class="bi bi-trash"></i></button>
+				<button id="btn-undo" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-backspace-fill"></i></button>
+				<button id="btn-redo" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-backspace-reverse"></i></button>
+				<button id="btn-rules" class="btn btn-custom-white icon-btn-style " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
+				<button id="btn-clear" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-trash"></i></button>
 				<div id="number-block" class="grid-b normal">
-					<button id="btn-one"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos1">1</span></button>
-					<button id="btn-two"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos2">2</span></button>
-					<button id="btn-three" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos3">3</span></button>
-					<button id="btn-four"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos4">4</span></button>
-					<button id="btn-five"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos5">5</span></button>
-					<button id="btn-six"   class="btn btn-custom-white btn-number disable-group"><span class="cornerPos6">6</span></button>
-					<button id="btn-seven" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos7">7</span></button>
-					<button id="btn-eight" class="btn btn-custom-white btn-number disable-group"><span class="cornerPos8">8</span></button>
-					<button id="btn-nine"  class="btn btn-custom-white btn-number disable-group"><span class="cornerPos9">9</span></button>
+					<button id="btn-one"   class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos1">1</span></button>
+					<button id="btn-two"   class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos2">2</span></button>
+					<button id="btn-three" class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos3">3</span></button>
+					<button id="btn-four"  class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos4">4</span></button>
+					<button id="btn-five"  class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos5">5</span></button>
+					<button id="btn-six"   class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos6">6</span></button>
+					<button id="btn-seven" class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos7">7</span></button>
+					<button id="btn-eight" class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos8">8</span></button>
+					<button id="btn-nine"  class="btn btn-custom-white number-btn-style disable-group"><span class="cornerPos9">9</span></button>
 				</div>
 				<div id="gap-row1"></div>
 				<div id="gap-row2"></div>
 				<div id="gap-col1"></div>
 				<div id="gap-col2"></div>
-				<button id="btn-numberMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-pencil-square"></i></button>
-				<button id="btn-topMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-arrow-up-left-square"></i></button>
-				<button id="btn-centerMode" class="btn btn-custom-white btn-square disable-group"><i class="bi bi-dash-square"></i></button>
-				<button id="btn-colorMode" class="btn btn-custom-white btn-square disable-group">
+				<button id="btn-numberMode" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-pencil-square"></i></button>
+				<button id="btn-topMode" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-arrow-up-left-square"></i></button>
+				<button id="btn-centerMode" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-dash-square"></i></button>
+				<button id="btn-colorMode" class="btn btn-custom-white icon-btn-style disable-group">
 					<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon"/>
 				</button>
 			</div>
@@ -85,6 +86,8 @@
 {% include "sudoku/game/game_modal_validation.html" %}
 {% include "sudoku/game/game_modal_completion.html" %}
 {% include "sudoku/game/game_modal_explanation.html" %}
+{% include "sudoku/game/game_modal_settings.html" %}
+
 
 {% endblock %}
 
@@ -92,6 +95,10 @@
 <script>window.puzzle_data={{puzzle_data_json | safe}};</script>
 <script type="module" src="{% static 'sudoku/js/game/game.js' %}"></script>
 <script>
+	document.getElementById("gameSettingsModal").addEventListener("shown.bs.modal", () => {
+		setupThemeMenu();  // oder this.setupThemeMenu()
+	});
+	
 	function updateControlContainerGrid() {
 		const container = document.querySelector(".control-container");
 		if (!container) return;
@@ -101,9 +108,9 @@
 		const border = 16;             // 1rem = 16px
 		const gap = 16;                // 1rem
 		const aspectRatios = {
-			"grid-a-Y": 300 / 540,
-			"grid-a-X": 384 / 304,
-			"grid-a-superX": 440 / 192,
+			"grid-a-Y": 429 / 772,
+			"grid-a-X": 599 / 492,
+			"grid-a-superX": 541 / 198,
 		};
 		const vw = window.innerWidth;
 		const vh = window.innerHeight;
@@ -178,33 +185,40 @@
 		const scaleBaseGrid = {
 			"grid-a-Y": 300,
 			"grid-a-X": 500,
-			
 			"grid-a-superX": 500,
 		};
 		const scaleBase = scaleBaseGrid[layout] || 300;  // fallback to 300 if layout unknown
 		const scaleFactor = width / scaleBase;
-		const fontSize = Math.max(0.8, Math.min(3.0, 1.4 * scaleFactor)); // clamp between 0.8rem and 3.0rem
-		const infoSize = fontSize * 0.5;
+		const fontSizeSlider = document.getElementById("fontsize-range");
+		const fontSizeFactor = fontSizeSlider ? parseFloat(fontSizeSlider.value) : 1.0;
+		const fontSize = Math.max(0.8, Math.min(4.0, 2.0 * scaleFactor * fontSizeFactor)) ; // clamp between 0.8rem and 3.0rem
 		
-		container.querySelectorAll(".btn").forEach(btn => {
-			btn.style.fontSize = `${fontSize}rem`;
-		});
+		const infoSize = fontSize * 0.4;
+		const btnNumberSize = fontSize * 1.0;
+		const btnCheckSize = fontSize * 0.5;
+		const btnIconSize = fontSize * 1.0;
+		const imageSize = Math.round(16 * fontSize);
+		
+		container.querySelector(".info-style").style.fontSize = `${infoSize}rem`;
+		container.querySelectorAll(".number-btn-style").forEach(btn => {btn.style.fontSize = `${btnNumberSize}rem`;});
+		container.querySelector(".check-btn-style").style.fontSize = `${btnCheckSize}rem`;
+		container.querySelectorAll(".icon-btn-style").forEach(btn => {btn.style.fontSize = `${btnIconSize}rem`;});
 
-		const imageSize = Math.round(20 * scaleFactor); // proportional image size
 		const colorBtnImg = document.querySelector("#btn-colorMode img");
 		if (colorBtnImg) {
 			colorBtnImg.style.width = `${imageSize}px`;
 			colorBtnImg.style.height = `${imageSize}px`;
 		}
 		
-		container.querySelectorAll(".text-custom-white").forEach(t => {
-			t.style.fontSize = `${infoSize}rem`;
-		});
 	}
 
 	// Execute after full load (including fonts/images/layout)
 	window.addEventListener("load", updateControlContainerGrid);
 	window.addEventListener("resize", updateControlContainerGrid);
+	const fontSizeSlider = document.getElementById("fontsize-range");
+	if (fontSizeSlider) {
+	    fontSizeSlider.addEventListener("input", updateControlContainerGrid);
+	}
 
 </script>
 {% endblock %}

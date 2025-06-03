@@ -18,9 +18,9 @@ html, body {
 }
 
 
-.btn-clear,
-.btn-square,
-.btn-number {
+.icon-btn-style,
+.number-btn-style,
+.check-btn-style{
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -28,21 +28,12 @@ html, body {
 	min-height: 0;
 	width: 100%;
 	aspect-ratio: 1 / 1;
+	font-size: 1rem;
 }
-.btn-number { position: relative; }
-.btn-validate {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 0;
-	min-height: 0;
-	width: 100%;
-}
-.btn-validate span{ font-size: 0.6em;}
 
-.board-pane {
-	position: relative; /* Wichtig für absolute Positionierung der Kinder */
-}
+.number-btn-style {position: relative;}
+
+.board-pane {position: relative;}
 
 .timer-container {
 	position: absolute;
@@ -105,21 +96,19 @@ html, body {
 }
 
 .grid-a-superX {
-	grid-template-columns: repeat(4, 1fr) .5rem repeat(5, 1fr);
-	grid-template-rows: .5fr .5fr repeat(2, 1fr);
+	grid-template-columns: repeat(4, 1fr) .3rem repeat(3, 1fr) .3rem 1fr;
+	grid-template-rows: repeat(3, 1fr);
 	grid-template-areas:
-		"name 	 name 	 name    name    col1  NB  NB  NB  NB  check"
-		"creator creator creator creator col1  NB  NB  NB  NB  check"
-		"undo    redo    rules   clear   col1  NB  NB  NB  NB  menu"
-		"number  top     center  color   col1  NB  NB  NB  NB  gear";
+		"info 	 info	 info	 info 	 col1  NB  NB  NB  col2  menu"
+		"undo    redo    rules   clear   col1  NB  NB  NB  col2  check"
+		"number  top     center  color   col1  NB  NB  NB  col2  .";
 }
 
 .grid-a-X {
 	grid-template-columns: repeat(4, 1fr) .5rem 1fr 1fr;
-	grid-template-rows:  .5fr .5fr repeat(4, 1fr);
+	grid-template-rows:  repeat(5, 1fr);
 	grid-template-areas:
-		"name 	 name 	 name 	 name 	 col1  gear    menu"
-		"creator creator creator creator col1  check   check"
+		"info 	 info	 info	 info 	 col1  check   menu"
 		"NB   	 NB   	 NB 	 NB   	 col1  number  rules"
 		"NB   	 NB   	 NB 	 NB   	 col1  top     undo"
 		"NB   	 NB   	 NB 	 NB   	 col1  center  redo"
@@ -128,10 +117,9 @@ html, body {
 
 .grid-a-Y {
 	 	grid-template-columns: repeat(4, 1fr);
-	grid-template-rows: .5fr .5fr 1fr .5rem repeat(4, 1fr) .5rem 1fr;
+	grid-template-rows: 1fr 1fr .2rem repeat(4, 1fr) .2rem 1fr;
 	grid-template-areas:
-		"name 	 name    gear    menu"
-		"creator creator check   check"
+		"info 	 info	 check   menu"
 		"undo    redo    rules   clear"
 		"row1    row1    row1    row1"
 		"NB      NB      NB      NB"
@@ -223,7 +211,13 @@ html, body {
 	}
 }
 
-#number-block {
+.grid-a-superX #number-block {
+	position:relative;
+	grid-area: NB;
+	height: 100%;
+}
+.grid-a-X #number-block,
+.grid-a-Y #number-block {
 	position:relative;
 	grid-area: NB;
 	grid-row: span 4;
@@ -275,11 +269,9 @@ html, body {
 .grid-a-superX #gap-row2,
 .grid-a-superX #gap-col2 {display: none;}
 
-#game-name { grid-area: name; font-size: 1rem; color: black; overflow: hidden;}
-#game-creator { grid-area: creator; font-size: 1rem; color: black; overflow: hidden;}
-#btn-gear { grid-area: gear; }
-#btn-menu { grid-area: menu; }
-#validate-btn { grid-area: check; }
+#game-info { grid-area: info; font-size: 1.3rem;  color: black; overflow: hidden;}
+
+#btn-validation { grid-area: check; }
 
 #gap-row1{
 	grid-area: row1;
@@ -335,7 +327,7 @@ html, body {
 #btn-colorMode { grid-area: color; }
 #btn-colorMode img {width: 20px; height: 20px;}
 
-#btn-numberMode { grid-area: number; }
+#number-btn-styleMode { grid-area: number; }
 
 #btn-topMode { grid-area: top; }
 
@@ -358,22 +350,6 @@ html, body {
 	border-color: #86b7fe;
 	outline: 0;
 	box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
-}
-.text-custom-white {
-	color: #212529;
-	background-color: #fff;
-	border-left: 1px solid #dee2e6;
-	border-bottom: 1px solid #dee2e6;
-	border-bottom-left-radius: var(--bs-border-radius);
-	box-shadow: none;
-	display: flex;
-	align-items: center;
-	min-width: 0;
-	min-height: 0;
-	width: 100%;
-	vertical-align: center;
-	padding-left: 1rem;
-	padding-right: 1rem;
 }
 
 /* Standardfarben mit 0.5 Alpha */
@@ -496,6 +472,8 @@ html, body {
 	justify-content: space-between;
 	align-items: center;
 	margin-top: 1rem;
+	margin-left: 2rem;
+	margin-right: 2rem;
 }
 
 .gear-description-wrapper .form-group-row label {
@@ -589,35 +567,41 @@ html, body {
 	z-index: 1;
 }
 
+#help-button { left: 4px; }
+#gear-button { right: 4px; }
 
-#help-button {
+#help-button,
+#gear-button {
 	position: absolute;
 	top: 4px;
 	right: 4px;
 	z-index: 10;
-
+	
 	background: none;
 	border: none;
 	padding: 0;
 	margin: 0;
-
+	
 	width: 30px;
 	height: 30px;
-
+	
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
+	
 	cursor: pointer;
 }
 
-#help-button i {
+
+#help-button i,
+#gear-button i {
 	color: black;
 	font-size: 1.2rem;
 	transition: color 0.2s ease-in-out;
 }
 
-#help-button:hover i {
+#help-button:hover i,
+#gear-button:hover i {
 	color: #0d6efd; /* Bootstrap blue */
 }
 
