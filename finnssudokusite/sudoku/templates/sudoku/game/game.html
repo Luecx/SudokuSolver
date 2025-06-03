@@ -70,7 +70,7 @@
 		{% include "sudoku/game/game_offcanvas_menu.html" %}
 
 		<!-- Gear Canvas -->
-		{% include "sudoku/game/game_offcanvas_settings.html" %}
+		{% include "sudoku/game/game_modal_settings.html" %}
 
 		<!-- Rules Canvas -->
 		{% include "sudoku/game/game_offcanvas_rules.html" %}
@@ -178,6 +178,7 @@
 		const scaleBaseGrid = {
 			"grid-a-Y": 300,
 			"grid-a-X": 500,
+			
 			"grid-a-superX": 500,
 		};
 		const scaleBase = scaleBaseGrid[layout] || 300;  // fallback to 300 if layout unknown
