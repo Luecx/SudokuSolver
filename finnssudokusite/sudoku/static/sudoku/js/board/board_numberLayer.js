@@ -283,7 +283,7 @@ export class BoardNumberLayer {
     }
 
     updateBackground(cell) {
-        if (!cell.element || cell.value) return;
+        if (!cell.element) return;
         cell.element.style.background = this.computeBackground(cell.colors);
         cell.element.classList.toggle("multi-color-background", cell.colors.length > 1);
     }
