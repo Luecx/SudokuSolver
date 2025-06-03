@@ -575,7 +575,7 @@ html, body {
 	position: absolute;
 	top: -0.6rem;
 	left: -0.6rem;
-	background-color: #0d6efd; /* Bootstrap primary */
+	background-color: #0d6efd !important;
 	color: white;
 	border-radius: 50%;
 	width: 1.8rem;

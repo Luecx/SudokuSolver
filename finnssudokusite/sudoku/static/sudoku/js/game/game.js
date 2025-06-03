@@ -308,18 +308,41 @@ export class Game {
         if (!startButton) throw new Error("Start button element not found");
 
         const completionMsg = this.state.completed_before
-            ? "Dieses Sudoku wurde bereits abgeschlossen. Ein weiteres Lösen wird nicht erneut gezählt."
-            : "Dies ist dein erster Versuch dieses Sudokus. Viel Erfolg!";
+            ? "This Sudoku has already been completed. Solving it again will not be counted."
+            : "This is your first attempt at this Sudoku. Good luck!";
 
         const resumeMsg = this.state.resumed
-            ? "Ein gespeicherter Zustand wurde gefunden. Du kannst jetzt weiterspielen."
-            : "Es wurde kein gespeicherter Zustand gefunden. Du beginnst von vorne.";
+            ? "A saved game state was found. You can continue playing."
+            : "No saved state was found. You'll start from the beginning.";
+
+        // Create the initial content
+        const messageHTML = `
+        <div class="text-center">
+            <p class="mb-3">${completionMsg}</p>
+            <hr class="my-3" style="border: none; border-top: 1px solid #dee2e6;" />
+            <p class="mt-3">${resumeMsg}</p>
+        </div>
+    `;
+
+        // Generate HTML for all enabled rule handlers
+        const ruleHandlers = this.board.getAllHandlers().filter(h => h.enabled);
+        const rulesHTML = ruleHandlers.map((handler, index) => {
+            const html = handler.getDescriptionPlayHTML();
+            if (!html) return "";
+            return `
+            <div class="rule-description d-flex align-items-start mb-3">
+                <div class="rule-badge bg-light rounded-circle fw-bold text-center me-3" style="width: 2rem;">${index + 1}</div>
+                <div>${html}</div>
+            </div>
+        `;
+        }).join("");
 
         messageBox.innerHTML = `
-            <div class="text-center">
-                <p class="mb-3">${completionMsg}</p>
-                <hr class="my-3" style="border: none; border-top: 1px solid #dee2e6;" />
-                <p class="mt-3">${resumeMsg}</p>
+            ${messageHTML}
+            <hr class="my-3" style="border: none; border-top: 1px solid #dee2e6;" />
+            <div>
+                <h5 class="text-center mb-3">Active Rules</h5>
+                ${rulesHTML || "<p class='text-muted text-center'>No special rules are active.</p>"}
             </div>
         `;
 
@@ -332,6 +355,7 @@ export class Game {
             modal.show();
         });
     }
+
 
     renderStarRatingHTML() {
         const stars         = [];
