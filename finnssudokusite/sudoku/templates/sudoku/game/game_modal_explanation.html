@@ -1,0 +1,166 @@
+{% load static %}
+
+
+<div class="modal fade" id="howToPlayModal" tabindex="-1" aria-labelledby="howToPlayLabel" aria-hidden="true">
+	<div class="modal-dialog modal-xl modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="howToPlayLabel">How to Play</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+
+
+				<!-- Section 1: Rules -->
+				<div class="row align-items-center mb-4">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img.png' %}" alt="Info Button" class="img-fluid" style="width: 75%;" />
+					</div>
+					<div class="col-md-8">
+						<h5>Rules and Puzzle Description</h5>
+						<p>Click the <strong>info button</strong> <i class="bi bi-info-lg"></i> to view the puzzle-specific rules. A modal will appear showing all rules with visual examples and clear explanations. Make sure to review the rules before you begin solving!</p>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 2: Number Buttons (moved forward) -->
+				<div class="row align-items-center mb-4 flex-md-row-reverse">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img_6.png' %}" alt="Number Buttons" class="img-fluid" style="width: 70%;" />
+					</div>
+					<div class="col-md-8">
+						<h5>Number Buttons</h5>
+						<p>The number buttons <strong>1 to 9</strong> are used to input values into the selected cell based on your current input mode:</p>
+						<ul>
+							<li>Normal mode: Sets the final number in the cell.</li>
+							<li>Corner or center mode: Adds or removes candidate digits.</li>
+							<li>Color mode: Applies color to the number or cell depending on your setup.</li>
+						</ul>
+						<p>You can also use your keyboard's number keys to perform these same actions.</p>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 3: Check Button -->
+				<div class="row align-items-center mb-4">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img_5.png' %}" alt="Check Button" class="img-fluid" />
+					</div>
+					<div class="col-md-8">
+						<h5>Check Button</h5>
+						<p>The <strong>Check</strong> button allows you to verify your current solution. Be careful—using this may reduce your score in the leaderboard. Use it only when necessary to validate your progress.</p>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 4: Input Modes -->
+				<div class="row align-items-center mb-4 flex-md-row-reverse">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img_2.png' %}" alt="Input Modes" class="img-fluid" />
+					</div>
+					<div class="col-md-8">
+						<h5>Input Modes</h5>
+						<p>Use the four buttons below the number pad to change your input mode:</p>
+						<ul>
+							<li><i class="bi bi-pencil-square"></i> <strong>Normal Mode</strong>: Enter a final number.</li>
+							<li><i class="bi bi-arrow-up-left-square"></i> <strong>Corner Candidates</strong>: Add small pencil marks in corners for possibilities.</li>
+							<li><i class="bi bi-dash-square"></i> <strong>Centered Candidates</strong>: Use centered notes for more prominent candidates.</li>
+							<li><img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Color Mode Icon" style="height: 1em;"> <strong>Color Mode</strong>: Highlight cells with colored backgrounds to group logic ideas visually.</li>
+						</ul>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 5: Keyboard Controls -->
+				<div class="row align-items-center mb-4">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/keyboard2.png' %}" alt="Keyboard" class="img-fluid" />
+					</div>
+					<div class="col-md-8">
+						<h5>Keyboard Controls</h5>
+						<p>For faster solving, use these keyboard shortcuts:</p>
+						<ul>
+							<li><kbd>1</kbd>–<kbd>9</kbd>: Fill the active cell with that number.</li>
+							<li><kbd>Backspace</kbd>: Clear the selected cell.</li>
+							<li><kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd>: Move the selected region using arrow keys.</li>
+							<li><kbd>Ctrl</kbd> (hold): Enter <strong>centered candidates</strong> mode temporarily.</li>
+							<li><kbd>Alt</kbd> (hold): Enter <strong>corner candidates</strong> mode temporarily.</li>
+							<li><kbd>Space</kbd>: Cycle through input modes.</li>
+							<li>Release <kbd>Ctrl</kbd> or <kbd>Alt</kbd> to return to your previous input mode.</li>
+						</ul>
+						<p>These shortcuts are especially useful for advanced solvers and laptop users.</p>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 6: Settings Gear -->
+				<div class="row align-items-center mb-4 flex-md-row-reverse">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img_3.png' %}" alt="Settings Gear" class="img-fluid" style="width: 50%;" />
+					</div>
+					<div class="col-md-8">
+						<h5>Settings Panel</h5>
+						<p>Click the <strong>gear icon</strong> <i class="bi bi-gear"></i> to access the settings:</p>
+						<ul>
+							<li><strong>Theme</strong>: Change the visual background style of the board.</li>
+							<li><strong>Transparency</strong>: Adjust the opacity of the control pane.</li>
+							<li><strong>Highlights</strong>: Toggle visual highlights for:
+								<ul>
+									<li>Row, column, and block of the selected cell</li>
+									<li>Same numbers</li>
+									<li>Candidate digits</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 7: Menu Icon -->
+				<div class="row align-items-center mb-4">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img_1.png' %}" alt="Menu Icon" class="img-fluid" style="width: 60%;" />
+					</div>
+					<div class="col-md-8">
+						<h5>Menu Icon</h5>
+						<p>The <strong>menu icon</strong> <i class="bi bi-list"></i> allows you to return to the main menu at any time.</p>
+						<p>You can safely leave the puzzle and come back later. Your progress is saved automatically:</p>
+						<ul>
+							<li><strong>Logged in</strong>: Your progress is saved on the server.</li>
+							<li><strong>Not logged in</strong>: Your progress is stored locally in your browser.</li>
+						</ul>
+						<p>When you return, the puzzle will load exactly where you left off.</p>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<!-- Section 8: Undo / Redo / Clear -->
+				<div class="row align-items-center mb-4 flex-md-row-reverse">
+					<div class="col-md-4 text-center">
+						<img src="{% static 'sudoku/img/game_explanation/img_4.png' %}" alt="Undo Redo Clear" class="img-fluid" />
+					</div>
+					<div class="col-md-8">
+						<h5>Undo, Redo, and Clear</h5>
+						<ul>
+							<li><i class="bi bi-backspace-fill"></i> <strong>Undo</strong>: Reverts your last input or change.</li>
+							<li><i class="bi bi-backspace-reverse"></i> <strong>Redo</strong>: Reapplies an undone move.</li>
+							<li><i class="bi bi-trash"></i> <strong>Clear</strong>: Deletes all entries from the board (you’ll be asked to confirm).</li>
+						</ul>
+						<p>These actions help you experiment freely, knowing you can revert or reset anytime.</p>
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

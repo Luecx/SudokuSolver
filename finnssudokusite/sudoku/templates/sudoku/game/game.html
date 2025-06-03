@@ -70,14 +70,23 @@
 
 		<!-- Rules Canvas -->
 		{% include "sudoku/game/game_offcanvas_rules.html" %}
+
+
+		<button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
+			<i class="bi bi-question-circle"></i> How to Play
+		</button>
+
 	</div>
+
 </div>
+
 
 <!-- Playinfo Modal -->
 
 {% include "sudoku/game/game_modal_start.html" %}
 {% include "sudoku/game/game_modal_validation.html" %}
 {% include "sudoku/game/game_modal_completion.html" %}
+{% include "sudoku/game/game_modal_explanation.html" %}
 
 {% endblock %}
 
