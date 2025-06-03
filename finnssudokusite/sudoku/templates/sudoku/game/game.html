@@ -17,7 +17,11 @@
 <div class="fullwindow">
 	<div class="grid-container">
 		<div class="board-pane my_board_style">
-			<div class="board-container"></div>
+			<div class="board-container">
+				<button id="help-button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
+					<i class="bi bi-question-circle"></i>
+				</button>
+			</div>
 			<div class="timer-container">
 				<div class="timer" id="timer">00:00:00</div>
 			</div>
@@ -70,12 +74,6 @@
 
 		<!-- Rules Canvas -->
 		{% include "sudoku/game/game_offcanvas_rules.html" %}
-
-
-		<button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
-			<i class="bi bi-question-circle"></i> How to Play
-		</button>
-
 	</div>
 
 </div>
