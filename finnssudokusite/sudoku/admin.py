@@ -15,12 +15,3 @@ class CachedLeaderboardEntryAdmin(admin.ModelAdmin):
         self.message_user(request, "Leaderboard has been recomputed.", level=messages.SUCCESS)
 
     recompute_leaderboard.short_description = "Recompute full leaderboard"
-
-    def run_migrate(self, request, queryset):
-        try:
-            call_command("migrate", verbosity=1, interactive=False)
-            self.message_user(request, "Database migrations applied successfully.", level=messages.SUCCESS)
-        except Exception as e:
-            self.message_user(request, f"Migration failed: {str(e)}", level=messages.ERROR)
-
-    run_migrate.short_description = "Apply pending database migrations"
