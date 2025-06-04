@@ -1,17 +1,26 @@
 # sudoku/admin.py
 
-from django.contrib import admin
-from django.contrib import messages
+from django.contrib import admin, messages
+from django.core.management import call_command
 from .models import CachedLeaderboardEntry
 from .util.leaderboard import update_all_leaderboard_entries
 
 @admin.register(CachedLeaderboardEntry)
 class CachedLeaderboardEntryAdmin(admin.ModelAdmin):
     list_display = ("user", "score", "solved", "updated_at")
-    actions = ["recompute_leaderboard"]
+    actions = ["recompute_leaderboard", "run_migrate"]
 
     def recompute_leaderboard(self, request, queryset):
         update_all_leaderboard_entries()
         self.message_user(request, "Leaderboard has been recomputed.", level=messages.SUCCESS)
 
     recompute_leaderboard.short_description = "Recompute full leaderboard"
+
+    def run_migrate(self, request, queryset):
+        try:
+            call_command("migrate", verbosity=1, interactive=False)
+            self.message_user(request, "Database migrations applied successfully.", level=messages.SUCCESS)
+        except Exception as e:
+            self.message_user(request, f"Migration failed: {str(e)}", level=messages.ERROR)
+
+    run_migrate.short_description = "Apply pending database migrations"
