@@ -20,13 +20,13 @@
     </p>
 
     <div class="text-center mb-3">
-        <p class="text-primary">\[\displaystyle S_{u,s} = w(\Delta_s) \cdot \bar{t}_s \cdot \frac{\bar{t}_s}{t_{u,s}}\]</p>
+        <p class="text-primary">\[\displaystyle S_{u,s} = \bar{t}_s \cdot \frac{\bar{t}_s}{t_{u,s}}\]</p>
     </div>
 
     <p>
         {% blocktrans %}
-        The reward \( S_{u,s} \) increases when you solve a puzzle faster than the average, when the puzzle is difficult (as measured by solve time),
-        and when the solve is recent.
+        The reward \( S_{u,s} \) increases when you solve a puzzle faster than the average and when the puzzle is difficult (as measured by solve time).
+        This score is computed independently of recency.
         {% endblocktrans %}
     </p>
 
@@ -46,38 +46,64 @@
             <td>\( t_{u,s} \)</td>
             <td>{% trans "Your time to solve puzzle \(s\)" %}</td>
         </tr>
-        <tr>
-            <td>\( \Delta_s \)</td>
-            <td>{% trans "Days since you solved puzzle \(s\)" %}</td>
-        </tr>
-        <tr>
-            <td>\( w(\Delta_s) \)</td>
-            <td>{% trans "Recency weight: newer solves are more valuable" %}</td>
-        </tr>
         </tbody>
     </table>
 
-    <p>{% trans "The recency weight is given by exponential decay:" %}</p>
+    <hr class="my-4">
+
+    <h6 class="fw-bold mb-2">{% trans "Recency weight" %}</h6>
+    <p>
+        {% blocktrans %}
+        To value recent solves more highly, each puzzle’s score is assigned a time-based weight:
+        {% endblocktrans %}
+    </p>
     <div class="text-center mb-4">
         <p class="text-primary">\[\displaystyle w(\Delta_s) = \alpha^{\Delta_s} \quad \text{with } \alpha = 0.95\]</p>
     </div>
+
+    <p>
+        {% blocktrans %}
+        Where \( \Delta_s \) is the number of days since the solve. Older solves contribute less over time.
+        {% endblocktrans %}
+    </p>
 
     <hr class="my-4">
 
     <h6 class="fw-bold mb-2">{% trans "User rating" %}</h6>
     <p>
         {% blocktrans %}
-        Your overall rating \( R_u \) is computed as the geometric mean of your per-puzzle rewards \( S_{u,s} \), across all puzzles you’ve solved:
+        Your overall rating \( R_u \) is computed as a <em>weighted geometric mean</em> of your per-puzzle rewards \( S_{u,s} \),
+        using recency weights:
         {% endblocktrans %}
     </p>
 
-    <div class="text-center mb-4">
-        <p class="text-primary">\[\displaystyle R_u = \left( \prod_{s \in S_u} S_{u,s} \right)^{1 / |S_u|}\]</p>
+    <div class="text-center mb-3">
+        <p class="text-primary">\[\displaystyle R_u = \exp\left( \frac{ \sum_{s \in S_u} w(\Delta_s) \cdot \ln(S_{u,s}) }{ \sum_{s \in S_u} w(\Delta_s) } \right)\]</p>
     </div>
 
     <p>
         {% blocktrans %}
-        This balances individual performance and avoids inflation from a few easy or lucky solves.
+        This form ensures stability and avoids excessive numerical divisions by computing the weighted sum of logs before dividing by the total weight.
+        {% endblocktrans %}
+    </p>
+
+    <hr class="my-4">
+
+    <h6 class="fw-bold mb-2">{% trans "Volume weight" %}</h6>
+    <p>
+        {% blocktrans %}
+        To avoid inflation from a single good solve, your final rating is scaled by a <em>volume weight</em> based on how many puzzles you've solved recently:
+        {% endblocktrans %}
+    </p>
+
+    <div class="text-center mb-4">
+        <p class="text-primary">\[\displaystyle V_u = 1 - e^{-\lambda N_u} \quad \text{with } \lambda = 0.2\]</p>
+        <p class="text-primary">\[\displaystyle R'_u = R_u \cdot V_u\]</p>
+    </div>
+
+    <p>
+        {% blocktrans %}
+        This ensures that your rating becomes reliable only with consistent activity and performance.
         {% endblocktrans %}
     </p>
 
@@ -86,31 +112,18 @@
     <h6 class="fw-bold mb-2">{% trans "Leaderboard score" %}</h6>
     <p>
         {% blocktrans %}
-        To compare ratings across players, we normalize all user ratings onto a 0–100 scale.
+        To compare ratings across players, we normalize all adjusted ratings \( R'_u \) onto a 0–100 scale.
         The top player's score is always 100:
         {% endblocktrans %}
     </p>
     <div class="text-center mb-4">
-        <p class="text-primary">\[\displaystyle \text{SPI}_u = 100 \cdot \frac{R_u}{\max\limits_v R_v}\]</p>
+        <p class="text-primary">\[\displaystyle \text{SPI}_u = 100 \cdot \frac{R'_u}{\max\limits_v R'_v}\]</p>
     </div>
 
     <p>
         {% blocktrans %}
         Everyone else is scored proportionally. A strong performance today can lift you up quickly —
-        but you'll have to keep playing to stay on top.
+        but you’ll need consistency to stay on top.
         {% endblocktrans %}
     </p>
-
-    <hr class="my-4">
-
-    <h6 class="fw-bold mb-2">{% trans "Why exponential decay?" %}</h6>
-    <p>
-        {% blocktrans %}
-        To keep the leaderboard dynamic. Recent solves matter more — older ones slowly fade. For instance, with \(\alpha = 0.95\), a solve
-        from 60 days ago counts for less than 5% of its original value:
-        {% endblocktrans %}
-    </p>
-    <div class="text-center mb-4">
-        <p class="text-primary">\[\displaystyle w(60) = 0.95^{60} \approx 0.045\]</p>
-    </div>
 </div>
