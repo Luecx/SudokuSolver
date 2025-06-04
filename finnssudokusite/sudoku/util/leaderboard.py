@@ -11,10 +11,11 @@ This module computes user scores and rankings based on:
 
 import math
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
+from django.utils import timezone
 from django.utils.timezone import make_aware, is_naive
-from ..models import UserSudokuDone
-
+from django.contrib.auth.models import User
+from ..models import UserSudokuDone, CachedLeaderboardEntry
 
 # === Constants === #
 ALPHA = 0.95  # Recency decay base
@@ -151,3 +152,75 @@ def compute_leaderboard_scores():
     now = datetime.now(timezone.utc)
     user_data = collect_weighted_logs(stats, now)
     return build_leaderboard(user_data)
+
+def update_leaderboard_entry(user):
+    """
+    Recomputes and updates a single user's leaderboard score and solve count.
+    """
+    stats = (
+        UserSudokuDone.objects
+        .select_related('sudoku')
+        .filter(user=user, time__gt=0)
+    )
+
+    now = timezone.now()
+    sum_log = 0.0
+    sum_weight = 0.0
+    count = 0
+
+    for stat in stats:
+        score = compute_raw_score(stat)
+        weight = compute_recency_weight(stat, now)
+        if score is None or weight is None or score <= 0:
+            continue
+        sum_log += weight * math.log(score)
+        sum_weight += weight
+        count += 1
+
+    if count == 0:
+        adjusted = 0.0
+    else:
+        R_u = compute_geometric_mean(sum_log, sum_weight)
+        V_u = compute_volume_weight(count)
+        adjusted = R_u * V_u
+
+    CachedLeaderboardEntry.objects.update_or_create(
+        user=user,
+        defaults={
+            "score": adjusted,
+            "solved": count
+        }
+    )
+
+def update_all_leaderboard_entries():
+    now = timezone.now()
+    for user in User.objects.all():
+        stats = UserSudokuDone.objects.select_related("sudoku").filter(user=user, time__gt=0)
+
+        sum_log = 0.0
+        sum_weight = 0.0
+        count = 0
+
+        for stat in stats:
+            score = compute_raw_score(stat)
+            weight = compute_recency_weight(stat, now)
+            if score is None or weight is None or score <= 0:
+                continue
+            sum_log += weight * math.log(score)
+            sum_weight += weight
+            count += 1
+
+        if count == 0:
+            final_score = 0.0
+        else:
+            R_u = compute_geometric_mean(sum_log, sum_weight)
+            V_u = compute_volume_weight(count)
+            final_score = R_u * V_u
+
+        CachedLeaderboardEntry.objects.update_or_create(
+            user=user,
+            defaults={
+                "score": final_score,
+                "solved": count
+            }
+        )

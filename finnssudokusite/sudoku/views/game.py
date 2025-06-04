@@ -26,6 +26,7 @@ Responses use JSON:
 
 import zlib
 import json
+import traceback
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
@@ -34,7 +35,7 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 
 from ..models import Sudoku, UserSudokuDone, UserSudokuOngoing
-
+from ..util.leaderboard import update_leaderboard_entry  # adjust path as needed
 
 def game(request):
     """
@@ -191,7 +192,12 @@ def mark_sudoku_completed(request):
         sudoku.save()
 
         UserSudokuOngoing.objects.filter(user=request.user, sudoku=sudoku).delete()
-
+        try:
+            update_leaderboard_entry(request.user)
+        except Exception as e:
+            print("ERROR during mark_sudoku_completed:")
+            traceback.print_exc()
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
         return JsonResponse({"status": "success", "message": "Puzzle marked as completed"})
 
     except Exception as e:

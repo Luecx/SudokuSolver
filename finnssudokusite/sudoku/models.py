@@ -120,3 +120,16 @@ class UserSudokuOngoing(AbstractUserSudoku):
     def __str__(self):
         return f"Ongoing: {self.sudoku} by {self.user}"
 
+
+class CachedLeaderboardEntry(models.Model):
+    """
+    Precomputed leaderboard score and rank for each user.
+    Updated periodically (e.g., every 2 minutes).
+    """
+    user   = models.OneToOneField(User, on_delete=models.CASCADE, related_name="leaderboard_cache")
+    score  = models.FloatField()
+    solved = models.PositiveIntegerField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.score:.2f} pts)"

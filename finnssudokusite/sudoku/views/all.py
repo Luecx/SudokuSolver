@@ -71,15 +71,6 @@ def puzzles_view(request):
         "all_tags": all_tags,
     })
 
-
-def leaderboard(request):
-    leaderboard_data = compute_leaderboard_scores()
-    for entry in leaderboard_data:
-        entry["user"] = User.objects.get(username=entry["user"])
-
-    return render(request, "sudoku/leaderboard/leaderboard.html", {"leaderboard": leaderboard_data})
-
-
 def creator(request):
     return render(request, "sudoku/creator/creator.html")
 
