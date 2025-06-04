@@ -27,19 +27,19 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleXV>(this);
             } else if (type == "Chevron") {
                 handler = std::make_shared<RuleChevron>(this);
-            } else if (type == "Extra Regions") {
+            } else if (type == "Extra Regions" || type == "Extra-Regions") {
                 handler = std::make_shared<RuleExtraRegions>(this);
             } else if (type == "Killer" || type == "Custom Sum") {
                 handler = std::make_shared<RuleKiller>(this);
             } else if (type == "Clone") {
                 handler = std::make_shared<RuleClone>(this);
-            } else if (type == "Irregular Regions") {
+            } else if (type == "Irregular Regions" || type == "Irregular-Regions") {
                 handler = std::make_shared<RuleIrregular>(this);
             } else if (type == "Magic Square") {
                 handler = std::make_shared<RuleMagic>(this);
             } else if (type == "Palindrome") {
                 handler = std::make_shared<RulePalindrome>(this);
-            } else if (type == "Thermo") {
+            } else if (type == "Thermo" || type == "Thermos") {
                 handler = std::make_shared<RuleThermo>(this);
             } else if (type == "Parity") {
                 handler = std::make_shared<RuleParity>(this);
