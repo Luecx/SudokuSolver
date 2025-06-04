@@ -65,6 +65,8 @@ html, body {
 	--min-spaceX: 250px;
 	--min-spaceY: 200px;
 	--menu-height: 0px;
+	--grid-container-gap: 2vw;
+	--border: 1.5vw;
 }
 
 .grid-b {
@@ -99,7 +101,7 @@ html, body {
 	grid-template-rows: repeat(3, 1fr);
 	grid-template-areas:
 		"info 	 info	 info	 info 	 col1  NB  NB  NB  col2  menu"
-		"undo    redo    rules   clear   col1  NB  NB  NB  col2  check"
+		"undo    redo    clear   rules   col1  NB  NB  NB  col2  check"
 		"number  top     center  color   col1  NB  NB  NB  col2  .";
 }
 
@@ -119,7 +121,7 @@ html, body {
 	grid-template-rows: 1fr 1fr .2rem repeat(4, 1fr) .2rem 1fr;
 	grid-template-areas:
 		"info 	 info	 check   menu"
-		"undo    redo    rules   clear"
+		"undo    redo    clear   rules"
 		"row1    row1    row1    row1"
 		"NB      NB      NB      NB"
 		"NB      NB      NB      NB"
@@ -133,9 +135,6 @@ html, body {
 @media (min-aspect-ratio: 1/1) {  /* Landscape */
 	
 	.grid-container {  /* Landscape */
-		--grid-container-gap: 1rem;
-		--border: 1rem;
-		
 		display: flex;
 		flex-direction: row;
 		align-items: flex-start;
@@ -178,9 +177,6 @@ html, body {
 @media (max-aspect-ratio: 1/1) {/* Portrait */
 	
 	.grid-container { /* Portrait */
-		--grid-container-gap: 5px;
-		--border: .6rem;
-		
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -576,16 +572,15 @@ html, body {
 	z-index: 1;
 }
 
-#board-helpButton { left: 4px; }
+#board-helpButton { right: calc(4px + 1.6rem); }
 #board-gearButton { right: 4px; }
-#board-rulesButton { left: calc(4px + 1.6rem);}
+#board-rulesButton { }
 
 #board-helpButton,
 #board-gearButton,
 #board-rulesButton{
 	position: absolute;
 	top: 4px;
-	right: 4px;
 	z-index: 10;
 	
 	background: none;

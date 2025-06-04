@@ -24,9 +24,9 @@
 				<button id="board-gearButton" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#gameSettingsModal">
 					<i class="bi bi-gear"></i>
 				</button>
-				<button id="board-rulesButton" class="btn btn-light btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules">
+				<!--<button id="board-rulesButton" class="btn btn-light btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules">
 					<i class="bi bi-info-circle"></i>
-				</button>
+				</button>-->
 			</div>
 			<div class="timer-container">
 				<div class="timer" id="timer">00:00:00</div>
@@ -35,8 +35,6 @@
 		
 		<div class="keypad-pane my_control_style">
 			<div class="control-container">
-				<!--<div class="block-part" data-block="top"></div><div class="block-part keypad-pane-middle-content my_control_style justify-content-start" data-block="middle"><div class="grid-right">-->
-				
 				<div id="game-info" class="info-style">{{ page_title|default:"Unnamed Puzzle" }}<br><span style="color: #343a40">by {{ creator_name|default:"Unknown" }}</span></div>
 				<button id="btn-validation" class="btn btn-custom-white check-btn-style disable-group">Check</button>
 				<button id="btn-menu" class="btn btn-custom-white icon-btn-style" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
@@ -99,14 +97,19 @@
 		setupThemeMenu();  // oder this.setupThemeMenu()
 	});
 	
+	// CHECK Touch-Screen
+	const isTouchScreen =
+		'ontouchstart' in window ||
+		navigator.maxTouchPoints > 0 ||
+		navigator.msMaxTouchPoints > 0;
+	
+	
 	function updateControlContainerGrid() {
 		const container = document.querySelector(".control-container");
 		if (!container) return;
 
 		// Layout constants
 		const menuHeight = 0;          // px
-		const border = 16;             // 1rem = 16px
-		const gap = 16;                // 1rem
 		const aspectRatios = {
 			"grid-a-Y": 429 / 772,
 			"grid-a-X": 599 / 492,
@@ -114,6 +117,9 @@
 		};
 		const vw = window.innerWidth;
 		const vh = window.innerHeight;
+		const gap = 2 / 100 * vw;
+		const border = 1.5 / 100 * vw;
+		
 		let layout = "";
 		let width, height;
 		
@@ -126,8 +132,9 @@
 			const availableHeight = vh - menuHeight - 2 * border;
 			const availableRightPane = vw - availableHeight - gap;
 			const ratio = availableRightPane / availableHeight;
-
-			layout = ratio < 1 ? "grid-a-Y" : "grid-a-X";
+			
+			if (isTouchScreen) { layout = ratio < 1 ? "grid-a-Y" : "grid-a-X";}
+			else {layout = "grid-a-Y";}
 
 			container.classList.add(layout);
 
