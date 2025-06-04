@@ -18,11 +18,14 @@
 	<div class="grid-container">
 		<div class="board-pane my_board_style">
 			<div class="board-container">
-				<button id="help-button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
+				<button id="board-helpButton" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
 					<i class="bi bi-question-circle"></i>
 				</button>
-				<button id="gear-button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#gameSettingsModal">
+				<button id="board-gearButton" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#gameSettingsModal">
 					<i class="bi bi-gear"></i>
+				</button>
+				<button id="board-rulesButton" class="btn btn-light btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules">
+					<i class="bi bi-info-circle"></i>
 				</button>
 			</div>
 			<div class="timer-container">
@@ -69,9 +72,6 @@
 		
 		<!-- Menu Canvas -->
 		{% include "sudoku/game/game_offcanvas_menu.html" %}
-
-		<!-- Gear Canvas -->
-		{% include "sudoku/game/game_modal_settings.html" %}
 
 		<!-- Rules Canvas -->
 		{% include "sudoku/game/game_offcanvas_rules.html" %}
@@ -193,7 +193,7 @@
 		const fontSizeFactor = fontSizeSlider ? parseFloat(fontSizeSlider.value) : 1.0;
 		const fontSize = Math.max(0.8, Math.min(4.0, 2.0 * scaleFactor * fontSizeFactor)) ; // clamp between 0.8rem and 3.0rem
 		
-		const infoSize = fontSize * 0.4;
+		const infoSize = Math.max(0.8, Math.min(4.0, scaleFactor ));
 		const btnNumberSize = fontSize * 1.0;
 		const btnCheckSize = fontSize * 0.5;
 		const btnIconSize = fontSize * 1.0;
