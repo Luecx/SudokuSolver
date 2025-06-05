@@ -3,9 +3,9 @@
 <div class="modal-body px-4 py-3">
     <p>
         {% blocktrans %}
-        The leaderboard uses the
+        The leaderboard now uses the
         <strong>Sudoku Power Index (SPI)</strong> — a score from 0 to 100 that rewards
-        <em>fast</em> solves on <em>difficult</em> puzzles and consistent performance across recent games.
+        <em>fast</em> solves on <em>difficult</em> puzzles and consistent performance as you complete more puzzles.
         {% endblocktrans %}
     </p>
 
@@ -49,20 +49,23 @@
 
     <hr class="my-4">
 
-    <h6 class="fw-bold mb-2">{% trans "User rating" %}</h6>
+    <h6 class="fw-bold mb-2">{% trans "User score" %}</h6>
     <p>
         {% blocktrans %}
-        Your rating \( R_u \) is the average of your scores from the <strong>last 100 puzzles</strong> you've completed:
+        Your score \( R_u \) is now the <strong>sum</strong> of your scores from the
+        <strong>last 100 puzzles</strong> you’ve completed.
+        If you have solved fewer than 100 puzzles, then only those contribute.
+        This design means that building a top score requires completing many puzzles.
         {% endblocktrans %}
     </p>
 
     <div class="text-center mb-3">
-        <p class="text-primary">\[\displaystyle R_u = \frac{1}{N_u} \sum_{s=1}^{N_u} S_{u,s}\]</p>
+        <p class="text-primary">\[\displaystyle R_u = \sum_{s=1}^{N_u} S_{u,s}\]</p>
     </div>
 
     <p>
         {% blocktrans %}
-        This average rewards players who solve puzzles quickly and consistently — only your most recent 100 solves count.
+        This total rewards players for consistent participation over many puzzles.
         {% endblocktrans %}
     </p>
 
@@ -71,7 +74,8 @@
     <h6 class="fw-bold mb-2">{% trans "Leaderboard score" %}</h6>
     <p>
         {% blocktrans %}
-        To compare across players, ratings \( R_u \) are normalized so that the top player always has a score of 100:
+        To compare across players, each score \( R_u \) is normalized so that
+        the top score always corresponds to an SPI of 100:
         {% endblocktrans %}
     </p>
 
