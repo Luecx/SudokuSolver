@@ -8,22 +8,21 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-
 				<!-- Section 1: Rules -->
-				<div class="row align-items-center mb-4">
-					<div class="col-md-4 text-center">
+				<section class="row align-items-center mb-4">
+					<div class="col-md-6 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img.png' %}" alt="Info Button" class="img-fluid" style="width: 75%;" />
 					</div>
-					<div class="col-md-8">
+					<div class="col-md-6">
 						<h4 class="my-4">Rules and Puzzle Description</h4>
 						<p>Click the <strong>info button</strong> <i class="bi bi-info-lg"></i> to view the puzzle-specific rules. A modal will appear showing all rules with visual examples and clear explanations. Make sure to review the rules before you begin solving!</p>
 					</div>
-				</div>
+				</section>
 
 				<hr class="my-4">
 
 				<!-- Section 2: Number Buttons -->
-				<div class="row align-items-center mb-4 flex-md-row-reverse">
+				<section class="row align-items-center mb-4 flex-md-row-reverse">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img_6.png' %}" alt="Number Buttons" class="img-fluid" style="width: 70%;" />
 					</div>
@@ -37,12 +36,12 @@
 						</ul>
 						<p>You can also use your keyboard's number keys to perform these same actions.</p>
 					</div>
-				</div>
+				</section>
 
 				<hr class="my-4">
 
 				<!-- Section 3: Check Button -->
-				<div class="row align-items-center mb-4">
+				<section class="row align-items-center mb-4">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img_5.png' %}" alt="Check Button" class="img-fluid" />
 					</div>
@@ -50,12 +49,12 @@
 						<h4 class="my-4">Check Button</h4>
 						<p>The <strong>Check</strong> button allows you to verify your current solution. Be careful—using this may reduce your score in the leaderboard. Use it only when necessary to validate your progress.</p>
 					</div>
-				</div>
+				</section>
 
 				<hr class="my-4">
 
 				<!-- Section 4: Input Modes -->
-				<div class="row align-items-center mb-4 flex-md-row-reverse">
+				<section class="row align-items-center mb-4 flex-md-row-reverse">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img_2.png' %}" alt="Input Modes" class="img-fluid" />
 					</div>
@@ -67,12 +66,12 @@
 						<p><i class="bi bi-dash-square me-2" style="font-size: 2rem"></i><strong>Centered Candidates</strong>: Use centered notes for more prominent candidates.</p>
 						<p><img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Color Mode Icon" style="height: 2em;" class=" me-2"><strong>Color Mode</strong>: Highlight cells with colored backgrounds to group logic ideas visually.</p>
 					</div>
-				</div>
+				</section>
 				
 				<hr class="my-4">
 				
 				<!-- Section 8: Undo / Redo / Clear -->
-				<div class="row align-items-center mb-4 flex-md-row-reverse">
+				<section class="row align-items-center mb-4 flex-md-row-reverse">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img_4.png' %}" alt="Undo Redo Clear" class="img-fluid" />
 					</div>
@@ -83,11 +82,12 @@
 						<p><i class="bi bi-trash me-2" style="font-size: 2rem"></i><strong>Clear</strong>: Deletes all entries from the board (you’ll be asked to confirm).</p>
 						<p>These actions help you experiment freely, knowing you can revert or reset anytime.</p>
 					</div>
-				</div>
+				</section>
+				
 				<hr class="my-4">
 
 				<!-- Section 5: Keyboard Controls -->
-				<div class="row align-items-center mb-4">
+				<section class="row align-items-center mb-4">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/keyboard2.png' %}" alt="Keyboard" class="img-fluid" />
 					</div>
@@ -106,12 +106,12 @@
 						</ul>
 						<p>These shortcuts are especially useful for advanced solvers and laptop users.</p>
 					</div>
-				</div>
+				</section>
 
 				<hr class="my-4">
 
 				<!-- Section 6: Settings Gear -->
-				<div class="row align-items-center mb-4 flex-md-row-reverse">
+				<section class="row align-items-center mb-4 flex-md-row-reverse">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img_3.png' %}" alt="Settings Gear" class="img-fluid" style="width: 50%;" />
 					</div>
@@ -130,12 +130,12 @@
 							</li>
 						</ul>
 					</div>
-				</div>
+				</section>
 
 				<hr class="my-4">
 
 				<!-- Section 7: Menu Icon -->
-				<div class="row align-items-center mb-4">
+				<section class="row align-items-center mb-4">
 					<div class="col-md-4 text-center">
 						<img src="{% static 'sudoku/img/game_explanation/img_1.png' %}" alt="Menu Icon" class="img-fluid" style="width: 60%;" />
 					</div>
@@ -149,9 +149,7 @@
 						</ul>
 						<p>When you return, the puzzle will load exactly where you left off.</p>
 					</div>
-				</div>
-
-				
+				</section>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
