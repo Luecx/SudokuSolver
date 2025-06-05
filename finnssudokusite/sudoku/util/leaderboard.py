@@ -86,3 +86,26 @@ def update_all_leaderboard_entries():
                 "solved": len(scores)
             }
         )
+
+def update_leaderboard_entry(user):
+    """
+    Updates the leaderboard entry for a single user based on their last 100 solves.
+    """
+    stats = (
+        UserSudokuDone.objects
+        .select_related('sudoku')
+        .filter(user=user, time__gt=0)
+        .order_by('-date')[:100]
+    )
+
+    scores = [compute_raw_score(stat) for stat in stats if compute_raw_score(stat)]
+    scores = [s for s in scores if s > 0]
+
+    final_score = compute_adjusted_rating(scores)
+    CachedLeaderboardEntry.objects.update_or_create(
+        user=user,
+        defaults={
+            "score": final_score,
+            "solved": len(scores)
+        }
+    )
