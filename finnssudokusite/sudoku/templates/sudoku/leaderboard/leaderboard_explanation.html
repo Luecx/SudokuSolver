@@ -5,8 +5,7 @@
         {% blocktrans %}
         The leaderboard uses the
         <strong>Sudoku Power Index (SPI)</strong> — a score from 0 to 100 that rewards
-        <em>fast</em> solves on <em>difficult</em> puzzles, values
-        <em>recency</em>, and favors consistent performance.
+        <em>fast</em> solves on <em>difficult</em> puzzles and favors consistent performance.
         {% endblocktrans %}
     </p>
 
@@ -26,7 +25,6 @@
     <p>
         {% blocktrans %}
         The reward \( S_{u,s} \) increases when you solve a puzzle faster than the average and when the puzzle is difficult (as measured by solve time).
-        This score is computed independently of recency.
         {% endblocktrans %}
     </p>
 
@@ -51,39 +49,21 @@
 
     <hr class="my-4">
 
-    <h6 class="fw-bold mb-2">{% trans "Recency weight" %}</h6>
-    <p>
-        {% blocktrans %}
-        To value recent solves more highly, each puzzle’s score is assigned a time-based weight:
-        {% endblocktrans %}
-    </p>
-    <div class="text-center mb-4">
-        <p class="text-primary">\[\displaystyle w(\Delta_s) = \alpha^{\Delta_s} \quad \text{with } \alpha = 0.95\]</p>
-    </div>
-
-    <p>
-        {% blocktrans %}
-        Where \( \Delta_s \) is the number of days since the solve. Older solves contribute less over time.
-        {% endblocktrans %}
-    </p>
-
-    <hr class="my-4">
-
     <h6 class="fw-bold mb-2">{% trans "User rating" %}</h6>
     <p>
         {% blocktrans %}
-        Your overall rating \( R_u \) is computed as a <em>weighted geometric mean</em> of your per-puzzle rewards \( S_{u,s} \),
-        using recency weights:
+        Your overall rating \( R_u \) is computed as the geometric mean of your puzzle rewards \( S_{u,s} \),
+        based on your last 100 solved puzzles:
         {% endblocktrans %}
     </p>
 
     <div class="text-center mb-3">
-        <p class="text-primary">\[\displaystyle R_u = \exp\left( \frac{ \sum_{s \in S_u} w(\Delta_s) \cdot \ln(S_{u,s}) }{ \sum_{s \in S_u} w(\Delta_s) } \right)\]</p>
+        <p class="text-primary">\[\displaystyle R_u = \exp\left( \frac{1}{N_u} \sum_{s = 1}^{N_u} \ln(S_{u,s}) \right)\]</p>
     </div>
 
     <p>
         {% blocktrans %}
-        This form ensures stability and avoids excessive numerical divisions by computing the weighted sum of logs before dividing by the total weight.
+        This ensures that all your recent solves contribute equally and prevents domination by outliers.
         {% endblocktrans %}
     </p>
 
@@ -92,7 +72,7 @@
     <h6 class="fw-bold mb-2">{% trans "Volume weight" %}</h6>
     <p>
         {% blocktrans %}
-        To avoid inflation from a single good solve, your final rating is scaled by a <em>volume weight</em> based on how many puzzles you've solved recently:
+        To avoid inflation from a single good solve, your final rating is scaled by a <em>volume weight</em> based on how many puzzles you've solved:
         {% endblocktrans %}
     </p>
 
@@ -103,7 +83,7 @@
 
     <p>
         {% blocktrans %}
-        This ensures that your rating becomes reliable only with consistent activity and performance.
+        This ensures that your rating becomes reliable only with consistent activity and performance. Only your most recent 100 puzzles are considered.
         {% endblocktrans %}
     </p>
 
