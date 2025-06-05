@@ -20,7 +20,8 @@ html, body {
 
 .icon-btn-style,
 .number-btn-style,
-.check-btn-style{
+.check-btn-style,
+.square-btn{
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -64,8 +65,8 @@ html, body {
 	--min-spaceX: 250px;
 	--min-spaceY: 200px;
 	--menu-height: 0px;
-	--grid-container-gap: 1rem;
-	--border: 1rem;
+	--grid-container-gap: 2vw;
+	--border: 1.5vw;
 }
 
 .grid-b {
@@ -100,7 +101,7 @@ html, body {
 	grid-template-rows: repeat(3, 1fr);
 	grid-template-areas:
 		"info 	 info	 info	 info 	 col1  NB  NB  NB  col2  menu"
-		"undo    redo    rules   clear   col1  NB  NB  NB  col2  check"
+		"undo    redo    clear   rules   col1  NB  NB  NB  col2  check"
 		"number  top     center  color   col1  NB  NB  NB  col2  .";
 }
 
@@ -116,11 +117,11 @@ html, body {
 }
 
 .grid-a-Y {
-	 	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(4, 1fr);
 	grid-template-rows: 1fr 1fr .2rem repeat(4, 1fr) .2rem 1fr;
 	grid-template-areas:
 		"info 	 info	 check   menu"
-		"undo    redo    rules   clear"
+		"undo    redo    clear   rules"
 		"row1    row1    row1    row1"
 		"NB      NB      NB      NB"
 		"NB      NB      NB      NB"
@@ -174,6 +175,7 @@ html, body {
 
 
 @media (max-aspect-ratio: 1/1) {/* Portrait */
+	
 	.grid-container { /* Portrait */
 		display: flex;
 		flex-direction: column;
@@ -206,8 +208,8 @@ html, body {
 		display: grid;
 		width: 100%;
 		height: 100%;
-		gap: .5rem;
-		padding: 1rem;
+		gap: .3rem;
+		padding: .5rem;
 	}
 }
 
@@ -223,6 +225,9 @@ html, body {
 	grid-row: span 4;
 	grid-column: span 4;
 	height: 100%;
+}
+.grid-a-superX #game-info {
+	grid-column: span 4;
 }
 
 	/* Orientation numbers in buttons*/
@@ -270,6 +275,8 @@ html, body {
 .grid-a-superX #gap-col2 {display: none;}
 
 #game-info { grid-area: info; font-size: 1.3rem;  color: black; overflow: hidden;}
+
+#btn-menu {grid-area: menu;}
 
 #btn-validation { grid-area: check; }
 
@@ -324,14 +331,11 @@ html, body {
 
 #btn-nine { grid-area: nine; }
 
+#btn-numberMode { grid-area: number; }
+#btn-topMode { grid-area: top; }
+#btn-centerMode { grid-area: center; }
 #btn-colorMode { grid-area: color; }
 #btn-colorMode img {width: 20px; height: 20px;}
-
-#number-btn-styleMode { grid-area: number; }
-
-#btn-topMode { grid-area: top; }
-
-#btn-centerMode { grid-area: center; }
 
 
 /* Erzeugt weiße button */
@@ -400,25 +404,26 @@ html, body {
 .btn-selected-9 { background-color: rgba(188, 246, 12, 1); }
 
 /* === Bootstrap-like Hover / Focus for All Buttons === */
-.btn-square:hover,
-.btn-square:focus {
+
+.control-container .btn:hover,
+.control-container .btn:focus {
 	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .5);
 	border-color: #86b7fe;
 }
 
-.btn-hovered {
+.control-container .btn-hovered {
 	background-color: #e7f1ff !important;
 	border-color: #86b7fe !important;
 	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .5);
 }
 
-.btn-selected {
+.control-container .btn-selected {
 	border-color: #86b7fe !important;
 	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .8);
 }
 
 /* === Suppress persistent outline glow after focus === */
-.btn-square:focus:not(:focus-visible) {
+.control-container .btn:focus:not(:focus-visible) {
 	outline: none;
 	box-shadow: none;
 }
@@ -567,14 +572,15 @@ html, body {
 	z-index: 1;
 }
 
-#help-button { left: 4px; }
-#gear-button { right: 4px; }
+#board-helpButton { right: calc(4px + 1.6rem); }
+#board-gearButton { right: 4px; }
+#board-rulesButton { }
 
-#help-button,
-#gear-button {
+#board-helpButton,
+#board-gearButton,
+#board-rulesButton{
 	position: absolute;
 	top: 4px;
-	right: 4px;
 	z-index: 10;
 	
 	background: none;
@@ -593,15 +599,17 @@ html, body {
 }
 
 
-#help-button i,
-#gear-button i {
+#board-helpButton i,
+#board-gearButton i,
+#board-rulesButton i{
 	color: black;
 	font-size: 1.2rem;
 	transition: color 0.2s ease-in-out;
 }
 
-#help-button:hover i,
-#gear-button:hover i {
+#board-helpButton:hover i,
+#board-gearButton:hover i,
+#board-rulesButton:hover i{
 	color: #0d6efd; /* Bootstrap blue */
 }
 

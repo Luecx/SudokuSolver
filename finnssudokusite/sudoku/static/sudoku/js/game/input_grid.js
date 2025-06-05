@@ -21,7 +21,7 @@ export class InputGrid {
 
     initModeButtons() {
         const modeMap = {
-            [InputMode.NumberRegular]: 'number-btn-styleMode',
+            [InputMode.NumberRegular]: 'btn-numberMode',
             [InputMode.CandidateRegular]: 'btn-topMode',
             [InputMode.CandidateCentered]: 'btn-centerMode',
             [InputMode.Color]: 'btn-colorMode'
@@ -31,7 +31,7 @@ export class InputGrid {
             const btn = document.getElementById(id);
             if (btn) {
                 this.modeButtons[mode] = btn;
-                btn.classList.add("btn-square", "btn-statebtn"); // mark as state button
+                btn.classList.add("btn-statebtn"); // mark as state button
 
                 btn.addEventListener('click', () => {
                     this.keyboard.setMode(mode);
@@ -65,7 +65,7 @@ export class InputGrid {
     initFontControls() {
         let currentFontSize = 1.8;
         let currentSvgSize = 28;
-        const gridButtons = document.querySelectorAll('.button-grid .btn-square');
+        const gridButtons = document.querySelectorAll('.button-grid .btn');
         const btnPlus = document.getElementById('btn-plus');
         const btnMinus = document.getElementById('btn-minus');
         const svgIcon = document.querySelector("#btn-colorMode img");
