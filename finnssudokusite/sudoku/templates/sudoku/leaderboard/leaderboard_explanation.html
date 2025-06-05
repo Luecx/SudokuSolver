@@ -5,7 +5,7 @@
         {% blocktrans %}
         The leaderboard uses the
         <strong>Sudoku Power Index (SPI)</strong> — a score from 0 to 100 that rewards
-        <em>fast</em> solves on <em>difficult</em> puzzles and favors consistent performance.
+        <em>fast</em> solves on <em>difficult</em> puzzles and consistent performance.
         {% endblocktrans %}
     </p>
 
@@ -24,7 +24,7 @@
 
     <p>
         {% blocktrans %}
-        The reward \( S_{u,s} \) increases when you solve a puzzle faster than the average and when the puzzle is difficult (as measured by solve time).
+        This value increases if you solve the puzzle faster than average — and especially so if it's a tough puzzle.
         {% endblocktrans %}
     </p>
 
@@ -52,18 +52,17 @@
     <h6 class="fw-bold mb-2">{% trans "User rating" %}</h6>
     <p>
         {% blocktrans %}
-        Your overall rating \( R_u \) is computed as the geometric mean of your puzzle rewards \( S_{u,s} \),
-        based on your last 100 solved puzzles:
+        Your rating \( R_u \) is the average of your scores from the <strong>last 100 puzzles</strong> you've completed:
         {% endblocktrans %}
     </p>
 
     <div class="text-center mb-3">
-        <p class="text-primary">\[\displaystyle R_u = \exp\left( \frac{1}{N_u} \sum_{s = 1}^{N_u} \ln(S_{u,s}) \right)\]</p>
+        <p class="text-primary">\[\displaystyle R_u = \frac{1}{N_u} \sum_{s=1}^{N_u} S_{u,s}\]</p>
     </div>
 
     <p>
         {% blocktrans %}
-        This ensures that all your recent solves contribute equally and prevents domination by outliers.
+        This average rewards players who solve puzzles quickly and consistently — only your most recent solves count.
         {% endblocktrans %}
     </p>
 
@@ -72,7 +71,7 @@
     <h6 class="fw-bold mb-2">{% trans "Volume weight" %}</h6>
     <p>
         {% blocktrans %}
-        To avoid inflation from a single good solve, your final rating is scaled by a <em>volume weight</em> based on how many puzzles you've solved:
+        To prevent high ratings from just one or two good performances, your score is scaled by how many puzzles you've recently solved:
         {% endblocktrans %}
     </p>
 
@@ -83,7 +82,7 @@
 
     <p>
         {% blocktrans %}
-        This ensures that your rating becomes reliable only with consistent activity and performance. Only your most recent 100 puzzles are considered.
+        Only those with consistent activity across many puzzles can reach the top.
         {% endblocktrans %}
     </p>
 
@@ -92,18 +91,17 @@
     <h6 class="fw-bold mb-2">{% trans "Leaderboard score" %}</h6>
     <p>
         {% blocktrans %}
-        To compare ratings across players, we normalize all adjusted ratings \( R'_u \) onto a 0–100 scale.
-        The top player's score is always 100:
+        All adjusted scores \( R'_u \) are normalized so that the top player always has a score of 100:
         {% endblocktrans %}
     </p>
+
     <div class="text-center mb-4">
         <p class="text-primary">\[\displaystyle \text{SPI}_u = 100 \cdot \frac{R'_u}{\max\limits_v R'_v}\]</p>
     </div>
 
     <p>
         {% blocktrans %}
-        Everyone else is scored proportionally. A strong performance today can lift you up quickly —
-        but you’ll need consistency to stay on top.
+        The closer your performance is to the best, the closer your SPI will be to 100.
         {% endblocktrans %}
     </p>
 </div>
