@@ -5,7 +5,7 @@
         {% blocktrans %}
         The leaderboard uses the
         <strong>Sudoku Power Index (SPI)</strong> — a score from 0 to 100 that rewards
-        <em>fast</em> solves on <em>difficult</em> puzzles and consistent performance.
+        <em>fast</em> solves on <em>difficult</em> puzzles and consistent performance across recent games.
         {% endblocktrans %}
     </p>
 
@@ -62,27 +62,7 @@
 
     <p>
         {% blocktrans %}
-        This average rewards players who solve puzzles quickly and consistently — only your most recent solves count.
-        {% endblocktrans %}
-    </p>
-
-    <hr class="my-4">
-
-    <h6 class="fw-bold mb-2">{% trans "Volume weight" %}</h6>
-    <p>
-        {% blocktrans %}
-        To prevent high ratings from just one or two good performances, your score is scaled by how many puzzles you've recently solved:
-        {% endblocktrans %}
-    </p>
-
-    <div class="text-center mb-4">
-        <p class="text-primary">\[\displaystyle V_u = 1 - e^{-\lambda N_u} \quad \text{with } \lambda = 0.2\]</p>
-        <p class="text-primary">\[\displaystyle R'_u = R_u \cdot V_u\]</p>
-    </div>
-
-    <p>
-        {% blocktrans %}
-        Only those with consistent activity across many puzzles can reach the top.
+        This average rewards players who solve puzzles quickly and consistently — only your most recent 100 solves count.
         {% endblocktrans %}
     </p>
 
@@ -91,12 +71,12 @@
     <h6 class="fw-bold mb-2">{% trans "Leaderboard score" %}</h6>
     <p>
         {% blocktrans %}
-        All adjusted scores \( R'_u \) are normalized so that the top player always has a score of 100:
+        To compare across players, ratings \( R_u \) are normalized so that the top player always has a score of 100:
         {% endblocktrans %}
     </p>
 
     <div class="text-center mb-4">
-        <p class="text-primary">\[\displaystyle \text{SPI}_u = 100 \cdot \frac{R'_u}{\max\limits_v R'_v}\]</p>
+        <p class="text-primary">\[\displaystyle \text{SPI}_u = 100 \cdot \frac{R_u}{\max\limits_v R_v}\]</p>
     </div>
 
     <p>

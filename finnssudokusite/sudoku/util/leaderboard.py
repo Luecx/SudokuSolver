@@ -3,7 +3,6 @@ from collections import defaultdict
 from django.contrib.auth.models import User
 from ..models import UserSudokuDone, CachedLeaderboardEntry
 
-LAMBDA = 0.2  # Volume weight
 
 def compute_raw_score(stat):
     """
@@ -17,21 +16,18 @@ def compute_raw_score(stat):
     user_t = max(stat.time, 1e-8)
     return avg_t * (avg_t / user_t)
 
-def compute_volume_weight(n):
-    return 1.0 - math.exp(-LAMBDA * n)
 
 def compute_adjusted_rating(scores):
     """
-    Computes adjusted rating R'_u = avg(S_{u,s}) * V_u
+    Computes adjusted rating R_u = avg(S_{u,s})
     """
     if not scores:
         return 0.0
-    R_u = sum(scores) / len(scores)
-    V_u = compute_volume_weight(len(scores))
-    return R_u * V_u
+    return sum(scores) / len(scores)
+
 
 def build_leaderboard(user_data_map):
-    scores = {user: compute_adjusted_rating(scores) for user, scores in user_data_map.items()}
+    scores = {user: compute_adjusted_rating(user_scores) for user, user_scores in user_data_map.items()}
     R_max = max(scores.values(), default=0.0)
     leaderboard = []
 
@@ -45,6 +41,7 @@ def build_leaderboard(user_data_map):
 
     leaderboard.sort(key=lambda x: x['score'], reverse=True)
     return leaderboard
+
 
 def compute_leaderboard_scores():
     stats = (
@@ -66,6 +63,7 @@ def compute_leaderboard_scores():
 
     return build_leaderboard(user_data)
 
+
 def update_all_leaderboard_entries():
     for user in User.objects.all():
         stats = (
@@ -86,6 +84,7 @@ def update_all_leaderboard_entries():
                 "solved": len(scores)
             }
         )
+
 
 def update_leaderboard_entry(user):
     """
