@@ -572,6 +572,19 @@ html, body {
 	z-index: 1;
 }
 
+.history-indicator {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.75rem;
+    z-index: 10;
+}
+
 #board-helpButton { right: calc(4px + 1.6rem); }
 #board-gearButton { right: 4px; }
 #board-rulesButton { }

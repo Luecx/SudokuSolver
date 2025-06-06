@@ -116,12 +116,12 @@ export function createBoard(container) {
                 // early exit if all types found
                 if (hasValues && hasCandidates && hasColors) break;
             }
+                    
+            numberLayer.clearRegion(region, force, canClearFixed)
 
             if (hasValues) eventManager.emit("ev_number_changed", region);
             if (hasCandidates) eventManager.emit("ev_candidates_changed", region);
             if (hasColors) eventManager.emit("ev_color_changed", region);
-                    
-            numberLayer.clearRegion(region, force, canClearFixed)
         },
 
         // ----─  CONTENT-LAYER APIs END ────────────────────────────────────────
@@ -156,7 +156,6 @@ export function createBoard(container) {
         ruleManager.registerDefaults(board);
         candidateRemover.init(board);
         historyManager.init(board);
-
 
         function resizeAndRebuild() {
             renderer.setup(container);

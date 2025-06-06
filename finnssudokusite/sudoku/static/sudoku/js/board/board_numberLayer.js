@@ -193,6 +193,8 @@ export class BoardNumberLayer {
                 this.updateCell(cell);
             }
         }
+
+        this.board.historyManager.saveInitialState();
     }
 
     getState() {
@@ -459,7 +461,6 @@ export class BoardNumberLayer {
         });
     }
 
-
     setCandidates(region, candidate, centered = false) {
         this._filterCells(region).forEach(c => this.setCandidate(c.idx, candidate, centered));
     }
@@ -583,6 +584,7 @@ export class BoardNumberLayer {
         for (const { r, c, value } of data) {
             this.setValue(new CellIdx(r, c), value, true);
         }
+        this.board.historyManager.saveInitialState();
     }
 
     getCellsByValue(value) {
