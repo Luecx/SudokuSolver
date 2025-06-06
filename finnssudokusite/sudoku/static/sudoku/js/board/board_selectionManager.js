@@ -193,14 +193,11 @@ export class SelectionManager {
      * @param {number} dx - Horizontal shift in columns.
      */
     shiftSelection(dy, dx) {
-        console.log(this.selectionConfig?.target, dy, dy);
         if (this.selectionConfig?.target !== RegionType.CELLS) return;
 
         const region = this.getSelectedRegion();
-        console.log(region);
         if (!region || region.type !== RegionType.CELLS || region.size() === 0) return;
 
-        console.log(region);
         const rows = this.board.getGridSize();
         const cols = rows;
         const CellIdxClass = region.itemClass;

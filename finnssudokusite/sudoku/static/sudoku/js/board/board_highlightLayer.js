@@ -107,7 +107,7 @@ export class HighlightLayer {
 
     _renderNumberHighlight(ctx) {
         if (this.highlights.number.isEnabled() && this.highlights.number.getRegion().size() > 0) {
-            this._renderRegion(ctx, this.highlights.number.getRegion(), "rgba(10, 60, 110, 0.15)");
+            this._renderRegion(ctx, this.highlights.number.getRegion(), "rgba(10, 60, 110, 0.2)");
         }
     }
 

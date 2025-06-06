@@ -63,7 +63,7 @@ export class EventManager {
      * @param {any} payload
      */
     emit(event, payload = {}) {
-        console.log("event emitted: ", event);
+        // console.log("event emitted: ", event);
         const cbs = this.listeners.get(event);
         if (!cbs) return;
         for (const cb of cbs) {

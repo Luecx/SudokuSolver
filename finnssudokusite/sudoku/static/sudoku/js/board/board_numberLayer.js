@@ -465,7 +465,6 @@ export class BoardNumberLayer {
     }
 
     unsetCandidates(region, candidate, centered = false) {
-        console.log(region);
         this._filterCells(region).forEach(c => this.unsetCandidate(c.idx, candidate, centered));
     }
 

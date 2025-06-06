@@ -12,6 +12,7 @@ import { NO_NUMBER } from "../number/number.js";
 import { HintDiagLayer } from "./board_hintDiagLayer.js";
 import { HighlightLayer } from "./board_highlightLayer.js";
 import { CandidateRemover } from "./board_removeCandidates.js";
+import { HistoryManager } from "./board_historyManager.js";
 
 export function createBoard(container) {
     const gridSize = 9;
@@ -36,6 +37,7 @@ export function createBoard(container) {
     const cellLayer          = new CellLayer(container, gridSize);
     const selectionManager   = new SelectionManager(ruleManager, renderer);
     const candidateRemover   = new CandidateRemover();
+    const historyManager     = new HistoryManager(renderer);
 
     solutionLayer.useSolutionStyle = true;
 
@@ -101,7 +103,26 @@ export function createBoard(container) {
                                                        eventManager.emit("ev_color_changed", region)},
         toggleColors:    (region,col,force=false)  => {numberLayer.toggleColors(region,col,force);
                                                        eventManager.emit("ev_color_changed", region)},
-        clearRegion:     (region, force=false, canClearFixed = false) => {numberLayer.clearRegion(region, force, canClearFixed)},
+        clearRegion:     (region, force=false, canClearFixed = false) => {
+            let hasValues = false, hasCandidates = false, hasColors = false;
+            for (const idx of region.items) {
+                const cell = numberLayer.getCell(idx);
+                if (!cell) continue;
+                
+                if (!hasValues && cell.value !== NO_NUMBER) hasValues = true;
+                if (!hasCandidates && (cell.ordinaryCandidates.size > 0 || cell.centeredCandidates.size > 0)) hasCandidates = true;
+                if (!hasColors && cell.colors.size > 0) hasColors = true;
+                
+                // early exit if all types found
+                if (hasValues && hasCandidates && hasColors) break;
+            }
+
+            if (hasValues) eventManager.emit("ev_number_changed", region);
+            if (hasCandidates) eventManager.emit("ev_candidates_changed", region);
+            if (hasColors) eventManager.emit("ev_color_changed", region);
+                    
+            numberLayer.clearRegion(region, force, canClearFixed)
+        },
 
         // ----─  CONTENT-LAYER APIs END ────────────────────────────────────────
         resetBoard,
@@ -120,6 +141,7 @@ export function createBoard(container) {
         contentLayer: numberLayer,
         highlightLayer,
         candidateRemover,
+        historyManager
     };
 
     function initBoard() {
@@ -133,6 +155,7 @@ export function createBoard(container) {
         selectionManager.setup(board);
         ruleManager.registerDefaults(board);
         candidateRemover.init(board);
+        historyManager.init(board);
 
 
         function resizeAndRebuild() {
