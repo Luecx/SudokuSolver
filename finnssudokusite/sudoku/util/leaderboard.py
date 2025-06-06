@@ -3,15 +3,16 @@ from collections import defaultdict
 from django.contrib.auth.models import User
 from ..models import UserSudokuDone, CachedLeaderboardEntry
 
+
 def compute_raw_score(stat):
     """
     Per-puzzle score:
 
-    S_{u,s} = avg_t * (avg_t / user_t)
+    S_{u,s} = max(1, log_base_1.2(avg_t / 20)) * clamp(avg_t / user_t, 0.5, 2)
 
     where:
-      - avg_t: the average solve time for puzzle s (always at least 1e-8 to avoid division by zero)
-      - user_t: the user's actual solve time
+      - avg_t: the average solve time for puzzle s (in seconds)
+      - user_t: the user's actual solve time (in seconds)
     """
     puzzle = stat.sudoku
     if not puzzle or not puzzle.average_time or not stat.time:
@@ -19,7 +20,16 @@ def compute_raw_score(stat):
 
     avg_t = max(puzzle.average_time, 1e-8)
     user_t = max(stat.time, 1e-8)
-    return avg_t * (avg_t / user_t)
+
+    try:
+        log_term = math.log(avg_t / 20, 1.2)
+    except ValueError:
+        log_term = 0  # defensive fallback if avg_t is very small
+
+    weight = max(1.0, log_term)
+    speed_factor = max(0.5, min(avg_t / user_t, 2.0))
+
+    return weight * speed_factor
 
 
 def compute_total_rating(scores):

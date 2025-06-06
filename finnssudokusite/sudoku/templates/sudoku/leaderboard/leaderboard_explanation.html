@@ -14,17 +14,22 @@
     <h6 class="fw-bold mb-2">{% trans "Per‑puzzle contribution" %}</h6>
     <p>
         {% blocktrans %}
-        Each time you solve a puzzle, you earn a score \( S_{u,s} \) that reflects your relative performance:
+        Each time you solve a puzzle, you earn a score \( S_{u,s} \) that reflects both the difficulty of the puzzle and how fast you solved it:
         {% endblocktrans %}
     </p>
 
     <div class="text-center mb-3">
-        <p class="text-primary">\[\displaystyle S_{u,s} = \bar{t}_s \cdot \frac{\bar{t}_s}{t_{u,s}}\]</p>
+        <p class="text-primary">
+            \[
+            S_{u,s} = \max\left(1,\ \log_{1.2}\left(\frac{\bar{t}_s}{20}\right)\right)
+            \cdot \mathrm{clamp}\left(\frac{\bar{t}_s}{t_{u,s}},\ 0.5,\ 2\right)
+            \]
+        </p>
     </div>
 
     <p>
         {% blocktrans %}
-        This value increases if you solve the puzzle faster than average — and especially so if it's a tough puzzle.
+        Here, \( \bar{t}_s \) is the average time (in seconds) to solve puzzle \( s \), and \( t_{u,s} \) is your time. The logarithmic term models puzzle difficulty (with diminishing returns), while the clamped time ratio rewards speed within bounds.
         {% endblocktrans %}
     </p>
 
@@ -38,24 +43,47 @@
         <tbody>
         <tr>
             <td>\( \bar{t}_s \)</td>
-            <td>{% trans "Average solve time for puzzle \(s\)" %}</td>
+            <td>{% trans "Average solve time for puzzle \(s\) (in seconds)" %}</td>
         </tr>
         <tr>
             <td>\( t_{u,s} \)</td>
-            <td>{% trans "Your time to solve puzzle \(s\)" %}</td>
+            <td>{% trans "Your time to solve puzzle \(s\) (in seconds)" %}</td>
         </tr>
         </tbody>
     </table>
+
+    <h6 class="fw-bold mb-2 mt-4">{% trans "Weight examples (based on avg. time in seconds)" %}</h6>
+    <table class="table table-sm table-bordered w-auto mx-auto my-3">
+        <thead class="table-light">
+        <tr>
+            <th>{% trans "Average time (s)" %}</th>
+            <th>\( \log_{1.2}\left(\frac{x_1}{20}\right) \)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td>60</td><td>6.025851</td></tr>
+        <tr><td>120</td><td>9.827469</td></tr>
+        <tr><td>240</td><td>13.629253</td></tr>
+        <tr><td>300</td><td>14.853154</td></tr>
+        <tr><td>600</td><td>18.654938</td></tr>
+        <tr><td>1200</td><td>22.456722</td></tr>
+        <tr><td>2400</td><td>26.258506</td></tr>
+        <tr><td>3600</td><td>28.482407</td></tr>
+        <tr><td>7200</td><td>32.284191</td></tr>
+        </tbody>
+    </table>
+
+    <p class="small text-muted text-center">
+        {% trans "The weight grows faster for harder puzzles, with base-1.2 logarithmic scaling from 20 seconds upward." %}
+    </p>
 
     <hr class="my-4">
 
     <h6 class="fw-bold mb-2">{% trans "User score" %}</h6>
     <p>
         {% blocktrans %}
-        Your score \( R_u \) is now the <strong>sum</strong> of your scores from the
-        <strong>last 100 puzzles</strong> you’ve completed.
-        If you have solved fewer than 100 puzzles, then only those contribute.
-        This design means that building a top score requires completing many puzzles.
+        Your score \( R_u \) is the <strong>sum</strong> of your scores from the
+        <strong>last 100 puzzles</strong> you’ve completed. If you’ve solved fewer, only those count.
         {% endblocktrans %}
     </p>
 
@@ -65,7 +93,7 @@
 
     <p>
         {% blocktrans %}
-        This total rewards players for consistent participation over many puzzles.
+        This setup rewards both quantity and quality: you must solve many puzzles — and solve them well — to reach the top.
         {% endblocktrans %}
     </p>
 
@@ -74,8 +102,7 @@
     <h6 class="fw-bold mb-2">{% trans "Leaderboard score" %}</h6>
     <p>
         {% blocktrans %}
-        To compare across players, each score \( R_u \) is normalized so that
-        the top score always corresponds to an SPI of 100:
+        Finally, all user scores are normalized to generate a clean leaderboard from 0 to 100:
         {% endblocktrans %}
     </p>
 
@@ -85,7 +112,7 @@
 
     <p>
         {% blocktrans %}
-        The closer your performance is to the best, the closer your SPI will be to 100.
+        The closer your performance is to the best in the community, the closer your SPI will be to 100.
         {% endblocktrans %}
     </p>
 </div>
