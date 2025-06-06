@@ -15,6 +15,48 @@
 		</p>
 	</div>
 
+	<div class="onlyDesktop my-5">
+		<div class="row justify-content-center text-center align-items-end">
+			{% if top_3|length >= 3 %}
+			<!-- Rank 2 -->
+			<div class="col-3">
+				<div class="card border-0">
+					<div class="fs-1 text-secondary">
+						<i class="fas fa-medal"></i>
+					</div>
+					<div class="fw-bold">{{ top_3.1.user.username }}</div>
+					<div class="text-muted small">{% trans "2nd place" %}</div>
+					<div class="text-muted">{{ top_3.1.normalized_score|floatformat:2 }}</div>
+				</div>
+			</div>
+
+			<!-- Rank 1 -->
+			<div class="col-4">
+				<div class="card border-0">
+					<div class="fs-1 text-warning">
+						<i class="fas fa-trophy"></i>
+					</div>
+					<div class="fw-bold fs-4">{{ top_3.0.user.username }}</div>
+					<div class="text-muted">{% trans "1st place" %}</div>
+					<div class="text-primary fw-semibold">{{ top_3.0.normalized_score|floatformat:2 }}</div>
+				</div>
+			</div>
+
+			<!-- Rank 3 -->
+			<div class="col-3">
+				<div class="card border-0">
+					<div class="fs-1 text-warning">
+						<i class="fas fa-award"></i>
+					</div>
+					<div class="fw-bold">{{ top_3.2.user.username }}</div>
+					<div class="text-muted small">{% trans "3rd place" %}</div>
+					<div class="text-muted">{{ top_3.2.normalized_score|floatformat:2 }}</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+
 	<form method="get" class="mb-4">
 		<label class="form-label fw-semibold">{% trans "Search users:" %}</label>
 		<div class="input-group">

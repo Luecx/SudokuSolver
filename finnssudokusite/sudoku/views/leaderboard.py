@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 from ..models import CachedLeaderboardEntry
 
 SORT_MAP = {
-    "rank": "rank",  # will sort by dynamically computed rank
+    "rank": "rank",
     "username": "user__username",
-    "score": "normalized_score",  # also dynamically computed
+    "score": "normalized_score",
     "solved": "solved",
 }
 
@@ -33,6 +33,9 @@ def leaderboard(request):
     for idx, entry in enumerate(ranked, start=1):
         entry.rank = idx
 
+    # Get top 3 if available
+    top_3 = ranked[:3] if len(ranked) >= 3 else None
+
     # Sort for current view
     reverse = sort_order == "desc"
     if sort_by == "score":
@@ -53,4 +56,5 @@ def leaderboard(request):
         "query": query,
         "sort_by": sort_by,
         "sort_order": sort_order,
+        "top_3": top_3,
     })
