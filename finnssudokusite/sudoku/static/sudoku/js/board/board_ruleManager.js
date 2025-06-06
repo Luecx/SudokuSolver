@@ -1,5 +1,10 @@
 import { createAllRuleHandlers } from "../rules/rules.js";
 
+
+function normalizeKey(str) {
+    return str.toLowerCase().replace(/[^a-z]/g, "");
+}
+
 export class RuleManager {
     constructor() {
         this.handlers = {};
@@ -9,12 +14,13 @@ export class RuleManager {
     registerDefaults(board) {
         this.board = board;
         const rules = createAllRuleHandlers(board);
+
         rules.forEach(handler => this.registerHandler(handler));
     }
 
     registerHandler(handler) {
-        this.handlers[handler.name] = handler;
-        handler.onRegister?.();
+        const key = normalizeKey(handler.name);
+        this.handlers[key] = handler;
     }
 
     getAllHandlers() {
@@ -78,7 +84,7 @@ export class RuleManager {
         const parsed = typeof data === "string" ? JSON.parse(data) : data;
 
         for (const { type, fields, rules } of parsed) {
-            const handler = this.handlers[type];
+            const handler = this.handlers[normalizeKey(type)];
             if (!handler) {
                 console.warn(`Unknown handler type: ${type}`);
                 continue;
