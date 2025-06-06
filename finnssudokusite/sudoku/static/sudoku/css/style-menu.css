@@ -28,7 +28,7 @@
 .nav-dropdowntext {color: #aaaaaa; font-weight: 600; font-size: 1.2rem;}
 
 
-/*  CREATOR  */
+
 .myNavTabStyle .nav-link.active {
   border-left-color: #cccccc;
   border-top-color: #cccccc;
@@ -36,12 +36,14 @@
 }
 
 .myNavTabStyle .nav-link:not(.active) {
-  background-color: #818181;
-  color: #ffffff;
-  border-color: #1e1e1e;
+  background-color: #ffffff;
+  color: #0d6efd;
+  border-color: #cccccc #cccccc #cccccc;
 }
 .myNavTabStyle .nav-link:not(.active):hover {
-  color: #a0bcff;
+  color: #ffffff;
+  background-color: rgb(11, 94, 215);
+  border-bottom-color: rgb(10, 88, 202);
 }
 
 .myNavTabStyle .tab-content {

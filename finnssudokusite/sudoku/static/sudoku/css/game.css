@@ -1,21 +1,8 @@
-body {
-	background-image: none;
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-	transition: background-image 0.5s ease-in-out;
-}
+
 html, body {
 	height: 100%;
-	margin: 0;
-	padding: 0;
 }
 
-.fullwindow {
-	height: 100dvh;
-	overflow: hidden;
-	padding: 1rem;
-}
 
 
 .icon-btn-style,
@@ -64,7 +51,7 @@ html, body {
 :root {
 	--min-spaceX: 250px;
 	--min-spaceY: 200px;
-	--menu-height: 0px;
+	--menu-height: 60px;
 	--grid-container-gap: 2vw;
 	--border: 1.5vw;
 }
@@ -100,7 +87,7 @@ html, body {
 	grid-template-columns: repeat(4, 1fr) .3rem repeat(3, 1fr) .3rem 1fr;
 	grid-template-rows: repeat(3, 1fr);
 	grid-template-areas:
-		"info 	 info	 info	 info 	 col1  NB  NB  NB  col2  menu"
+		"info 	 info	 info	 info 	 col1  NB  NB  NB  col2  gear"
 		"undo    redo    clear   rules   col1  NB  NB  NB  col2  check"
 		"number  top     center  color   col1  NB  NB  NB  col2  .";
 }
@@ -109,7 +96,7 @@ html, body {
 	grid-template-columns: repeat(4, 1fr) .5rem 1fr 1fr;
 	grid-template-rows:  repeat(5, 1fr);
 	grid-template-areas:
-		"info 	 info	 info	 info 	 col1  check   menu"
+		"info 	 info	 info	 info 	 col1  check   gear"
 		"NB   	 NB   	 NB 	 NB   	 col1  number  rules"
 		"NB   	 NB   	 NB 	 NB   	 col1  top     undo"
 		"NB   	 NB   	 NB 	 NB   	 col1  center  redo"
@@ -120,7 +107,7 @@ html, body {
 	grid-template-columns: repeat(4, 1fr);
 	grid-template-rows: 1fr 1fr .2rem repeat(4, 1fr) .2rem 1fr;
 	grid-template-areas:
-		"info 	 info	 check   menu"
+		"info 	 info	 check   gear"
 		"undo    redo    clear   rules"
 		"row1    row1    row1    row1"
 		"NB      NB      NB      NB"
@@ -276,8 +263,6 @@ html, body {
 
 #game-info { grid-area: info; font-size: 1.3rem;  color: black; overflow: hidden;}
 
-#btn-menu {grid-area: menu;}
-
 #btn-validation { grid-area: check; }
 
 #gap-row1{
@@ -304,6 +289,8 @@ html, body {
 	width: 1rem;
 	pointer-events: none;
 }
+
+#btn-gear { grid-area: gear; }
 
 #btn-rules { grid-area: rules; }
 
@@ -585,44 +572,31 @@ html, body {
     z-index: 10;
 }
 
-#board-helpButton { right: calc(4px + 1.6rem); }
-#board-gearButton { right: 4px; }
-#board-rulesButton { }
-
-#board-helpButton,
-#board-gearButton,
-#board-rulesButton{
+#board-helpButton {
 	position: absolute;
+	right: 4px;
 	top: 4px;
 	z-index: 10;
-	
 	background: none;
 	border: none;
 	padding: 0;
 	margin: 0;
-	
-	width: 30px;
-	height: 30px;
-	
+	width: 1rem;
+	height: 1rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	
 	cursor: pointer;
 }
 
 
-#board-helpButton i,
-#board-gearButton i,
-#board-rulesButton i{
+#board-helpButton i {
 	color: black;
 	font-size: 1.2rem;
 	transition: color 0.2s ease-in-out;
 }
 
-#board-helpButton:hover i,
-#board-gearButton:hover i,
-#board-rulesButton:hover i{
+#board-helpButton:hover i {
 	color: #0d6efd; /* Bootstrap blue */
 }
 
