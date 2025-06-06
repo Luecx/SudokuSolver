@@ -52,6 +52,7 @@ export class Game {
 
     async init() {
         this.board.initBoard();
+        this.timer.init();
         const jsonData = window.puzzle_data;
         if (!jsonData) return;
 
@@ -270,7 +271,6 @@ export class Game {
         return new Promise(resolve => {
             startButton.addEventListener("click", () => {
                 modal.hide();
-                this.timer.init();
                 resolve();
             }, { once: true });
             modal.show();

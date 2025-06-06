@@ -49,7 +49,6 @@ export class Timer {
     init() {
         if (this.timerElement) {
             this.timerElement.textContent = this.formatTime(this.seconds);
-            this.start();
         }
 
         document.addEventListener('visibilitychange', () => {
