@@ -113,11 +113,9 @@ export class HistoryManager {
 
         for (let r = 0; r < gridSize; r++) {
             for (let c = 0; c < gridSize; c++) {
-                const cellIdx = new CellIdx(r, c);
-                const cell = this.board.contentLayer.getCell(cellIdx);
-                if (cell) {
+                const cell = this.board.contentLayer.getCell(new CellIdx(r, c));
+                if (cell)
                     snapshot.push(this._createCellSnapshot(cell));
-                }
             }
         }
 
@@ -128,7 +126,7 @@ export class HistoryManager {
         return {
             idx: cell.idx,
             value: cell.value,
-            fixed: cell.fixed, // Include fixed property
+            fixed: cell.fixed,
             ordinaryCandidates: [...cell.ordinaryCandidates],
             centeredCandidates: [...cell.centeredCandidates],
             colors: [...cell.colors]
