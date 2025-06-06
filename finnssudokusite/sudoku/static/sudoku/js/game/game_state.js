@@ -75,6 +75,8 @@ export class GameState {
                 body: JSON.stringify(data)
             });
         } catch { /* ignore */ }
+        
+        timer.stop();
     }
 
     async load(sudokuId, board, timer) {
@@ -95,7 +97,11 @@ export class GameState {
         }
 
         this.completed_before = hasSolved;
-
+        if (hasSolved) 
+        {
+            timer.stop();
+            return;
+        }
         // --- Try to load ongoing from server ---
         try {
             const res = await fetch(`/ongoing-state/${sudokuId}/`);
@@ -143,5 +149,7 @@ export class GameState {
         } else {
             this.resumed = false;
         }
+
+        timer.start();
     }
 }
