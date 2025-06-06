@@ -45,9 +45,9 @@
 	transition: transform 0.3s ease; /* optional für sanftes Ein-/Ausblenden */
 }
 .sides { transform: scale(1);}
-.card-body { margin-top: 0; padding-top: 0;}
-.card-title {font-weight: 100; font-size: 4rem; }
-.card-text { font-size: 4rem;}
+#about .card-body { margin-top: 0; padding-top: 0;}
+#about .card-title {font-weight: 100; font-size: 4rem; }
+#about .card-text { font-size: 4rem;}
 
 @media (min-width: 768px) and (max-width: 1200px) {  /*  gilt für md, lg */
 	.card-title {font-size: 3rem;}

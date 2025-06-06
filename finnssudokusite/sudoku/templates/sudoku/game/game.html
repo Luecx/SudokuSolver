@@ -1,4 +1,4 @@
-{% extends 'sudoku/game/game_base.html' %}
+{% extends 'sudoku/base.html' %}
 {% load i18n %}
 {% load static %}
 
@@ -22,10 +22,7 @@
 				<button id="board-helpButton" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
 					<i class="bi bi-question-circle"></i>
 				</button>
-				<button id="board-gearButton" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#gameSettingsModal">
-					<i class="bi bi-gear"></i>
-				</button>
-				 <div id="history-indicator" class="history-indicator">
+				<div id="history-indicator" class="history-indicator">
 					<small>0/0</small>
 				</div>
 				<!--<button id="board-rulesButton" class="btn btn-light btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules">
@@ -41,8 +38,7 @@
 			<div class="control-container">
 				<div id="game-info" class="info-style">{{ page_title|default:"Unnamed Puzzle" }}<br><span style="color: #343a40">by {{ creator_name|default:"Unknown" }}</span></div>
 				<button id="btn-validation" class="btn btn-custom-white check-btn-style disable-group">Check</button>
-				<button id="btn-menu" class="btn btn-custom-white icon-btn-style" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu"><i class="bi bi-list"></i></button>
-				
+				<button id="board-gearButton" class="btn btn-custom-white icon-btn-style" data-bs-toggle="modal" data-bs-target="#gameSettingsModal"><i class="bi bi-gear"></i></button>
 				<button id="btn-undo" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-backspace-fill"></i></button>
 				<button id="btn-redo" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-backspace-reverse"></i></button>
 				<button id="btn-rules" class="btn btn-custom-white icon-btn-style " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules"><i class="bi bi-info-lg"></i></button>
@@ -69,21 +65,14 @@
 					<img src="{% static 'sudoku/img/game/btn-farbe.svg' %}" alt="Icon"/>
 				</button>
 			</div>
-			
 		</div>
-		
-		<!-- Menu Canvas -->
-		{% include "sudoku/game/game_offcanvas_menu.html" %}
-
-		<!-- Rules Canvas -->
-		{% include "sudoku/game/game_offcanvas_rules.html" %}
 	</div>
-
 </div>
 
+<!-- Rules Canvas -->
+{% include "sudoku/game/game_offcanvas_rules.html" %}
 
 <!-- Playinfo Modal -->
-
 {% include "sudoku/game/game_modal_start.html" %}
 {% include "sudoku/game/game_modal_validation.html" %}
 {% include "sudoku/game/game_modal_completion.html" %}
@@ -112,7 +101,7 @@
 		if (!container) return;
 
 		// Layout constants
-		const menuHeight = 0;          // px
+		const menuHeight = 60;          // px
 		const aspectRatios = {
 			"grid-a-Y": 429 / 772,
 			"grid-a-X": 599 / 492,
