@@ -93,6 +93,7 @@ USE_TZ   = True
 # === Static Files ===
 STATIC_URL       = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'sudoku' / 'static']
+STATIC_ROOT      = BASE_DIR / 'staticfiles'
 
 # === Email ===
 EMAIL_BACKEND      = 'django.core.mail.backends.console.EmailBackend'

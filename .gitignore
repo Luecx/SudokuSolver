@@ -1,6 +1,7 @@
 # Build folders (CMake)
 cmake-build-*/
 build/
+staticfiles/
 
 # IDE files (CLion, PyCharm, etc.)
 **/.idea/
