@@ -1,12 +1,16 @@
+import os
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 
-DEBUG = True
-
+# === Base Paths ===
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'pi2jx+*ku8#*+f@v5yd7xe^%7(408vdlfv640oxdthuc!o14s!'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'noreply@finnssudokuapp.com'
 
+# === Security & Debug ===
+SECRET_KEY    = os.environ.get("DJANGO_SECRET_KEY"   , "pi2jx+*ku8#*+f@v5yd7xe^%7(408vdlfv640oxdthuc!o14s!")
+DEBUG         = os.environ.get("DJANGO_DEBUG"        , "True").lower() == "true"
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+
+# === Installed Apps ===
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,10 +23,7 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
+# === Middleware ===
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -35,12 +36,13 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
 ]
 
+# === Authentication ===
 AUTHENTICATION_BACKENDS = [
     'sudoku.auth_backends.EmailOrUsernameBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
+# === Templates ===
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -59,44 +61,53 @@ TEMPLATES = [
     },
 ]
 
-
+# === Database ===
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'sudoku' / 'static',
-    ]
-CSRF_TRUSTED_ORIGINS = ['http://finny.ccrl.live', 'https://finny.ccrl.live']
-CORS_ALLOW_ALL_ORIGINS = True
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-ALLOWED_HOSTS = ['*']
-ROOT_URLCONF = 'sudoku_site.urls'
-
+# === Internationalization ===
 LANGUAGE_CODE = 'en'
-
-from django.utils.translation import gettext_lazy as _
 
 LANGUAGES = [
     ('en', _('English')),
     ('de', _('Deutsch')),
-    ('ja', _('日本語')),  # Japanisch
-#     ('fr', _('Français')),
-#     ('es', _('Español')),
-#     ('it', _('Italiano')),
-#     ('zh-hans', _('中文 (简体)')),  # Chinesisch (vereinfacht)
-#     ('ru', _('Русский')),
-#     ('pt-br', _('Português (Brasil)')),
+    ('ja', _('日本語')),
+    # ('fr', _('Français')),
+    # ('es', _('Español')),
+    # ('it', _('Italiano')),
+    # ('zh-hans', _('中文 (简体)')),
+    # ('ru', _('Русский')),
+    # ('pt-br', _('Português (Brasil)')),
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']
 
-import os
-BASE_DIR = Path(__file__).resolve().parent.parent
-LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+USE_I18N = True
+USE_L10N = True
+USE_TZ   = True
+
+# === Static Files ===
+STATIC_URL       = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'sudoku' / 'static']
+
+# === Email ===
+EMAIL_BACKEND      = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@finnssudokuapp.com'
+
+# === CORS & CSRF ===
+CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "http://localhost,http://127.0.0.1"
+).split(",")
+
+# === Other ===
+DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
+LOGIN_REDIRECT_URL  = '/'
+LOGOUT_REDIRECT_URL = '/'
+ROOT_URLCONF        = 'sudoku_site.urls'
