@@ -1,7 +1,13 @@
 {% extends "sudoku/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}Sudoku Leaderboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'sudoku/css/leaderboard.css' %}">
+{% endblock %}
+
 
 {% block content %}
 <div class="container mt-5">
@@ -18,7 +24,8 @@
 	<div class="onlyDesktop my-5">
 		<div class="row justify-content-center text-center align-items-end">
 			{% if top_3|length >= 3 %}
-			<!-- Rank 2 -->
+
+			<!-- 🥈 Rank 2 -->
 			<div class="col-3">
 				<div class="card border-0">
 					<div class="fs-1 text-secondary">
@@ -30,7 +37,7 @@
 				</div>
 			</div>
 
-			<!-- Rank 1 -->
+			<!-- 🥇 Rank 1 -->
 			<div class="col-4">
 				<div class="card border-0">
 					<div class="fs-1 text-warning">
@@ -42,10 +49,10 @@
 				</div>
 			</div>
 
-			<!-- Rank 3 -->
+			<!-- 🥉 Rank 3 -->
 			<div class="col-3">
 				<div class="card border-0">
-					<div class="fs-1 text-warning">
+					<div class="fs-1 text-bronze">
 						<i class="fas fa-award"></i>
 					</div>
 					<div class="fw-bold">{{ top_3.2.user.username }}</div>
@@ -53,6 +60,7 @@
 					<div class="text-muted">{{ top_3.2.normalized_score|floatformat:2 }}</div>
 				</div>
 			</div>
+
 			{% endif %}
 		</div>
 	</div>

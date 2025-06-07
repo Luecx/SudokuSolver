@@ -130,6 +130,7 @@ class CachedLeaderboardEntry(models.Model):
     score  = models.FloatField()
     solved = models.PositiveIntegerField()
     updated_at = models.DateTimeField(auto_now=True)
+    rank = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username} ({self.score:.2f} pts)"

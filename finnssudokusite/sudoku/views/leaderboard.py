@@ -6,7 +6,7 @@ from ..models import CachedLeaderboardEntry
 SORT_MAP = {
     "rank": "rank",
     "username": "user__username",
-    "score": "normalized_score",
+    "score": "score",  # raw score — normalized for display only
     "solved": "solved",
 }
 
@@ -16,39 +16,33 @@ def leaderboard(request):
     sort_order = request.GET.get("sort_order", "asc")
     page_num   = request.GET.get("page", 1)
 
+    # Get global top 3 (by stored rank)
+    top_3 = list(
+        CachedLeaderboardEntry.objects
+        .select_related("user")
+        .order_by("rank")[:3]
+    )
+
+    # Now build queryable base (may filter or sort later)
     entries = CachedLeaderboardEntry.objects.select_related("user")
 
     if query:
         entries = entries.filter(user__username__icontains=query)
 
-    entries = list(entries)
+    # Apply sorting
+    order_field = SORT_MAP.get(sort_by, "rank")
+    if sort_order == "desc":
+        order_field = f"-{order_field}"
+    entries = entries.order_by(order_field)
 
-    # Normalize scores
-    max_score = max((entry.score for entry in entries), default=1e-8)
-    for entry in entries:
+    # Normalize score for display
+    entry_list = list(entries)
+    max_score = max((entry.score for entry in entry_list), default=1e-8)
+    for entry in entry_list:
         entry.normalized_score = round((entry.score / max_score) * 100, 2) if max_score > 0 else 0.0
 
-    # Assign dynamic rank (always sort by score descending)
-    ranked = sorted(entries, key=lambda x: x.normalized_score, reverse=True)
-    for idx, entry in enumerate(ranked, start=1):
-        entry.rank = idx
-
-    # Get top 3 if available
-    top_3 = ranked[:3] if len(ranked) >= 3 else None
-
-    # Sort for current view
-    reverse = sort_order == "desc"
-    if sort_by == "score":
-        entries.sort(key=lambda x: x.normalized_score, reverse=reverse)
-    elif sort_by == "username":
-        entries.sort(key=lambda x: x.user.username.lower(), reverse=reverse)
-    elif sort_by == "solved":
-        entries.sort(key=lambda x: x.solved, reverse=reverse)
-    elif sort_by == "rank":
-        entries.sort(key=lambda x: x.rank, reverse=reverse)
-
     # Paginate
-    paginator = Paginator(entries, 25)
+    paginator = Paginator(entry_list, 25)
     page_obj = paginator.get_page(page_num)
 
     return render(request, "sudoku/leaderboard/leaderboard.html", {
@@ -56,5 +50,5 @@ def leaderboard(request):
         "query": query,
         "sort_by": sort_by,
         "sort_order": sort_order,
-        "top_3": top_3,
+        "top_3": top_3,  # Always global best 3
     })
