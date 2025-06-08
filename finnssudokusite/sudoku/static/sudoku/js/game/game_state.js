@@ -91,6 +91,7 @@ export class GameState {
         try {
             const res  = await fetch(`/has-solved/${sudokuId}/`);
             const json = await res.json();
+            console.log("SOLVED BEFORE:", json);
             if (json.status === "success") {
                 hasSolved = json.solved === true;
             }
@@ -104,6 +105,7 @@ export class GameState {
         try {
             const res  = await fetch(`/ongoing-state/${sudokuId}/`);
             const json = await res.json();
+            console.log("ONGOING STATE:", json);
             if (json.status === "success") {
                 serverOngoing = {
                     time: json.time || 0,
