@@ -201,7 +201,7 @@ export class BoardNumberLayer {
         let state = [];
         for (const cell of this.cells) {
             // only store cells that have a value, candidates or colors and are not fixed
-            if (cell.fixed || !(cell.hasValue() || cell.hasCandidates() || cell.hasColors()))
+            if (!(cell.hasValue() || cell.hasCandidates() || cell.hasColors()))
                 continue;
             state.push(cell.compressedString());
         }
