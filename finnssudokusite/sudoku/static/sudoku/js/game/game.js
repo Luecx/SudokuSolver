@@ -11,8 +11,6 @@ import { GameState } from "./game_state.js";
 
 export class Game {
     constructor(options = {}) {
-        console.log("constructing new game");
-
         this.ratingGiven = null;
         this.isCompleted = false;
         this.modalClosed = false;
@@ -57,11 +55,7 @@ export class Game {
         this.timer.init();
         const jsonData = window.puzzle_data;
 
-        console.log("Init");
-
         if (!jsonData) return;
-
-        console.log(jsonData);
 
         this.sudokuId = jsonData.id;
         this.board.loadBoard(jsonData.board);
