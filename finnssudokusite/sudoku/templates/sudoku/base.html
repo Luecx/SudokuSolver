@@ -96,8 +96,18 @@
 						</li>
 						<hr>
 						<li>
-							<a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>{% trans "Your profile" %}</a>
+							<a class="dropdown-item" href="{% url 'profile' %}#profile"><i class="fas fa-user me-2"></i>{% trans "Your profile" %}</a>
 						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'profile' %}#done"><i class="bi bi-check-lg me-2"></i>{% trans "Puzzles done" %}</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'profile' %}#ongoing"><i class="bi bi-arrow-right me-2"></i>{% trans "Ongoing Puzzles" %}</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'profile' %}#created"><i class="bi bi-grid-3x3 me-2"></i>{% trans "Puzzles Created" %}</a>
+						</li>
+						<hr>
 						<li>
 							<form method="post" action="{% url 'logout' %}" class="m-0">
 								{% csrf_token %}

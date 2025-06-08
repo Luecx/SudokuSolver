@@ -22,9 +22,6 @@
 				<button id="board-helpButton" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#howToPlayModal">
 					<i class="bi bi-question-circle"></i>
 				</button>
-				<div id="history-indicator" class="history-indicator">
-					<small>0/0</small>
-				</div>
 				<!--<button id="board-rulesButton" class="btn btn-light btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRules" aria-controls="offcanvasRules">
 					<i class="bi bi-info-circle"></i>
 				</button>-->
@@ -36,7 +33,13 @@
 		
 		<div class="keypad-pane my_control_style">
 			<div class="control-container">
-				<div id="game-info" class="info-style">{{ page_title|default:"Unnamed Puzzle" }}<br><span style="color: #343a40">by {{ creator_name|default:"Unknown" }}</span></div>
+				<div id="game-info">
+					<div class="info-style">{{ page_title|default:"Unnamed Puzzle" }}<br><span style="color: #343a40">by {{ creator_name|default:"Unknown" }}</span>
+					</div>
+					<div id="history-indicator" class="history-indicator">
+						<small>0/0</small>
+					</div>
+				</div>
 				<button id="btn-validation" class="btn btn-custom-white check-btn-style disable-group">Check</button>
 				<button id="board-gearButton" class="btn btn-custom-white icon-btn-style" data-bs-toggle="modal" data-bs-target="#gameSettingsModal"><i class="bi bi-gear"></i></button>
 				<button id="btn-undo" class="btn btn-custom-white icon-btn-style disable-group"><i class="bi bi-backspace-fill"></i></button>
@@ -192,7 +195,7 @@
 		const fontSizeFactor = fontSizeSlider ? parseFloat(fontSizeSlider.value) : 1.0;
 		const fontSize = Math.max(0.8, Math.min(4.0, 2.0 * scaleFactor * fontSizeFactor)) ; // clamp between 0.8rem and 3.0rem
 		
-		const infoSize = Math.max(0.8, Math.min(4.0, scaleFactor ));
+		const infoSize = Math.max(0.8, Math.min(4.0, 0.8 * scaleFactor ));
 		const btnNumberSize = fontSize * 1.0;
 		const btnCheckSize = fontSize * 0.5;
 		const btnIconSize = fontSize * 1.0;

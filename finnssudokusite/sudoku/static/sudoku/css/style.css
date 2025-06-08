@@ -20,7 +20,26 @@ body {
 
 h1, h2, h3 {margin-bottom: 1rem;}
 
-.card-title {font-weight: 100; font-size: 3rem; }
+.onlyHandy {
+    display: block !important;
+}
+
+@media (min-width: 576px) {
+    .onlyHandy {
+        display: none !important;
+    }
+}
+
+.onlyDesktop {
+    display: none !important;
+}
+
+@media (min-width: 576px) {
+    .onlyDesktop {
+        display: block !important;
+    }
+}
+
 
 h2.title {
     font-weight: 100;

@@ -86,9 +86,14 @@ export class HistoryManager {
 
     _updateHistoryIndicator() {
         const indicator = document.getElementById("history-indicator");
+        const u = document.getElementById("btn-undo");
+        const r = document.getElementById("btn-redo");
         if (indicator) {
             const current = this.currentIndex;
             const total = this.history.length - 1;
+            if (u) {u.disabled = (current === 0);}
+            if (r) {r.disabled = (current === total);}
+
             indicator.innerHTML = `<small>${current}/${total}</small>`;
         }
     }
