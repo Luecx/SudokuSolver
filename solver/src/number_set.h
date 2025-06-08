@@ -78,14 +78,20 @@ public:
         return {max_number, compute_mask(max_number) & ~((bit_t{1} << (num + 1)) - 1)};
     }
 
-    static NumberSet greaterEqThan(int max_number, Number num) { return greaterThan(max_number, num - 1); }
+    static NumberSet greaterEqThan(int max_number, Number num) {
+        assert(num >= 0 && num <= max_number);
+        return {max_number, compute_mask(max_number) & ~((bit_t{1} << num) - 1)};
+    }
 
     static NumberSet lessThan(int max_number, Number num) {
         assert(num >= 0 && num <= max_number);
         return {max_number, (bit_t{1} << num) - 1};
     }
 
-    static NumberSet lessEqThan(int max_number, Number num) { return lessThan(max_number, num + 1); }
+    static NumberSet lessEqThan(int max_number, Number num) {
+        assert(num >= 0 && num <= max_number);
+        return {max_number, (bit_t{1} << (num + 1)) - 1};
+    }
 
     static NumberSet odd(int max_number) {
         assert(max_number >= 1 && max_number <= MAX_SIZE);

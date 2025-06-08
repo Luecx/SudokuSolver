@@ -11,11 +11,6 @@ struct ArrowPair {
     Region<CellIdx> path;
 };
 
-/*
-    Arrow is now the same implementation as the one in js
-    But there is probably a mistake in the js implementation
-    and therefore in this one too.
-*/
 class RuleArrow : public RuleHandler {
 public:
     explicit RuleArrow(Board *board) : RuleHandler(board) {}
@@ -32,7 +27,9 @@ private:
     bool determine_base_options(ArrowPair &arrow_pair);
     bool determine_path_options(ArrowPair &arrow_pair);
 
-    std::pair<int, int> bounds_base(const Region<CellIdx> &base);
-    std::pair<int, int> bounds_path(const Region<CellIdx> &path);
+    std::pair<int, int> bounds_base(const Region<CellIdx> &base, bool clip = true);
+    std::pair<int, int> bounds_path(const Region<CellIdx> &path, int base_size, bool clip = true);
+
+    std::pair<int, int> clamp_bounds(int lb, int ub, int base_size);
 };
 } // namespace sudoku
