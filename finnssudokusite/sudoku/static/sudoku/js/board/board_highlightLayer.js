@@ -211,7 +211,7 @@ export class HighlightLayer {
         const candidateDivs = this.board.contentLayer.grid.querySelectorAll('.candidate-cell');
         candidateDivs.forEach(div => {
             if (div.textContent.trim() === value.toString()) {
-                div.style.fontWeight = 'bold';
+                div.style.setProperty('font-weight', 'bold', 'important');
             }
         });
     }
@@ -233,7 +233,7 @@ export class HighlightLayer {
         // Reset candidate styling
         const candidateDivs = this.board.contentLayer.grid.querySelectorAll('.candidate-cell');
         candidateDivs.forEach(div => {
-            div.style.fontWeight = 'normal';
+            div.style.setProperty('font-weight', 'normal', 'important');
         });
     }
 }
