@@ -89,7 +89,7 @@ export class GameState {
 
         // --- Fetch has-solved status ---
         try {
-            const res = await fetch(`/has-solved/${sudokuId}/`);
+            const res  = await fetch(`/has-solved/${sudokuId}/`);
             const json = await res.json();
             if (json.status === "success") {
                 hasSolved = json.solved === true;
@@ -99,14 +99,10 @@ export class GameState {
         }
 
         this.completed_before = hasSolved;
-        if (hasSolved) 
-        {
-            timer.stop();
-            return;
-        }
+
         // --- Try to load ongoing from server ---
         try {
-            const res = await fetch(`/ongoing-state/${sudokuId}/`);
+            const res  = await fetch(`/ongoing-state/${sudokuId}/`);
             const json = await res.json();
             if (json.status === "success") {
                 serverOngoing = {
