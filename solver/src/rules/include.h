@@ -17,3 +17,4 @@
 #include "rule_thermo.h"
 #include "rule_whisper.h"
 #include "rule_xv.h"
+#include "rule_dutch_flat.h"
