@@ -16,7 +16,6 @@ void Board::from_json(JSON &json) {
                 throw std::runtime_error("Each rule must be an object");
 
             std::string type = rule_entry["type"].get<std::string>();
-
             std::shared_ptr<RuleHandler> handler;
 
             if (type == "Standard") {
@@ -57,6 +56,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleSandwich>(this);
             } else if (type == "Diagonal Sum") {
                 handler = std::make_shared<RuleDiagonalSum>(this);
+            } else if (type == "Dutch-Flat") {
+                handler = std::make_shared<RuleDutchFlat>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }

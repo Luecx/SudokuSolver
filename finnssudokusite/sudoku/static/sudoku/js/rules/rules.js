@@ -18,6 +18,7 @@ import { ExtraRegionsHandler } from "./rule_extra_regions.js";
 import { CloneHandler } from "./rule_clone.js";
 import { CustomSumHandler } from "./rule_custom_sum.js";
 import { DiagonalSumHandler } from "./rule_diag_sum.js";
+import { DutchFlatRuleHandler } from "./rule_dutch_flat.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -41,6 +42,7 @@ export function createAllRuleHandlers(board) {
         new ExtraRegionsHandler(board),
         new CloneHandler(board),
         new CustomSumHandler(board),
-        new DiagonalSumHandler(board)
+        new DiagonalSumHandler(board),
+        new DutchFlatRuleHandler(board)
     ];
 }

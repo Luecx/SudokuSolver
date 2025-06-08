@@ -5,26 +5,18 @@ LDFLAGS := -flto
 
 SRC_DIR := src
 BUILD_DIR := build
-TARGET := SudokuSolver
+TARGET := SudokuSolver.exe
 
 # ------------------ Emscripten Settings ------------------
 EMCC := emcc
-EMFLAGS := \
-	-std=c++23 \
-	-O3 \
-	-s WASM=1 \
-	-s EXPORT_ES6=1 \
-	-s MODULARIZE=1 \
-	-s EXPORT_NAME=SolverEngine \
-	-s EXPORTED_FUNCTIONS="['_solve','_solveComplete']" \
-	-s EXPORTED_RUNTIME_METHODS="['ccall']" \
-  	--pre-js pre.js \
-	--no-entry
+EMFLAGS := -std=c++23 -O3 -s WASM=1 -s EXPORT_ES6=1 -s MODULARIZE=1 -s EXPORT_NAME=SolverEngine -s "EXPORTED_FUNCTIONS=[\"_solve\",\"_solveComplete\"]" -s "EXPORTED_RUNTIME_METHODS=[\"ccall\"]" --pre-js pre.js --no-entry
 
-WASM_OUT := $(BUILD_DIR)/solver.js
+WASM_OUT := $(BUILD_DIR)\solver.js
 
 # ------------------ File Discovery ------------------
-SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
+SOURCES := $(shell dir /b /s "$(SRC_DIR)\*.cpp" 2>nul)
+SOURCES := $(subst \,/,$(SOURCES))
+
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 
 # ------------------ Targets ------------------
@@ -38,18 +30,23 @@ $(TARGET): $(OBJECTS)
 
 # Compile object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(dir $@)
+	@if not exist "$(dir $@)" mkdir "$(dir $@)"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Emscripten (WASM) build
 wasm: $(WASM_OUT)
 
 $(WASM_OUT): $(SOURCES)
-	@mkdir -p $(BUILD_DIR)
+	@if not exist "$(BUILD_DIR)" mkdir "$(BUILD_DIR)"
 	$(EMCC) $(SOURCES) $(EMFLAGS) -o $@
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
+	@if exist "$(BUILD_DIR)" rmdir /S /Q "$(BUILD_DIR)"
+	@if exist "$(TARGET)" del "$(TARGET)"
 
-.PHONY: all clean wasm
+# Debug target to check sources
+debug-sources:
+    @echo "Sources: $(SOURCES)"
+
+.PHONY: all clean wasm debug-sources
