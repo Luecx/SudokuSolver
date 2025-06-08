@@ -87,6 +87,7 @@ export class GameState {
         let serverOngoing = null;
         let cacheData = null;
 
+        console.log("loading...");
         // --- Fetch has-solved status ---
         try {
             const res  = await fetch(`/has-solved/${sudokuId}/`);
