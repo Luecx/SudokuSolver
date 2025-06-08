@@ -37,6 +37,7 @@ export class GameState {
                     "Content-Type": "application/json",
                     "X-CSRFToken": getCSRFToken()
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     sudoku_id: data.sudoku_id,
                     time: data.time,
@@ -72,6 +73,7 @@ export class GameState {
                     "Content-Type": "application/json",
                     "X-CSRFToken": getCSRFToken()
                 },
+                credentials: "include",
                 body: JSON.stringify(data)
             });
         } catch { /* ignore */ }
