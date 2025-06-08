@@ -186,16 +186,6 @@
     overflow: hidden;
 }
 
-.cc-size-1  { font-size: 1.0em; }
-.cc-size-2  { font-size: 1.0em; }
-.cc-size-3  { font-size: 1.0em; }
-.cc-size-4  { font-size: 0.95em; }
-.cc-size-5  { font-size: 0.9em; }
-.cc-size-6  { font-size: 0.85em; }
-.cc-size-7  { font-size: 0.8em; }
-.cc-size-8  { font-size: 0.75em; }
-.cc-size-9  { font-size: 0.7em; }
-
 .hidden {
     display: none !important;
 }

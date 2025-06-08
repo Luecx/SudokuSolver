@@ -330,15 +330,27 @@ export class BoardNumberLayer {
     updateCenteredCandidates(cell) {
         const layer = cell.centeredCandidateLayer;
         layer.textContent = "";
+        layer.style.display = "none";
         layer.className = "centered-candidate-layer";
 
-        if (cell.centeredCandidates.length === 0) {
-            layer.style.display = "none";
-            return;
-        }
+        const count = cell.centeredCandidates.length;
+        if (count === 0) return;
 
-        const count = Math.min(cell.centeredCandidates.length, 9);
-        layer.classList.add(`cc-size-${count}`);
+        // Define scale factors (relative to cell size)
+        const sizeMap = {
+            1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0,
+            5: 0.9,
+            6: 0.8,
+            7: 0.7,
+            8: 0.6,
+            9: 0.5
+        };
+
+        const cellSize = this.board.getCellSize() * 0.3;
+        const scale = sizeMap[Math.min(count, 9)] ?? 0.75;
+        const fontSize = cellSize * scale;
+
+        layer.style.fontSize = `${fontSize}px`;
         layer.textContent = cell.centeredCandidates.sort().join("");
         layer.style.display = "flex";
     }
