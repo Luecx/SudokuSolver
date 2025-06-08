@@ -89,9 +89,6 @@ void RuleArrow::from_json(JSON &json) {
             arrow_pair.base = base;
             arrow_pair.path = path;
 
-            std::cout << base << std::endl;
-            std::cout << path << std::endl;
-
             arrow_pairs_.push_back(arrow_pair);
         }
     }
