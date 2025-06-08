@@ -50,15 +50,10 @@ export class HintRCLayer {
         this.config = config;
         this.showing = true;
 
-        console.log("showing hint rc layer");
-        console.log("type: " + config.target);
-
         const type = config.target;
         this.selected_region        = new Region(type);
         this.excluded_region        = config.excluded_region?? new Region(type);
         this.selector.selectionMode = config.mode ?? "multiple";
-
-        console.log(RegionClassMap[type]);
 
         if (config.initialSelected && Array.isArray(config.initialSelected)) {
             for (const idx of config.initialSelected) {
@@ -86,9 +81,6 @@ export class HintRCLayer {
             this.clearSelection();
         }
 
-        console.log(this.selected_region);
-        console.log("class:" + this.selected_region.constructor.name);
-
         if (!this.selected_region.has(idx)) {
             this.selected_region.add(idx);
             if (this.showing) {
@@ -101,6 +93,7 @@ export class HintRCLayer {
 
     deselect(idx) {
         if (!this.config || this.config.target !== RegionType.ROWCOL) return;
+
 
         if (this.selected_region.has(idx)) {
             this.selected_region.remove(idx);
@@ -176,7 +169,9 @@ export class HintRCLayer {
         label.className = "hint-rc-label";
         label.dataset.key = idx.toString();
 
-        label.innerText = isRow ? "→" : "↓"; // ← Arrows instead of numbers
+        const icon = document.createElement("i");
+        icon.classList.add("fa-solid", isRow ? "fa-arrow-right" : "fa-arrow-down");
+        label.appendChild(icon);
 
         if (this.selected_region?.has(idx)) {
             label.classList.add("selected");

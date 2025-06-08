@@ -12,6 +12,7 @@ import { EdgeIdx } from "./EdgeIdx.js";
 import { CornerIdx } from "./CornerIdx.js";
 import { RCIdx } from "./RCIdx.js";
 import { DiagonalIdx } from "./DiagonalIdx.js";
+import { OrientedRCIdx } from "./OrientedRCIdx.js";
 
 /**
  * Maps each region type to its corresponding class.
@@ -21,6 +22,7 @@ export const RegionClassMap = {
     [RegionType.EDGES]: EdgeIdx,
     [RegionType.CORNERS]: CornerIdx,
     [RegionType.ROWCOL]: RCIdx,
+    [RegionType.ORIENTED_ROWCOL]: OrientedRCIdx,
     [RegionType.DIAGONAL]: DiagonalIdx,
 };
 

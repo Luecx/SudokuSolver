@@ -21,7 +21,7 @@ export class SelectionManager {
         this.board = board;
         this.resetSelectionToDefault();
     }
-    
+
     isDefaultMode() {
         return this.selectionConfig?.isDefault ?? false;
     }
@@ -40,12 +40,15 @@ export class SelectionManager {
         if (target === RegionType.ROWCOL) {
             return this.board.hintRCLayer.selected_region;
         }
+        if (target === RegionType.ORIENTED_ROWCOL) {
+            return this.board.hintORCLayer.selected_region;
+        }
         if (target === RegionType.DIAGONAL) {
             return this.board.hintDiagLayer.selected_region;
         }
         return null;
     }
-    
+
     setSelectedRegion(region) {
         if (!this.selectionConfig) return;
 
@@ -61,43 +64,34 @@ export class SelectionManager {
         if (target === RegionType.ROWCOL && region.type === RegionType.ROWCOL) {
             this.board.hintRCLayer.selected_region = region;
         }
-        if (target === RegionType.DIAGONAL && region.type === RegionType.ROWCOL) {
+        if (target === RegionType.ORIENTED_ROWCOL && region.type === RegionType.ORIENTED_ROWCOL) {
+            this.board.hintORCLayer.selected_region = region;
+        }
+        if (target === RegionType.DIAGONAL && region.type === RegionType.DIAGONAL) {
             this.board.hintDiagLayer.selected_region = region;
         }
     }
 
-    /**
-     * Applies a selection configuration, enabling appropriate interaction.
-     * Stores the current config as the previous one before switching.
-     * @param {Object} config - Configuration created by `createSelectionConfig()`
-     */
     setSelectionMode(config) {
-        // close any open selector
+        // Close any open selector
         if (this.selectionConfig && this.selectionConfig.target !== RegionType.NONE) {
-            // emit an event which stops the current selection
             this.board.emitEvent("ev_selection_ended",
-                this.selectionConfig.target === RegionType.CELLS    ? this.board.cellLayer.selected_region :
-                this.selectionConfig.target === RegionType.EDGES    ? this.board.hintLayer.selected_region :
-                this.selectionConfig.target === RegionType.CORNERS  ? this.board.hintLayer.selected_region :
-                this.selectionConfig.target === RegionType.ROWCOL   ? this.board.hintRCLayer.selected_region :
-                this.selectionConfig.target === RegionType.DIAGONAL ? this.board.hintDiagLayer.selected_region  : null
+                this.selectionConfig.target === RegionType.CELLS           ? this.board.cellLayer.selected_region :
+                    this.selectionConfig.target === RegionType.EDGES           ? this.board.hintLayer.selected_region :
+                        this.selectionConfig.target === RegionType.CORNERS         ? this.board.hintLayer.selected_region :
+                            this.selectionConfig.target === RegionType.ROWCOL          ? this.board.hintRCLayer.selected_region :
+                                this.selectionConfig.target === RegionType.ORIENTED_ROWCOL ? this.board.hintORCLayer.selected_region :
+                                    this.selectionConfig.target === RegionType.DIAGONAL        ? this.board.hintDiagLayer.selected_region  : null
             );
 
-            // close the selector
             this.board.cellLayer.hide();
             this.board.hintLayer.hide();
             this.board.hintRCLayer.hide();
+            this.board.hintORCLayer.hide();
             this.board.hintDiagLayer.hide();
         }
 
-        // save the current config if it exists to allow reverting.
-        if (this.selectionConfig) {
-            this.previousConfig = this.selectionConfig;
-        } else {
-            this.previousConfig = this.defaultConfig;
-        }
-
-        // set the new config
+        this.previousConfig = this.selectionConfig ?? this.defaultConfig;
         this.selectionConfig = config;
         this.deselectAll();
 
@@ -106,19 +100,22 @@ export class SelectionManager {
         const isHint = target === RegionType.EDGES
             || target === RegionType.CORNERS;
 
-        const isRC = target === RegionType.ROWCOL;
-        const isDiag = target === RegionType.DIAGONAL
+        const isRC    = target === RegionType.ROWCOL;
+        const isORC   = target === RegionType.ORIENTED_ROWCOL;
+        const isDiag  = target === RegionType.DIAGONAL;
 
+        // Disable all pointer events
+        this.board.cellLayer.grid.style.pointerEvents             = "none";
+        this.board.hintLayer.hintLayer.style.pointerEvents        = "none";
+        this.board.hintRCLayer.rcLayer.style.pointerEvents        = "none";
+        this.board.hintORCLayer.layer.style.pointerEvents  = "none";
+        this.board.hintDiagLayer.diagLayer.style.pointerEvents    = "none";
 
-        this.board.cellLayer.grid.style.pointerEvents        = "none";
-        this.board.hintLayer.hintLayer.style.pointerEvents   = "none";
-        this.board.hintRCLayer.rcLayer.style.pointerEvents   = "none";
-        this.board.hintDiagLayer.diagLayer.style.pointerEvents = "none";
-
-        if (isRC)        this.board.hintRCLayer.rcLayer.style.pointerEvents = "auto";
-        else if (isDiag) this.board.hintDiagLayer.diagLayer.style.pointerEvents = "auto";
-        else if (isHint) this.board.hintLayer.hintLayer.style.pointerEvents = "auto";
-        else             this.board.cellLayer.grid.style.pointerEvents = "auto";
+        if (isRC)        this.board.hintRCLayer.rcLayer.style.pointerEvents        = "auto";
+        else if (isORC)  this.board.hintORCLayer.layer.style.pointerEvents         = "auto";
+        else if (isDiag) this.board.hintDiagLayer.diagLayer.style.pointerEvents    = "auto";
+        else if (isHint) this.board.hintLayer.hintLayer.style.pointerEvents        = "auto";
+        else             this.board.cellLayer.grid.style.pointerEvents             = "auto";
 
         if (target === RegionType.CELLS) {
             this.board.cellLayer.show(config);
@@ -141,6 +138,13 @@ export class SelectionManager {
             this.board.hintRCLayer.hide();
         }
 
+        if (isORC) {
+            this.board.hintORCLayer.show(config);
+            this.board.emitEvent("ev_selection_started", config);
+        } else {
+            this.board.hintORCLayer.hide();
+        }
+
         if (isDiag) {
             this.board.hintDiagLayer.show(config);
             this.board.emitEvent("ev_selection_started", config);
@@ -149,49 +153,32 @@ export class SelectionManager {
         }
     }
 
-    /**
-     * Reverts the selection config to the last one before the most recent set.
-     */
     revertSelection() {
         if (this.previousConfig) {
             this.setSelectionMode(this.previousConfig);
         }
     }
 
-    /**
-     * Applies the default selection config (cells, multiple).
-     */
     resetSelectionToDefault() {
         this.setSelectionMode(this.defaultConfig);
     }
 
-    /**
-     * Deselects everything across all types.
-     */
     deselectAll() {
-        if (this.selectionConfig?.target === RegionType.CELLS) {
+        const target = this.selectionConfig?.target;
+        if (target === RegionType.CELLS) {
             this.board.cellLayer._clearSelection();
         }
-
-        if (
-            this.selectionConfig?.target === RegionType.EDGES ||
-            this.selectionConfig?.target === RegionType.CORNERS
-        ) {
+        if (target === RegionType.EDGES || target === RegionType.CORNERS) {
             this.board.hintLayer.clearSelection();
         }
-
-        if (this.selectionConfig?.target === RegionType.ROWCOL) {
+        if (target === RegionType.ROWCOL) {
             this.board.hintRCLayer.clearSelection();
+        }
+        if (target === RegionType.ORIENTED_ROWCOL) {
+            this.board.hintORCLayer.clearSelection();
         }
     }
 
-    /**
-     * Shifts the currently selected cell region by (dx, dy).
-     * Cells that move out of bounds are discarded.
-     * Emits `ev_selected_region_changed` or `ev_selected_region_cleared`.
-     * @param {number} dy - Vertical shift in rows.
-     * @param {number} dx - Horizontal shift in columns.
-     */
     shiftSelection(dy, dx) {
         if (this.selectionConfig?.target !== RegionType.CELLS) return;
 
@@ -209,13 +196,10 @@ export class SelectionManager {
                 cell.c >= 0 && cell.c < cols
             );
 
-        if (shiftedItems.length === 0) {
-            return;
-        }
+        if (shiftedItems.length === 0) return;
 
         const newRegion = new Region(RegionType.CELLS, shiftedItems);
         this.setSelectedRegion(newRegion);
         this.board.emitEvent("ev_selected_region_changed", newRegion);
     }
-
 }

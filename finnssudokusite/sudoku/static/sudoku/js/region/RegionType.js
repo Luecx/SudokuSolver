@@ -19,8 +19,11 @@ export const RegionType = {
     CORNERS: 'corners',
 
     /** Region composed of RCIdx items (entire rows or columns or wildcard combinations) */
-    ROWCOL: "rowcol",
+    ROWCOL: 'rowcol',
+
+    /** Region composed of OrientedRCIdx items (directional rows or columns) */
+    ORIENTED_ROWCOL: 'oriented_rowcol',
 
     /** Region composed of DiagonalIdx items (either diagonal or antidiagonal) */
-    DIAGONAL: "diagonal",
+    DIAGONAL: 'diagonal',
 };

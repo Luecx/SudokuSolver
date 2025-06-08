@@ -36,12 +36,16 @@ export class RCIdx {
      * @returns {boolean}
      */
     equals(other) {
-        return (
-            other instanceof RCIdx &&
-            (this.row === other.row || (this.row === null && other.row === null)) &&
-            (this.col === other.col || (this.col === null && other.col === null))
-        );
+        if (!(other instanceof RCIdx)) return false;
+
+        const isWildcard = (v) => v == null || Number.isNaN(v);
+
+        const rowEqual = (this.row === other.row) || (isWildcard(this.row) && isWildcard(other.row));
+        const colEqual = (this.col === other.col) || (isWildcard(this.col) && isWildcard(other.col));
+
+        return rowEqual && colEqual;
     }
+
 
     /**
      * Returns a copy of this RCIdx.

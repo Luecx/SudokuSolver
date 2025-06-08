@@ -13,6 +13,7 @@ import { HintDiagLayer } from "./board_hintDiagLayer.js";
 import { HighlightLayer } from "./board_highlightLayer.js";
 import { CandidateRemover } from "./board_removeCandidates.js";
 import { HistoryManager } from "./board_historyManager.js";
+import { HintOrientedRCLayer } from "./board_hintOrientedRCLayer.js";
 
 export function createBoard(container) {
     const gridSize = 9;
@@ -33,6 +34,8 @@ export function createBoard(container) {
     const solutionLayer      = new BoardNumberLayer(container, renderer);
     const hintLayer          = new HintEdgeLayer(container, renderer);
     const hintRCLayer        = new HintRCLayer(container, renderer);
+    const hintORCLayer       = new HintOrientedRCLayer(container, renderer);
+
     const hintDiagLayer      = new HintDiagLayer(container, renderer);
     const cellLayer          = new CellLayer(container, gridSize);
     const selectionManager   = new SelectionManager(ruleManager, renderer);
@@ -137,6 +140,7 @@ export function createBoard(container) {
         cellLayer,
         hintLayer,
         hintRCLayer,
+        hintORCLayer,
         hintDiagLayer,
         contentLayer: numberLayer,
         highlightLayer,
@@ -147,6 +151,7 @@ export function createBoard(container) {
     function initBoard() {
         hintLayer.init(board);
         hintRCLayer.init(board);
+        hintORCLayer.init(board);
         hintDiagLayer.init(board);
         cellLayer.init(board);
         numberLayer.init(board);
@@ -166,6 +171,7 @@ export function createBoard(container) {
             cellLayer._generate(cellSize, usedSize, offset);
             hintLayer.update();
             hintRCLayer.update();
+            hintORCLayer.update();
             hintDiagLayer.update();
             board.render();
             numberLayer._generate(cellSize, usedSize, offset);
