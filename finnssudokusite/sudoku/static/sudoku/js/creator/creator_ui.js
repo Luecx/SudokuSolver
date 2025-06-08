@@ -176,12 +176,13 @@ class Creator {
         }
 
         const { solutions_found, interrupted_by_node_limit, interrupted_by_solution_limit, error, nodes_explored, time_taken_ms } = this.stats;
+        const interrupted = interrupted_by_node_limit || interrupted_by_solution_limit;
 
         if (error) {
             this.renderAlert("danger", "Solver Error", `<p>❌ ${error}</p>`);
-        } else if (solutions_found === 0) {
+        } else if (solutions_found === 0 && !interrupted) {
             this.renderAlert("danger", "No solution", "<p>❌ No solution exists for this puzzle.</p>");
-        } else if (solutions_found === 1 && !interrupted_by_solution_limit && !interrupted_by_node_limit) {
+        } else if (solutions_found === 1 && !interrupted) {
             this.renderAlert("success", "1 solution", `<p>✅ Exactly one solution exists.<br><small>${nodes_explored} nodes, ${time_taken_ms.toFixed(1)} ms</small></p>`);
             this.board.showSolution(this.preSolveNumbers, solutions[0]);
             this.displaySolutions(solutions);
@@ -189,16 +190,32 @@ class Creator {
         } else {
             let summary = "";
             let solutionText = "";
+            let alertType, alertContent;
 
             if (interrupted_by_solution_limit) {
                 summary = "⚠️ Solution limit reached";
                 solutionText = `At least ${solutions_found}`;
+                alertType = "danger";
+                alertContent = "Solution limit reached";
             } else if (interrupted_by_node_limit) {
                 summary = "⚠️ Node limit reached";
-                solutionText = `At least ${solutions_found}`;
+                solutionText = solutions_found > 0 ? `At least ${solutions_found}` : "No solutions found";
+                
+                if (solutions_found === 1) {
+                    alertType = "warning";
+                    alertContent = "More solutions may exist, add more constraints";
+                } else if (solutions_found > 1) {
+                    alertType = "danger";
+                    alertContent = "Multiple solutions found";
+                } else {
+                    alertType = "warning";
+                    alertContent = "Node limit reached";
+                }
             } else {
                 summary = "❌ Multiple solutions found";
                 solutionText = `${solutions_found}`;
+                alertType = "danger";
+                alertContent = "Multiple solutions found";
             }
 
             let msg = `
@@ -212,7 +229,7 @@ class Creator {
               </div>
             `;
 
-            this.renderAlert("danger", "Multiple solutions", msg);
+            this.renderAlert(alertType, alertContent, msg);
             this.displaySolutions(solutions);
             this.analysisUnlocked = true;
         }
