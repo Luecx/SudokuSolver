@@ -22,6 +22,7 @@ import { EdgeIdx } from "../region/EdgeIdx.js";
 import { RCIdx } from "../region/RCIdx.js";
 import { DiagonalIdx } from "../region/DiagonalIdx.js";
 import { Region } from "../region/Region.js";
+import {OrientedRCIdx} from "../region/OrientedRCIdx.js";
 
 // === Internal type mapping (future extensibility) ===
 const typeMap = {
@@ -29,6 +30,7 @@ const typeMap = {
     "CornerIdx": CornerIdx,
     "EdgeIdx": EdgeIdx,
     "RCIdx": RCIdx,
+    "OCIdx": OrientedRCIdx,
     "DiagonalIdx": DiagonalIdx,
     "Region": Region,
 };
@@ -54,6 +56,9 @@ function customReplacer(key, value) {
     }
     if (value instanceof RCIdx) {
         return { __type__: "RCIdx", row: value.row, col: value.col };
+    }
+    if (value instanceof OrientedRCIdx) {
+        return { __type__: "ORCIdx", row: value.row, col: value.col, reversed: value.reversed};
     }
     if (value instanceof DiagonalIdx) {
         return { __type__: "DiagonalIdx", type: value.type, index: value.index };
@@ -88,6 +93,8 @@ function customReviver(key, value) {
                 return new EdgeIdx(value.r1, value.c1, value.r2, value.c2);
             case "RCIdx":
                 return new RCIdx(value.row, value.col);
+            case "ORCIdx":
+                return new OrientedRCIdx(value.row, value.col, value.reversed);
             case "DiagonalIdx":
                 return new DiagonalIdx(value.type, value.index);
             case "Region":

@@ -24,6 +24,7 @@
 #include "DiagonalIdx.h"
 #include "EdgeIdx.h"
 #include "RCIdx.h"
+#include "ORCIdx.h"
 
 namespace sudoku {
 
@@ -265,6 +266,7 @@ private:
     static std::vector<CellIdx> call_attached_cells(const CornerIdx &idx, int) { return idx.attached_cells(); }
     static std::vector<CellIdx> call_attached_cells(const RCIdx &idx, int n) { return idx.attached_cells(n); }
     static std::vector<CellIdx> call_attached_cells(const DiagonalIdx &idx, int n) { return idx.attached_cells(n); }
+    static std::vector<CellIdx> call_attached_cells(const ORCIdx &idx, int n) { return idx.attached_cells(n); }
 };
 
 /**
