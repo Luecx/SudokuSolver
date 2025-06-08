@@ -167,8 +167,8 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         ctx.save();
         ctx.strokeStyle = rule.label == "Anti-Knight" ? "rgb(158, 107, 73)" : "rgb(125, 196, 62)";
         ctx.lineWidth = 3;
-        ctx.lineJoin = "round";  // Ensures smooth connection of line segments
-        ctx.lineCap = "round";   // Ensures smooth caps at the ends
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
             
         ctx.setLineDash([10, 10]);
             
@@ -185,8 +185,6 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             ctx.stroke();
         }
 
-        // Position top left
-
         const forbiddenSums = this.getForbiddenSums(rule);
         const totalNumbers = forbiddenSums.length;
         if (!forbiddenSums || totalNumbers === 0) {
@@ -197,6 +195,11 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
         const topLeft = this.board.getCellTopLeftCTX(firstPoint.r, firstPoint.c);
             
+        // Calculate responsive font size with minimum size for mobile
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const baseFontSize = s * 0.22;
+        const fontSize = Math.max(baseFontSize * devicePixelRatio, 10);
+        
         const boxWidth = s * 0.22 * totalNumbers;
         const boxHeight = s * 0.25;
 
@@ -208,20 +211,18 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
 
         const forbiddenSumsText = forbiddenSums.join(", ");
-        const textX =  rectX + s * 0.02;
+        const textX = rectX + s * 0.02;
         const textY = rectY + s * 0.03;
 
-        ctx.setLineDash([]); // reset dashed lines before strikethrough
-        ctx.fillStyle = "#B92B2B";
-        ctx.font = `${s * 0.24}px Tahoma, Geneva, sans-serif`;
+        ctx.setLineDash([]);
+        ctx.fillStyle = "black";
+        ctx.font = `${fontSize}px Tahoma, Geneva, sans-serif`;
         ctx.textAlign = "left";
         ctx.textBaseline = "top";
 
         ctx.fillText(forbiddenSumsText, textX, textY);
 
-        // Get text metrics before drawing text
         const textMetrics = ctx.measureText(forbiddenSumsText);
-        // calculate a vertical position
         const middleY = textY + (textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent) / 1.75;
 
         ctx.strokeStyle = "rgb(61, 50, 42, 0.5)";
