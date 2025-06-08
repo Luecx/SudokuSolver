@@ -318,7 +318,7 @@ export class BoardNumberLayer {
         for (let n of candidateOrder) {
             const candidate = document.createElement("div");
             candidate.className = "candidate-cell";
-            candidate.style.fontSize = `${candidateSize * 1.0}px`;
+            candidate.style.fontSize = `${candidateSize * 0.8}px`;
             candidate.style.color = candidateColor;
             if (cell.ordinaryCandidates.includes(n)) {
                 candidate.textContent = n;
