@@ -39,6 +39,22 @@ def index(request):
     })
 
 
+def contact_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        message = request.POST.get('message', '').strip()
+
+        if name and message:
+            send_mail(
+                f"Neue Kontaktanfrage von {name}",
+                f"Name: {name}\n\nNachricht:\n{message}",
+                settings.DEFAULT_FROM_EMAIL,
+                ['hello@sudokusphere.com']
+            )
+            return HttpResponse("OK")  # Keine Umleitung, nur Antwort
+        return HttpResponse("Fehler", status=400)
+    return render(request, 'index.html')
+
 def game(request):
     return render(request, "sudoku/game/game.html")
 

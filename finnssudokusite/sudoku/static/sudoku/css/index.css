@@ -92,3 +92,26 @@
 .dsgvo h3 {font-size: 1.2rem;}
 .dsgvo h4 {font-size: 1.1rem;}
 .dsgvo h5 {font-size: 1rem;}
+
+
+.history {
+	margin: 2rem 0;
+}
+
+.history section {
+	display: grid;
+	grid-template-columns: 10ch 1fr; /* 10 Zeichen Breite für Datum */
+	gap: 1.5rem;
+	padding: 0.5rem 0;
+	align-items: start;
+}
+
+.history section span:first-child {
+	font-weight: bold;
+	color: #555;
+	white-space: nowrap;
+}
+
+.history section span:last-child {
+	color: #222;
+}
