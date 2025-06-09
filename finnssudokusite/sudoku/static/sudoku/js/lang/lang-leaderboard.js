@@ -26,7 +26,7 @@ var translations = {
     },
     langScore: {
         en: "Total Score",
-        de: "Gesamtpunktzahl",
+        de: "Punkte",
         jp: "合計スコア" // 合計スコア (gōkei sukoa): "Gesamtpunktzahl" (Score)
     },
     langSolved: {

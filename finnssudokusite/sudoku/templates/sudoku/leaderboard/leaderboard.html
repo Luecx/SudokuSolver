@@ -6,6 +6,82 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'sudoku/css/leaderboard.css' %}">
+<style>
+	.podest {
+		width: 70%;
+		margin: 0 auto;
+		position: relative;
+		background-image: url("{% static 'sudoku/img/leaderboard/podest.png' %}");
+		background-size: contain;
+		background-repeat: no-repeat;
+		background-position: center;
+		aspect-ratio: 1024/628;
+		height: auto;
+		z-index: 1;
+	}
+	.podest .name-1,
+	.podest .pokal-1,
+	.podest .box-1{
+		position: absolute;
+		left: 50%;
+		top: 28%;
+		justify-content: center;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.podest .name-2,
+	.podest .pokal-2,
+	.podest .box-2 {
+		position: absolute;
+		left: 23%;
+		top: 45%;
+		justify-content: center;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+	}
+	.podest .name-3,
+	.podest .pokal-3,
+	.podest .box-3 {
+		position: absolute;
+		left: 76%;
+		top: 50%;
+		justify-content: center;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.podest .box-1 {
+		top: 40%;
+		width: 26%;
+		height: 45%;
+	}
+	.podest .box-2 {
+		top: 58%;
+		width: 25%;
+		height: 27%;
+	}
+	.podest .box-3 {
+		top: 63%;
+		width: 26%;
+		height: 22%;
+	}
+	.podest .pokal-1 {
+		top: 6%;
+		width: 22%;
+	}
+	.podest .pokal-2 {
+		top: 33%;
+		width: 16%;
+	}
+	.podest .pokal-3 {
+		top: 42%;
+		width: 14%;
+	}
+</style>
 {% endblock %}
 
 
@@ -13,60 +89,40 @@
 <div class="container mt-5">
 	<h2 class="text-center title">{% trans "Leaderboard" %}</h2>
 
-	<div class="text-center mt-4">
-		<p>
-			{% blocktrans with link='<a href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">'|safe %}
-			For a detailed explanation of how the rating is computed, {{ link }}click here</a>.
-			{% endblocktrans %}
-		</p>
-	</div>
-	
 	{% if top_3|length >= 3 %}
-	<div class="container onlyDesktop my-5">
-		<div class="d-flex justify-content-center align-items-end" style="gap: 6px;">
-			<!-- 🥈 Rank 2 -->
-			<div class="col-3 d-flex flex-column justify-content-end">
-				<div class="card text-center h-100 d-flex flex-column justify-content-end">
-					<div class="card-body mt-auto">
-						<h2 class="card-title">{{ top_3.1.user.username }}</h2>
-						<img class="square-img mx-auto d-block" src="../../../static/sudoku/img/leaderboard/cup2.png" width="50%"/>
-						<div class="text-muted small">{% trans "2nd place" %}</div>
-						<div class="text-muted">{{ top_3.1.normalized_score|floatformat:2 }}</div>
-					</div>
-				</div>
-			</div>
-			<!-- 🥇 Rank 1 -->
-			<div class="col-4 d-flex flex-column justify-content-end">
-				<div class="card text-center h-100 d-flex flex-column justify-content-end">
-					<div class="card-body mt-auto">
-						<h2 class="card-title">{{ top_3.0.user.username }}</h2>
-						<img class="square-img mx-auto d-block" src="../../../static/sudoku/img/leaderboard/cup1.png" width="60%"/>
-						<div class="text-muted">{% trans "1st place" %}</div>
-						<div class="text-primary fw-semibold">{{ top_3.0.normalized_score|floatformat:2 }}</div>
-					</div>
-				</div>
-			</div>
-			<!-- 🥉 Rank 3 -->
-			<div class="col-3 d-flex flex-column justify-content-end">
-				<div class="card text-center h-100 d-flex flex-column justify-content-end">
-					<div class="card-body mt-auto">
-						<h2 class="card-title">{{ top_3.2.user.username }}</h2>
-						<img class="square-img mx-auto d-block" src="../../../static/sudoku/img/leaderboard/cup3.png" width="40%"/>
-						<div class="text-muted small">{% trans "3rd place" %}</div>
-						<div class="text-muted">{{ top_3.2.normalized_score|floatformat:2 }}</div>
-					</div>
-				</div>
-			</div>
+	<div class="podest">
+		<!-- 🥇 Rank 1 -->
+		<div class="box-1 text-center">
+			<div class="text-muted">{% trans "1st place" %}</div>
+			<h2 class="card-title">{{ top_3.0.user.username }}</h2>
+			<div class="text-muted">{{ top_3.0.normalized_score|floatformat:0 }}&nbsp;points</div>
 		</div>
+		<img class="pokal-1 square-img" src="{% static 'sudoku/img/leaderboard/cup1.png' %}"/>
+		
+		
+		<!-- 🥈 Rank 2 -->
+		<div class="box-2 text-center">
+			<div class="text-muted">{% trans "2nd place" %}</div>
+			<h2 class="card-title">{{ top_3.1.user.username }}</h2>
+			<div class="text-muted">{{ top_3.1.normalized_score|floatformat:0 }}</div>
+		</div>
+		<img class="pokal-2 square-img" src="{% static 'sudoku/img/leaderboard/cup2.png' %}"/>
+		
+		<!-- 🥉 Rank 3 -->
+		<div class="box-3 text-center">
+			<div class="text-muted">{% trans "3rd place" %}</div>
+			<h2 class="card-title">{{ top_3.2.user.username }}</h2>
+			<div class="text-muted">{{ top_3.2.normalized_score|floatformat:0 }}</div>
+		</div>
+		<img class="pokal-3 square-img" src="{% static 'sudoku/img/leaderboard/cup3.png' %}"/>
 	</div>
+
 	{% endif %}
-	
 	
 	<div class="my_board_style p-3">
 		
 		<div>
 			<form method="get" class="mb-4">
-				<label class="form-label fw-semibold">{% trans "Search users:" %}</label>
 				<div class="input-group">
 					<input type="text" name="q" class="form-control" placeholder="{% trans 'Search by username...' %}" value="{{ query }}">
 					<button class="btn btn-primary" type="submit">
@@ -121,7 +177,7 @@
 			<tr>
 				<td>{{ entry.rank }}</td>
 				<td><a href="{% url 'user_profile' entry.user.username %}">{{ entry.user.username }}</a></td>
-				<td>{{ entry.normalized_score|floatformat:2 }}</td>
+				<td>{{ entry.normalized_score|floatformat:0 }}</td>
 				<td>{{ entry.solved }}</td>
 			</tr>
 			{% endfor %}
@@ -133,6 +189,13 @@
 			</tbody>
 		</table>
 	</div>
+	</div>
+	<div class="text-center mt-4">
+		<p>
+			{% blocktrans with link='<a href="#" data-bs-toggle="modal" data-bs-target="#formulaModal">'|safe %}
+			For a detailed explanation of how the rating is computed, {{ link }}click here</a>.
+			{% endblocktrans %}
+		</p>
 	</div>
 	<nav class="mt-3">
 		<ul class="pagination justify-content-center">

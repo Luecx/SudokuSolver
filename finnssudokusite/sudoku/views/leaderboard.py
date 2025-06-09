@@ -22,6 +22,9 @@ def leaderboard(request):
         .select_related("user")
         .order_by("rank")[:3]
     )
+    top_3_max = max((entry.score for entry in top_3), default=1e-8)
+    for entry in top_3:
+        entry.normalized_score = round((entry.score / top_3_max) * 10000, 2) if top_3_max > 0 else 0.0
 
     # Now build queryable base (may filter or sort later)
     entries = CachedLeaderboardEntry.objects.select_related("user")
@@ -39,7 +42,7 @@ def leaderboard(request):
     entry_list = list(entries)
     max_score = max((entry.score for entry in entry_list), default=1e-8)
     for entry in entry_list:
-        entry.normalized_score = round((entry.score / max_score) * 100, 2) if max_score > 0 else 0.0
+        entry.normalized_score = round((entry.score / max_score) * 10000, 2) if max_score > 0 else 0.0
 
     # Paginate
     paginator = Paginator(entry_list, 25)
