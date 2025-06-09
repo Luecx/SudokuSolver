@@ -43,8 +43,6 @@ public:
             delete[] data;
     }
 
-    void clear() { idx = 0; }
-
     void add(int value) {
         if (idx < m_size)
             data[idx++] = value;
@@ -55,17 +53,16 @@ public:
             --idx;
     }
 
+    void clear() { idx = 0; }
     void sort() { std::sort(data, data + idx); }
-
     int size() const { return idx; }
+    bool empty() const { return idx == 0; }
 
     int operator[](int i) const {
         if (i < 0 || i >= idx)
             throw std::out_of_range("Index out of range in RenbanType");
         return data[i];
     }
-
-    bool empty() const { return idx == 0; }
 };
 
 class RuleRenban : public RuleHandler {
