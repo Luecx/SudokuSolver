@@ -76,15 +76,25 @@ void RuleRenban::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
+bool RuleRenban::filter_range_based(const Region<CellIdx> &path, int min_val, int max_val) {
     const int board_size = board_->size();
-    const int length = path.size();
-    bool changed = false;
 
-    // collect candidate bounds and solved values
-    int min_cand = board_size + 1;
-    int max_cand = 0;
+    bool changed = false;
+    if (min_val > 1 || max_val < board_size) {
+        NumberSet invalid = NumberSet::greaterThan(board_size, max_val) | NumberSet::lessThan(board_size, min_val);
+        for (const auto &pos: path)
+            changed |= board_->get_cell(pos).remove_candidates(invalid);
+    }
+    return changed;
+}
+
+bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
+    // collect solved cells
     m_solved_values.clear();
+    int free_cells = 0;
+
+    int min_cand = board_->size() + 1;
+    int max_cand = 0;
 
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
@@ -93,50 +103,28 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
 
         if (cell.is_solved())
             m_solved_values.add(cell.value);
+        else
+            free_cells++;
     }
 
-    // remove candidates outside the global candidate range
-    if (min_cand > 1 || max_cand < board_size) {
-        NumberSet invalid_candidates =
-                NumberSet::greaterThan(board_size, max_cand) | NumberSet::lessThan(board_size, min_cand);
+    // if no cells are solved, check if we can filter some candidates
+    if (m_solved_values.empty())
+        return filter_range_based(path, min_cand, max_cand);
 
-        for (const auto &pos: path)
-            changed |= board_->get_cell(pos).remove_candidates(invalid_candidates);
-    }
+    const int length = path.size();
 
-    // if no solved values, we're done
-    if (m_solved_values.empty()) {
-        return changed;
-    }
+    // Berechne Grenzen für die konsekutive Sequenz
+    int min_solved = m_solved_values.min();
+    int max_solved = m_solved_values.max();
 
-    const int num_solved = m_solved_values.size();
-    const int min_solved = m_solved_values.min();
-    const int max_solved = m_solved_values.max();
+    int min_start = std::max(1, max_solved - length + 1);
+    int max_start = std::min(board_->size() - length + 1, min_solved);
 
-    // calculate valid range for the consecutive sequence
-    int min_possible = std::max(1, max_solved - length + 1);
-    int max_possible = std::min(board_size, min_solved + length - 1);
+    // check if range is valid
+    if (min_start > max_start)
+        return false;
 
-    // if multiple values are solved, ensure they can fit in a consecutive sequence
-    if (num_solved > 1) {
-        int solved_span = max_solved - min_solved + 1;
-        int gaps_needed = solved_span - num_solved;
-        int gaps_available = length - num_solved;
-
-        if (gaps_needed > gaps_available)
-            return changed; // invalid
-    }
-
-    // remove candidates outside the possible range
-    if (min_possible > 1 || max_possible < board_size) {
-        NumberSet invalid_range =
-                NumberSet::greaterThan(board_size, max_possible) | NumberSet::lessThan(board_size, min_possible);
-
-        for (const auto &pos: path)
-            changed |= board_->get_cell(pos).remove_candidates(invalid_range);
-    }
-
-    return changed;
+    return filter_range_based(path, min_start, max_start + length - 1);
 }
 
 } // namespace sudoku
