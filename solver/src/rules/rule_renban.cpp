@@ -36,17 +36,14 @@ bool RuleRenban::valid() {
     for (const auto &path: renban_paths_) {
         solved_values_.clear();
 
-        bool all_solved = true;
         for (const auto &pos: path) {
             Cell &cell = board_->get_cell(pos);
-            if (!cell.is_solved()) {
-                all_solved = false;
+            if (!cell.is_solved()) 
                 break;
-            }
             solved_values_.push_back(cell.value);
         }
 
-        if (!all_solved)
+        if (solved_values_.size() != path.size())
             continue;
 
         std::sort(solved_values_.begin(), solved_values_.end());
@@ -81,37 +78,47 @@ void RuleRenban::from_json(JSON &json) {
 void RuleRenban::init_all_consecutive_ranges(int length) {
     ranges_.clear();
     const int board_size = board_->size();
-
-    for (int start = 1; start <= board_size - length + 1; start++) {
-        ranges_.emplace_back(); // add an empty vector to ranges_
-        for (int i = 0; i < length; i++)
-            ranges_.back().push_back(start + i);
+    const int num_ranges = board_size - length + 1;
+    
+    ranges_.reserve(num_ranges);
+    
+    for (int start = 1; start <= num_ranges; start++) {
+        std::vector<int> range;
+        range.reserve(length);
+        for (int i = 0; i < length; i++) {
+            range.push_back(start + i);
+        }
+        ranges_.push_back(std::move(range));
     }
 }
 
 void RuleRenban::init_ranges_including_values(int length, int min_value, int max_value) {
     ranges_.clear();
-    solved_values_.clear();
     const int board_size = board_->size();
 
     int min_start = std::max(1, max_value - length + 1);
     int max_start = std::min(board_size - length + 1, min_value);
 
     for (int start = min_start; start <= max_start; start++) {
-        potential_range_.clear();
-        for (int i = 0; i < length; i++)
-            potential_range_.push_back(start + i);
-
+        int end = start + length - 1;
+        
+        // Check if all solved values are within this range [start, end]
         bool all_included = true;
-        for (int val: solved_values_) {
-            if (std::find(potential_range_.begin(), potential_range_.end(), val) == potential_range_.end()) {
+        for (int val : solved_values_) {
+            if (val < start || val > end) {
                 all_included = false;
                 break;
             }
         }
 
-        if (all_included)
+        if (all_included) {
+            potential_range_.clear();
+            potential_range_.reserve(length);
+            for (int i = 0; i < length; i++) {
+                potential_range_.push_back(start + i);
+            }
             ranges_.push_back(std::move(potential_range_));
+        }
     }
 }
 

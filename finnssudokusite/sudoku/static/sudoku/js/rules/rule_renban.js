@@ -29,6 +29,23 @@ export class RenbanHandler extends RuleTypeHandler {
         ];
     }
 
+    getRuleWarnings(rule) {
+        let warnings = [];
+
+        let region = rule.fields.region;
+        if (!region) {
+            warnings.push("Region is empty");
+            return warnings;
+        }
+
+        if (region.size() < 2 || region.size() > 9) {
+            warnings.push(`Region must have 2 to 9 cells`);
+        }
+
+        return warnings;
+    }
+
+
     getDescriptionHTML() {
         return `
         Along a <b>renban line</b>, the digits form a consecutive sequence, in any order.
