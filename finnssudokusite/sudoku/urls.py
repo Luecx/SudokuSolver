@@ -17,6 +17,7 @@ from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
 from sudoku.forms import UsernameOrEmailPasswordResetForm
 from . import views as views
+from sudoku.views.contact import kontaktformular_view
 
 urlpatterns = [
     # --- Core Views ---
@@ -69,4 +70,7 @@ urlpatterns = [
     path('load-state/<int:sudoku_id>/'      , views.load_puzzle_state       , name='load_puzzle_state'),  # legacy
     path('ongoing-state/<int:sudoku_id>/'   , views.get_ongoing_state       , name='get_ongoing_state'),
     path('save-ongoing/'                    , views.save_ongoing_state      , name='save_ongoing_state'),
+
+    path("kontakt/", kontaktformular_view, name="kontaktformular"),
 ]
+

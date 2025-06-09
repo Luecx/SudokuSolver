@@ -64,3 +64,5 @@ cmake-build-release/
 perf*
 
 *-p/
+
+finnssudokusite/.env
