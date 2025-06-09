@@ -19,9 +19,7 @@ private:
 public:
     RenbanType(int _size) : m_size(_size) {
         data = new int[_size]();
-        idx = 0;
-        min_value = m_size + 1;
-        max_value = 0;
+        clear();
     }
 
     ~RenbanType() {
