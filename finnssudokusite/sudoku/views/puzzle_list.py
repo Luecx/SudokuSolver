@@ -1,9 +1,9 @@
 from django.db.models import F, FloatField, ExpressionWrapper
+from django.db.models import Count, Q
 from django.db.models.functions import NullIf
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from ..models import Sudoku, Tag
-
 SORT_FIELDS = {
     "title": "title",
     "creator": "created_by__username",
@@ -44,7 +44,12 @@ def puzzles_view(request):
         sudokus = sudokus.filter(title__icontains=query)
 
     if tag_names:
-        sudokus = sudokus.filter(tags__name__in=tag_names).distinct()
+        sudokus = (
+            sudokus
+            .filter(tags__name__in=tag_names)
+            .annotate(num_matching_tags=Count('tags', filter=Q(tags__name__in=tag_names), distinct=True))
+            .filter(num_matching_tags=len(tag_names))
+        )
 
     sudokus = sudokus.order_by(sort_field)
 
