@@ -1,0 +1,124 @@
+{
+  "fixedCells": [
+    {
+      "r": 4,
+      "c": 4,
+      "value": 5
+    }
+  ],
+  "rules": [
+    {
+      "type": "Standard",
+      "fields": {},
+      "rules": []
+    },
+    {
+      "type": "Numbered-Rooms",
+      "fields": {},
+      "rules": [
+        {
+          "id": "1749416725179-elyp",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "oriented_rowcol",
+              "items": [
+                {
+                  "__type__": "ORCIdx",
+                  "row": 2,
+                  "col": null,
+                  "reversed": true
+                },
+                {
+                  "__type__": "ORCIdx",
+                  "row": 6,
+                  "col": null,
+                  "reversed": false
+                }
+              ]
+            },
+            "digit": 5
+          }
+        },
+        {
+          "id": "1749416732799-hto1",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "oriented_rowcol",
+              "items": [
+                {
+                  "__type__": "ORCIdx",
+                  "row": 2,
+                  "col": null,
+                  "reversed": false
+                },
+                {
+                  "__type__": "ORCIdx",
+                  "row": 6,
+                  "col": null,
+                  "reversed": true
+                }
+              ]
+            },
+            "digit": 3
+          }
+        },
+        {
+          "id": "1749416744543-bw1i",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "oriented_rowcol",
+              "items": [
+                {
+                  "__type__": "ORCIdx",
+                  "row": null,
+                  "col": 1,
+                  "reversed": false
+                },
+                {
+                  "__type__": "ORCIdx",
+                  "row": null,
+                  "col": 7,
+                  "reversed": true
+                }
+              ]
+            },
+            "digit": 1
+          }
+        },
+        {
+          "id": "1749416756793-2x1y",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "oriented_rowcol",
+              "items": [
+                {
+                  "__type__": "ORCIdx",
+                  "row": 4,
+                  "col": null,
+                  "reversed": true
+                },
+                {
+                  "__type__": "ORCIdx",
+                  "row": null,
+                  "col": 2,
+                  "reversed": false
+                },
+                {
+                  "__type__": "ORCIdx",
+                  "row": null,
+                  "col": 6,
+                  "reversed": true
+                }
+              ]
+            },
+            "digit": 6
+          }
+        }
+      ]
+    }
+  ]
+}

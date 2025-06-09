@@ -107,6 +107,8 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
             SolverStats stats;
             auto sol = solve_complete ? board.solve_complete(&stats, max_nodes) : board.solve(max_solutions, max_nodes, &stats);
             std::cout << stats << std::endl;
+            if (stats.solutions_found < 1)
+                std::cout << board << std::endl;
 
             total_solutions += stats.solutions_found;
             total_nodes += stats.nodes_explored;

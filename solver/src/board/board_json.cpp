@@ -58,6 +58,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleDiagonalSum>(this);
             } else if (type == "Dutch-Flat") {
                 handler = std::make_shared<RuleDutchFlat>(this);
+            } else if (type == "Numbered-Rooms") {
+                handler = std::make_shared<RuleNumberedRooms>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }
