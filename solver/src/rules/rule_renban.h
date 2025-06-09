@@ -12,6 +12,8 @@ struct RenbanType {
 private:
     int m_size;
     int idx = 0;
+    int min_value = 0;
+    int max_value = 0;
     int *data = nullptr;
 
 public:
@@ -20,11 +22,15 @@ public:
     RenbanType(int _size) : m_size(_size) {
         data = new int[_size]();
         idx = 0;
+        min_value = m_size + 1;
+        max_value = 0;
     }
 
     RenbanType(const RenbanType &other) : m_size(other.m_size), idx(other.idx) {
         data = new int[m_size]();
         std::copy(other.data, other.data + idx, data);
+        min_value = other.min_value;
+        max_value = other.max_value;
     }
 
     RenbanType &operator=(const RenbanType &other) {
@@ -32,6 +38,8 @@ public:
             delete[] data;
             m_size = other.m_size;
             idx = other.idx;
+            min_value = other.min_value;
+            max_value = other.max_value;
             data = new int[m_size]();
             std::copy(other.data, other.data + idx, data);
         }
@@ -44,16 +52,31 @@ public:
     }
 
     void add(int value) {
-        if (idx < m_size)
+        if (idx < m_size) {
             data[idx++] = value;
+            min_value = std::min(min_value, value);
+            max_value = std::max(max_value, value);
+        }
     }
 
-    void pop() {
-        if (idx > 0)
-            --idx;
+    int min() {
+        if (idx == 0)
+            throw std::runtime_error("Cannot get min of empty RenbanType");
+        return min_value;
     }
 
-    void clear() { idx = 0; }
+    int max() {
+        if (idx == 0)
+            throw std::runtime_error("Cannot get max of empty RenbanType");
+        return max_value;
+    }
+
+    void clear() {
+        idx = 0;
+        min_value = m_size + 1;
+        max_value = 0;
+    }
+
     void sort() { std::sort(data, data + idx); }
     int size() const { return idx; }
     bool empty() const { return idx == 0; }
@@ -76,14 +99,8 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> renban_paths_;
-
+    std::vector<Region<CellIdx>> m_paths;
     RenbanType m_solved_values;
-    int m_num_ranges = 0;
-    std::unique_ptr<RenbanType[]> m_ranges;
-
-    void init_all_consecutive_ranges(int length);
-    void init_ranges_including_values(int length, int min_value, int max_value);
 
     bool enforce_renban(const Region<CellIdx> &path);
 };
