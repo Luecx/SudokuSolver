@@ -108,7 +108,7 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     }
 
     // if no cells are solved, check if we can filter some candidates
-    if (m_solved_values.empty())
+    if (m_solved_values.size() == 0)
         return filter_range_based(path, min_cand, max_cand);
 
     const int length = path.size();

@@ -17,33 +17,11 @@ private:
     int *data = nullptr;
 
 public:
-    RenbanType() : m_size(0), idx(0), data(nullptr) {}
-
     RenbanType(int _size) : m_size(_size) {
         data = new int[_size]();
         idx = 0;
         min_value = m_size + 1;
         max_value = 0;
-    }
-
-    RenbanType(const RenbanType &other) : m_size(other.m_size), idx(other.idx) {
-        data = new int[m_size]();
-        std::copy(other.data, other.data + idx, data);
-        min_value = other.min_value;
-        max_value = other.max_value;
-    }
-
-    RenbanType &operator=(const RenbanType &other) {
-        if (this != &other) {
-            delete[] data;
-            m_size = other.m_size;
-            idx = other.idx;
-            min_value = other.min_value;
-            max_value = other.max_value;
-            data = new int[m_size]();
-            std::copy(other.data, other.data + idx, data);
-        }
-        return *this;
     }
 
     ~RenbanType() {
@@ -78,8 +56,8 @@ public:
     }
 
     void sort() { std::sort(data, data + idx); }
+
     int size() const { return idx; }
-    bool empty() const { return idx == 0; }
 
     int operator[](int i) const {
         if (i < 0 || i >= idx)
