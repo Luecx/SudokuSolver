@@ -4,11 +4,11 @@
 
 namespace sudoku {
 
-RuleRenban::RuleRenban(Board *board) : RuleHandler(board), solved_values_(board->size()) {
+RuleRenban::RuleRenban(Board *board) : RuleHandler(board), m_solved_values(board->size()) {
     const int board_size = board->size();
-    ranges_ = std::make_unique<RenbanType[]>(board_size);
+    m_ranges = std::make_unique<RenbanType[]>(board_size);
     for (int i = 0; i < board_size; i++) {
-        new (&ranges_[i]) RenbanType(board_size);
+        new (&m_ranges[i]) RenbanType(board_size);
     }
 }
 
@@ -42,21 +42,21 @@ void RuleRenban::update_impact(ImpactMap &map) {
 
 bool RuleRenban::valid() {
     for (const auto &path: renban_paths_) {
-        solved_values_.clear();
+        m_solved_values.clear();
 
         for (const auto &pos: path) {
             Cell &cell = board_->get_cell(pos);
             if (!cell.is_solved())
                 break;
-            solved_values_.add(cell.value);
+            m_solved_values.add(cell.value);
         }
 
-        if (solved_values_.size() != static_cast<int>(path.size()))
+        if (m_solved_values.size() != static_cast<int>(path.size()))
             continue;
 
-        solved_values_.sort();
-        for (int i = 1; i < solved_values_.size(); i++)
-            if (solved_values_[i] != solved_values_[i - 1] + 1)
+        m_solved_values.sort();
+        for (int i = 1; i < m_solved_values.size(); i++)
+            if (m_solved_values[i] != m_solved_values[i - 1] + 1)
                 return false;
     }
 
@@ -84,23 +84,17 @@ void RuleRenban::from_json(JSON &json) {
 // private member functions
 
 void RuleRenban::init_all_consecutive_ranges(int length) {
-    const int board_size = board_->size();
-    const int num_ranges = board_size - length + 1;
-
-    num_ranges_ = num_ranges;
-
-    for (int start = 1; start <= num_ranges; start++) {
-        ranges_[start - 1].clear();
+    m_num_ranges = board_->size() - length + 1;
+    for (int start = 1; start <= m_num_ranges; start++) {
+        m_ranges[start - 1].clear();
         for (int i = 0; i < length; i++)
-            ranges_[start - 1].add(start + i);
+            m_ranges[start - 1].add(start + i);
     }
 }
 
 void RuleRenban::init_ranges_including_values(int length, int min_value, int max_value) {
-    const int board_size = board_->size();
-
     int min_start = std::max(1, max_value - length + 1);
-    int max_start = std::min(board_size - length + 1, min_value);
+    int max_start = std::min(board_->size() - length + 1, min_value);
 
     int range_idx = 0;
     for (int start = min_start; start <= max_start; start++) {
@@ -108,8 +102,8 @@ void RuleRenban::init_ranges_including_values(int length, int min_value, int max
 
         // Check if all solved values are within this range [start, end]
         bool all_included = true;
-        for (int i = 0; i < solved_values_.size(); i++) {
-            int val = solved_values_[i];
+        for (int i = 0; i < m_solved_values.size(); i++) {
+            int val = m_solved_values[i];
             if (val < start || val > end) {
                 all_included = false;
                 break;
@@ -119,26 +113,24 @@ void RuleRenban::init_ranges_including_values(int length, int min_value, int max
         if (!all_included)
             continue;
 
-        ranges_[range_idx].clear();
+        m_ranges[range_idx].clear();
         for (int i = 0; i < length; i++)
-            ranges_[range_idx].add(start + i);
+            m_ranges[range_idx].add(start + i);
         range_idx++;
     }
 
-    num_ranges_ = range_idx;
+    m_num_ranges = range_idx;
 }
 
 bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     const int board_size = board_->size();
-    const int length = path.size();
-
     bool changed = false;
 
     int min_value = board_size + 1;
     int max_value = 0;
 
     // collect solved values
-    solved_values_.clear();
+    m_solved_values.clear();
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
         if (!cell.is_solved())
@@ -148,17 +140,17 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
         min_value = std::min(min_value, val);
         max_value = std::max(max_value, val);
 
-        solved_values_.add(cell.value);
+        m_solved_values.add(cell.value);
     }
 
-    if (!solved_values_.empty())
-        init_ranges_including_values(length, min_value, max_value);
+    if (!m_solved_values.empty())
+        init_ranges_including_values(path.size(), min_value, max_value);
     else
-        init_all_consecutive_ranges(length);
+        init_all_consecutive_ranges(path.size());
 
     NumberSet allowed(board_size);
-    for (int range_idx = 0; range_idx < num_ranges_; range_idx++) {
-        const auto &range = ranges_[range_idx];
+    for (int range_idx = 0; range_idx < m_num_ranges; range_idx++) {
+        const auto &range = m_ranges[range_idx];
         for (int i = 0; i < range.size(); i++)
             allowed.add(range[i]);
     }

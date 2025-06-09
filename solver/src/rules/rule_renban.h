@@ -78,9 +78,9 @@ public:
 private:
     std::vector<Region<CellIdx>> renban_paths_;
 
-    RenbanType solved_values_;
-    int num_ranges_ = 0;
-    std::unique_ptr<RenbanType[]> ranges_;
+    RenbanType m_solved_values;
+    int m_num_ranges = 0;
+    std::unique_ptr<RenbanType[]> m_ranges;
 
     void init_all_consecutive_ranges(int length);
     void init_ranges_including_values(int length, int min_value, int max_value);
