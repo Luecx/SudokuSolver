@@ -32,13 +32,13 @@ export class RenbanHandler extends RuleTypeHandler {
     getRuleWarnings(rule) {
         let warnings = [];
 
-        let region = rule.fields.region;
-        if (!region) {
+        let path = rule.fields.path;
+        if (!path) {
             warnings.push("Region is empty");
             return warnings;
         }
 
-        if (region.size() < 2 || region.size() > 9) {
+        if (path.size() < 2 || path.size() > 9) {
             warnings.push(`Region must have 2 to 9 cells`);
         }
 
