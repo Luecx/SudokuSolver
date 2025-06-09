@@ -104,18 +104,49 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
             Board board{9};
             board.from_json(root);
 
-            SolverStats stats;
-            auto sol = solve_complete ? board.solve_complete(&stats, max_nodes) : board.solve(max_solutions, max_nodes, &stats);
-            std::cout << stats << std::endl;
-            if (stats.solutions_found < 1)
+            // Run 100 iterations
+            const int iterations = 100;
+            float total_iteration_time = 0.0f;
+            int total_iteration_solutions = 0;
+            uint64_t total_iteration_nodes = 0;
+            bool any_solution_found = false;
+
+            for (int i = 0; i < iterations; ++i) {
+                SolverStats stats;
+                auto sol = solve_complete ? board.solve_complete(&stats, max_nodes)
+                                          : board.solve(max_solutions, max_nodes, &stats);
+
+                total_iteration_time += stats.time_taken_ms;
+                total_iteration_solutions += stats.solutions_found;
+                total_iteration_nodes += stats.nodes_explored;
+
+                if (!sol.empty()) {
+                    any_solution_found = true;
+                }
+            }
+
+            // Calculate averages
+            float avg_time = total_iteration_time / iterations;
+            float avg_solutions = static_cast<float>(total_iteration_solutions) / iterations;
+            uint64_t avg_nodes = total_iteration_nodes / iterations;
+
+            std::cout << "Average over " << iterations << " runs:\n";
+            std::cout << "  Time: " << std::fixed << std::setprecision(3) << avg_time << " ms\n";
+            std::cout << "  Solutions: " << std::fixed << std::setprecision(2) << avg_solutions << "\n";
+            std::cout << "  Nodes: " << avg_nodes << "\n";
+
+            // Add to totals (using averages)
+            total_solutions += static_cast<int>(avg_solutions);
+            total_nodes += avg_nodes;
+            total_time_ms += avg_time;
+
+            if (any_solution_found)
+                successful_solutions++;
+
+            // Show board if no solutions found in any iteration
+            if (total_iteration_solutions == 0)
                 std::cout << board << std::endl;
 
-            total_solutions += stats.solutions_found;
-            total_nodes += stats.nodes_explored;
-            total_time_ms += stats.time_taken_ms;
-
-            if (!sol.empty())
-                successful_solutions++;
         } catch (const std::exception &e) {
             std::cerr << "[ERROR] Error processing " << file_path << ": " << e.what() << "\n";
         }

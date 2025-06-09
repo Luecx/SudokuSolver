@@ -4,6 +4,11 @@
 
 namespace sudoku {
 
+RuleRenban::RuleRenban(Board *board) : //
+    RuleHandler(board), //
+    solved_values_(board->size()), //
+    ranges_(board->size(), RenbanType(board->size())) {}
+
 bool RuleRenban::number_changed(CellIdx pos) {
     bool changed = false;
     for (const auto &path: renban_paths_) {
@@ -38,16 +43,16 @@ bool RuleRenban::valid() {
 
         for (const auto &pos: path) {
             Cell &cell = board_->get_cell(pos);
-            if (!cell.is_solved()) 
+            if (!cell.is_solved())
                 break;
-            solved_values_.push_back(cell.value);
+            solved_values_.add(cell.value);
         }
 
-        if (solved_values_.size() != path.size())
+        if (solved_values_.size() != static_cast<int>(path.size()))
             continue;
 
-        std::sort(solved_values_.begin(), solved_values_.end());
-        for (size_t i = 1; i < solved_values_.size(); i++)
+        solved_values_.sort();
+        for (int i = 1; i < solved_values_.size(); i++)
             if (solved_values_[i] != solved_values_[i - 1] + 1)
                 return false;
     }
@@ -76,50 +81,48 @@ void RuleRenban::from_json(JSON &json) {
 // private member functions
 
 void RuleRenban::init_all_consecutive_ranges(int length) {
-    ranges_.clear();
     const int board_size = board_->size();
     const int num_ranges = board_size - length + 1;
-    
-    ranges_.reserve(num_ranges);
-    
+
+    num_ranges_ = num_ranges;
+
     for (int start = 1; start <= num_ranges; start++) {
-        std::vector<int> range;
-        range.reserve(length);
-        for (int i = 0; i < length; i++) {
-            range.push_back(start + i);
-        }
-        ranges_.push_back(std::move(range));
+        ranges_[start - 1].clear();
+        for (int i = 0; i < length; i++)
+            ranges_[start - 1].add(start + i);
     }
 }
 
 void RuleRenban::init_ranges_including_values(int length, int min_value, int max_value) {
-    ranges_.clear();
     const int board_size = board_->size();
 
     int min_start = std::max(1, max_value - length + 1);
     int max_start = std::min(board_size - length + 1, min_value);
 
+    int range_idx = 0;
     for (int start = min_start; start <= max_start; start++) {
         int end = start + length - 1;
-        
+
         // Check if all solved values are within this range [start, end]
         bool all_included = true;
-        for (int val : solved_values_) {
+        for (int i = 0; i < solved_values_.size(); i++) {
+            int val = solved_values_[i];
             if (val < start || val > end) {
                 all_included = false;
                 break;
             }
         }
 
-        if (all_included) {
-            potential_range_.clear();
-            potential_range_.reserve(length);
-            for (int i = 0; i < length; i++) {
-                potential_range_.push_back(start + i);
-            }
-            ranges_.push_back(std::move(potential_range_));
-        }
+        if (!all_included)
+            continue;
+
+        ranges_[range_idx].clear();
+        for (int i = 0; i < length; i++)
+            ranges_[range_idx].add(start + i);
+        range_idx++;
     }
+
+    num_ranges_ = range_idx;
 }
 
 bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
@@ -135,7 +138,6 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     solved_values_.clear();
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
-
         if (!cell.is_solved())
             continue;
 
@@ -143,7 +145,7 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
         min_value = std::min(min_value, val);
         max_value = std::max(max_value, val);
 
-        solved_values_.push_back(cell.value);
+        solved_values_.add(cell.value);
     }
 
     if (!solved_values_.empty())
@@ -152,9 +154,11 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
         init_all_consecutive_ranges(length);
 
     NumberSet allowed(board_size);
-    for (const auto &range: ranges_)
-        for (int v: range)
-            allowed.add(v);
+    for (int range_idx = 0; range_idx < num_ranges_; range_idx++) {
+        const auto &range = ranges_[range_idx];
+        for (int i = 0; i < range.size(); i++)
+            allowed.add(range[i]);
+    }
 
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
