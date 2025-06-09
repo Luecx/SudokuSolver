@@ -4,10 +4,13 @@
 
 namespace sudoku {
 
-RuleRenban::RuleRenban(Board *board) : //
-    RuleHandler(board), //
-    solved_values_(board->size()), //
-    ranges_(board->size(), RenbanType(board->size())) {}
+RuleRenban::RuleRenban(Board *board) : RuleHandler(board), solved_values_(board->size()) {
+    const int board_size = board->size();
+    ranges_ = std::make_unique<RenbanType[]>(board_size);
+    for (int i = 0; i < board_size; i++) {
+        new (&ranges_[i]) RenbanType(board_size);
+    }
+}
 
 bool RuleRenban::number_changed(CellIdx pos) {
     bool changed = false;

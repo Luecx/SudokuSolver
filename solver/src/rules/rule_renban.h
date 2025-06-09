@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "../cell.h"
 #include "../number_set.h"
 #include "_rule_handler.h"
@@ -81,7 +83,7 @@ private:
 
     RenbanType solved_values_;
     int num_ranges_ = 0;
-    std::vector<RenbanType> ranges_;
+    std::unique_ptr<RenbanType[]> ranges_;
 
     void init_all_consecutive_ranges(int length);
     void init_ranges_including_values(int length, int min_value, int max_value);
