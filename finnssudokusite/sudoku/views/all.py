@@ -53,7 +53,7 @@ def contact_view(request):
             )
             return HttpResponse("OK")  # Keine Umleitung, nur Antwort
         return HttpResponse("Fehler", status=400)
-    return render(request, 'contact_form.html')
+    return render(request, 'index.html')
 
 def game(request):
     return render(request, "sudoku/game/game.html")

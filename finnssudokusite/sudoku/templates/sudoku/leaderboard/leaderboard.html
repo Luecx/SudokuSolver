@@ -6,81 +6,64 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'sudoku/css/leaderboard.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+
 <style>
+	.engraved {
+		font-family: 'Cinzel', serif;
+		color: rgba(155,122,88,0.3);
+		text-shadow:
+			-1px -1px 0 rgb(146,117,68),
+			-1px -1px 0 rgb(174,139,90),
+			1px 1px 0 rgb(251,248,225),
+			1px 1px 0 rgb(251,248,225);
+	}
+	.engraved h2 {padding: 0; margin: 0; font-size: 1.4rem!important; line-height: 2.5rem;}
+	.engraved h5 {padding: 0; margin: 0; font-size: 1rem!important;}
 	.podest {
 		width: 70%;
 		margin: 0 auto;
 		position: relative;
-		background-image: url("{% static 'sudoku/img/leaderboard/podest.png' %}");
+		background-image: url("{% static 'sudoku/img/leaderboard/podest_new.png' %}");
 		background-size: contain;
 		background-repeat: no-repeat;
 		background-position: center;
-		aspect-ratio: 1024/628;
+		aspect-ratio: 1536/1024;
 		height: auto;
 		z-index: 1;
 	}
-	.podest .name-1,
-	.podest .pokal-1,
 	.podest .box-1{
 		position: absolute;
-		left: 50%;
-		top: 28%;
+		left: 40.7%;
+		top: 58.5%;
+		width: 18.3%;
+		height: 18%;
 		justify-content: center;
-		transform: translateX(-50%);
 		display: flex;
 		flex-direction: column;
 	}
 	
-	.podest .name-2,
-	.podest .pokal-2,
 	.podest .box-2 {
 		position: absolute;
-		left: 23%;
-		top: 45%;
+		left: 15.5%;
+		top: 59.5%;
+		width: 19%;
+		height: 16.5%;
 		justify-content: center;
-		transform: translateX(-50%);
 		display: flex;
 		flex-direction: column;
 	}
-	.podest .name-3,
-	.podest .pokal-3,
 	.podest .box-3 {
 		position: absolute;
-		left: 76%;
-		top: 50%;
+		left: 65%;
+		top: 60.5%;
+		width: 17.5%;
+		height: 15.5%;
 		justify-content: center;
-		transform: translateX(-50%);
 		display: flex;
 		flex-direction: column;
 	}
 	
-	.podest .box-1 {
-		top: 40%;
-		width: 26%;
-		height: 45%;
-	}
-	.podest .box-2 {
-		top: 58%;
-		width: 25%;
-		height: 27%;
-	}
-	.podest .box-3 {
-		top: 63%;
-		width: 26%;
-		height: 22%;
-	}
-	.podest .pokal-1 {
-		top: 6%;
-		width: 22%;
-	}
-	.podest .pokal-2 {
-		top: 33%;
-		width: 16%;
-	}
-	.podest .pokal-3 {
-		top: 42%;
-		width: 14%;
-	}
 </style>
 {% endblock %}
 
@@ -89,34 +72,25 @@
 <div class="container mt-5">
 	<h2 class="text-center title">{% trans "Leaderboard" %}</h2>
 
-	{% if top_3|length >= 3 %}
-	<div class="podest">
+<!--	Show only: top3 is, is page 1, is no search result -->
+	{% if top_3|length >= 3 and page_obj.number == 1 and not query %}
+	<div class="podest engraved">
 		<!-- 🥇 Rank 1 -->
 		<div class="box-1 text-center">
-			<div class="text-muted">{% trans "1st place" %}</div>
-			<h2 class="card-title">{{ top_3.0.user.username }}</h2>
-			<div class="text-muted">{{ top_3.0.normalized_score|floatformat:0 }}&nbsp;points</div>
+			<h2>{{ top_3.0.user.username }}</h2>
+			<h5>{{ top_3.0.normalized_score|floatformat:0 }}</h5>
 		</div>
-		<img class="pokal-1 square-img" src="{% static 'sudoku/img/leaderboard/cup1.png' %}"/>
-		
-		
 		<!-- 🥈 Rank 2 -->
 		<div class="box-2 text-center">
-			<div class="text-muted">{% trans "2nd place" %}</div>
-			<h2 class="card-title">{{ top_3.1.user.username }}</h2>
-			<div class="text-muted">{{ top_3.1.normalized_score|floatformat:0 }}</div>
+			<h2>{{ top_3.1.user.username }}</h2>
+			<h5>{{ top_3.1.normalized_score|floatformat:0 }}</h5>
 		</div>
-		<img class="pokal-2 square-img" src="{% static 'sudoku/img/leaderboard/cup2.png' %}"/>
-		
 		<!-- 🥉 Rank 3 -->
 		<div class="box-3 text-center">
-			<div class="text-muted">{% trans "3rd place" %}</div>
-			<h2 class="card-title">{{ top_3.2.user.username }}</h2>
-			<div class="text-muted">{{ top_3.2.normalized_score|floatformat:0 }}</div>
+			<h2>{{ top_3.2.user.username }}</h2>
+			<h5>{{ top_3.2.normalized_score|floatformat:0 }}</h5>
 		</div>
-		<img class="pokal-3 square-img" src="{% static 'sudoku/img/leaderboard/cup3.png' %}"/>
 	</div>
-
 	{% endif %}
 	
 	<div class="my_board_style p-3">
@@ -142,53 +116,62 @@
 		</div>
 		
 		<div class="table-responsive">
-		<table class="table table-striped table-hover align-middle">
-			<thead>
-			<tr>
-				<th>
-					<a href="?q={{ query }}&sort_by=rank&sort_order={% if sort_by == 'rank' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
-						{% trans "Rank" %}
-						{% if sort_by == 'rank' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
-					</a>
-				</th>
-				<th>
-					<a href="?q={{ query }}&sort_by=username&sort_order={% if sort_by == 'username' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
-						{% trans "User" %}
-						{% if sort_by == 'username' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
-					</a>
-				</th>
-				<th>
-					<a href="?q={{ query }}&sort_by=score&sort_order={% if sort_by == 'score' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
-						{% trans "Total Score" %}
-						{% if sort_by == 'score' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
-					</a>
-				</th>
-				<th>
-					<a href="?q={{ query }}&sort_by=solved&sort_order={% if sort_by == 'solved' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
-						{% trans "Puzzles Solved" %}
-						{% if sort_by == 'solved' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
-					</a>
-				</th>
-			</tr>
-			</thead>
-			<tbody class="table-group-divider">
-			{% if page_obj %}
-			{% for entry in page_obj %}
-			<tr>
-				<td>{{ entry.rank }}</td>
-				<td><a href="{% url 'user_profile' entry.user.username %}">{{ entry.user.username }}</a></td>
-				<td>{{ entry.normalized_score|floatformat:0 }}</td>
-				<td>{{ entry.solved }}</td>
-			</tr>
-			{% endfor %}
-			{% else %}
-			<tr>
-				<td colspan="4" class="text-center text-muted">{% trans "No results yet." %}</td>
-			</tr>
-			{% endif %}
-			</tbody>
-		</table>
-	</div>
+			<table class="table table-striped table-hover align-middle">
+				<thead>
+				<tr>
+					<th>
+						<a href="?q={{ query }}&sort_by=rank&sort_order={% if sort_by == 'rank' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
+							{% trans "Rank" %}
+							{% if sort_by == 'rank' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
+						</a>
+					</th>
+					<th>
+						<a href="?q={{ query }}&sort_by=username&sort_order={% if sort_by == 'username' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
+							{% trans "User" %}
+							{% if sort_by == 'username' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
+						</a>
+					</th>
+					<th>
+						<a href="?q={{ query }}&sort_by=score&sort_order={% if sort_by == 'score' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
+							{% trans "Total Score" %}
+							{% if sort_by == 'score' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
+						</a>
+					</th>
+					<th>
+						<a href="?q={{ query }}&sort_by=solved&sort_order={% if sort_by == 'solved' and sort_order == 'asc' %}desc{% else %}asc{% endif %}">
+							{% trans "Puzzles Solved" %}
+							{% if sort_by == 'solved' %}<span>{% if sort_order == 'asc' %}▲{% else %}▼{% endif %}</span>{% endif %}
+						</a>
+					</th>
+				</tr>
+				</thead>
+				<tbody class="table-group-divider">
+				{% if page_obj %}
+				{% for entry in page_obj %}
+				<tr>
+					<td>
+						{{ entry.rank }}
+						{% if entry.rank == 1 %}
+							<img src="{% static 'sudoku/img/leaderboard/cup1.png' %}" height="30" width="30" />
+						{% elif entry.rank == 2 %}
+							<img src="{% static 'sudoku/img/leaderboard/cup2.png' %}" height="30" width="30" />
+						{% elif entry.rank == 3 %}
+							<img src="{% static 'sudoku/img/leaderboard/cup3.png' %}" height="30" width="30" />
+						{% endif %}
+					</td>
+					<td><a href="{% url 'user_profile' entry.user.username %}">{{ entry.user.username }}</a></td>
+					<td>{{ entry.normalized_score|floatformat:0 }}</td>
+					<td>{{ entry.solved }}</td>
+				</tr>
+				{% endfor %}
+				{% else %}
+				<tr>
+					<td colspan="4" class="text-center text-muted">{% trans "No results yet." %}</td>
+				</tr>
+				{% endif %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 	<div class="text-center mt-4">
 		<p>
