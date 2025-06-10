@@ -38,6 +38,7 @@ Thumbs.db
 .vscode/
 
 # Python virtual environments (optional)
+uvenv/
 .venv/
 env/
 venv/

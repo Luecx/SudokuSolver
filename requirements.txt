@@ -1,0 +1,4 @@
+Django
+django-cors-headers
+django-widget-tweaks
+python-dotenv
