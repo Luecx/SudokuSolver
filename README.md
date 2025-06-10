@@ -1,6 +1,6 @@
 # 🧠 SudokuSolver
 
-A full-featured web-based Sudoku platform where you can solve puzzles for fun or competition, and use the built-in tools to create and validate your own Sudokus. Powered by a high-performance C++ solver compiled to WebAssembly and integrated with a Django web app, this project offers a fun, fast, and competitive experience for Sudoku enthusiasts.
+A full-featured web-based Sudoku platform where you can solve puzzles competitively or casually, and create your own using a powerful solver. Play against others, climb the leaderboards, and challenge yourself with thousands of puzzles—all live at [SudokuSphere.com](https://sudokusphere.com/).
 
 ---
 
