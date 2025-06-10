@@ -78,6 +78,9 @@ void RuleRenban::from_json(JSON &json) {
 
 bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     const int board_size = board_->size();
+    const int length = path.size();
+
+    bool changed = false;
 
     NumberSet all(board_size);
 
@@ -99,30 +102,41 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     // check if certain candidates have no neighbors
     NumberSet invalid(board_size);
     for (const auto n: all) {
-        if (n == 1) {
-            if (!all.test(2))
-                invalid.add(1);
-        } else if (n == board_size) {
-            if (!all.test(board_size - 1))
-                invalid.add(board_size);
-        } else {
-            if (!all.test(n - 1) && !all.test(n + 1))
-                invalid.add(n);
+        bool has_valid_sequence = false;
+
+        int start = std::max(1, n - length + 1);
+        int end = std::min(board_size - length + 1, int(n));
+
+        while (start <= end) {
+            bool sequence_possible = true;
+            // check if all numbers in this sequence have at least one candidate in the path
+            for (int i = 0; i < length; i++)
+                if (!all.test(start + i)) {
+                    sequence_possible = false;
+                    break;
+                }
+
+            if (sequence_possible) {
+                has_valid_sequence = true;
+                break;
+            }
+            start++;
         }
+
+        if (!has_valid_sequence)
+            invalid.add(n);
     }
 
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
         if (cell.is_solved())
             continue;
-        cell.remove_candidates(invalid);
+        changed |= cell.remove_candidates(invalid);
     }
 
     // if no cells are solved, we cannot enforce renban
     if (solved_values.count() == 0)
-        return false;
-
-    const int length = path.size();
+        return changed;
 
     int min_solved = solved_values.lowest();
     int max_solved = solved_values.highest();
@@ -136,7 +150,6 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
 
     int max_possible = max_start + length - 1;
 
-    bool changed = false;
     if (min_start > 1 || max_possible < board_size) {
         NumberSet invalid =
                 NumberSet::greaterThan(board_size, max_possible) | NumberSet::lessThan(board_size, min_start);
