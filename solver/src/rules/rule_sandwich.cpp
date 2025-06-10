@@ -62,13 +62,20 @@ bool RuleSandwich::valid() {
 
             const int left = std::min(idx1, idxBoardSize);
             const int right = std::max(idx1, idxBoardSize);
-            int actual = 0;
 
+            bool skip = false;
+
+            int actual = 0;
             for (int i = left + 1; i < right; i++) {
-                if (!line[i]->is_solved())
-                    return true;
+                if (!line[i]->is_solved()) {
+                    skip = true;
+                    break;
+                }
                 actual += line[i]->value;
             }
+
+            if (skip)
+                continue;
 
             if (actual != sum)
                 return false;
