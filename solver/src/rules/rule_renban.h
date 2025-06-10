@@ -11,56 +11,56 @@ namespace sudoku {
 struct RenbanType {
 private:
     int m_size;
-    int idx = 0;
-    int min_value = 0;
-    int max_value = 0;
-    int *data = nullptr;
+    int m_idx = 0;
+    int m_min = 0;
+    int m_max = 0;
+    int *m_data = nullptr;
 
 public:
     RenbanType(int _size) : m_size(_size) {
-        data = new int[_size]();
+        m_data = new int[_size]();
         clear();
     }
 
     ~RenbanType() {
-        if (data)
-            delete[] data;
+        if (m_data)
+            delete[] m_data;
     }
 
     void add(int value) {
-        if (idx < m_size) {
-            data[idx++] = value;
-            min_value = std::min(min_value, value);
-            max_value = std::max(max_value, value);
+        if (m_idx < m_size) {
+            m_data[m_idx++] = value;
+            m_min = std::min(m_min, value);
+            m_max = std::max(m_max, value);
         }
     }
 
     int min() {
-        if (idx == 0)
+        if (m_idx == 0)
             throw std::runtime_error("Cannot get min of empty RenbanType");
-        return min_value;
+        return m_min;
     }
 
     int max() {
-        if (idx == 0)
+        if (m_idx == 0)
             throw std::runtime_error("Cannot get max of empty RenbanType");
-        return max_value;
+        return m_max;
     }
 
     void clear() {
-        idx = 0;
-        min_value = m_size + 1;
-        max_value = 0;
+        m_idx = 0;
+        m_min = m_size + 1;
+        m_max = 0;
     }
 
-    void sort() { std::sort(data, data + idx); }
+    void sort() { std::sort(m_data, m_data + m_idx); }
 
-    int size() const { return idx; }
+    int size() const { return m_idx; }
 
     int operator[](int i) const {
-        if (i < 0 || i >= idx)
+        if (i < 0 || i >= m_idx)
             throw std::out_of_range("Index out of range in RenbanType");
-        return data[i];
+        return m_data[i];
     }
 };
 

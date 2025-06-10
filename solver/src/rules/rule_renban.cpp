@@ -81,29 +81,18 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
 
     // collect solved cells
     m_solved_values.clear();
-    int free_cells = 0;
-
-    int min_cand = board_size + 1;
-    int max_cand = 0;
-
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
-        min_cand = std::min(min_cand, int(cell.candidates.lowest()));
-        max_cand = std::max(max_cand, int(cell.candidates.highest()));
-
         if (cell.is_solved())
             m_solved_values.add(cell.value);
-        else
-            free_cells++;
     }
 
-    // if no cells are solved, check if we can filter some candidates
+    // if no cells are solved, we cannot enforce renban
     if (m_solved_values.size() == 0)
         return false;
 
     const int length = path.size();
 
-    // Berechne Grenzen für die konsekutive Sequenz
     int min_solved = m_solved_values.min();
     int max_solved = m_solved_values.max();
 
