@@ -120,5 +120,9 @@ EMAIL_HOST = 'smtp.strato.de'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'noreply@sudokusphere.com'
-EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD", "")
+EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD")
 DEFAULT_FROM_EMAIL = 'SudokuSphere <noreply@sudokusphere.com>'
+
+import ssl
+import certifi
+EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
