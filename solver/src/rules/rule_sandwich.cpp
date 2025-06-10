@@ -3,6 +3,11 @@
 
 namespace sudoku {
 
+RuleSandwich::~RuleSandwich() {
+    delete[] m_min_digits;
+    delete[] m_max_digits;
+}
+
 bool RuleSandwich::number_changed(CellIdx pos) {
     bool changed = false;
     for (const auto &pair: m_pairs) {
@@ -46,14 +51,14 @@ bool RuleSandwich::valid() {
         const Region<RCIdx> &region = pair.region;
         const int sum = pair.sum;
 
-        for (const auto &rcidx: region.items()) {
-            initLine(rcidx);
+        for (const auto &pos: region.items()) {
+            std::vector<Cell *> &line = getLine(pos);
 
             int idx1 = -1, idxBoardSize = -1;
             for (int i = 0; i < board_size; i++) {
-                if (m_line[i]->value == 1)
+                if (line[i]->value == 1)
                     idx1 = i;
-                if (m_line[i]->value == board_size)
+                if (line[i]->value == board_size)
                     idxBoardSize = i;
             }
 
@@ -65,9 +70,9 @@ bool RuleSandwich::valid() {
             int actual = 0;
 
             for (int i = left + 1; i < right; i++) {
-                if (!m_line[i]->is_solved())
+                if (!line[i]->is_solved())
                     return true;
-                actual += m_line[i]->value;
+                actual += line[i]->value;
             }
 
             if (actual != sum)
@@ -111,71 +116,57 @@ void RuleSandwich::from_json(JSON &json) {
 
 void RuleSandwich::generateSandwichTables() {
     const int board_size = board_->size();
-    const int digit_min = 1;
-    const int digit_max = board_size;
-    const int num_digits = digit_max - digit_min + 1;
-    const int max_sum = (digit_max * (digit_max + 1)) / 2;
+    const int max_sum = (board_size * (board_size + 1)) / 2;
 
-    m_valid_combinations.resize(max_sum + 1);
-    m_min_digits.resize(max_sum + 1, num_digits + 1);
-    m_max_digits.resize(max_sum + 1, 0);
+    // Initialize data structures
+    m_valid_combinations.assign(max_sum + 1, std::vector<std::vector<NumberSet>>(board_size + 1));
+    m_min_digits = new int[max_sum + 1]();
+    m_max_digits = new int[max_sum + 1]();
 
-    for (int s = 0; s <= max_sum; s++)
-        m_valid_combinations[s].resize(num_digits + 1);
+    std::fill(m_min_digits, m_min_digits + max_sum + 1, board_size + 1);
 
-    const int max_mask = 1 << num_digits;
+    // Generate all possible digit combinations (excluding 1 and board_size)
+    const int max_mask = 1 << board_size;
     for (int mask = 1; mask < max_mask; mask++) {
         const NumberSet::bit_t bits = mask << 1;
-        NumberSet cands(digit_max, bits);
+        NumberSet cands(board_size, bits);
 
-        int sum = 0;
-        int count = 0;
-        bool has1 = false, hasBoardSize = false;
+        int sum = 0, count = 0;
+        bool has_bread_digits = false;
 
-        for (int d = digit_min; d <= digit_max; ++d) {
+        for (int d = 1; d <= board_size; ++d) {
             if (!cands.test(d))
                 continue;
+
             sum += d;
             count++;
-            has1 |= (d == 1);
-            hasBoardSize |= (d == board_size);
+            has_bread_digits |= (d == 1 || d == board_size);
         }
 
-        if (has1 || hasBoardSize || sum > max_sum || count == 0)
+        // Skip if contains bread digits, invalid sum, or empty
+        if (has_bread_digits || sum > max_sum || count == 0)
             continue;
 
+        // Store valid combination and update min/max
         m_valid_combinations[sum][count].push_back(cands);
         m_min_digits[sum] = std::min(m_min_digits[sum], count);
         m_max_digits[sum] = std::max(m_max_digits[sum], count);
     }
 
-    for (int s = 0; s <= max_sum; s++)
-        if (m_min_digits[s] > num_digits) {
-            m_min_digits[s] = 0;
-            m_max_digits[s] = 0;
+    // Reset impossible sums
+    for (int s = 0; s <= max_sum; s++) {
+        if (m_min_digits[s] > board_size) {
+            m_min_digits[s] = m_max_digits[s] = 0;
         }
-}
-
-void RuleSandwich::initLine(const RCIdx &pos) {
-    m_line.clear();
-    const int board_size = board_->size();
-
-    if (pos.row >= 0) {
-        for (int c = 0; c < board_size; c++)
-            m_line.push_back(&board_->get_cell({pos.row, c}));
-    } else if (pos.col >= 0) {
-        for (int r = 0; r < board_size; r++)
-            m_line.push_back(&board_->get_cell({r, pos.col}));
     }
 }
 
-bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD) {
-    const int line_size = m_line.size();
-    for (int j = 0; j < line_size; j++) {
+bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD, std::vector<Cell *> &line) {
+    for (int j = 0; j < board_->size(); j++) {
         if (j == i)
             continue;
 
-        Cell &peer = *m_line[j];
+        Cell &peer = *line[j];
         if (peer.value == other_digit || (!peer.is_solved() && peer.candidates.test(other_digit))) {
             int cnt = std::abs(j - i) - 1;
             if (cnt >= minD && cnt <= maxD)
@@ -187,7 +178,7 @@ bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD)
 }
 
 bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
-    initLine(pos);
+    std::vector<Cell *> &line = getLine(pos);
 
     const int board_size = board_->size();
 
@@ -197,24 +188,24 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
     bool changed = false;
 
     for (int i = 0; i < board_size; i++) {
-        if (m_line[i]->value == 1)
+        if (line[i]->value == 1)
             idx1 = i;
-        if (m_line[i]->value == board_size)
+        if (line[i]->value == board_size)
             idxBoardSize = i;
     }
 
     if (idx1 == -1 && idxBoardSize == -1) {
         // Both bread digits are unknown
         for (int i = 0; i < board_size; i++) {
-            Cell &c = *m_line[i];
+            Cell &c = *line[i];
             if (c.is_solved())
                 continue;
 
-            if (c.candidates.test(1) && !has_possible_pair(i, board_size, minD, maxD)) {
+            if (c.candidates.test(1) && !has_possible_pair(i, board_size, minD, maxD, line)) {
                 changed |= c.remove_candidate(1);
             }
 
-            if (c.candidates.test(board_size) && !has_possible_pair(i, 1, minD, maxD)) {
+            if (c.candidates.test(board_size) && !has_possible_pair(i, 1, minD, maxD, line)) {
                 changed |= c.remove_candidate(board_size);
             }
         }
@@ -225,7 +216,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
         const int idx_known = (known == 1) ? idx1 : idxBoardSize;
 
         for (int i = 0; i < board_size; i++) {
-            Cell &c = *m_line[i];
+            Cell &c = *line[i];
             if (c.is_solved() || !c.candidates.test(unknown))
                 continue;
 
@@ -245,7 +236,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
                 union_set |= comb;
 
             for (int i = left + 1; i < right; i++) {
-                Cell &c = *m_line[i];
+                Cell &c = *line[i];
                 if (c.is_solved())
                     continue;
 
@@ -258,5 +249,10 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
 
     return changed;
 }
+
+std::vector<Cell *>& RuleSandwich::getLine(const RCIdx &pos) {
+    return (pos.is_row()) ? board_->get_row(pos.row) : board_->get_col(pos.col);
+}
+
 
 } // namespace sudoku

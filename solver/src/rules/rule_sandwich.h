@@ -11,10 +11,10 @@ struct SandwichPair {
     int sum = 0;
 };
 
-// NOTE: For some reason this is very slow!
 class RuleSandwich : public RuleHandler {
 public:
     explicit RuleSandwich(Board *board) : RuleHandler(board) {}
+    ~RuleSandwich();
 
     bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;
@@ -23,15 +23,16 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<int> m_min_digits;
-    std::vector<int> m_max_digits;
+    int *m_min_digits;
+    int *m_max_digits;
+
     std::vector<std::vector<std::vector<NumberSet>>> m_valid_combinations;
-    std::vector<Cell *> m_line;
     std::vector<SandwichPair> m_pairs;
 
+    std::vector<Cell *> &getLine(const RCIdx &pos);
+
     void generateSandwichTables();
-    void initLine(const RCIdx &pos);
-    bool has_possible_pair(int i, int other_digit, int minD, int maxD);
+    bool has_possible_pair(int i, int other_digit, int minD, int maxD, std::vector<Cell *> &line);
     bool check_sandwich(const RCIdx &pos, const int sum);
 };
 } // namespace sudoku
