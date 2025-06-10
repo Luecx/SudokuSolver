@@ -21,11 +21,11 @@ export class DutchFlatRuleHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-            In <b>Dutch Flat Sudoku</b>, each 5 must have a 1 directly above it and a 9 directly below it.
+            In <b>Dutch Flat Sudoku</b>, each 5 must have a 1 directly above it and/or a 9 directly below it.
         `;
     }
 
     getDescriptionPlayHTML() {
-        return "In <b>Dutch Flat Sudoku</b>, each 5 must have a 1 directly above it and a 9 directly below it.";
+        return "In <b>Dutch Flat Sudoku</b>, each 5 must have a 1 directly above it and/or a 9 directly below it.";
     }
 }
