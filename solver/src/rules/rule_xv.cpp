@@ -3,6 +3,11 @@
 
 namespace sudoku {
 
+bool RuleXV::number_changed(CellIdx pos) {
+    // unsure if this benefits solver or not
+    return false;
+}
+
 bool RuleXV::candidates_changed() {
     bool changed = false;
 

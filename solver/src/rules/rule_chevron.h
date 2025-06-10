@@ -26,10 +26,10 @@ private:
 
     bool enforce() const;
     bool enforce_greater_less(Cell &cell, Cell &neighbor, std::string symbol) const;
-    bool checkPair(Cell &cell, Cell &neighbor, std::string symbol) const;
+    bool check_pair(Cell &cell, Cell &neighbor, std::string symbol) const;
 
-    bool allowGreaterCandidates(Cell &cell, Number value) const;
-    bool allowLessCandidates(Cell &cell, Number value) const;
+    bool allow_greater_cands(Cell &cell, Number value) const;
+    bool allow_less_cands(Cell &cell, Number value) const;
 };
 
 } // namespace sudoku

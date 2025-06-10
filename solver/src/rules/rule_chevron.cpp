@@ -4,7 +4,10 @@
 
 namespace sudoku {
 
-bool RuleChevron::number_changed(CellIdx pos) { return enforce(); }
+bool RuleChevron::number_changed(CellIdx pos) {
+    // unsure if this benefits solver or not
+    return false;
+}
 
 bool RuleChevron::candidates_changed() { return enforce(); }
 
@@ -12,28 +15,28 @@ bool RuleChevron::valid() {
     for (const auto &edge: m_up_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
-        if (!checkPair(cell, neighbor, "up"))
+        if (!check_pair(cell, neighbor, "up"))
             return false;
     }
 
     for (const auto &edge: m_down_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
-        if (!checkPair(cell, neighbor, "down"))
+        if (!check_pair(cell, neighbor, "down"))
             return false;
     }
 
     for (const auto &edge: m_right_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
-        if (!checkPair(cell, neighbor, "right"))
+        if (!check_pair(cell, neighbor, "right"))
             return false;
     }
 
     for (const auto &edge: m_left_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
-        if (!checkPair(cell, neighbor, "left"))
+        if (!check_pair(cell, neighbor, "left"))
             return false;
     }
 
@@ -134,34 +137,34 @@ bool RuleChevron::enforce_greater_less(Cell &cell, Cell &neighbor, std::string s
 
     if (symbol == "up" || symbol == "left") {
         if (cell.is_solved()) {
-            changed |= allowGreaterCandidates(neighbor, cell.value);
+            changed |= allow_greater_cands(neighbor, cell.value);
         } else if (neighbor.is_solved()) {
-            changed |= allowLessCandidates(cell, neighbor.value);
+            changed |= allow_less_cands(cell, neighbor.value);
         } else {
             Number min_cell_val = cell_candidates.lowest();
-            changed |= allowGreaterCandidates(neighbor, min_cell_val);
+            changed |= allow_greater_cands(neighbor, min_cell_val);
 
             Number max_neighbor_val = neighbor_candidates.highest();
-            changed |= allowLessCandidates(cell, max_neighbor_val);
+            changed |= allow_less_cands(cell, max_neighbor_val);
         }
     } else {
         if (cell.is_solved()) {
-            changed |= allowLessCandidates(neighbor, cell.value);
+            changed |= allow_less_cands(neighbor, cell.value);
         } else if (neighbor.is_solved()) {
-            changed |= allowGreaterCandidates(cell, neighbor.value);
+            changed |= allow_greater_cands(cell, neighbor.value);
         } else {
             Number max_cell_val = cell_candidates.highest();
-            changed |= allowLessCandidates(neighbor, max_cell_val);
+            changed |= allow_less_cands(neighbor, max_cell_val);
 
             Number min_neighbor_val = neighbor_candidates.lowest();
-            changed |= allowGreaterCandidates(cell, min_neighbor_val);
+            changed |= allow_greater_cands(cell, min_neighbor_val);
         }
     }
 
     return changed;
 }
 
-bool RuleChevron::checkPair(Cell &cell, Cell &neighbor, std::string symbol) const {
+bool RuleChevron::check_pair(Cell &cell, Cell &neighbor, std::string symbol) const {
     if (!cell.is_solved() || !neighbor.is_solved())
         return true;
 
@@ -171,14 +174,13 @@ bool RuleChevron::checkPair(Cell &cell, Cell &neighbor, std::string symbol) cons
         return cell.value > neighbor.value;
 }
 
-
 // helper
 
-bool RuleChevron::allowGreaterCandidates(Cell &cell, Number value) const {
+bool RuleChevron::allow_greater_cands(Cell &cell, Number value) const {
     return cell.only_allow_candidates(NumberSet::greaterThan(board_->size(), value));
 }
 
-bool RuleChevron::allowLessCandidates(Cell &cell, Number value) const {
+bool RuleChevron::allow_less_cands(Cell &cell, Number value) const {
     return cell.only_allow_candidates(NumberSet::lessThan(board_->size(), value));
 }
 

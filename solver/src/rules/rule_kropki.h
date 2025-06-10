@@ -26,6 +26,8 @@ private:
     Region<EdgeIdx> m_combined_edges;
     Region<EdgeIdx> m_missing_dot_edges;
 
+    bool pos_in_edge(const CellIdx &pos, const EdgeIdx &edge) const;
+
     bool apply_white_number(Cell &source, Cell &target) const;
     bool apply_black_number(Cell &source, Cell &target) const;
     bool apply_white_candidates(Cell &a, Cell &b) const;

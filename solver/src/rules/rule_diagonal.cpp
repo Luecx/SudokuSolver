@@ -4,22 +4,17 @@
 namespace sudoku {
 
 bool RuleDiagonal::number_changed(CellIdx pos) {
-    Cell &cell = board_->get_cell(pos);
-
     const int board_size = board_->size();
+    const Cell &cell = board_->get_cell(pos);
+
     bool changed = false;
-
-    NumberSet rm(board_size);
-    rm.add(cell.value);
-
-    NumberSet keep = ~rm;
 
     if (m_diagonal && pos.r == pos.c) {
         for (int i = 0; i < board_size; ++i) {
             Cell &diag_cell = board_->get_cell({i, i});
             if (diag_cell.is_solved())
                 continue;
-            changed |= diag_cell.only_allow_candidates(keep);
+            changed |= diag_cell.remove_candidate(cell.value);
         }
     }
 
@@ -28,11 +23,15 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
             Cell &anti_diag_cell = board_->get_cell({i, board_size - 1 - i});
             if (anti_diag_cell.is_solved())
                 continue;
-            changed |= anti_diag_cell.only_allow_candidates(keep);
+            changed |= anti_diag_cell.remove_candidate(cell.value);
         }
     }
 
     return changed;
+}
+
+bool RuleDiagonal::candidates_changed() {
+    return false; // unnecessary to implement
 }
 
 bool RuleDiagonal::valid() {

@@ -7,38 +7,8 @@
 namespace sudoku {
 
 bool RuleKropki::number_changed(CellIdx pos) {
-    bool changed = false;
-
-    // white dots
-    for (const auto &edge: m_white_edges.items()) {
-        Cell &a = board_->get_cell(pos);
-
-        if (edge.r1 == pos.r && edge.c1 == pos.c) {
-            Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
-            changed |= apply_white_number(a, b);
-        } else if (edge.r2 == pos.r && edge.c2 == pos.c) {
-            Cell &b = board_->get_cell(CellIdx(edge.r1, edge.c1));
-            changed |= apply_white_number(a, b);
-        }
-    }
-
-    // Process black dots
-    for (const auto &edge: m_black_edges.items()) {
-        Cell &a = board_->get_cell(pos);
-
-        if (edge.r1 == pos.r && edge.c1 == pos.c) {
-            Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
-            changed |= apply_black_number(a, b);
-        } else if (edge.r2 == pos.r && edge.c2 == pos.c) {
-            Cell &b = board_->get_cell(CellIdx(edge.r1, edge.c1));
-            changed |= apply_black_number(a, b);
-        }
-    }
-
-    if (m_all_dots_given)
-        changed |= enforce_missing_dots();
-
-    return changed;
+    // unsure if this benefits solver or not
+    return false;
 }
 
 bool RuleKropki::candidates_changed() {
@@ -59,6 +29,9 @@ bool RuleKropki::candidates_changed() {
         changed |= apply_black_candidates(a, b);
         changed |= apply_black_candidates(b, a);
     }
+
+    if (m_all_dots_given)
+        changed |= enforce_missing_dots();
 
     return changed;
 }
@@ -248,5 +221,12 @@ void RuleKropki::from_json(JSON &json) {
     m_combined_edges = m_white_edges | m_black_edges;
     m_missing_dot_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
+
+bool RuleKropki::pos_in_edge(const CellIdx &pos, const EdgeIdx &edge) const {
+    CellIdx cell1(edge.r1, edge.c1);
+    CellIdx cell2(edge.r2, edge.c2);
+    return (pos == cell1 || pos == cell2);
+}
+
 
 } // namespace sudoku

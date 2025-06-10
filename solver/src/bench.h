@@ -74,104 +74,87 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
 
     std::cout << std::endl;
 
-    // Pre-load all JSON files to avoid I/O overhead in timing
-    std::vector<std::string> json_contents;
+    // statistics for the benchmark
+    int total_puzzles = 0;
+    int total_solutions = 0;
+    uint64_t total_nodes = 0;
+    int successful_solutions = 0;
+    float total_time_ms = 0;
+
     for (const auto &file_path: json_files) {
-        std::ifstream file(file_path);
-        if (!file.is_open()) {
-            std::cerr << "[ERROR] Failed to open " << file_path << std::endl;
-            continue;
-        }
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        json_contents.push_back(buffer.str());
-    }
-
-    const int num_runs = 50;
-    std::vector<float> run_times;
-    
-    // Run benchmark 50 times
-    for (int run = 0; run < num_runs; ++run) {
-        std::cout << "[RUN " << (run + 1) << "/" << num_runs << "]\n";
-        
-        // statistics for this run
-        int total_puzzles = 0;
-        int total_solutions = 0;
-        uint64_t total_nodes = 0;
-        int successful_solutions = 0;
-        float total_time_ms = 0;
-
-        for (size_t i = 0; i < json_files.size() && i < json_contents.size(); ++i) {
-            const auto &file_path = json_files[i];
-            const auto &txt = json_contents[i];
-
-            total_puzzles++;
-
-            try {
-                auto root = JSON::parse(txt);
-
-                Board board{9};
-                board.from_json(root);
-
-                SolverStats stats;
-                auto sol = solve_complete ? board.solve_complete(&stats, max_nodes) : board.solve(max_solutions, max_nodes, &stats);
-
-                total_solutions += stats.solutions_found;
-                total_nodes += stats.nodes_explored;
-                total_time_ms += stats.time_taken_ms;
-
-                if (!sol.empty())
-                    successful_solutions++;
-            } catch (const std::exception &e) {
-                std::cerr << "[ERROR] Error processing " << file_path << ": " << e.what() << "\n";
+        std::string txt;
+        {
+            std::ifstream file(file_path);
+            if (!file.is_open()) {
+                std::cerr << "[ERROR] Failed to open " << file_path << std::endl;
+                continue;
             }
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            txt = buffer.str();
         }
-        
-        run_times.push_back(total_time_ms);
-        std::cout << "Run " << (run + 1) << " total time: " << std::fixed << std::setprecision(3) << total_time_ms << " ms\n";
+
+        std::cout << "[PROCESSING] " << file_path << "\n";
+
+        total_puzzles++;
+
+        try {
+            auto root = JSON::parse(txt);
+
+            Board board{9};
+            board.from_json(root);
+
+            SolverStats stats;
+            auto sol = solve_complete ? board.solve_complete(&stats, max_nodes) : board.solve(max_solutions, max_nodes, &stats);
+            std::cout << stats << std::endl;
+            if (stats.solutions_found < 1)
+                std::cout << board << std::endl;
+
+            total_solutions += stats.solutions_found;
+            total_nodes += stats.nodes_explored;
+            total_time_ms += stats.time_taken_ms;
+
+            if (!sol.empty())
+                successful_solutions++;
+        } catch (const std::exception &e) {
+            std::cerr << "[ERROR] Error processing " << file_path << ": " << e.what() << "\n";
+        }
     }
 
-    // Calculate statistics across all runs
-    float sum_time = 0;
-    float min_time = run_times[0];
-    float max_time = run_times[0];
-    
-    for (float time : run_times) {
-        sum_time += time;
-        min_time = std::min(min_time, time);
-        max_time = std::max(max_time, time);
-    }
-    
-    float avg_time = sum_time / num_runs;
-
-    print_header("BENCHMARK SUMMARY(" + std::to_string(num_runs) + " RUNS)");
+    print_header("BENCHMARK SUMMARY");
 
     std::cout << "+----------------------------------------+\n";
 
-    // Average time row
-    std::cout << "| " << std::setw(26) << std::left << "Average time (ms):";
-    std::stringstream avg_ss;
-    avg_ss << std::fixed << std::setprecision(3) << avg_time;
-    std::cout << std::setw(12) << std::right << avg_ss.str() << " |\n";
+    // Total puzzles row
+    std::cout << "| " << std::setw(26) << std::left << "Total puzzles:";
+    std::cout << std::setw(12) << std::right << total_puzzles << " |\n";
 
-    // Min time row
-    std::cout << "| " << std::setw(26) << std::left << "Min time (ms):";
-    std::stringstream min_ss;
-    min_ss << std::fixed << std::setprecision(3) << min_time;
-    std::cout << std::setw(12) << std::right << min_ss.str() << " |\n";
+    // Puzzles solved row
+    std::cout << "| " << std::setw(26) << std::left << "Puzzles solved:";
+    std::cout << std::setw(12) << std::right << successful_solutions << " |\n";
 
-    // Max time row
-    std::cout << "| " << std::setw(26) << std::left << "Max time (ms):";
-    std::stringstream max_ss;
-    max_ss << std::fixed << std::setprecision(3) << max_time;
-    std::cout << std::setw(12) << std::right << max_ss.str() << " |\n";
+    // Total solutions row
+    std::cout << "| " << std::setw(26) << std::left << "Total solutions:";
+    std::cout << std::setw(12) << std::right << total_solutions << " |\n";
 
-    // Total time across all runs
+    // Total nodes row
+    std::cout << "| " << std::setw(26) << std::left << "Total nodes:";
+    std::cout << std::setw(12) << std::right << total_nodes << " |\n";
+
+    // Total time row
     std::cout << "| " << std::setw(26) << std::left << "Total time (ms):";
-    std::stringstream total_ss;
-    total_ss << std::fixed << std::setprecision(3) << sum_time;
-    std::cout << std::setw(12) << std::right << total_ss.str() << " |\n";
+    std::stringstream time_ss;
+    time_ss << std::fixed << std::setprecision(3) << total_time_ms;
+    std::cout << std::setw(12) << std::right << time_ss.str() << " |\n";
 
+    if (total_puzzles > 0) {
+        // Success rate row
+        std::cout << "| " << std::setw(25) << std::left << "Success rate:";
+        double success_rate = (successful_solutions * 100.0 / total_puzzles);
+        std::stringstream rate_ss;
+        rate_ss << std::fixed << std::setprecision(2) << success_rate << "%";
+        std::cout << std::setw(13) << std::right << rate_ss.str() << " |\n";
+    }
     std::cout << "+----------------------------------------+\n";
 
     print_header("BENCHMARK FINISHED");

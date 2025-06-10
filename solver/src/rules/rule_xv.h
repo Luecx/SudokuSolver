@@ -12,7 +12,7 @@ class RuleXV : public RuleHandler {
 public:
     explicit RuleXV(Board *board) : RuleHandler(board) {}
 
-    bool number_changed(CellIdx pos) override { return false; };
+    bool number_changed(CellIdx pos) override;
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override;

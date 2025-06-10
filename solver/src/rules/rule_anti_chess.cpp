@@ -77,7 +77,6 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
 }
 
 bool RuleAntiChess::candidates_changed() {
-    // TODO: add anti-chess here as well
     bool changed = false;
     for (int i = 0; i < 2; i++)
         changed |= check_cage(m_pair[i].region, m_pair[i].allow_repeats);
