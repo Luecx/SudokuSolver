@@ -118,8 +118,8 @@ void RuleSandwich::generateSandwichTables() {
     const int board_size = board_->size();
     const int max_sum = (board_size * (board_size + 1)) / 2;
 
-    // Initialize data structures
-    m_valid_combinations.assign(max_sum + 1, std::vector<std::vector<NumberSet>>(board_size + 1));
+    // Initialize data structures - now storing union sets instead of all combinations
+    m_valid_union_sets.assign(max_sum + 1, std::vector<NumberSet>(board_size + 1, NumberSet(board_size)));
     m_min_digits = new int[max_sum + 1]();
     m_max_digits = new int[max_sum + 1]();
 
@@ -147,8 +147,8 @@ void RuleSandwich::generateSandwichTables() {
         if (has_bread_digits || sum > max_sum || count == 0)
             continue;
 
-        // Store valid combination and update min/max
-        m_valid_combinations[sum][count].push_back(cands);
+        // Update union set and min/max
+        m_valid_union_sets[sum][count] |= cands;
         m_min_digits[sum] = std::min(m_min_digits[sum], count);
         m_max_digits[sum] = std::max(m_max_digits[sum], count);
     }
@@ -231,9 +231,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
         const int between = right - left - 1;
 
         if (between >= minD && between <= maxD) {
-            NumberSet union_set(board_size);
-            for (const auto &comb: m_valid_combinations[sum][between])
-                union_set |= comb;
+            const NumberSet &union_set = m_valid_union_sets[sum][between];
 
             for (int i = left + 1; i < right; i++) {
                 Cell &c = *line[i];
@@ -250,9 +248,8 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
     return changed;
 }
 
-std::vector<Cell *>& RuleSandwich::getLine(const RCIdx &pos) {
+std::vector<Cell *> &RuleSandwich::getLine(const RCIdx &pos) {
     return (pos.is_row()) ? board_->get_row(pos.row) : board_->get_col(pos.col);
 }
-
 
 } // namespace sudoku

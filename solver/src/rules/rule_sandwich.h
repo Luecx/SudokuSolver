@@ -26,7 +26,7 @@ private:
     int *m_min_digits;
     int *m_max_digits;
 
-    std::vector<std::vector<std::vector<NumberSet>>> m_valid_combinations;
+    std::vector<std::vector<NumberSet>> m_valid_union_sets;
     std::vector<SandwichPair> m_pairs;
 
     std::vector<Cell *> &getLine(const RCIdx &pos);
