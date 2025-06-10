@@ -76,24 +76,14 @@ void RuleRenban::from_json(JSON &json) {
 
 // private member functions
 
-bool RuleRenban::filter_range_based(const Region<CellIdx> &path, int min_val, int max_val) {
+bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     const int board_size = board_->size();
 
-    bool changed = false;
-    if (min_val > 1 || max_val < board_size) {
-        NumberSet invalid = NumberSet::greaterThan(board_size, max_val) | NumberSet::lessThan(board_size, min_val);
-        for (const auto &pos: path)
-            changed |= board_->get_cell(pos).remove_candidates(invalid);
-    }
-    return changed;
-}
-
-bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     // collect solved cells
     m_solved_values.clear();
     int free_cells = 0;
 
-    int min_cand = board_->size() + 1;
+    int min_cand = board_size + 1;
     int max_cand = 0;
 
     for (const auto &pos: path) {
@@ -109,7 +99,7 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
 
     // if no cells are solved, check if we can filter some candidates
     if (m_solved_values.size() == 0)
-        return filter_range_based(path, min_cand, max_cand);
+        return false;
 
     const int length = path.size();
 
@@ -118,13 +108,23 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     int max_solved = m_solved_values.max();
 
     int min_start = std::max(1, max_solved - length + 1);
-    int max_start = std::min(board_->size() - length + 1, min_solved);
+    int max_start = std::min(board_size - length + 1, min_solved);
 
     // check if range is valid
     if (min_start > max_start)
         return false;
 
-    return filter_range_based(path, min_start, max_start + length - 1);
+    int max_possible = max_start + length - 1;
+
+    bool changed = false;
+    if (min_start > 1 || max_possible < board_size) {
+        NumberSet invalid =
+                NumberSet::greaterThan(board_size, max_possible) | NumberSet::lessThan(board_size, min_start);
+        for (const auto &pos: path)
+            changed |= board_->get_cell(pos).remove_candidates(invalid);
+    }
+
+    return changed;
 }
 
 } // namespace sudoku

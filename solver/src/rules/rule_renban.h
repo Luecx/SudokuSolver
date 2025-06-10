@@ -78,7 +78,6 @@ private:
     std::vector<Region<CellIdx>> m_paths;
     RenbanType m_solved_values;
 
-    bool filter_range_based(const Region<CellIdx> &path, int min_val, int max_val);
     bool enforce_renban(const Region<CellIdx> &path);
 };
 
