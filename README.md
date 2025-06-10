@@ -1,6 +1,6 @@
 # 🧠 SudokuSolver
 
-A full-featured web-based Sudoku platform where you can play, create, and compete in solving puzzles. Powered by a high-performance C++ solver compiled to WebAssembly and integrated with a Django web app, this project offers a fun, fast, and competitive experience for Sudoku enthusiasts.
+A full-featured web-based Sudoku platform where you can solve puzzles for fun or competition, and use the built-in tools to create and validate your own Sudokus. Powered by a high-performance C++ solver compiled to WebAssembly and integrated with a Django web app, this project offers a fun, fast, and competitive experience for Sudoku enthusiasts.
 
 ---
 
@@ -40,21 +40,21 @@ pip install -r requirements.txt
 
 ```bash
 cd finnssudokusite
-python manage.py makemigrations sudoku
-python manage.py migrate
+python3 manage.py makemigrations sudoku
+python3 manage.py migrate
 ```
 
 ### 4. (Optional) Import Sample Puzzles
 
 ```bash
 source uvenv/bin/activate
-python manage.py import_sudokus your_username ../sudoku_jsons/ --solver ../solver/SudokuSolver
+python3 manage.py import_sudokus your_username ../sudoku_jsons/ --solver ../solver/SudokuSolver
 ```
 
 ### 5. Run the Development Server
 
 ```bash
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 Visit `http://localhost:8000` to get started!
@@ -90,19 +90,13 @@ Run performance tests on Sudoku collections:
 Delete all existing puzzles:
 
 ```bash
-python manage.py delete_sudokus --match-regex "."
+python3 manage.py delete_sudokus --match-regex "."
 ```
 
----
-
-## 🧱 Project Structure
-
-```
-SudokuSolver/
-├── finnssudokusite/      # Django web app
-├── solver/               # C++ Sudoku solver and generator
-├── sudoku_jsons/         # JSON-based puzzle data
-├── requirements.txt      # Python dependencies
+Import puzzles (in the expected JSON format):
+```bash
+source venv/bin/activate
+python3 manage.py import_sudokus user_name ../sudoku_jsons/ --solver ../solver/SudokuSolver
 ```
 
 ---
