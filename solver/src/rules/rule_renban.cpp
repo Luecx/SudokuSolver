@@ -83,14 +83,18 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     NumberSet solved_values(board_size);
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
-        if (cell.is_solved())
-            solved_values.add(cell.value);
+        if (!cell.is_solved())
+            continue;
+
+        if (solved_values.test(cell.value))
+            return false; // duplicate value in path
+        solved_values.add(cell.value);
     }
 
     // if no cells are solved, we cannot enforce renban
     if (solved_values.count() == 0)
         return false;
-
+        
     const int length = path.size();
 
     int min_solved = solved_values.lowest();
