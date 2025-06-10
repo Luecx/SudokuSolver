@@ -25,7 +25,7 @@ A full-featured web-based Sudoku platform where you can solve puzzles competitiv
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/SudokuSolver.git
+git clone https://github.com/Luecx/SudokuSolver.git
 cd SudokuSolver
 ```
 
