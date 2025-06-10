@@ -2,6 +2,7 @@ from django.core.mail import EmailMessage, send_mail
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.utils.translation import gettext as _
 
 @csrf_exempt
 def kontaktformular_view(request):
@@ -31,17 +32,18 @@ def kontaktformular_view(request):
 
         # 2. Auto-Antwort an den Absender
         send_mail(
-            subject='Vielen Dank für deine Nachricht',
-            message=(
-                f"Hallo {name},\n\n"
-                "vielen Dank für deine Nachricht an SudokuSphere.\n"
-                "Wir melden uns so bald wie möglich bei dir.\n\n"
-                "Viele Grüße\nSudokuSphere-Team"
-            ),
+            subject=_('Vielen Dank für deine Nachricht'),
+            message=_(
+                "Hello %(name)s,\n\n"
+                "Thank you for your message to SudokuSphere.\n"
+                "We will get back to you as soon as possible.\n\n"
+                "Best regards,\nFinn and the SudokuSphere Team"
+            ) % {'name': name},
+
             from_email='noreply@sudokusphere.com',
             recipient_list=[user_email],
         )
 
-        return HttpResponse("Nachricht erfolgreich gesendet.")
+        return HttpResponse(_("Message sent successfully."))
 
     return render(request, 'index.html')

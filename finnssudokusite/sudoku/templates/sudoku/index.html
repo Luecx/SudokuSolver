@@ -108,7 +108,7 @@
 		<div class="modal-content">
 			<div class="modal-body px-4">
 				<h2 class="card-title my-3">{% trans "Send Finn a message" %}</h2>
-				<form method="post" id="contactForm">
+				<form method="post" action="{% url 'kontaktformular' %}" id="contactForm">
 					{% csrf_token %}
 					
 					{% if user.is_authenticated %}
