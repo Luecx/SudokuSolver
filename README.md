@@ -1,7 +1,3 @@
-Here’s a clean, well-organized, and visually appealing version of your README file, suitable for GitHub:
-
----
-
 # 🧠 SudokuSolver
 
 A full-featured web-based Sudoku platform where you can play, create, and compete in solving puzzles. Powered by a high-performance C++ solver compiled to WebAssembly and integrated with a Django web app, this project offers a fun, fast, and competitive experience for Sudoku enthusiasts.
