@@ -12,12 +12,10 @@ bool RuleSandwich::number_changed(CellIdx pos) {
     bool changed = false;
     for (const auto &pair: m_pairs) {
         const Region<RCIdx> &region = pair.region;
-        const int sum = pair.sum;
-
         for (const auto &rcidx: region.items()) {
             if (rcidx.row != pos.r && rcidx.col != pos.c)
                 continue;
-            changed |= check_sandwich(rcidx, sum);
+            changed |= check_sandwich(rcidx, pair.sum);
         }
     }
     return changed;
@@ -27,10 +25,8 @@ bool RuleSandwich::candidates_changed() {
     bool changed = false;
     for (const auto &pair: m_pairs) {
         const Region<RCIdx> &region = pair.region;
-        const int sum = pair.sum;
-
         for (const auto &rcidx: region.items())
-            changed |= check_sandwich(rcidx, sum);
+            changed |= check_sandwich(rcidx, pair.sum);
     }
     return changed;
 };
@@ -42,7 +38,6 @@ void RuleSandwich::update_impact(ImpactMap &map) {
         map.increment_region(cell_reg);
     }
 };
-
 
 bool RuleSandwich::valid() {
     const int board_size = board_->size();
@@ -118,47 +113,41 @@ void RuleSandwich::generateSandwichTables() {
     const int board_size = board_->size();
     const int max_sum = (board_size * (board_size + 1)) / 2;
 
-    // Initialize data structures - now storing union sets instead of all combinations
     m_valid_union_sets.assign(max_sum + 1, std::vector<NumberSet>(board_size + 1, NumberSet(board_size)));
     m_min_digits = new int[max_sum + 1]();
     m_max_digits = new int[max_sum + 1]();
 
     std::fill(m_min_digits, m_min_digits + max_sum + 1, board_size + 1);
 
-    // Generate all possible digit combinations (excluding 1 and board_size)
-    const int max_mask = 1 << board_size;
-    for (int mask = 1; mask < max_mask; mask++) {
+    // Generate all digit combinations excluding 1 and board_size
+    for (int mask = 1; mask < (1 << board_size); mask++) {
         const NumberSet::bit_t bits = mask << 1;
         NumberSet cands(board_size, bits);
 
         int sum = 0, count = 0;
-        bool has_bread_digits = false;
-
         for (int d = 1; d <= board_size; ++d) {
-            if (!cands.test(d))
-                continue;
-
-            sum += d;
-            count++;
-            has_bread_digits |= (d == 1 || d == board_size);
+            if (cands.test(d)) {
+                sum += d;
+                count++;
+                // Skip if contains bread digits
+                if (d == 1 || d == board_size)
+                    goto next_mask;
+            }
         }
 
-        // Skip if contains bread digits, invalid sum, or empty
-        if (has_bread_digits || sum > max_sum || count == 0)
-            continue;
+        if (count > 0 && sum <= max_sum) {
+            m_valid_union_sets[sum][count] |= cands;
+            m_min_digits[sum] = std::min(m_min_digits[sum], count);
+            m_max_digits[sum] = std::max(m_max_digits[sum], count);
+        }
 
-        // Update union set and min/max
-        m_valid_union_sets[sum][count] |= cands;
-        m_min_digits[sum] = std::min(m_min_digits[sum], count);
-        m_max_digits[sum] = std::max(m_max_digits[sum], count);
+    next_mask:;
     }
 
     // Reset impossible sums
-    for (int s = 0; s <= max_sum; s++) {
-        if (m_min_digits[s] > board_size) {
+    for (int s = 0; s <= max_sum; s++)
+        if (m_min_digits[s] > board_size)
             m_min_digits[s] = m_max_digits[s] = 0;
-        }
-    }
 }
 
 bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD, std::vector<Cell *> &line) {
@@ -167,26 +156,22 @@ bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD,
             continue;
 
         Cell &peer = *line[j];
-        if (peer.value == other_digit || (!peer.is_solved() && peer.candidates.test(other_digit))) {
-            int cnt = std::abs(j - i) - 1;
-            if (cnt >= minD && cnt <= maxD)
-                return true;
+        if ((peer.value == other_digit || (!peer.is_solved() && peer.candidates.test(other_digit))) &&
+            std::abs(j - i) - 1 >= minD && std::abs(j - i) - 1 <= maxD) {
+            return true;
         }
     }
-
     return false;
 }
 
 bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
     std::vector<Cell *> &line = getLine(pos);
-
     const int board_size = board_->size();
-
     const int minD = m_min_digits[sum];
     const int maxD = m_max_digits[sum];
-    int idx1 = -1, idxBoardSize = -1;
-    bool changed = false;
 
+    // Find bread digits
+    int idx1 = -1, idxBoardSize = -1;
     for (int i = 0; i < board_size; i++) {
         if (line[i]->value == 1)
             idx1 = i;
@@ -194,8 +179,10 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
             idxBoardSize = i;
     }
 
+    bool changed = false;
+
     if (idx1 == -1 && idxBoardSize == -1) {
-        // Both bread digits are unknown
+        // Both bread digits unknown - check if placement is possible
         for (int i = 0; i < board_size; i++) {
             Cell &c = *line[i];
             if (c.is_solved())
@@ -204,34 +191,32 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
             if (c.candidates.test(1) && !has_possible_pair(i, board_size, minD, maxD, line)) {
                 changed |= c.remove_candidate(1);
             }
-
             if (c.candidates.test(board_size) && !has_possible_pair(i, 1, minD, maxD, line)) {
                 changed |= c.remove_candidate(board_size);
             }
         }
     } else if (idx1 == -1 || idxBoardSize == -1) {
-        // Only one bread digit is known
-        const int known = (idx1 != -1) ? 1 : board_size;
-        const int unknown = (known == 1) ? board_size : 1;
-        const int idx_known = (known == 1) ? idx1 : idxBoardSize;
+        // One bread digit known - constrain the other
+        const int known_idx = (idx1 != -1) ? idx1 : idxBoardSize;
+        const int unknown_digit = (idx1 != -1) ? board_size : 1;
 
         for (int i = 0; i < board_size; i++) {
             Cell &c = *line[i];
-            if (c.is_solved() || !c.candidates.test(unknown))
+            if (c.is_solved() || !c.candidates.test(unknown_digit))
                 continue;
 
-            int dist = std::abs(i - idx_known) - 1;
+            int dist = std::abs(i - known_idx) - 1;
             if (dist < minD || dist > maxD)
-                changed |= c.remove_candidate(unknown);
+                changed |= c.remove_candidate(unknown_digit);
         }
     } else {
-        // Both bread digits are known
+        // Both bread digits known - constrain filling digits
         const int left = std::min(idx1, idxBoardSize);
         const int right = std::max(idx1, idxBoardSize);
         const int between = right - left - 1;
 
         if (between >= minD && between <= maxD) {
-            const NumberSet &union_set = m_valid_union_sets[sum][between];
+            const NumberSet &valid_digits = m_valid_union_sets[sum][between];
 
             for (int i = left + 1; i < right; i++) {
                 Cell &c = *line[i];
@@ -239,7 +224,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
                     continue;
 
                 for (int d = 1; d <= board_size; d++)
-                    if (c.candidates.test(d) && !union_set.test(d))
+                    if (c.candidates.test(d) && !valid_digits.test(d))
                         changed |= c.remove_candidate(d);
             }
         }
