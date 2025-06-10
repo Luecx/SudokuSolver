@@ -1,10 +1,7 @@
 #include "rule_renban.h"
 #include "../board/board.h"
 
-
 namespace sudoku {
-
-RuleRenban::RuleRenban(Board *board) : RuleHandler(board), m_solved_values(board->size()) {}
 
 bool RuleRenban::number_changed(CellIdx pos) {
     bool changed = false;
@@ -36,21 +33,24 @@ void RuleRenban::update_impact(ImpactMap &map) {
 
 bool RuleRenban::valid() {
     for (const auto &path: m_paths) {
-        m_solved_values.clear();
+        NumberSet solved_values(board_->size());
         for (const auto &pos: path) {
             const Cell &cell = board_->get_cell(pos);
             if (!cell.is_solved())
-                break;
-            m_solved_values.add(cell.value);
+                continue;
+
+            if (solved_values.test(cell.value))
+                return false; // duplicate value in path
+            solved_values.add(cell.value);
         }
 
-        if (m_solved_values.size() != static_cast<int>(path.size()))
+        int path_size = static_cast<int>(path.size());
+        if (solved_values.count() != path_size)
             continue;
 
-        m_solved_values.sort();
-        for (int i = 1; i < m_solved_values.size(); i++)
-            if (m_solved_values[i] != m_solved_values[i - 1] + 1)
-                return false;
+        int dist = solved_values.highest() - solved_values.lowest() + 1;
+        if (dist != path_size)
+            return false;
     }
 
     return true;
@@ -80,21 +80,21 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     const int board_size = board_->size();
 
     // collect solved cells
-    m_solved_values.clear();
+    NumberSet solved_values(board_size);
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
         if (cell.is_solved())
-            m_solved_values.add(cell.value);
+            solved_values.add(cell.value);
     }
 
     // if no cells are solved, we cannot enforce renban
-    if (m_solved_values.size() == 0)
+    if (solved_values.count() == 0)
         return false;
 
     const int length = path.size();
 
-    int min_solved = m_solved_values.min();
-    int max_solved = m_solved_values.max();
+    int min_solved = solved_values.lowest();
+    int max_solved = solved_values.highest();
 
     int min_start = std::max(1, max_solved - length + 1);
     int max_start = std::min(board_size - length + 1, min_solved);
