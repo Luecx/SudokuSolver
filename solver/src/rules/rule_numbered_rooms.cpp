@@ -5,7 +5,7 @@ namespace sudoku {
 
 bool RuleNumberedRooms::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &pair: numbered_rooms_pair_) {
+    for (const auto &pair: m_pairs) {
         const Region<ORCIdx> &region = pair.region;
         if (!region.has(ORCIdx(pos.r, -1, false)) && //
             !region.has(ORCIdx(pos.r, -1, true)) && //
@@ -20,13 +20,13 @@ bool RuleNumberedRooms::number_changed(CellIdx pos) {
 
 bool RuleNumberedRooms::candidates_changed() {
     bool changed = false;
-    for (const auto &pair: numbered_rooms_pair_)
+    for (const auto &pair: m_pairs)
         changed |= enforce_numbered_rooms(pair);
     return changed;
 }
 
 bool RuleNumberedRooms::valid() {
-    for (const auto &pair: numbered_rooms_pair_) {
+    for (const auto &pair: m_pairs) {
         for (const auto &orc: pair.region) {
             Cell &first_cell = get_first_cell(orc);
             if (!first_cell.is_solved())
@@ -42,7 +42,7 @@ bool RuleNumberedRooms::valid() {
 }
 
 void RuleNumberedRooms::update_impact(ImpactMap &map) {
-    for (const auto &pair: numbered_rooms_pair_) {
+    for (const auto &pair: m_pairs) {
         for (const auto &orc: pair.region) {
             Cell &first_cell = get_first_cell(orc);
             if (!first_cell.is_solved())
@@ -61,7 +61,7 @@ void RuleNumberedRooms::update_impact(ImpactMap &map) {
 }
 
 void RuleNumberedRooms::from_json(JSON &json) {
-    numbered_rooms_pair_.clear();
+    m_pairs.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -79,7 +79,7 @@ void RuleNumberedRooms::from_json(JSON &json) {
             NumberedRoomsPair pair;
             pair.region = region;
             pair.digit = static_cast<int>(rule["fields"]["digit"].get<double>());
-            numbered_rooms_pair_.push_back(pair);
+            m_pairs.push_back(pair);
 
             for (const auto &orc: pair.region) {
                 Cell &first_cell = get_first_cell(orc);

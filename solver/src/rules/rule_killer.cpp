@@ -57,13 +57,13 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
 bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
 
-    for (const auto &pair: cage_pair_) {
+    for (const auto &pair: m_cage_pair) {
         const Region<CellIdx> &region = pair.region;
 
         if (!region.has(pos))
             continue;
 
-        for (auto &pair: cage_pair_)
+        for (auto &pair: m_cage_pair)
             changed |= check_cage(pair);
         break; // regions can't overlap
     }
@@ -73,23 +73,23 @@ bool RuleKiller::number_changed(CellIdx pos) {
 
 bool RuleKiller::candidates_changed() {
     bool changed = false;
-    for (auto &pair: cage_pair_)
+    for (auto &pair: m_cage_pair)
         changed |= check_cage(pair);
     return changed;
 }
 
 bool RuleKiller::valid() {
-    for (auto &pair: cage_pair_)
+    for (auto &pair: m_cage_pair)
         if (!check_group(pair))
             return false;
     return true;
 }
 
 void RuleKiller::from_json(JSON &json) {
-    cage_pair_.clear();
+    m_cage_pair.clear();
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("NumberCanRepeat"))
-        number_can_repeat_ = json["fields"]["NumberCanRepeat"].get<bool>();
+        m_number_can_repeat = json["fields"]["NumberCanRepeat"].get<bool>();
 
     if (!json["rules"].is_array())
         return;
@@ -107,7 +107,7 @@ void RuleKiller::from_json(JSON &json) {
             KillerPair cage_pair;
             cage_pair.region = region;
             cage_pair.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
-            cage_pair_.push_back(cage_pair);
+            m_cage_pair.push_back(cage_pair);
         }
     }
 }
@@ -116,7 +116,7 @@ void RuleKiller::from_json(JSON &json) {
 
 bool RuleKiller::check_cage(KillerPair &pair) {
     const int board_size = board_->size();
-    remaining_cells.clear();
+    m_remaining_cells.clear();
 
     int sum = 0;
     NumberSet seen_values(board_size);
@@ -130,31 +130,31 @@ bool RuleKiller::check_cage(KillerPair &pair) {
         if (cell.is_solved()) {
             sum += cell.value;
 
-            if (!number_can_repeat_ && seen_values.test(cell.value)) {
+            if (!m_number_can_repeat && seen_values.test(cell.value)) {
                 return false;
             }
 
-            if (!number_can_repeat_)
+            if (!m_number_can_repeat)
                 seen_values.add(cell.value);
         } else {
-            remaining_cells.add(cell.pos);
+            m_remaining_cells.add(cell.pos);
             min_candidate = std::min(min_candidate, cell.candidates.lowest());
             max_candidate = std::max(max_candidate, cell.candidates.highest());
         }
     }
 
-    auto [min, max] = getSoftBounds(remaining_cells.size(), pair.sum - sum, min_candidate, max_candidate, board_size,
-                                    number_can_repeat_);
+    auto [min, max] = getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_candidate, max_candidate, board_size,
+                                    m_number_can_repeat);
 
     bool changed = false;
-    for (const auto &item: remaining_cells) {
+    for (const auto &item: m_remaining_cells) {
         Cell &cell = board_->get_cell(item);
 
         for (Number d = 1; d <= board_size; ++d) {
             if (!cell.candidates.test(d))
                 continue;
 
-            if (!number_can_repeat_ && seen_values.test(d))
+            if (!m_number_can_repeat && seen_values.test(d))
                 changed |= cell.remove_candidate(d);
             else if (d < min || d > max)
                 changed |= cell.remove_candidate(d);
@@ -174,11 +174,11 @@ bool RuleKiller::check_group(const KillerPair &pair) const {
         if (cell.is_solved()) {
             sum += cell.value;
 
-            if (!number_can_repeat_ && seen_values.test(cell.value)) {
+            if (!m_number_can_repeat && seen_values.test(cell.value)) {
                 return false; // number already seen, repetition not allowed
             }
 
-            if (!number_can_repeat_)
+            if (!m_number_can_repeat)
                 seen_values.add(cell.value);
         }
     }

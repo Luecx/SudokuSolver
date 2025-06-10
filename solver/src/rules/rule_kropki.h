@@ -19,16 +19,18 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    Region<EdgeIdx> white_edges_;
-    Region<EdgeIdx> black_edges_;
-    Region<EdgeIdx> combined_edges_;
-    Region<EdgeIdx> missing_dot_edges_;
-    bool all_dots_given_ = false;
+    bool m_all_dots_given = false;
+
+    Region<EdgeIdx> m_white_edges;
+    Region<EdgeIdx> m_black_edges;
+    Region<EdgeIdx> m_combined_edges;
+    Region<EdgeIdx> m_missing_dot_edges;
 
     bool apply_white_number(Cell &source, Cell &target) const;
     bool apply_black_number(Cell &source, Cell &target) const;
     bool apply_white_candidates(Cell &a, Cell &b) const;
     bool apply_black_candidates(Cell &a, Cell &b) const;
+    
     bool enforce_missing_dots();
     bool remove_forbidden(Cell &a, Cell &b) const;
 };

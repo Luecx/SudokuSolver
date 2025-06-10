@@ -6,7 +6,7 @@ namespace sudoku {
 
 bool RuleWhisper::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &path: whisper_paths_) {
+    for (const auto &path: m_paths) {
         if (!path.has(pos))
             continue;
 
@@ -25,7 +25,7 @@ bool RuleWhisper::number_changed(CellIdx pos) {
 
 bool RuleWhisper::candidates_changed() {
     bool changed = false;
-    for (const auto &path: whisper_paths_) {
+    for (const auto &path: m_paths) {
         const auto &items = path.items();
         for (size_t i = 0; i < path.size() - 1; i++) {
             Cell &cell1 = board_->get_cell(items[i]);
@@ -40,7 +40,7 @@ bool RuleWhisper::candidates_changed() {
 }
 
 bool RuleWhisper::valid() {
-    for (const auto &path: whisper_paths_) {
+    for (const auto &path: m_paths) {
         const auto &items = path.items();
         for (size_t i = 0; i < path.size() - 1; i++) {
             Cell &cell1 = board_->get_cell(items[i]);
@@ -55,7 +55,7 @@ bool RuleWhisper::valid() {
 }
 
 void RuleWhisper::update_impact(ImpactMap &map) {
-    for (const auto &path: whisper_paths_) {
+    for (const auto &path: m_paths) {
         for (const auto &pos: path) {
             Cell &cell = board_->get_cell(pos);
             if (cell.is_solved())
@@ -66,7 +66,7 @@ void RuleWhisper::update_impact(ImpactMap &map) {
 }
 
 void RuleWhisper::from_json(JSON &json) {
-    whisper_paths_.clear();
+    m_paths.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -79,7 +79,7 @@ void RuleWhisper::from_json(JSON &json) {
 
         Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
         if (path.size() > 1)
-            whisper_paths_.push_back(path);
+            m_paths.push_back(path);
     }
 }
 

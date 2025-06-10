@@ -22,7 +22,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<ArrowPair> arrow_pairs_;
+    std::vector<ArrowPair> m_arrow_pairs;
 
     bool determine_base_options(ArrowPair &arrow_pair);
     bool determine_path_options(ArrowPair &arrow_pair);

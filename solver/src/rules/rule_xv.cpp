@@ -7,7 +7,7 @@ bool RuleXV::candidates_changed() {
     bool changed = false;
 
     // process X edges
-    for (const auto &edge: x_edges_.items()) {
+    for (const auto &edge: m_x_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
 
@@ -16,7 +16,7 @@ bool RuleXV::candidates_changed() {
     }
 
     // process V edges
-    for (const auto &edge: v_edges_.items()) {
+    for (const auto &edge: m_v_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
 
@@ -25,7 +25,7 @@ bool RuleXV::candidates_changed() {
     }
 
     // if all symbols are given, enforce constraints on cells without symbols
-    if (all_symbols_given_)
+    if (m_all_dots_given)
         changed |= denforce_missing_symbols();
 
     return changed;
@@ -33,7 +33,7 @@ bool RuleXV::candidates_changed() {
 
 bool RuleXV::valid() {
     // check if all X edges form valid pairs
-    for (const auto &edge: x_edges_.items()) {
+    for (const auto &edge: m_x_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
 
@@ -44,7 +44,7 @@ bool RuleXV::valid() {
     }
 
     // check if all V edges form valid pairs
-    for (const auto &edge: v_edges_.items()) {
+    for (const auto &edge: m_v_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
 
@@ -58,26 +58,26 @@ bool RuleXV::valid() {
 }
 
 void RuleXV::update_impact(ImpactMap &map) {
-    for (const auto &edge: x_edges_.items()) {
+    for (const auto &edge: m_x_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
-    for (const auto &edge: v_edges_.items()) {
+    for (const auto &edge: m_v_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
 }
 
 void RuleXV::from_json(JSON &json) {
-    x_edges_.clear();
-    v_edges_.clear();
-    combined_edges_.clear();
-    missing_symbol_edges_.clear();
-    all_symbols_given_ = false;
+    m_x_edges.clear();
+    m_v_edges.clear();
+    m_combined_edges.clear();
+    m_missing_symbol_edges.clear();
+    m_all_dots_given = false;
 
     // NOTE: in xv rules allDotsGiven is given instead of allSymbolsGivenq
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("allDotsGiven"))
-        all_symbols_given_ = json["fields"]["allDotsGiven"].get<bool>();
+        m_all_dots_given = json["fields"]["allDotsGiven"].get<bool>();
 
     if (!json["rules"].is_array())
         return;
@@ -92,13 +92,13 @@ void RuleXV::from_json(JSON &json) {
         std::string label = rule["label"].get<std::string>();
 
         if (label == "X Rule")
-            x_edges_ = x_edges_ | region;
+            m_x_edges = m_x_edges | region;
         else if (label == "V Rule")
-            v_edges_ = v_edges_ | region;
+            m_v_edges = m_v_edges | region;
     }
 
-    combined_edges_ = x_edges_ | v_edges_;
-    missing_symbol_edges_ = Region<EdgeIdx>::all(board_->size()) - combined_edges_;
+    m_combined_edges = m_x_edges | m_v_edges;
+    m_missing_symbol_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
 // private member functions
@@ -148,7 +148,7 @@ bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {
 bool RuleXV::denforce_missing_symbols() const {
     bool changed = false;
 
-    for (const auto &edge: missing_symbol_edges_.items()) {
+    for (const auto &edge: m_missing_symbol_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
 

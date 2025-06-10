@@ -16,7 +16,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> irregular_regions_;
-    std::vector<std::vector<Cell *>> irregular_units_;
+    std::vector<Region<CellIdx>> m_irregular_regions;
+    std::vector<std::vector<Cell *>> m_irregular_units;
 };
 } // namespace sudoku

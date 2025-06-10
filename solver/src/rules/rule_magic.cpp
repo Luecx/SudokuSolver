@@ -26,9 +26,9 @@ const std::array<std::array<int, 9>, 8> MAGIC_SQUARE_SOLUTIONS =
 
 bool RuleMagic::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &region: magic_regions_) {
+    for (const auto &region: m_magic_regions) {
         initPossibleLayouts(region);
-        if (possible_layouts_.empty())
+        if (m_possible_layouts.empty())
             continue;
         changed |= applyCandidates(region);
     }
@@ -37,9 +37,9 @@ bool RuleMagic::number_changed(CellIdx pos) {
 
 bool RuleMagic::candidates_changed() {
     bool changed = false;
-    for (const auto &region: magic_regions_) {
+    for (const auto &region: m_magic_regions) {
         initPossibleLayouts(region);
-        if (possible_layouts_.empty())
+        if (m_possible_layouts.empty())
             continue;
         changed |= applyCandidates(region);
     }
@@ -47,16 +47,16 @@ bool RuleMagic::candidates_changed() {
 }
 
 bool RuleMagic::valid() {
-    for (const auto &region: magic_regions_) {
+    for (const auto &region: m_magic_regions) {
         initPossibleLayouts(region);
-        if (possible_layouts_.empty())
+        if (m_possible_layouts.empty())
             return false;
     }
     return true;
 }
 
 void RuleMagic::from_json(JSON &json) {
-    magic_regions_.clear();
+    m_magic_regions.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -76,7 +76,7 @@ void RuleMagic::from_json(JSON &json) {
             std::sort(region.begin(), region.end(),
                       [](const CellIdx &a, const CellIdx &b) { return (a.r != b.r) ? (a.r < b.r) : (a.c < b.c); });
 
-            magic_regions_.push_back(region);
+            m_magic_regions.push_back(region);
         }
     }
 }
@@ -111,10 +111,10 @@ bool RuleMagic::isValidLayout(const Region<CellIdx> &region, const std::array<in
 }
 
 void RuleMagic::initPossibleLayouts(const Region<CellIdx> &region) {
-    possible_layouts_.clear();
+    m_possible_layouts.clear();
     for (const auto &layout: MAGIC_SQUARE_SOLUTIONS)
         if (isValidLayout(region, layout))
-            possible_layouts_.push_back(layout);
+            m_possible_layouts.push_back(layout);
 }
 
 bool RuleMagic::applyCandidates(const Region<CellIdx> &region) {
@@ -128,7 +128,7 @@ bool RuleMagic::applyCandidates(const Region<CellIdx> &region) {
             continue;
 
         NumberSet allowed(cell.max_number);
-        for (const auto &layout: possible_layouts_)
+        for (const auto &layout: m_possible_layouts)
             allowed.add(layout[i]);
 
         // remove candidates that are not in the layout

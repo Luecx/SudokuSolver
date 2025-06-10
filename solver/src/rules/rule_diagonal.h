@@ -17,8 +17,8 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    bool diagonal_ = false;
-    bool anti_diagonal_ = false;
+    bool m_diagonal = false;
+    bool m_anti_diagonal = false;
 
     bool check_unique_diagonal(bool is_main);
 };

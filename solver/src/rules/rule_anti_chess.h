@@ -25,8 +25,8 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    AntiChessPair pair[2];
-    Region<CellIdx> remaining_cells;
+    AntiChessPair m_pair[2];
+    Region<CellIdx> m_remaining_cells;
 
     bool in_bounds(const CellIdx &pos);
     bool is_cage_valid(const Region<CellIdx> &region, bool allow_repeats);

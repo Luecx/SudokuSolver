@@ -6,7 +6,7 @@ namespace sudoku {
 
 bool RuleParity::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &path: parity_paths_) {
+    for (const auto &path: m_paths) {
         if (!path.has(pos))
             continue;
         changed |= enforceParityAlternation(path);
@@ -16,13 +16,13 @@ bool RuleParity::number_changed(CellIdx pos) {
 
 bool RuleParity::candidates_changed() {
     bool changed = false;
-    for (const auto &path: parity_paths_)
+    for (const auto &path: m_paths)
         changed |= enforceParityAlternation(path);
     return changed;
 }
 
 bool RuleParity::valid() {
-    for (const auto &path: parity_paths_) {
+    for (const auto &path: m_paths) {
         const std::vector<CellIdx> &items = path.items();
 
         for (size_t i = 0; i < items.size(); ++i) {
@@ -39,7 +39,7 @@ bool RuleParity::valid() {
 }
 
 void RuleParity::update_impact(ImpactMap &map) {
-    for (const auto &path: parity_paths_) {
+    for (const auto &path: m_paths) {
         for (const auto &pos: path) {
             Cell &cell = board_->get_cell(pos);
             if (cell.is_solved())
@@ -51,7 +51,7 @@ void RuleParity::update_impact(ImpactMap &map) {
 }
 
 void RuleParity::from_json(JSON &json) {
-    parity_paths_.clear();
+    m_paths.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -64,7 +64,7 @@ void RuleParity::from_json(JSON &json) {
 
         Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
         if (path.size() > 1) // only accept paths with more than 1 cell
-            parity_paths_.push_back(path);
+            m_paths.push_back(path);
     }
 }
 

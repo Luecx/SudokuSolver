@@ -17,7 +17,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> palindrome_paths_;
+    std::vector<Region<CellIdx>> m_paths;
 
     bool enforce_symmetry(Cell &a, Cell &b);
 };

@@ -24,10 +24,10 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    bool number_can_repeat_ = false;
+    bool m_number_can_repeat = false;
 
-    std::vector<KillerPair> cage_pair_;
-    Region<CellIdx> remaining_cells;
+    std::vector<KillerPair> m_cage_pair;
+    Region<CellIdx> m_remaining_cells;
 
     bool check_cage(KillerPair &pair);
     bool check_group(const KillerPair &pair) const;

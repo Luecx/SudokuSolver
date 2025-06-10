@@ -14,7 +14,7 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
 
     NumberSet keep = ~rm;
 
-    if (diagonal_ && pos.r == pos.c) {
+    if (m_diagonal && pos.r == pos.c) {
         for (int i = 0; i < board_size; ++i) {
             Cell &diag_cell = board_->get_cell({i, i});
             if (diag_cell.is_solved())
@@ -23,7 +23,7 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
         }
     }
 
-    if (anti_diagonal_ && pos.r + pos.c == board_size - 1) {
+    if (m_anti_diagonal && pos.r + pos.c == board_size - 1) {
         for (int i = 0; i < board_size; ++i) {
             Cell &anti_diag_cell = board_->get_cell({i, board_size - 1 - i});
             if (anti_diag_cell.is_solved())
@@ -36,18 +36,18 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
 }
 
 bool RuleDiagonal::valid() {
-    if (diagonal_ && !check_unique_diagonal(true))
+    if (m_diagonal && !check_unique_diagonal(true))
         return false;
-    if (anti_diagonal_ && !check_unique_diagonal(false))
+    if (m_anti_diagonal && !check_unique_diagonal(false))
         return false;
     return true;
 }
 
 void RuleDiagonal::from_json(JSON &json) {
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("diagonal"))
-        diagonal_ = json["fields"]["diagonal"].get<bool>();
+        m_diagonal = json["fields"]["diagonal"].get<bool>();
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("antiDiagonal"))
-        anti_diagonal_ = json["fields"]["antiDiagonal"].get<bool>();
+        m_anti_diagonal = json["fields"]["antiDiagonal"].get<bool>();
 }
 
 // private member function

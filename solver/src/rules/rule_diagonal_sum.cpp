@@ -10,7 +10,7 @@ bool RuleDiagonalSum::number_changed(CellIdx pos) {
     DiagonalIdx anti(DiagonalType::ANTI, pos.r + pos.c);
 
     bool changed = false;
-    for (auto &pair: diagsum_pairs_) {
+    for (auto &pair: m_diagsum_pairs) {
         if (pair.region.has(main))
             changed |= check_diagonal(pair);
         if (pair.region.has(anti))
@@ -21,7 +21,7 @@ bool RuleDiagonalSum::number_changed(CellIdx pos) {
 
 bool RuleDiagonalSum::candidates_changed() {
     bool changed = false;
-    for (auto &pair: diagsum_pairs_)
+    for (auto &pair: m_diagsum_pairs)
         changed |= check_diagonal(pair);
     return changed;
 };
@@ -29,7 +29,7 @@ bool RuleDiagonalSum::candidates_changed() {
 bool RuleDiagonalSum::valid() {
     const int board_size = board_->size();
 
-    for (const auto &pair: diagsum_pairs_) {
+    for (const auto &pair: m_diagsum_pairs) {
         const Region<CellIdx> &cell_pos = pair.region.attached_cells(board_size);
 
         bool all_solved = true;
@@ -55,7 +55,7 @@ bool RuleDiagonalSum::valid() {
 
 void RuleDiagonalSum::update_impact(ImpactMap &map) {
     const int board_size = board_->size();
-    for (const auto &pair: diagsum_pairs_) {
+    for (const auto &pair: m_diagsum_pairs) {
         const Region<CellIdx> &cell_pos = pair.region.attached_cells(board_size);
         for (const auto &pos: cell_pos) {
             Cell &c = board_->get_cell(pos);
@@ -67,7 +67,7 @@ void RuleDiagonalSum::update_impact(ImpactMap &map) {
 }
 
 void RuleDiagonalSum::from_json(JSON &json) {
-    diagsum_pairs_.clear();
+    m_diagsum_pairs.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -88,7 +88,7 @@ void RuleDiagonalSum::from_json(JSON &json) {
             pair.region = region;
             pair.sum = sum;
 
-            diagsum_pairs_.push_back(pair);
+            m_diagsum_pairs.push_back(pair);
         }
     }
 }

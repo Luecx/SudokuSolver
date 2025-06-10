@@ -22,7 +22,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<DiagSumPair> diagsum_pairs_;
+    std::vector<DiagSumPair> m_diagsum_pairs;
 
     bool check_diagonal(DiagSumPair &pair);
 };

@@ -9,7 +9,7 @@ namespace sudoku {
 bool RulePalindrome::number_changed(CellIdx pos) {
     bool changed = false;
 
-    for (auto &path: palindrome_paths_) {
+    for (auto &path: m_paths) {
         const std::vector<CellIdx> &items = path.items();
 
         const int unit_size = items.size();
@@ -29,7 +29,7 @@ bool RulePalindrome::number_changed(CellIdx pos) {
 
 bool RulePalindrome::candidates_changed() {
     bool changed = false;
-    for (auto &path: palindrome_paths_) {
+    for (auto &path: m_paths) {
         const std::vector<CellIdx> &items = path.items();
 
         const int unit_size = items.size();
@@ -49,7 +49,7 @@ bool RulePalindrome::candidates_changed() {
 }
 
 bool RulePalindrome::valid() {
-    for (auto &path: palindrome_paths_) {
+    for (auto &path: m_paths) {
         const std::vector<CellIdx> &items = path.items();
 
         const int unit_size = items.size();
@@ -70,7 +70,7 @@ void RulePalindrome::update_impact(ImpactMap &map) {
     // this increases the node time with planindrom
     // so probably need more json data to test it
     return;
-    for (auto &path: palindrome_paths_) {
+    for (auto &path: m_paths) {
         for (const auto &pos: path) {
             Cell &cell = board_->get_cell(pos);
             if (cell.is_solved())
@@ -81,7 +81,7 @@ void RulePalindrome::update_impact(ImpactMap &map) {
 };
 
 void RulePalindrome::from_json(JSON &json) {
-    palindrome_paths_.clear();
+    m_paths.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -94,7 +94,7 @@ void RulePalindrome::from_json(JSON &json) {
 
         Region<CellIdx> path = Region<CellIdx>::from_json(rule["fields"]["path"]);
         if (path.size() > 1) // only accept paths with more than 1 cell
-            palindrome_paths_.emplace_back(path);
+            m_paths.emplace_back(path);
     }
 }
 

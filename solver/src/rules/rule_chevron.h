@@ -19,10 +19,10 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    Region<EdgeIdx> up_edges_;
-    Region<EdgeIdx> down_edges_;
-    Region<EdgeIdx> right_edges_;
-    Region<EdgeIdx> left_edges_;
+    Region<EdgeIdx> m_up_edges;
+    Region<EdgeIdx> m_down_edges;
+    Region<EdgeIdx> m_right_edges;
+    Region<EdgeIdx> m_left_edges;
 
     bool enforce() const;
     bool enforce_greater_less(Cell &cell, Cell &neighbor, std::string symbol) const;

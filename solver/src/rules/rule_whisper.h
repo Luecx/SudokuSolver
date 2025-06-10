@@ -17,7 +17,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> whisper_paths_;
+    std::vector<Region<CellIdx>> m_paths;
 
     bool apply_number_contraint(Cell &cell1, Cell &cell2);
     bool apply_candidate_contraint(Cell &cell1, Cell &cell2);

@@ -18,7 +18,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> thermo_paths_;
+    std::vector<Region<CellIdx>> m_paths;
 };
 
 } // namespace sudoku

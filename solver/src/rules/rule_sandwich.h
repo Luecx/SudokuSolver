@@ -23,11 +23,11 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<int> min_digits;
-    std::vector<int> max_digits;
-    std::vector<std::vector<std::vector<NumberSet>>> valid_combinations;
-    std::vector<Cell *> line;
-    std::vector<SandwichPair> sandwich_pairs_;
+    std::vector<int> m_min_digits;
+    std::vector<int> m_max_digits;
+    std::vector<std::vector<std::vector<NumberSet>>> m_valid_combinations;
+    std::vector<Cell *> m_line;
+    std::vector<SandwichPair> m_pairs;
 
     void generateSandwichTables();
     void initLine(const RCIdx &pos);

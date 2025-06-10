@@ -11,7 +11,7 @@ bool RuleClone::number_changed(CellIdx pos) {
     bool changed = false;
     Cell &cell = board_->get_cell(pos);
 
-    for (const auto &group: clone_groups_) {
+    for (const auto &group: m_clone_groups) {
         if (group.size() < 2)
             continue;
 
@@ -20,7 +20,7 @@ bool RuleClone::number_changed(CellIdx pos) {
         int changed_item_idx = -1;
 
         for (const int region_idx: group) {
-            changed_item_idx = clone_regions_[region_idx].find_index(pos);
+            changed_item_idx = m_clone_regions[region_idx].find_index(pos);
             if (changed_item_idx != -1) {
                 changed_region_idx = region_idx;
                 break;
@@ -35,7 +35,7 @@ bool RuleClone::number_changed(CellIdx pos) {
             if (region_idx == changed_region_idx)
                 continue;
 
-            const auto &region = clone_regions_[region_idx];
+            const auto &region = m_clone_regions[region_idx];
             const CellIdx &pos2 = region.items()[changed_item_idx];
             Cell &cell2 = board_->get_cell(pos2);
 
@@ -49,16 +49,16 @@ bool RuleClone::number_changed(CellIdx pos) {
 bool RuleClone::candidates_changed() { return false; }
 
 bool RuleClone::valid() {
-    for (const auto &group: clone_groups_) {
+    for (const auto &group: m_clone_groups) {
         if (group.size() < 2) // skip if no clone exists
             continue;
 
-        const int region_size = clone_regions_[group[0]].size(); // used only to obtain the size
+        const int region_size = m_clone_regions[group[0]].size(); // used only to obtain the size
         for (int item_idx = 0; item_idx < region_size; item_idx++) {
             int value = -1;
 
             for (const int region_idx: group) {
-                const CellIdx &pos = clone_regions_[region_idx].items()[item_idx];
+                const CellIdx &pos = m_clone_regions[region_idx].items()[item_idx];
                 Cell &cell = board_->get_cell(pos);
 
                 if (!cell.is_solved())
@@ -76,12 +76,12 @@ bool RuleClone::valid() {
 }
 
 void RuleClone::update_impact(ImpactMap &map) {
-    for (const auto &group: clone_groups_) {
+    for (const auto &group: m_clone_groups) {
         if (group.size() < 2) // skip if no clone exists
             continue;
 
         for (const auto &region_idx: group) {
-            const auto &region = clone_regions_[region_idx];
+            const auto &region = m_clone_regions[region_idx];
             for (const auto &pos: region.items())
                 map.increment(pos);
         }
@@ -89,8 +89,8 @@ void RuleClone::update_impact(ImpactMap &map) {
 }
 
 void RuleClone::from_json(JSON &json) {
-    clone_regions_.clear();
-    clone_groups_.clear();
+    m_clone_regions.clear();
+    m_clone_groups.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -103,7 +103,7 @@ void RuleClone::from_json(JSON &json) {
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0)
-            clone_regions_.push_back(region);
+            m_clone_regions.push_back(region);
     }
 
     initCloneGroups();
@@ -112,7 +112,7 @@ void RuleClone::from_json(JSON &json) {
 // private member function
 
 void RuleClone::initCloneGroups() {
-    const int max_regions = clone_regions_.size();
+    const int max_regions = m_clone_regions.size();
     NumberSet processed(max_regions);
 
     for (int i = 0; i < max_regions; i++) {
@@ -120,27 +120,27 @@ void RuleClone::initCloneGroups() {
         if (processed.test(i + 1)) // +1 because NumberSet is 1-based
             continue;
 
-        const auto &region = clone_regions_[i];
+        const auto &region = m_clone_regions[i];
         std::vector<int> clones = {i};
 
         for (int j = i + 1; j < max_regions; j++) {
             if (processed.test(j + 1)) // +1 because NumberSet is 1-based
                 continue;
 
-            if (isSameShape(region, clone_regions_[j])) {
+            if (isSameShape(region, m_clone_regions[j])) {
                 clones.push_back(j);
                 processed.add(j + 1); // +1 because NumberSet is 1-based
             }
         }
 
         processed.add(i + 1); // +1 because NumberSet is 1-based
-        clone_groups_.push_back(clones);
+        m_clone_groups.push_back(clones);
     }
 
     // sort cells within each region for easier comparison
-    for (const auto &group: clone_groups_) {
+    for (const auto &group: m_clone_groups) {
         for (int regionIdx: group) {
-            auto &region = clone_regions_[regionIdx];
+            auto &region = m_clone_regions[regionIdx];
 
             // sort cells by row, then by column
             std::sort(region.begin(), region.end(), [](const CellIdx pos1, const CellIdx pos2) {

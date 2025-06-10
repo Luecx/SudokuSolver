@@ -19,11 +19,12 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    Region<EdgeIdx> x_edges_;
-    Region<EdgeIdx> v_edges_;
-    Region<EdgeIdx> combined_edges_;
-    Region<EdgeIdx> missing_symbol_edges_;
-    bool all_symbols_given_ = false;
+    bool m_all_dots_given = false;
+
+    Region<EdgeIdx> m_x_edges;
+    Region<EdgeIdx> m_v_edges;
+    Region<EdgeIdx> m_combined_edges;
+    Region<EdgeIdx> m_missing_symbol_edges;
 
     bool enforce_sum(Cell &a, Cell &b, int sum) const;
 

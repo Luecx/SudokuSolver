@@ -30,18 +30,18 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
     bool changed = false;
 
     for (int i = 0; i < 2; i++) {
-        if (!pair[i].enabled)
+        if (!m_pair[i].enabled)
             continue;
 
-        const Region<CellIdx> &region = pair[i].region;
-        const std::vector<int> &forbidden_sums = pair[i].forbidden_sums;
+        const Region<CellIdx> &region = m_pair[i].region;
+        const std::vector<int> &forbidden_sums = m_pair[i].forbidden_sums;
 
         if (region.size() > 0 && !region.has(pos))
             continue; // skip if cell is not in the region
 
-        changed |= check_cage(region, pair[i].allow_repeats);
+        changed |= check_cage(region, m_pair[i].allow_repeats);
 
-        const attacks &pattern = (pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
+        const attacks &pattern = (m_pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
 
         for (const auto &attack: pattern) {
             CellIdx neighbor_pos = {pos.r + attack.first, pos.c + attack.second};
@@ -80,21 +80,21 @@ bool RuleAntiChess::candidates_changed() {
     // TODO: add anti-chess here as well
     bool changed = false;
     for (int i = 0; i < 2; i++)
-        changed |= check_cage(pair[i].region, pair[i].allow_repeats);
+        changed |= check_cage(m_pair[i].region, m_pair[i].allow_repeats);
     return changed;
 }
 
 bool RuleAntiChess::valid() {
     const int board_size = board_->size();
     for (int i = 0; i < 2; i++) {
-        if (!pair[i].enabled)
+        if (!m_pair[i].enabled)
             continue;
 
-        const std::vector<int> &forbidden_sums = pair[i].forbidden_sums;
-        const Region<CellIdx> &region = pair[i].region;
-        const attacks &move_pattern = (pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
+        const std::vector<int> &forbidden_sums = m_pair[i].forbidden_sums;
+        const Region<CellIdx> &region = m_pair[i].region;
+        const attacks &move_pattern = (m_pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
 
-        if (!is_cage_valid(region, pair[i].allow_repeats))
+        if (!is_cage_valid(region, m_pair[i].allow_repeats))
             return false;
 
         for (int r = 0; r < board_size; r++) {
@@ -137,11 +137,11 @@ bool RuleAntiChess::valid() {
 
 void RuleAntiChess::update_impact(ImpactMap &map) {
     for (int i = 0; i < 2; i++) {
-        if (!pair[i].enabled)
+        if (!m_pair[i].enabled)
             continue;
 
-        const Region<CellIdx> &region = pair[i].region;
-        const attacks &move_pattern = (pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
+        const Region<CellIdx> &region = m_pair[i].region;
+        const attacks &move_pattern = (m_pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
 
         for (const auto &pos: region.items()) {
             for (const auto &attack: move_pattern) {
@@ -181,11 +181,11 @@ void RuleAntiChess::from_json(JSON &json) {
         else
             region = Region<CellIdx>(); // anti-chess allows null regions
 
-        pair[count].label = label;
-        pair[count].enabled = enabled;
-        pair[count].allow_repeats = number_can_repeat;
-        pair[count].region = region;
-        pair[count].forbidden_sums = getForbiddenSums(forbidden_sums);
+        m_pair[count].label = label;
+        m_pair[count].enabled = enabled;
+        m_pair[count].allow_repeats = number_can_repeat;
+        m_pair[count].region = region;
+        m_pair[count].forbidden_sums = getForbiddenSums(forbidden_sums);
         count++;
 
         if (count >= 2)
@@ -220,7 +220,7 @@ bool RuleAntiChess::check_cage(const Region<CellIdx> &region, bool allow_repeats
     if (allow_repeats || region.size() == 0)
         return false;
 
-    remaining_cells.clear();
+    m_remaining_cells.clear();
 
     const int board_size = board_->size();
     NumberSet seen_values(board_size);
@@ -235,16 +235,16 @@ bool RuleAntiChess::check_cage(const Region<CellIdx> &region, bool allow_repeats
             if (!allow_repeats)
                 seen_values.add(cell.value);
         } else {
-            remaining_cells.add(cell.pos);
+            m_remaining_cells.add(cell.pos);
         }
     }
 
     // if all cells are filled, no candidates to modify
-    if (remaining_cells.size() == 0)
+    if (m_remaining_cells.size() == 0)
         return false;
 
     bool changed = false;
-    for (const auto &pos: remaining_cells) {
+    for (const auto &pos: m_remaining_cells) {
         Cell &cell = board_->get_cell(pos);
 
         for (int d = 1; d <= board_size; d++) {

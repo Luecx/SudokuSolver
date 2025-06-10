@@ -17,7 +17,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> parity_paths_;
+    std::vector<Region<CellIdx>> m_paths;
 
     bool enforceParityAlternation(const Region<CellIdx> &path);
 };

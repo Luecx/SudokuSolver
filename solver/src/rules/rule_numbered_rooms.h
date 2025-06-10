@@ -23,7 +23,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<NumberedRoomsPair> numbered_rooms_pair_;
+    std::vector<NumberedRoomsPair> m_pairs;
 
     bool enforce_numbered_rooms(const NumberedRoomsPair &pair);
 

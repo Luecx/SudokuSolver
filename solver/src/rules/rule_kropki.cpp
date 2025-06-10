@@ -10,7 +10,7 @@ bool RuleKropki::number_changed(CellIdx pos) {
     bool changed = false;
 
     // white dots
-    for (const auto &edge: white_edges_.items()) {
+    for (const auto &edge: m_white_edges.items()) {
         Cell &a = board_->get_cell(pos);
 
         if (edge.r1 == pos.r && edge.c1 == pos.c) {
@@ -23,7 +23,7 @@ bool RuleKropki::number_changed(CellIdx pos) {
     }
 
     // Process black dots
-    for (const auto &edge: black_edges_.items()) {
+    for (const auto &edge: m_black_edges.items()) {
         Cell &a = board_->get_cell(pos);
 
         if (edge.r1 == pos.r && edge.c1 == pos.c) {
@@ -35,7 +35,7 @@ bool RuleKropki::number_changed(CellIdx pos) {
         }
     }
 
-    if (all_dots_given_)
+    if (m_all_dots_given)
         changed |= enforce_missing_dots();
 
     return changed;
@@ -45,7 +45,7 @@ bool RuleKropki::candidates_changed() {
     bool changed = false;
 
     // white dots
-    for (const auto &edge: white_edges_.items()) {
+    for (const auto &edge: m_white_edges.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
         changed |= apply_white_candidates(a, b);
@@ -53,7 +53,7 @@ bool RuleKropki::candidates_changed() {
     }
 
     // black dots
-    for (const auto &edge: black_edges_.items()) {
+    for (const auto &edge: m_black_edges.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
         changed |= apply_black_candidates(a, b);
@@ -65,7 +65,7 @@ bool RuleKropki::candidates_changed() {
 
 bool RuleKropki::valid() {
     // white dot constraints
-    for (const auto &edge: white_edges_.items()) {
+    for (const auto &edge: m_white_edges.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
 
@@ -75,7 +75,7 @@ bool RuleKropki::valid() {
     }
 
     // black dot constraints
-    for (const auto &edge: black_edges_.items()) {
+    for (const auto &edge: m_black_edges.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
 
@@ -88,11 +88,11 @@ bool RuleKropki::valid() {
 }
 
 void RuleKropki::update_impact(ImpactMap &map) {
-    for (const auto &edge: white_edges_.items()) {
+    for (const auto &edge: m_white_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
-    for (const auto &edge: black_edges_.items()) {
+    for (const auto &edge: m_black_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
@@ -179,13 +179,13 @@ bool RuleKropki::apply_black_candidates(Cell &a, Cell &b) const {
 }
 
 bool RuleKropki::enforce_missing_dots() {
-    if (!all_dots_given_)
+    if (!m_all_dots_given)
         return false;
 
     bool changed = false;
 
     // process cells that have no dot between them
-    for (const auto &edge: missing_dot_edges_.items()) {
+    for (const auto &edge: m_missing_dot_edges.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
         if (!a.is_solved() && !b.is_solved())
@@ -217,14 +217,14 @@ bool RuleKropki::remove_forbidden(Cell &a, Cell &b) const {
 }
 
 void RuleKropki::from_json(JSON &json) {
-    white_edges_.clear();
-    black_edges_.clear();
-    combined_edges_.clear();
-    missing_dot_edges_.clear();
-    all_dots_given_ = false;
+    m_white_edges.clear();
+    m_black_edges.clear();
+    m_combined_edges.clear();
+    m_missing_dot_edges.clear();
+    m_all_dots_given = false;
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("allDotsGiven"))
-        all_dots_given_ = json["fields"]["allDotsGiven"].get<bool>();
+        m_all_dots_given = json["fields"]["allDotsGiven"].get<bool>();
 
     if (!json["rules"].is_array())
         return;
@@ -239,14 +239,14 @@ void RuleKropki::from_json(JSON &json) {
         std::string color = rule["color"].get<std::string>();
 
         if (color == "white") {
-            white_edges_ = white_edges_ | region;
+            m_white_edges = m_white_edges | region;
         } else if (color == "black") {
-            black_edges_ = black_edges_ | region;
+            m_black_edges = m_black_edges | region;
         }
     }
 
-    combined_edges_ = white_edges_ | black_edges_;
-    missing_dot_edges_ = Region<EdgeIdx>::all(board_->size()) - combined_edges_;
+    m_combined_edges = m_white_edges | m_black_edges;
+    m_missing_dot_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
 } // namespace sudoku

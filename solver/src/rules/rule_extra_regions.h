@@ -16,8 +16,8 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> extra_regions_;
-    std::vector<std::vector<Cell *>> extra_units_;
+    std::vector<Region<CellIdx>> m_extra_regions;
+    std::vector<std::vector<Cell *>> m_extra_units;
 
     bool check_group(const std::vector<Cell *> &unit);
 };

@@ -9,28 +9,28 @@ bool RuleChevron::number_changed(CellIdx pos) { return enforce(); }
 bool RuleChevron::candidates_changed() { return enforce(); }
 
 bool RuleChevron::valid() {
-    for (const auto &edge: up_edges_.items()) {
+    for (const auto &edge: m_up_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         if (!checkPair(cell, neighbor, "up"))
             return false;
     }
 
-    for (const auto &edge: down_edges_.items()) {
+    for (const auto &edge: m_down_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         if (!checkPair(cell, neighbor, "down"))
             return false;
     }
 
-    for (const auto &edge: right_edges_.items()) {
+    for (const auto &edge: m_right_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         if (!checkPair(cell, neighbor, "right"))
             return false;
     }
 
-    for (const auto &edge: left_edges_.items()) {
+    for (const auto &edge: m_left_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         if (!checkPair(cell, neighbor, "left"))
@@ -41,29 +41,29 @@ bool RuleChevron::valid() {
 }
 
 void RuleChevron::update_impact(ImpactMap &map) {
-    for (const auto &edge: up_edges_.items()) {
+    for (const auto &edge: m_up_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
-    for (const auto &edge: down_edges_.items()) {
+    for (const auto &edge: m_down_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
-    for (const auto &edge: right_edges_.items()) {
+    for (const auto &edge: m_right_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
-    for (const auto &edge: left_edges_.items()) {
+    for (const auto &edge: m_left_edges.items()) {
         map.increment({edge.r1, edge.c1});
         map.increment({edge.r2, edge.c2});
     }
 }
 
 void RuleChevron::from_json(JSON &json) {
-    up_edges_.clear();
-    down_edges_.clear();
-    right_edges_.clear();
-    left_edges_.clear();
+    m_up_edges.clear();
+    m_down_edges.clear();
+    m_right_edges.clear();
+    m_left_edges.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -78,13 +78,13 @@ void RuleChevron::from_json(JSON &json) {
         std::string label = rule["label"].get<std::string>();
 
         if (label == "Up Chevron")
-            up_edges_ = up_edges_ | region;
+            m_up_edges = m_up_edges | region;
         else if (label == "Down Chevron")
-            down_edges_ = down_edges_ | region;
+            m_down_edges = m_down_edges | region;
         else if (label == "Right Chevron")
-            right_edges_ = right_edges_ | region;
+            m_right_edges = m_right_edges | region;
         else if (label == "Left Chevron")
-            left_edges_ = left_edges_ | region;
+            m_left_edges = m_left_edges | region;
     }
 }
 
@@ -93,28 +93,28 @@ void RuleChevron::from_json(JSON &json) {
 bool RuleChevron::enforce() const {
     bool changed = false;
 
-    for (const auto &edge: up_edges_.items()) {
+    for (const auto &edge: m_up_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         changed |= enforce_greater_less(cell, neighbor, "up");
         changed |= enforce_greater_less(neighbor, cell, "down");
     }
 
-    for (const auto &edge: down_edges_.items()) {
+    for (const auto &edge: m_down_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         changed |= enforce_greater_less(cell, neighbor, "down");
         changed |= enforce_greater_less(neighbor, cell, "up");
     }
 
-    for (const auto &edge: right_edges_.items()) {
+    for (const auto &edge: m_right_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         changed |= enforce_greater_less(cell, neighbor, "right");
         changed |= enforce_greater_less(neighbor, cell, "left");
     }
 
-    for (const auto &edge: left_edges_.items()) {
+    for (const auto &edge: m_left_edges.items()) {
         Cell &cell = board_->get_cell({edge.r1, edge.c1});
         Cell &neighbor = board_->get_cell({edge.r2, edge.c2});
         changed |= enforce_greater_less(cell, neighbor, "left");

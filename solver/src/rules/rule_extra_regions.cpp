@@ -10,7 +10,7 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
     bool changed = false;
 
     NumberSet rm(cell.max_number, cell.value);
-    for (const auto &region: extra_regions_) {
+    for (const auto &region: m_extra_regions) {
         if (!region.has(pos))
             continue;
 
@@ -26,20 +26,20 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
 
 bool RuleExtraRegions::candidates_changed() {
     bool changed = false;
-    for (auto &unit: extra_units_)
+    for (auto &unit: m_extra_units)
         changed |= hidden_singles(board_, unit);
     return changed;
 }
 
 bool RuleExtraRegions::valid() {
-    for (auto &unit: extra_units_)
+    for (auto &unit: m_extra_units)
         if (!check_group(unit))
             return false;
     return true;
 }
 
 void RuleExtraRegions::update_impact(ImpactMap &map) {
-    for (const auto &region: extra_regions_) {
+    for (const auto &region: m_extra_regions) {
         for (const auto &item: region.items()) {
             Cell &cell = board_->get_cell(item);
             if (cell.is_solved())
@@ -50,7 +50,7 @@ void RuleExtraRegions::update_impact(ImpactMap &map) {
 }
 
 void RuleExtraRegions::from_json(JSON &json) {
-    extra_regions_.clear();
+    m_extra_regions.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -63,14 +63,14 @@ void RuleExtraRegions::from_json(JSON &json) {
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0) {
-            extra_regions_.push_back(region);
+            m_extra_regions.push_back(region);
             // create a unit for each region
             std::vector<Cell *> unit;
             for (const auto &pos: region.items()) {
                 Cell &cell = board_->get_cell(pos);
                 unit.push_back(&cell);
             }
-            extra_units_.push_back(unit);
+            m_extra_units.push_back(unit);
         }
     }
 }

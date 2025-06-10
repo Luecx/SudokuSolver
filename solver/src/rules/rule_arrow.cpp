@@ -7,7 +7,7 @@ namespace sudoku {
 
 bool RuleArrow::number_changed(CellIdx pos) {
     bool changed = false;
-    for (auto &arrow_pair: arrow_pairs_) {
+    for (auto &arrow_pair: m_arrow_pairs) {
         const Region<CellIdx> &base = arrow_pair.base;
         const Region<CellIdx> &path = arrow_pair.path;
         // check if the changed cell is in the base or path
@@ -21,7 +21,7 @@ bool RuleArrow::number_changed(CellIdx pos) {
 
 bool RuleArrow::candidates_changed() {
     bool changed = false;
-    for (auto &arrow_pair: arrow_pairs_) {
+    for (auto &arrow_pair: m_arrow_pairs) {
         changed |= determine_base_options(arrow_pair);
         changed |= determine_path_options(arrow_pair);
     }
@@ -29,7 +29,7 @@ bool RuleArrow::candidates_changed() {
 }
 
 bool RuleArrow::valid() {
-    for (const auto &arrow_pair: arrow_pairs_) {
+    for (const auto &arrow_pair: m_arrow_pairs) {
         const Region<CellIdx> &base = arrow_pair.base;
         const Region<CellIdx> &path = arrow_pair.path;
 
@@ -44,7 +44,7 @@ bool RuleArrow::valid() {
 }
 
 void RuleArrow::update_impact(ImpactMap &map) {
-    for (const auto &arrow_pair: arrow_pairs_) {
+    for (const auto &arrow_pair: m_arrow_pairs) {
         const Region<CellIdx> &base = arrow_pair.base;
         const Region<CellIdx> &path = arrow_pair.path;
 
@@ -54,7 +54,7 @@ void RuleArrow::update_impact(ImpactMap &map) {
 }
 
 void RuleArrow::from_json(JSON &json) {
-    arrow_pairs_.clear();
+    m_arrow_pairs.clear();
 
     if (board_->size() != 9)
         return; // arrow rules only supported for 9x9 boards
@@ -89,7 +89,7 @@ void RuleArrow::from_json(JSON &json) {
             arrow_pair.base = base;
             arrow_pair.path = path;
 
-            arrow_pairs_.push_back(arrow_pair);
+            m_arrow_pairs.push_back(arrow_pair);
         }
     }
 }
