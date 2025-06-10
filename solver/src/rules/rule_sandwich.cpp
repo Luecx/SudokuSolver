@@ -111,12 +111,12 @@ void RuleSandwich::from_json(JSON &json) {
         }
     }
 
-    generateSandwichTables();
+    initTables();
 }
 
 // private member function
 
-void RuleSandwich::generateSandwichTables() {
+void RuleSandwich::initTables() {
     const int board_size = board_->size();
     const int max_sum = (board_size * (board_size + 1)) / 2;
 
@@ -157,18 +157,47 @@ void RuleSandwich::generateSandwichTables() {
             m_min_digits[s] = m_max_digits[s] = 0;
 }
 
-bool RuleSandwich::has_possible_pair(int i, int other_digit, int minD, int maxD, std::vector<Cell *> &line) {
-    for (int j = 0; j < board_->size(); j++) {
-        if (j == i)
+bool RuleSandwich::check_unkown_digits(int idx1, int idxBoardSize, int minD, int maxD, const RCIdx &pos) {
+    const int board_size = board_->size();
+    const std::vector<Cell *> &line = getLine(pos);
+
+    bool changed = false;
+    for (int i = 0; i < board_size; i++) {
+        Cell &c = *line[i];
+        if (c.is_solved())
             continue;
 
-        Cell &peer = *line[j];
-        if ((peer.value == other_digit || (!peer.is_solved() && peer.candidates.test(other_digit))) &&
-            std::abs(j - i) - 1 >= minD && std::abs(j - i) - 1 <= maxD) {
-            return true;
+        bool has_1 = false, has_board_size = false;
+
+        // check if this position can form valid sandwich with any other position
+        for (int j = 0; j < board_size; j++) {
+            if (j == i)
+                continue;
+
+            const Cell &peer = *line[j];
+            int dist = std::abs(j - i) - 1;
+
+            if (dist >= minD && dist <= maxD) {
+                if (peer.value == 1 || (!peer.is_solved() && peer.candidates.test(1))) {
+                    has_1 = true;
+                }
+                if (peer.value == board_size || (!peer.is_solved() && peer.candidates.test(board_size))) {
+                    has_board_size = true;
+                }
+            }
+
+            if (has_1 && has_board_size)
+                break;
         }
+
+        // remove bread digits that can't form valid sandwiches
+        if (c.candidates.test(1) && !has_board_size)
+            changed |= c.remove_candidate(1);
+        if (c.candidates.test(board_size) && !has_1)
+            changed |= c.remove_candidate(board_size);
     }
-    return false;
+
+    return changed;
 }
 
 bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
@@ -189,19 +218,7 @@ bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
     bool changed = false;
 
     if (idx1 == -1 && idxBoardSize == -1) {
-        // Both bread digits unknown - check if placement is possible
-        for (int i = 0; i < board_size; i++) {
-            Cell &c = *line[i];
-            if (c.is_solved())
-                continue;
-
-            if (c.candidates.test(1) && !has_possible_pair(i, board_size, minD, maxD, line)) {
-                changed |= c.remove_candidate(1);
-            }
-            if (c.candidates.test(board_size) && !has_possible_pair(i, 1, minD, maxD, line)) {
-                changed |= c.remove_candidate(board_size);
-            }
-        }
+        return check_unkown_digits(idx1, idxBoardSize, minD, maxD, pos);
     } else if (idx1 == -1 || idxBoardSize == -1) {
         // One bread digit known - constrain the other
         const int known_idx = (idx1 != -1) ? idx1 : idxBoardSize;

@@ -31,8 +31,10 @@ private:
 
     std::vector<Cell *> &getLine(const RCIdx &pos);
 
-    void generateSandwichTables();
-    bool has_possible_pair(int i, int other_digit, int minD, int maxD, std::vector<Cell *> &line);
+    void initTables();
+
+    bool check_unkown_digits(int idx1, int idxBoardSize, int minD, int maxD, const RCIdx &pos);
+
     bool check_sandwich(const RCIdx &pos, const int sum);
 };
 } // namespace sudoku
