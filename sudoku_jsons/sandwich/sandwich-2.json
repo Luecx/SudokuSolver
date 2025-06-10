@@ -1,0 +1,285 @@
+{
+    "fixedCells": [
+        {
+            "r": 0,
+            "c": 2,
+            "value": 8
+        },
+        {
+            "r": 2,
+            "c": 0,
+            "value": 1
+        },
+        {
+            "r": 4,
+            "c": 1,
+            "value": 1
+        },
+        {
+            "r": 4,
+            "c": 7,
+            "value": 7
+        },
+        {
+            "r": 6,
+            "c": 3,
+            "value": 5
+        },
+        {
+            "r": 6,
+            "c": 5,
+            "value": 9
+        }
+    ],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Sandwich",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1749558092559-2m4t",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": 8,
+                                    "col": null
+                                }
+                            ]
+                        },
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1749558110136-unvx",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": 6,
+                                    "col": null
+                                }
+                            ]
+                        },
+                        "sum": 7
+                    }
+                },
+                {
+                    "id": "1749558117845-m3bo",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": 5,
+                                    "col": null
+                                }
+                            ]
+                        },
+                        "sum": 4
+                    }
+                },
+                {
+                    "id": "1749558122506-b70y",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": 4,
+                                    "col": null
+                                }
+                            ]
+                        },
+                        "sum": 32
+                    }
+                },
+                {
+                    "id": "1749558130955-qqy0",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": 3,
+                                    "col": null
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1749558135549-74op",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": 2,
+                                    "col": null
+                                }
+                            ]
+                        },
+                        "sum": 4
+                    }
+                },
+                {
+                    "id": "1749558140556-w9je",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 0
+                                }
+                            ]
+                        },
+                        "sum": 27
+                    }
+                },
+                {
+                    "id": "1749558157938-tyc4",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 2
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                },
+                {
+                    "id": "1749558163580-gnyb",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 3
+                                }
+                            ]
+                        },
+                        "sum": 6
+                    }
+                },
+                {
+                    "id": "1749558168420-vp02",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 4
+                                }
+                            ]
+                        },
+                        "sum": 32
+                    }
+                },
+                {
+                    "id": "1749558174761-hatc",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 5
+                                }
+                            ]
+                        },
+                        "sum": 17
+                    }
+                },
+                {
+                    "id": "1749558181782-903i",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 6
+                                }
+                            ]
+                        },
+                        "sum": 19
+                    }
+                },
+                {
+                    "id": "1749558192596-rnrg",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 7
+                                }
+                            ]
+                        },
+                        "sum": 30
+                    }
+                },
+                {
+                    "id": "1749558218528-40yb",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "rowcol",
+                            "items": [
+                                {
+                                    "__type__": "RCIdx",
+                                    "row": null,
+                                    "col": 8
+                                }
+                            ]
+                        },
+                        "sum": 17
+                    }
+                }
+            ]
+        }
+    ]
+}

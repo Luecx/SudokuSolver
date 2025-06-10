@@ -41,35 +41,29 @@ void RuleSandwich::update_impact(ImpactMap &map) {
 
 bool RuleSandwich::valid() {
     for (const auto &pair: m_pairs) {
-        const Region<RCIdx> &region = pair.region;
-        const int sum = pair.sum;
-
-        for (const auto &pos: region.items()) {
+        for (const auto &pos: pair.region.items()) {
             const std::vector<Cell *> &line = get_line(pos);
             const auto [idx1, idxBoardSize] = get_digits(line);
 
+            // Skip if bread digits not found
             if (idx1 < 0 || idxBoardSize < 0)
                 continue;
 
             const int left = std::min(idx1, idxBoardSize);
             const int right = std::max(idx1, idxBoardSize);
-
-            bool skip = false;
-
             int actual = 0;
+
+            // Calculate sum between bread digits
             for (int i = left + 1; i < right; i++) {
-                if (!line[i]->is_solved()) {
-                    skip = true;
-                    break;
-                }
+                if (!line[i]->is_solved())
+                    goto next_position; // skip incomplete sandwiches
                 actual += line[i]->value;
             }
 
-            if (skip)
-                continue;
+            if (actual != pair.sum)
+                return false; // invalid sandwich sum
 
-            if (actual != sum)
-                return false;
+        next_position:;
         }
     }
 
@@ -111,7 +105,7 @@ void RuleSandwich::initTables() {
     const int board_size = board_->size();
     const int max_sum = (board_size * (board_size + 1)) / 2;
 
-    m_valid_union_sets.assign(max_sum + 1, std::vector<NumberSet>(board_size + 1, NumberSet(board_size)));
+    m_union_sets.assign(max_sum + 1, std::vector<NumberSet>(board_size + 1, NumberSet(board_size)));
     m_min_digits = new int[max_sum + 1]();
     m_max_digits = new int[max_sum + 1]();
 
@@ -134,7 +128,7 @@ void RuleSandwich::initTables() {
         }
 
         if (count > 0 && sum <= max_sum) {
-            m_valid_union_sets[sum][count] |= cands;
+            m_union_sets[sum][count] |= cands;
             m_min_digits[sum] = std::min(m_min_digits[sum], count);
             m_max_digits[sum] = std::max(m_max_digits[sum], count);
         }
@@ -208,7 +202,7 @@ bool RuleSandwich::check_known_digits(int idx1, int idxBoardSize, const RCIdx &p
 
     bool changed = false;
 
-    const NumberSet &valid_digits = m_valid_union_sets[sum][between];
+    const NumberSet &valid_digits = m_union_sets[sum][between];
     for (int i = left + 1; i < right; i++) {
         Cell &c = *line[i];
         if (c.is_solved())
