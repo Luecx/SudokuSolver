@@ -40,22 +40,13 @@ void RuleSandwich::update_impact(ImpactMap &map) {
 };
 
 bool RuleSandwich::valid() {
-    const int board_size = board_->size();
-
     for (const auto &pair: m_pairs) {
         const Region<RCIdx> &region = pair.region;
         const int sum = pair.sum;
 
         for (const auto &pos: region.items()) {
-            std::vector<Cell *> &line = getLine(pos);
-
-            int idx1 = -1, idxBoardSize = -1;
-            for (int i = 0; i < board_size; i++) {
-                if (line[i]->value == 1)
-                    idx1 = i;
-                if (line[i]->value == board_size)
-                    idxBoardSize = i;
-            }
+            const std::vector<Cell *> &line = get_line(pos);
+            const auto [idx1, idxBoardSize] = get_digits(line);
 
             if (idx1 < 0 || idxBoardSize < 0)
                 continue;
@@ -157,9 +148,12 @@ void RuleSandwich::initTables() {
             m_min_digits[s] = m_max_digits[s] = 0;
 }
 
-bool RuleSandwich::check_unkown_digits(int idx1, int idxBoardSize, int minD, int maxD, const RCIdx &pos) {
+bool RuleSandwich::check_unkown_digits(int idx1, int idxBoardSize, const RCIdx &pos, const int sum) {
     const int board_size = board_->size();
-    const std::vector<Cell *> &line = getLine(pos);
+    const int minD = m_min_digits[sum];
+    const int maxD = m_max_digits[sum];
+
+    const std::vector<Cell *> &line = get_line(pos);
 
     bool changed = false;
     for (int i = 0; i < board_size; i++) {
@@ -200,65 +194,87 @@ bool RuleSandwich::check_unkown_digits(int idx1, int idxBoardSize, int minD, int
     return changed;
 }
 
-bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
-    std::vector<Cell *> &line = getLine(pos);
+bool RuleSandwich::check_known_digits(int idx1, int idxBoardSize, const RCIdx &pos, int sum) {
     const int board_size = board_->size();
-    const int minD = m_min_digits[sum];
-    const int maxD = m_max_digits[sum];
+    const std::vector<Cell *> &line = get_line(pos);
 
-    // Find bread digits
-    int idx1 = -1, idxBoardSize = -1;
-    for (int i = 0; i < board_size; i++) {
-        if (line[i]->value == 1)
-            idx1 = i;
-        if (line[i]->value == board_size)
-            idxBoardSize = i;
+    const int left = std::min(idx1, idxBoardSize);
+    const int right = std::max(idx1, idxBoardSize);
+    const int between = right - left - 1;
+
+    if (between < m_min_digits[sum] || between > m_max_digits[sum]) {
+        return false;
     }
 
     bool changed = false;
 
-    if (idx1 == -1 && idxBoardSize == -1) {
-        return check_unkown_digits(idx1, idxBoardSize, minD, maxD, pos);
-    } else if (idx1 == -1 || idxBoardSize == -1) {
-        // One bread digit known - constrain the other
-        const int known_idx = (idx1 != -1) ? idx1 : idxBoardSize;
-        const int unknown_digit = (idx1 != -1) ? board_size : 1;
+    const NumberSet &valid_digits = m_valid_union_sets[sum][between];
+    for (int i = left + 1; i < right; i++) {
+        Cell &c = *line[i];
+        if (c.is_solved())
+            continue;
 
-        for (int i = 0; i < board_size; i++) {
-            Cell &c = *line[i];
-            if (c.is_solved() || !c.candidates.test(unknown_digit))
-                continue;
-
-            int dist = std::abs(i - known_idx) - 1;
-            if (dist < minD || dist > maxD)
-                changed |= c.remove_candidate(unknown_digit);
-        }
-    } else {
-        // Both bread digits known - constrain filling digits
-        const int left = std::min(idx1, idxBoardSize);
-        const int right = std::max(idx1, idxBoardSize);
-        const int between = right - left - 1;
-
-        if (between >= minD && between <= maxD) {
-            const NumberSet &valid_digits = m_valid_union_sets[sum][between];
-
-            for (int i = left + 1; i < right; i++) {
-                Cell &c = *line[i];
-                if (c.is_solved())
-                    continue;
-
-                for (int d = 1; d <= board_size; d++)
-                    if (c.candidates.test(d) && !valid_digits.test(d))
-                        changed |= c.remove_candidate(d);
-            }
-        }
+        for (int d = 1; d <= board_size; d++)
+            if (c.candidates.test(d) && !valid_digits.test(d))
+                changed |= c.remove_candidate(d);
     }
 
     return changed;
 }
 
-std::vector<Cell *> &RuleSandwich::getLine(const RCIdx &pos) {
+bool RuleSandwich::check_known_digit(int idx1, int idxBoardSize, const RCIdx &pos, const int sum) {
+    const int board_size = board_->size();
+    const std::vector<Cell *> &line = get_line(pos);
+
+    const int minD = m_min_digits[sum];
+    const int maxD = m_max_digits[sum];
+
+    const int known_idx = (idx1 != -1) ? idx1 : idxBoardSize;
+    const int unknown_digit = (idx1 != -1) ? board_size : 1;
+
+    bool changed = false;
+    for (int i = 0; i < board_size; i++) {
+        Cell &c = *line[i];
+        if (c.is_solved() || !c.candidates.test(unknown_digit))
+            continue;
+
+        int dist = std::abs(i - known_idx) - 1;
+        if (dist < minD || dist > maxD)
+            changed |= c.remove_candidate(unknown_digit);
+    }
+
+    return changed;
+}
+
+bool RuleSandwich::check_sandwich(const RCIdx &pos, const int sum) {
+    auto [idx1, idxBoardSize] = get_digits(get_line(pos));
+
+    bool changed = false;
+    if (idx1 == -1 && idxBoardSize == -1)
+        return check_unkown_digits(idx1, idxBoardSize, pos, sum);
+    else if (idx1 == -1 || idxBoardSize == -1)
+        return check_known_digit(idx1, idxBoardSize, pos, sum);
+    else
+        return check_known_digits(idx1, idxBoardSize, pos, sum);
+
+    return changed;
+}
+
+const std::vector<Cell *> &RuleSandwich::get_line(const RCIdx &pos) const {
     return (pos.is_row()) ? board_->get_row(pos.row) : board_->get_col(pos.col);
+}
+
+const std::pair<int, int> RuleSandwich::get_digits(const std::vector<Cell *> &line) const {
+    const int line_size = line.size();
+
+    int idx1 = -1, idxBoardSize = -1;
+    for (int i = 0; i < line_size; i++) {
+        if (line[i]->value == 1)
+            idx1 = i;
+        if (line[i]->value == board_->size())
+            idxBoardSize = i;
+    }
+    return {idx1, idxBoardSize};
 }
 
 } // namespace sudoku

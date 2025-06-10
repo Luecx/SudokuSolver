@@ -29,12 +29,14 @@ private:
     std::vector<std::vector<NumberSet>> m_valid_union_sets;
     std::vector<SandwichPair> m_pairs;
 
-    std::vector<Cell *> &getLine(const RCIdx &pos);
-
     void initTables();
 
-    bool check_unkown_digits(int idx1, int idxBoardSize, int minD, int maxD, const RCIdx &pos);
-
     bool check_sandwich(const RCIdx &pos, const int sum);
+    bool check_unkown_digits(int idx1, int idxBoardSize, const RCIdx &pos, const int sum);
+    bool check_known_digit(int idx1, int idxBoardSize, const RCIdx &pos, const int sum);
+    bool check_known_digits(int idx1, int idxBoardSize, const RCIdx &pos, const int sum);
+
+    const std::vector<Cell *> &get_line(const RCIdx &pos) const;
+    const std::pair<int, int> get_digits(const std::vector<Cell *> &line) const;
 };
 } // namespace sudoku
