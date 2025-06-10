@@ -20,7 +20,6 @@ A full-featured web-based Sudoku platform where you can solve puzzles competitiv
 ### Prerequisites
 
 * Python 3.x
-* Node.js
 * [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html)
 
 ### 1. Clone the Repository
