@@ -9,15 +9,14 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
     Cell &cell = board_->get_cell(pos);
     bool changed = false;
 
-    NumberSet rm(cell.max_number, cell.value);
-    for (const auto &region: m_extra_regions) {
+    for (const auto &region: m_regions) {
         if (!region.has(pos))
             continue;
 
         for (const auto &item: region.items()) {
             Cell &target = board_->get_cell(item);
             if (!target.is_solved())
-                changed |= target.remove_candidates(rm);
+                changed |= target.remove_candidate(cell.value);
         }
     }
 
@@ -26,20 +25,20 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
 
 bool RuleExtraRegions::candidates_changed() {
     bool changed = false;
-    for (auto &unit: m_extra_units)
+    for (auto &unit: m_units)
         changed |= hidden_singles(board_, unit);
     return changed;
 }
 
 bool RuleExtraRegions::valid() {
-    for (auto &unit: m_extra_units)
+    for (auto &unit: m_units)
         if (!check_group(unit))
             return false;
     return true;
 }
 
 void RuleExtraRegions::update_impact(ImpactMap &map) {
-    for (const auto &region: m_extra_regions) {
+    for (const auto &region: m_regions) {
         for (const auto &item: region.items()) {
             Cell &cell = board_->get_cell(item);
             if (cell.is_solved())
@@ -50,7 +49,7 @@ void RuleExtraRegions::update_impact(ImpactMap &map) {
 }
 
 void RuleExtraRegions::from_json(JSON &json) {
-    m_extra_regions.clear();
+    m_regions.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -63,14 +62,14 @@ void RuleExtraRegions::from_json(JSON &json) {
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0) {
-            m_extra_regions.push_back(region);
+            m_regions.push_back(region);
             // create a unit for each region
             std::vector<Cell *> unit;
             for (const auto &pos: region.items()) {
                 Cell &cell = board_->get_cell(pos);
                 unit.push_back(&cell);
             }
-            m_extra_units.push_back(unit);
+            m_units.push_back(unit);
         }
     }
 }

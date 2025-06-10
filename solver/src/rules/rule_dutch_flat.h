@@ -17,7 +17,7 @@ public:
     void from_json(JSON &json) override {};
 
 private:
-    bool force_dutch_flat(CellIdx pos);
+    bool enforce_dutch_flat(CellIdx pos);
 
     Cell* get_above_cell(CellIdx pos);
     Cell *get_below_cell(CellIdx pos);

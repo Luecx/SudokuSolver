@@ -19,7 +19,7 @@ bool RuleIrregular::number_changed(CellIdx pos) {
         if (!c->is_solved())
             changed |= c->remove_candidates(rm);
 
-    for (const auto &region: m_irregular_regions) {
+    for (const auto &region: m_regions) {
         if (!region.has(pos))
             continue;
 
@@ -65,14 +65,14 @@ bool RuleIrregular::valid() {
 }
 
 void RuleIrregular::from_json(JSON &json) {
-    m_irregular_regions.clear();
+    m_regions.clear();
     m_irregular_units.clear();
 
     for (int i = 1; i <= 9; ++i) {
         std::string region_key = "region" + std::to_string(i);
         Region<CellIdx> region = Region<CellIdx>::from_json(json["fields"][region_key]);
         if (region.size() > 0) {
-            m_irregular_regions.push_back(region);
+            m_regions.push_back(region);
             // create a unit for each region
             std::vector<Cell *> unit;
             for (const auto &pos: region.items()) {

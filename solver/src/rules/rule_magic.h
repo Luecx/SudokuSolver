@@ -19,7 +19,7 @@ public:
     void from_json(JSON &json) override;
 
 private:
-    std::vector<Region<CellIdx>> m_magic_regions;
+    std::vector<Region<CellIdx>> m_regions;
     std::vector<std::array<int, 9>> m_possible_layouts;
 
     bool is3x3Square(const Region<CellIdx> &region);

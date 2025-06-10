@@ -3,13 +3,13 @@
 
 namespace sudoku {
 
-bool RuleDutchFlat::number_changed(CellIdx pos) { return force_dutch_flat(pos); }
+bool RuleDutchFlat::number_changed(CellIdx pos) { return enforce_dutch_flat(pos); }
 
 bool RuleDutchFlat::candidates_changed() {
     bool changed = false;
     for (Row r = 0; r < board_->size(); ++r)
         for (Col c = 0; c < board_->size(); ++c)
-            changed |= force_dutch_flat(CellIdx(r, c));
+            changed |= enforce_dutch_flat(CellIdx(r, c));
     return changed;
 }
 
@@ -44,7 +44,7 @@ bool RuleDutchFlat::valid() {
 
 // private member function
 
-bool RuleDutchFlat::force_dutch_flat(CellIdx pos) {
+bool RuleDutchFlat::enforce_dutch_flat(CellIdx pos) {
     Cell &cell = board_->get_cell(pos);
     if (!cell.is_solved() || cell.value != 5)
         return false;

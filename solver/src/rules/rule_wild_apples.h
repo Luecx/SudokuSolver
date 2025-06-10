@@ -21,8 +21,10 @@ public:
 private:
     Region<EdgeIdx> m_apple_edges;
     Region<EdgeIdx> m_missing_edges;
+   
     bool apply_apple_number(Cell &source, Cell &target) const;
     bool apply_apple_candidates(Cell &a, Cell &b) const;
+   
     bool enforce_missing_dots();
     bool remove_apple_forbidden(Cell &a, Cell &b) const;
 };

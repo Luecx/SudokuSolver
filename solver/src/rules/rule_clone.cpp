@@ -11,7 +11,7 @@ bool RuleClone::number_changed(CellIdx pos) {
     bool changed = false;
     Cell &cell = board_->get_cell(pos);
 
-    for (const auto &group: m_clone_groups) {
+    for (const auto &group: m_units) {
         if (group.size() < 2)
             continue;
 
@@ -20,7 +20,7 @@ bool RuleClone::number_changed(CellIdx pos) {
         int changed_item_idx = -1;
 
         for (const int region_idx: group) {
-            changed_item_idx = m_clone_regions[region_idx].find_index(pos);
+            changed_item_idx = m_regions[region_idx].find_index(pos);
             if (changed_item_idx != -1) {
                 changed_region_idx = region_idx;
                 break;
@@ -35,7 +35,7 @@ bool RuleClone::number_changed(CellIdx pos) {
             if (region_idx == changed_region_idx)
                 continue;
 
-            const auto &region = m_clone_regions[region_idx];
+            const Region<CellIdx> &region = m_regions[region_idx];
             const CellIdx &pos2 = region.items()[changed_item_idx];
             Cell &cell2 = board_->get_cell(pos2);
 
@@ -46,28 +46,55 @@ bool RuleClone::number_changed(CellIdx pos) {
     return changed;
 }
 
-bool RuleClone::candidates_changed() { return false; }
+bool RuleClone::candidates_changed() {
+    bool changed = false;
 
-bool RuleClone::valid() {
-    for (const auto &group: m_clone_groups) {
-        if (group.size() < 2) // skip if no clone exists
+    for (const auto &group: m_units) {
+        if (group.size() < 2)
             continue;
 
-        const int region_size = m_clone_regions[group[0]].size(); // used only to obtain the size
+        const int region_size = m_regions[group.front()].size();
         for (int item_idx = 0; item_idx < region_size; item_idx++) {
-            int value = -1;
+            NumberSet common_cands = NumberSet::full(board_->size());
 
             for (const int region_idx: group) {
-                const CellIdx &pos = m_clone_regions[region_idx].items()[item_idx];
-                Cell &cell = board_->get_cell(pos);
+                const Cell &cell = board_->get_cell(m_regions[region_idx].items()[item_idx]);
+                if (cell.is_solved())
+                    continue;
+                common_cands &= cell.get_candidates();
+            }
+
+            for (const int region_idx: group) {
+                Cell &cell = board_->get_cell(m_regions[region_idx].items()[item_idx]);
+                if (cell.is_solved())
+                    continue;
+                changed |= cell.only_allow_candidates(common_cands);
+            }
+        }
+    }
+
+    return changed;
+}
+
+bool RuleClone::valid() {
+    for (const auto &group: m_units) {
+        if (group.size() < 2)
+            continue;
+
+        const int region_size = m_regions[group.front()].size();
+        for (int item_idx = 0; item_idx < region_size; item_idx++) {
+            int first_value = -1;
+
+            for (const int region_idx: group) {
+                const Cell &cell = board_->get_cell(m_regions[region_idx].items()[item_idx]);
 
                 if (!cell.is_solved())
                     continue;
 
-                if (value == -1)
-                    value = cell.value;
-                else if (value != cell.value)
-                    return false; // different values in the same clone
+                if (first_value == -1)
+                    first_value = cell.value;
+                else if (cell.value != first_value)
+                    return false;
             }
         }
     }
@@ -76,12 +103,12 @@ bool RuleClone::valid() {
 }
 
 void RuleClone::update_impact(ImpactMap &map) {
-    for (const auto &group: m_clone_groups) {
+    for (const auto &group: m_units) {
         if (group.size() < 2) // skip if no clone exists
             continue;
 
         for (const auto &region_idx: group) {
-            const auto &region = m_clone_regions[region_idx];
+            const auto &region = m_regions[region_idx];
             for (const auto &pos: region.items())
                 map.increment(pos);
         }
@@ -89,8 +116,8 @@ void RuleClone::update_impact(ImpactMap &map) {
 }
 
 void RuleClone::from_json(JSON &json) {
-    m_clone_regions.clear();
-    m_clone_groups.clear();
+    m_regions.clear();
+    m_units.clear();
 
     if (!json["rules"].is_array())
         return;
@@ -103,7 +130,7 @@ void RuleClone::from_json(JSON &json) {
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
         if (region.size() > 0)
-            m_clone_regions.push_back(region);
+            m_regions.push_back(region);
     }
 
     initCloneGroups();
@@ -112,43 +139,35 @@ void RuleClone::from_json(JSON &json) {
 // private member function
 
 void RuleClone::initCloneGroups() {
-    const int max_regions = m_clone_regions.size();
-    NumberSet processed(max_regions);
+    const int max_regions = m_regions.size();
+    std::vector<bool> processed(max_regions, false);
 
     for (int i = 0; i < max_regions; i++) {
-        // skip if already processed
-        if (processed.test(i + 1)) // +1 because NumberSet is 1-based
+        if (processed[i])
             continue;
 
-        const auto &region = m_clone_regions[i];
         std::vector<int> clones = {i};
+        processed[i] = true;
 
         for (int j = i + 1; j < max_regions; j++) {
-            if (processed.test(j + 1)) // +1 because NumberSet is 1-based
+            if (processed[j])
                 continue;
 
-            if (isSameShape(region, m_clone_regions[j])) {
+            if (isSameShape(m_regions[i], m_regions[j])) {
                 clones.push_back(j);
-                processed.add(j + 1); // +1 because NumberSet is 1-based
+                processed[j] = true;
             }
         }
 
-        processed.add(i + 1); // +1 because NumberSet is 1-based
-        m_clone_groups.push_back(clones);
+        m_units.push_back(clones);
     }
 
     // sort cells within each region for easier comparison
-    for (const auto &group: m_clone_groups) {
+    for (const auto &group: m_units) {
         for (int regionIdx: group) {
-            auto &region = m_clone_regions[regionIdx];
-
-            // sort cells by row, then by column
-            std::sort(region.begin(), region.end(), [](const CellIdx pos1, const CellIdx pos2) {
-                if (pos1.r != pos2.r)
-                    return pos1.r < pos2.r; // sort by row first
-                else
-                    return pos1.c < pos2.c; // for same row, sort by column
-            });
+            auto &region = m_regions[regionIdx];
+            std::sort(region.begin(), region.end(),
+                      [](const CellIdx &a, const CellIdx &b) { return a.r < b.r || (a.r == b.r && a.c < b.c); });
         }
     }
 }
@@ -177,15 +196,11 @@ bool RuleClone::isSameShape(const Region<CellIdx> &region1, const Region<CellIdx
     // create normalized representations using a bitset
     std::set<std::pair<int, int>> shape1, shape2;
 
-    for (const auto &pos: region1.items()) {
+    for (const auto &pos: region1.items())
         shape1.emplace(pos.r - minRow1, pos.c - minCol1);
-    }
-
-    for (const auto &pos: region2.items()) {
+    for (const auto &pos: region2.items())
         shape2.emplace(pos.r - minRow2, pos.c - minCol2);
-    }
 
-    // Compare normalized shapes
     return shape1 == shape2;
 }
 

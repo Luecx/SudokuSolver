@@ -26,7 +26,7 @@ const std::array<std::array<int, 9>, 8> MAGIC_SQUARE_SOLUTIONS =
 
 bool RuleMagic::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &region: m_magic_regions) {
+    for (const auto &region: m_regions) {
         initPossibleLayouts(region);
         if (m_possible_layouts.empty())
             continue;
@@ -37,7 +37,7 @@ bool RuleMagic::number_changed(CellIdx pos) {
 
 bool RuleMagic::candidates_changed() {
     bool changed = false;
-    for (const auto &region: m_magic_regions) {
+    for (const auto &region: m_regions) {
         initPossibleLayouts(region);
         if (m_possible_layouts.empty())
             continue;
@@ -47,7 +47,7 @@ bool RuleMagic::candidates_changed() {
 }
 
 bool RuleMagic::valid() {
-    for (const auto &region: m_magic_regions) {
+    for (const auto &region: m_regions) {
         initPossibleLayouts(region);
         if (m_possible_layouts.empty())
             return false;
@@ -56,7 +56,11 @@ bool RuleMagic::valid() {
 }
 
 void RuleMagic::from_json(JSON &json) {
-    m_magic_regions.clear();
+    m_regions.clear();
+
+    if (board_->size() != 9) {
+        throw std::runtime_error("RuleMagic only supports 9x9 boards");
+    }
 
     if (!json["rules"].is_array())
         return;
@@ -76,7 +80,7 @@ void RuleMagic::from_json(JSON &json) {
             std::sort(region.begin(), region.end(),
                       [](const CellIdx &a, const CellIdx &b) { return (a.r != b.r) ? (a.r < b.r) : (a.c < b.c); });
 
-            m_magic_regions.push_back(region);
+            m_regions.push_back(region);
         }
     }
 }
