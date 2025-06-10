@@ -79,10 +79,15 @@ void RuleRenban::from_json(JSON &json) {
 bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
     const int board_size = board_->size();
 
+    NumberSet all(board_size);
+
     // collect solved cells
     NumberSet solved_values(board_size);
     for (const auto &pos: path) {
         Cell &cell = board_->get_cell(pos);
+
+        all |= cell.get_candidates();
+
         if (!cell.is_solved())
             continue;
 
@@ -91,10 +96,32 @@ bool RuleRenban::enforce_renban(const Region<CellIdx> &path) {
         solved_values.add(cell.value);
     }
 
+    // check if certain candidates have no neighbors
+    NumberSet invalid(board_size);
+    for (const auto n: all) {
+        if (n == 1) {
+            if (!all.test(2))
+                invalid.add(1);
+        } else if (n == board_size) {
+            if (!all.test(board_size - 1))
+                invalid.add(board_size);
+        } else {
+            if (!all.test(n - 1) && !all.test(n + 1))
+                invalid.add(n);
+        }
+    }
+
+    for (const auto &pos: path) {
+        Cell &cell = board_->get_cell(pos);
+        if (cell.is_solved())
+            continue;
+        cell.remove_candidates(invalid);
+    }
+
     // if no cells are solved, we cannot enforce renban
     if (solved_values.count() == 0)
         return false;
-        
+
     const int length = path.size();
 
     int min_solved = solved_values.lowest();
