@@ -14,6 +14,7 @@ Each path is named for reverse resolution in templates and views.
 """
 
 from django.urls import path, reverse_lazy
+from django.views.i18n import JavaScriptCatalog
 from django.contrib.auth import views as auth_views
 from sudoku.forms import UsernameOrEmailPasswordResetForm
 from . import views as views
@@ -72,5 +73,7 @@ urlpatterns = [
     path('save-ongoing/'                    , views.save_ongoing_state      , name='save_ongoing_state'),
 
     path("kontakt/", kontaktformular_view, name="kontaktformular"),
+
+    path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
 ]
 
