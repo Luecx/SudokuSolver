@@ -23,6 +23,12 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'sudoku',
     'corsheaders',
+
+    'django.contrib.sites',  # Wichtig für allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 # === Middleware ===
@@ -111,9 +117,23 @@ LOGIN_REDIRECT_URL  = '/'
 LOGOUT_REDIRECT_URL = '/'
 ROOT_URLCONF        = 'sudoku_site.urls'
 
+# === GOOGLE LOGIN ===
+SITE_ID = 1
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
 
 # === EMAIL ===
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.strato.de'
