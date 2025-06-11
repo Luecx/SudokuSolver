@@ -71,8 +71,8 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         }
 
         const parts = trimmed.split(',');
-        if (parts.length > 18)
-            warnings.push(`Too many numbers: maximum allowed is ${18}`);
+        if (parts.length > 5)
+            warnings.push(`Too many forbidden sums: maximum allowed is ${5}`);
         
         const invalidParts = parts.filter(part => {
             const num = part.trim();
