@@ -39,17 +39,14 @@
 					<a class="link link--io my-text-btn" href="#" onclick="switchModalContent('{% url 'password_reset' %}')">{% trans "Forgot your password?" %}</a>
 				</div>
 				<hr class="my-4">
+				
+				
+				
 				<div class="d-flex align-items-center justify-content-center gap-3 mt-2">
 					<span class="text-nowrap">{% trans "Sign in with..." %}</span>
-					<button type="button" class="btn btn-link d-flex align-items-center border-0">
+					<a href="{% url 'socialaccount_login' 'google' %}">
 						<img src="{% static 'sudoku/img/login/loginSign-google.svg' %}" alt="Google" width="30" class="me-2">
-					</button>
-					<button type="button" class="btn btn-link d-flex align-items-center border-0">
-						<img src="{% static 'sudoku/img/login/loginSign-Apple.svg' %}" alt="Apple" width="30" class="me-2">
-					</button>
-					<button type="button" class="btn btn-link d-flex align-items-center border-0">
-						<img src="{% static 'sudoku/img/login/loginSign-facebook.svg' %}" alt="Facebook" width="30" class="me-2">
-					</button>
+					</a>
 				</div>
 				<div class="text-center mt-3">
 					<a class="link link--io my-text-btn" href="#" onclick="switchModalContent('{% url 'register' %}','L')">{% trans "No account yet? Register now" %}</a>
