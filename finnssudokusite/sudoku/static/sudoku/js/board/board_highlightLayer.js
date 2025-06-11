@@ -167,9 +167,7 @@ export class HighlightLayer {
     }
 
     _updateNumberHighlight() {
-        console.log("updating number highlights");
         const uniqueValue = this._getUniqueSelectedValue();
-        console.log(uniqueValue);
         if (uniqueValue === null) {
             this._clearNumberHighlights();
             return;

@@ -124,9 +124,6 @@ export class MouseSelector {
         if (key && isClick) {
             const alreadySelected = this.onIsSelected(key);
 
-            console.log(alreadySelected);
-            console.log(this.mode);
-
             if (this.mode === SelectionMode.SINGLE) {
                 if (alreadySelected) {
                     this.onDeselect(key);

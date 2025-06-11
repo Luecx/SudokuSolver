@@ -74,8 +74,6 @@ export class HintDiagLayer {
     }
 
     select(idx) {
-        console.log(idx);
-
         if (!this.config || this.config.target !== RegionType.DIAGONAL) return;
 
         if (this.config.mode === "single") {

@@ -1,6 +1,6 @@
 # 🧠 SudokuSolver
 
-A full-featured web-based Sudoku platform where you can solve puzzles competitively or casually, and create your own using a powerful solver. Play against others, climb the leaderboards, and challenge yourself with thousands of puzzles—all live at [SudokuSphere.com](https://sudokusphere.com/).
+A full-featured web-based Sudoku platform where you can solve puzzles competitively or casually, and create your own using a powerful solver. Play against others, climb the leaderboards, and challenge yourself with thousands of puzzles — all live at [SudokuSphere.com](https://sudokusphere.com/).
 
 ---
 

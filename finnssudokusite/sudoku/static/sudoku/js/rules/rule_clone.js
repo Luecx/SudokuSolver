@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
+import { CellIdx } from "../region/CellIdx.js";
 
 export class CloneHandler extends RuleTypeHandler {
     constructor(board) {
@@ -132,15 +133,11 @@ export class CloneHandler extends RuleTypeHandler {
             for (let j = i + 1; j < rules.length; j++) {
                 if (processed.has(j)) continue;
                     
-                if (isRegionSameShape(region,  rules[j].fields.region)) {
+                if (this.isRegionSameShape(region,  rules[j].fields.region)) {
                     clones.push(j);
                     processed.add(j);
                 }
             }
-    
-            //if (clones.length < 2) {
-            //    throw new Error("Clone groups must have at least 2 regions");
-            //}
                 
             processed.add(i);
             cloneGroups.push(clones);
@@ -162,5 +159,38 @@ export class CloneHandler extends RuleTypeHandler {
         }
             
         return cloneGroups;
+    }
+
+    isRegionSameShape(region1, region2) {
+        if (!region1 || !region2) return false; // check if both regions are defined
+        if (region1.size() !== region2.size()) return false;
+
+        const normalizeCoordinates = (cells) => {
+            if (cells.length === 0) return [];
+
+            let minRow = Infinity;
+            let minCol = Infinity;
+                
+            for (const cell of cells) {
+                minRow = Math.min(minRow, cell.r);
+                minCol = Math.min(minCol, cell.c);
+            }
+
+            return cells.map(cell => new CellIdx(cell.r - minRow, cell.c - minCol));
+        };
+
+        const cells1 = region1.items;
+        const cells2 = region2.items;
+
+        const normalizedCells1 = normalizeCoordinates(cells1);
+        const normalizedCells2 = normalizeCoordinates(cells2);
+
+        const shape1 = normalizedCells1.map(cell => cell.toString()).sort();
+        const shape2 = normalizedCells2.map(cell => cell.toString()).sort();
+
+        for (let i = 0; i < shape1.length; i++)
+            if (shape1[i] !== shape2[i]) return false;
+
+        return true;
     }
 }

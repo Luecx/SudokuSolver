@@ -81,7 +81,6 @@ export class DiagonalSumHandler extends RuleTypeHandler {
                     dir = "botright"
                 } else {
                     let tl = this.board.getCellTopLeftCTX(size - diag.index, size)
-                    console.log(size - diag.index, size, tl)
                     target_x = tl.x
                     target_y = tl.y
                     dir = "topleft"
@@ -95,7 +94,6 @@ export class DiagonalSumHandler extends RuleTypeHandler {
                     dir = "botleft"
                 } else {
                     let tl = this.board.getCellTopLeftCTX(size, diag.index)
-                    console.log(diag.index, size)
                     target_x = tl.x
                     target_y = tl.y
                     dir = "topright"

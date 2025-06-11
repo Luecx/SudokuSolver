@@ -60,7 +60,6 @@ export class RegionSelectorOption {
         if (!this.active) return;
         this.active = false;
         this.board.resetSelectionToDefault();
-        console.log("stop");
         this._detachBoardListeners();
         this._triggerDone();
         this._updateDisplay();
