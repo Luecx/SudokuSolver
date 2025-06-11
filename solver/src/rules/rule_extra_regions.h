@@ -5,6 +5,7 @@
 #include "_rule_handler.h"
 
 namespace sudoku {
+    
 class RuleExtraRegions : public RuleHandler {
 public:
     explicit RuleExtraRegions(Board *board) : RuleHandler(board) {}
@@ -21,4 +22,5 @@ private:
 
     bool check_group(const std::vector<Cell *> &unit);
 };
+
 } // namespace sudoku

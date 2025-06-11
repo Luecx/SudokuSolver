@@ -1,7 +1,6 @@
 #include "rule_whisper.h"
 #include "../board/board.h"
 
-
 namespace sudoku {
 
 bool RuleWhisper::number_changed(CellIdx pos) {

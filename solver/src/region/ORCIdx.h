@@ -34,8 +34,8 @@ namespace sudoku {
  * All other configurations are invalid and will throw.
  */
 struct ORCIdx {
-    Row row;       ///< Row index (≥ 0 for row, < 0 otherwise)
-    Col col;       ///< Column index (≥ 0 for column, < 0 otherwise)
+    Row row; ///< Row index (≥ 0 for row, < 0 otherwise)
+    Col col; ///< Column index (≥ 0 for column, < 0 otherwise)
     bool reversed; ///< Direction of the row or column
 
     ORCIdx(Row r, Col c, bool rev) : row(r), col(c), reversed(rev) {

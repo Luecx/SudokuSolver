@@ -30,6 +30,5 @@ private:
     Region<CellIdx> m_remaining_cells;
 
     bool check_cage(KillerPair &pair);
-    bool check_group(const KillerPair &pair) const;
 };
 } // namespace sudoku

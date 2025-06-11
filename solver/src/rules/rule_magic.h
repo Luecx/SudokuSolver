@@ -29,4 +29,5 @@ private:
 
     bool applyCandidates(const Region<CellIdx> &region);
 };
+
 } // namespace sudoku

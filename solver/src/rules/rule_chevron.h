@@ -5,7 +5,6 @@
 #include "../region/EdgeIdx.h"
 #include "_rule_handler.h"
 
-
 namespace sudoku {
 
 class RuleChevron : public RuleHandler {

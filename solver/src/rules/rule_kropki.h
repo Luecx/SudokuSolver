@@ -5,7 +5,6 @@
 #include "../region/EdgeIdx.h"
 #include "_rule_handler.h"
 
-
 namespace sudoku {
 
 class RuleKropki : public RuleHandler {
@@ -32,7 +31,7 @@ private:
     bool apply_black_number(Cell &source, Cell &target) const;
     bool apply_white_candidates(Cell &a, Cell &b) const;
     bool apply_black_candidates(Cell &a, Cell &b) const;
-    
+
     bool enforce_missing_dots();
     bool remove_forbidden(Cell &a, Cell &b) const;
 };

@@ -4,7 +4,6 @@
 #include "../json/json.h"
 #include "_rule_handler.h"
 
-
 namespace sudoku {
 
 class RuleThermo : public RuleHandler {

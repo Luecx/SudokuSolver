@@ -39,4 +39,5 @@ private:
     const std::vector<Cell *> &get_line(const RCIdx &pos) const;
     const std::pair<int, int> get_digits(const std::vector<Cell *> &line) const;
 };
+
 } // namespace sudoku

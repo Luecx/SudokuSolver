@@ -5,6 +5,7 @@
 #include "_rule_handler.h"
 
 namespace sudoku {
+    
 class RuleIrregular : public RuleHandler {
 public:
     explicit RuleIrregular(Board *board) : RuleHandler(board) {}
@@ -19,4 +20,5 @@ private:
     std::vector<Region<CellIdx>> m_regions;
     std::vector<std::vector<Cell *>> m_irregular_units;
 };
+
 } // namespace sudoku

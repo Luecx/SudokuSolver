@@ -1,7 +1,6 @@
 #include "rule_diagonal_sum.h"
-#include "../board/board.h"
 #include "rule_killer.h"
-
+#include "../board/board.h"
 
 namespace sudoku {
 

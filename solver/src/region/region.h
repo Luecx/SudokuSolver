@@ -23,8 +23,8 @@
 #include "CornerIdx.h"
 #include "DiagonalIdx.h"
 #include "EdgeIdx.h"
-#include "RCIdx.h"
 #include "ORCIdx.h"
+#include "RCIdx.h"
 
 namespace sudoku {
 

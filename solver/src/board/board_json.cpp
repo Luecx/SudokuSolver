@@ -2,7 +2,6 @@
 #include "../rules/include.h"
 #include "board.h"
 
-
 namespace sudoku {
 
 void Board::from_json(JSON &json) {

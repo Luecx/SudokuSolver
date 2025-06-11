@@ -1,8 +1,5 @@
-#include <utility>
-
-#include "../board/board.h"
 #include "rule_killer.h"
-
+#include "../board/board.h"
 
 namespace sudoku {
 
@@ -56,10 +53,8 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
 
 bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
-
     for (const auto &pair: m_cage_pair) {
         const Region<CellIdx> &region = pair.region;
-
         if (!region.has(pos))
             continue;
 
@@ -67,7 +62,6 @@ bool RuleKiller::number_changed(CellIdx pos) {
             changed |= check_cage(pair);
         break; // regions can't overlap
     }
-
     return changed;
 }
 
@@ -79,9 +73,31 @@ bool RuleKiller::candidates_changed() {
 }
 
 bool RuleKiller::valid() {
-    for (auto &pair: m_cage_pair)
-        if (!check_group(pair))
+    for (const auto &pair: m_cage_pair) {
+        int sum = 0;
+        NumberSet seen_values(board_->size());
+        bool all_solved = true;
+
+        for (const auto &item: pair.region) {
+            const Cell &cell = board_->get_cell(item);
+
+            if (!cell.is_solved()) {
+                all_solved = false;
+                continue;
+            }
+
+            sum += cell.value;
+
+            if (!m_number_can_repeat) {
+                if (seen_values.test(cell.value))
+                    return false;
+                seen_values.add(cell.value);
+            }
+        }
+
+        if (sum > pair.sum || (all_solved && sum != pair.sum))
             return false;
+    }
     return true;
 }
 
@@ -119,10 +135,10 @@ bool RuleKiller::check_cage(KillerPair &pair) {
     m_remaining_cells.clear();
 
     int sum = 0;
-    NumberSet seen_values(board_size);
+    NumberSet seen(board_size);
 
-    Number min_candidate = board_size;
-    Number max_candidate = 1;
+    Number min_cand = board_size;
+    Number max_cand = 1;
 
     for (const auto &item: pair.region) {
         Cell &cell = board_->get_cell(item);
@@ -130,64 +146,35 @@ bool RuleKiller::check_cage(KillerPair &pair) {
         if (cell.is_solved()) {
             sum += cell.value;
 
-            if (!m_number_can_repeat && seen_values.test(cell.value)) {
-                return false;
-            }
+            if (m_number_can_repeat)
+                continue; // repetition allowed, no need to check
 
-            if (!m_number_can_repeat)
-                seen_values.add(cell.value);
+            if (seen.test(cell.value))
+                return false;
+            seen.add(cell.value);
         } else {
             m_remaining_cells.add(cell.pos);
-            min_candidate = std::min(min_candidate, cell.candidates.lowest());
-            max_candidate = std::max(max_candidate, cell.candidates.highest());
+            min_cand = std::min(min_cand, cell.candidates.lowest());
+            max_cand = std::max(max_cand, cell.candidates.highest());
         }
     }
 
-    auto [min, max] = getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_candidate, max_candidate, board_size,
+    if (m_remaining_cells.size() == 0)
+        return false;
+
+    auto [min, max] = getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_cand, max_cand, board_size,
                                     m_number_can_repeat);
 
     bool changed = false;
     for (const auto &item: m_remaining_cells) {
         Cell &cell = board_->get_cell(item);
-
-        for (Number d = 1; d <= board_size; ++d) {
-            if (!cell.candidates.test(d))
-                continue;
-
-            if (!m_number_can_repeat && seen_values.test(d))
-                changed |= cell.remove_candidate(d);
-            else if (d < min || d > max)
-                changed |= cell.remove_candidate(d);
+        for (const auto n: cell.candidates) {
+            if ((!m_number_can_repeat && seen.test(n)) || n < min || n > max)
+                changed |= cell.remove_candidate(n);
         }
     }
 
     return changed;
-}
-
-bool RuleKiller::check_group(const KillerPair &pair) const {
-    int sum = 0;
-    sudoku::NumberSet seen_values(board_->size());
-
-    for (const auto &item: pair.region) {
-        Cell &cell = board_->get_cell(item);
-
-        if (cell.is_solved()) {
-            sum += cell.value;
-
-            if (!m_number_can_repeat && seen_values.test(cell.value)) {
-                return false; // number already seen, repetition not allowed
-            }
-
-            if (!m_number_can_repeat)
-                seen_values.add(cell.value);
-        }
-    }
-
-    // if all cells in the cage are filled, check if sum matches target
-    if (seen_values.count() == static_cast<int>(pair.region.size()) && sum != pair.sum)
-        return false;
-
-    return true;
 }
 
 } // namespace sudoku

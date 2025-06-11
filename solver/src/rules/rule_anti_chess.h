@@ -33,7 +33,6 @@ private:
     bool check_cage(const Region<CellIdx> &region, bool allow_repeats);
 
     std::vector<int> getForbiddenSums(const std::string input);
-
-    // bool check_cage(Region<CellIdx> &region);
 };
+
 } // namespace sudoku

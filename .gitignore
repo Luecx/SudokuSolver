@@ -37,6 +37,9 @@ Thumbs.db
 # VSCode settings (optional)
 .vscode/
 
+# Environment variables
+.env
+
 # Python virtual environments (optional)
 uvenv/
 .venv/

@@ -1,0 +1,807 @@
+{
+    "fixedCells": [],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Killer",
+            "fields": {
+                "NumberCanRepeat": false
+            },
+            "rules": [
+                {
+                    "id": "1747516865003-vbxx",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 1
+                                }
+                            ]
+                        },
+                        "sum": 11
+                    }
+                },
+                {
+                    "id": "1747516876397-kkge",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 4
+                                }
+                            ]
+                        },
+                        "sum": 14
+                    }
+                },
+                {
+                    "id": "1747516876548-cn28",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 6
+                                }
+                            ]
+                        },
+                        "sum": 5
+                    }
+                },
+                {
+                    "id": "1747516876690-p68y",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 6
+                                }
+                            ]
+                        },
+                        "sum": 20
+                    }
+                },
+                {
+                    "id": "1747516877188-fv60",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 8
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                },
+                {
+                    "id": "1747516877341-9lxm",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 6
+                                }
+                            ]
+                        },
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1747516877487-7ch9",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "sum": 14
+                    }
+                },
+                {
+                    "id": "1747516942537-ol3a",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 4
+                                }
+                            ]
+                        },
+                        "sum": 14
+                    }
+                },
+                {
+                    "id": "1747516942653-1be3",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 2
+                                }
+                            ]
+                        },
+                        "sum": 19
+                    }
+                },
+                {
+                    "id": "1747516942720-5uer",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 1
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                },
+                {
+                    "id": "1747516942830-alhr",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 0
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                },
+                {
+                    "id": "1747516942868-4d53",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 0
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1747516942991-fil3",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 1
+                                }
+                            ]
+                        },
+                        "sum": 11
+                    }
+                },
+                {
+                    "id": "1747516943048-sn83",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 2
+                                }
+                            ]
+                        },
+                        "sum": 14
+                    }
+                },
+                {
+                    "id": "1747516943143-11gy",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 1
+                                }
+                            ]
+                        },
+                        "sum": 17
+                    }
+                },
+                {
+                    "id": "1747516943192-9d7i",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 2
+                                }
+                            ]
+                        },
+                        "sum": 8
+                    }
+                },
+                {
+                    "id": "1747516943301-75uu",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 3
+                                }
+                            ]
+                        },
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1747516943349-rzmh",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 4
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1747517058294-6d0f",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 8
+                                }
+                            ]
+                        },
+                        "sum": 19
+                    }
+                },
+                {
+                    "id": "1747517058437-puk5",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1747517058584-7u6q",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "sum": 21
+                    }
+                },
+                {
+                    "id": "1747517058721-1ohf",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "sum": 5
+                    }
+                },
+                {
+                    "id": "1747517058879-jrq0",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 4
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                },
+                {
+                    "id": "1747517059033-iwb6",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 2
+                                }
+                            ]
+                        },
+                        "sum": 12
+                    }
+                },
+                {
+                    "id": "1747517059195-xo8p",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 4
+                                }
+                            ]
+                        },
+                        "sum": 6
+                    }
+                },
+                {
+                    "id": "1747517137768-eq9f",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                },
+                {
+                    "id": "1747517137920-kykf",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 3
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 3
+                                }
+                            ]
+                        },
+                        "sum": 15
+                    }
+                },
+                {
+                    "id": "1747517138062-p1mw",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "sum": 11
+                    }
+                },
+                {
+                    "id": "1747517138200-cojm",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "sum": 14
+                    }
+                },
+                {
+                    "id": "1747517138333-uhmv",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "sum": 11
+                    }
+                },
+                {
+                    "id": "1747517138448-suuy",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 7
+                                }
+                            ]
+                        },
+                        "sum": 1
+                    }
+                },
+                {
+                    "id": "1747517138622-3djr",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 8
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 8
+                                }
+                            ]
+                        },
+                        "sum": 13
+                    }
+                }
+            ]
+        }
+    ]
+}

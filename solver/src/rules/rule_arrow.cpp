@@ -1,7 +1,6 @@
 #include "rule_arrow.h"
-#include "../board/board.h"
 #include "rule_killer.h"
-
+#include "../board/board.h"
 
 namespace sudoku {
 

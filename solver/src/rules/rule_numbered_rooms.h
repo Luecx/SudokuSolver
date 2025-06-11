@@ -30,4 +30,5 @@ private:
     Cell &get_first_cell(const ORCIdx &orc);
     Cell &get_target_cell(const ORCIdx &orc, int val);
 };
+
 } // namespace sudoku

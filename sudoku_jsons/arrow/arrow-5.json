@@ -1,1 +1,285 @@
-{"fixedCells":[{"r":0,"c":0,"value":9},{"r":0,"c":3,"value":3},{"r":0,"c":6,"value":6},{"r":0,"c":8,"value":8},{"r":1,"c":1,"value":7},{"r":1,"c":2,"value":4},{"r":1,"c":7,"value":9},{"r":2,"c":0,"value":1},{"r":2,"c":3,"value":5},{"r":2,"c":7,"value":4},{"r":3,"c":6,"value":7},{"r":3,"c":8,"value":3},{"r":5,"c":0,"value":4},{"r":5,"c":2,"value":7},{"r":6,"c":1,"value":4},{"r":6,"c":5,"value":6},{"r":6,"c":8,"value":5},{"r":7,"c":1,"value":9},{"r":7,"c":6,"value":8},{"r":7,"c":7,"value":3},{"r":8,"c":0,"value":7},{"r":8,"c":2,"value":3},{"r":8,"c":5,"value":5},{"r":8,"c":8,"value":4}],"rules":[{"type":"Standard","fields":{},"rules":[]},{"type":"Arrow","fields":{},"rules":[{"id":"1749374443911-kcg0","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":0,"c":5}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":1,"c":4},{"__type__":"CellIdx","r":2,"c":4},{"__type__":"CellIdx","r":3,"c":5}]}}},{"id":"1749374452840-kqz4","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":5,"c":8}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":4,"c":7},{"__type__":"CellIdx","r":4,"c":6},{"__type__":"CellIdx","r":5,"c":5}]}}},{"id":"1749374459055-d939","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":8,"c":3}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":7,"c":4},{"__type__":"CellIdx","r":6,"c":4},{"__type__":"CellIdx","r":5,"c":3}]}}},{"id":"1749374465395-qd5o","fields":{"base":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":3,"c":0}]},"path":{"__type__":"Region","type":"cells","items":[{"__type__":"CellIdx","r":4,"c":1},{"__type__":"CellIdx","r":4,"c":2},{"__type__":"CellIdx","r":3,"c":3}]}}}]}]}
+{
+    "fixedCells": [
+        {
+            "r": 0,
+            "c": 0,
+            "value": 9
+        },
+        {
+            "r": 0,
+            "c": 3,
+            "value": 3
+        },
+        {
+            "r": 0,
+            "c": 6,
+            "value": 6
+        },
+        {
+            "r": 0,
+            "c": 8,
+            "value": 8
+        },
+        {
+            "r": 1,
+            "c": 1,
+            "value": 7
+        },
+        {
+            "r": 1,
+            "c": 2,
+            "value": 4
+        },
+        {
+            "r": 1,
+            "c": 7,
+            "value": 9
+        },
+        {
+            "r": 2,
+            "c": 0,
+            "value": 1
+        },
+        {
+            "r": 2,
+            "c": 3,
+            "value": 5
+        },
+        {
+            "r": 2,
+            "c": 7,
+            "value": 4
+        },
+        {
+            "r": 3,
+            "c": 6,
+            "value": 7
+        },
+        {
+            "r": 3,
+            "c": 8,
+            "value": 3
+        },
+        {
+            "r": 5,
+            "c": 0,
+            "value": 4
+        },
+        {
+            "r": 5,
+            "c": 2,
+            "value": 7
+        },
+        {
+            "r": 6,
+            "c": 1,
+            "value": 4
+        },
+        {
+            "r": 6,
+            "c": 5,
+            "value": 6
+        },
+        {
+            "r": 6,
+            "c": 8,
+            "value": 5
+        },
+        {
+            "r": 7,
+            "c": 1,
+            "value": 9
+        },
+        {
+            "r": 7,
+            "c": 6,
+            "value": 8
+        },
+        {
+            "r": 7,
+            "c": 7,
+            "value": 3
+        },
+        {
+            "r": 8,
+            "c": 0,
+            "value": 7
+        },
+        {
+            "r": 8,
+            "c": 2,
+            "value": 3
+        },
+        {
+            "r": 8,
+            "c": 5,
+            "value": 5
+        },
+        {
+            "r": 8,
+            "c": 8,
+            "value": 4
+        }
+    ],
+    "rules": [
+        {
+            "type": "Standard",
+            "fields": {},
+            "rules": []
+        },
+        {
+            "type": "Arrow",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1749374443911-kcg0",
+                    "fields": {
+                        "base": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 5
+                                }
+                            ]
+                        },
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 2,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 5
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749374452840-kqz4",
+                    "fields": {
+                        "base": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 8
+                                }
+                            ]
+                        },
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 7
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 5
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749374459055-d939",
+                    "fields": {
+                        "base": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 3
+                                }
+                            ]
+                        },
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 7,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 5,
+                                    "c": 3
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749374465395-qd5o",
+                    "fields": {
+                        "base": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 0
+                                }
+                            ]
+                        },
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 2
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 3
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,8 +1,5 @@
 #include "rule_kropki.h"
-#include <array>
-#include <cmath>
 #include "../board/board.h"
-
 
 namespace sudoku {
 

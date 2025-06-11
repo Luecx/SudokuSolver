@@ -1,8 +1,5 @@
-#include <utility>
-
-#include "../board/board.h"
 #include "rule_anti_chess.h"
-
+#include "../board/board.h"
 
 namespace sudoku {
 

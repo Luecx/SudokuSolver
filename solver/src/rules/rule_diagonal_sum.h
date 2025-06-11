@@ -26,4 +26,5 @@ private:
 
     bool check_diagonal(DiagSumPair &pair);
 };
+
 } // namespace sudoku

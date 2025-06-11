@@ -32,4 +32,5 @@ private:
 
     std::pair<int, int> clamp_bounds(int lb, int ub, int base_size);
 };
+
 } // namespace sudoku

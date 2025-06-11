@@ -22,4 +22,5 @@ private:
 
     bool check_unique_diagonal(bool is_main);
 };
+
 } // namespace sudoku

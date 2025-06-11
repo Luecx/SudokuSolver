@@ -1,20 +1,19 @@
 #include <iostream>
 
 #include <chrono>
+#include <cstdlib> // for std::atoi
 #include <functional>
 #include <random>
 #include <unordered_set>
-#include <cstdlib>  // for std::atoi
 
 #include "bench.h"
 #include "board/board.h"
 #include "json/json.h"
-#include "rules/include.h"
 #include "solver_stats.h"
 
 extern "C" {
-    void solve(const char *json, int max_solutions, int max_nodes);
-    void solveComplete(const char *json, int unused, int max_nodes);
+void solve(const char *json, int max_solutions, int max_nodes);
+void solveComplete(const char *json, int unused, int max_nodes);
 }
 
 void print_help() {
@@ -82,7 +81,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        bench::bench(argv[2], 17, 4 * 128000, false);
+        bench::bench(argv[2], 17, 5 * 128000, false);
         return 0;
     }
 

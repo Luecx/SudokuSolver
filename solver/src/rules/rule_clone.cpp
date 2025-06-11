@@ -1,9 +1,7 @@
 #include <set>
-#include <utility>
 
-#include "../board/board.h"
 #include "rule_clone.h"
-
+#include "../board/board.h"
 
 namespace sudoku {
 

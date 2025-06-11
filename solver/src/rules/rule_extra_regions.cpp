@@ -1,7 +1,6 @@
 #include "rule_extra_regions.h"
-#include "../board/board.h"
 #include "rule_standard.h"
-
+#include "../board/board.h"
 
 namespace sudoku {
 

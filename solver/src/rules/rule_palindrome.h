@@ -21,4 +21,5 @@ private:
 
     bool enforce_symmetry(Cell &a, Cell &b);
 };
+
 } // namespace sudoku

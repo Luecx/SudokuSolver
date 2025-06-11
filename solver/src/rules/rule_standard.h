@@ -25,4 +25,5 @@ public:
 
 private:
 };
+
 } // namespace sudoku

@@ -19,7 +19,8 @@ public:
 private:
     bool enforce_dutch_flat(CellIdx pos);
 
-    Cell* get_above_cell(CellIdx pos);
+    Cell *get_above_cell(CellIdx pos);
     Cell *get_below_cell(CellIdx pos);
 };
+
 } // namespace sudoku

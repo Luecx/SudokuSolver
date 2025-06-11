@@ -1,10 +1,7 @@
 #include "rule_palindrome.h"
 #include "../board/board.h"
 
-
 namespace sudoku {
-
-// RuleMagic member functions
 
 bool RulePalindrome::number_changed(CellIdx pos) {
     bool changed = false;

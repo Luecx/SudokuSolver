@@ -23,4 +23,5 @@ private:
     bool apply_candidate_contraint(Cell &cell1, Cell &cell2);
     bool valid_pair(Cell &cell1, Cell &cell2);
 };
+
 } // namespace sudoku

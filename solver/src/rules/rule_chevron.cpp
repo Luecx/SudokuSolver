@@ -1,7 +1,6 @@
 #include "rule_chevron.h"
 #include "../board/board.h"
 
-
 namespace sudoku {
 
 bool RuleChevron::number_changed(CellIdx pos) {

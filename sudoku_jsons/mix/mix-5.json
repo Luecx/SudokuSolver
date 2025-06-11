@@ -1,51 +1,131 @@
 {
-    "fixedCells": [
-        {
-            "r": 2,
-            "c": 3,
-            "value": 1
-        },
-        {
-            "r": 2,
-            "c": 5,
-            "value": 2
-        },
-        {
-            "r": 3,
-            "c": 4,
-            "value": 3
-        },
-        {
-            "r": 5,
-            "c": 4,
-            "value": 5
-        },
-        {
-            "r": 6,
-            "c": 3,
-            "value": 6
-        },
-        {
-            "r": 6,
-            "c": 5,
-            "value": 7
-        },
-        {
-            "r": 8,
-            "c": 3,
-            "value": 3
-        },
-        {
-            "r": 8,
-            "c": 5,
-            "value": 8
-        }
-    ],
+    "fixedCells": [],
     "rules": [
         {
             "type": "Standard",
             "fields": {},
             "rules": []
+        },
+        {
+            "type": "Thermo",
+            "fields": {},
+            "rules": [
+                {
+                    "id": "1749643076979-5d4u",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 0
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749643079556-kqx7",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 1
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749643081926-rynj",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749643085839-ulo7",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "id": "1749643089254-tjl3",
+                    "fields": {
+                        "path": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 4
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 0,
+                                    "c": 5
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 6
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 1,
+                                    "c": 7
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
         },
         {
             "type": "Killer",
@@ -54,7 +134,51 @@
             },
             "rules": [
                 {
-                    "id": "1749643547704-8lql",
+                    "id": "1749643111255-xvdj",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 3,
+                                    "c": 1
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1749643115790-5ydr",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 0
+                                },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 4,
+                                    "c": 1
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1749643119045-bigz",
                     "fields": {
                         "region": {
                             "__type__": "Region",
@@ -64,93 +188,19 @@
                                     "__type__": "CellIdx",
                                     "r": 0,
                                     "c": 0
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 1
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 2
-                                }
-                            ]
-                        },
-                        "sum": 18
-                    }
-                },
-                {
-                    "id": "1749643553669-n0p1",
-                    "fields": {
-                        "region": {
-                            "__type__": "Region",
-                            "type": "cells",
-                            "items": [
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 3
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 4
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 5
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 6
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 7
-                                }
-                            ]
-                        },
-                        "sum": 18
-                    }
-                },
-                {
-                    "id": "1749643562807-yzcg",
-                    "fields": {
-                        "region": {
-                            "__type__": "Region",
-                            "type": "cells",
-                            "items": [
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 0,
-                                    "c": 8
                                 },
                                 {
                                     "__type__": "CellIdx",
                                     "r": 1,
-                                    "c": 8
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 2,
-                                    "c": 8
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 2,
-                                    "c": 7
+                                    "c": 0
                                 }
                             ]
                         },
-                        "sum": 28
+                        "sum": 10
                     }
                 },
                 {
-                    "id": "1749643569973-2rbv",
+                    "id": "1749643122296-607c",
                     "fields": {
                         "region": {
                             "__type__": "Region",
@@ -158,46 +208,21 @@
                             "items": [
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 2,
-                                    "c": 6
+                                    "r": 0,
+                                    "c": 1
                                 },
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 3,
-                                    "c": 6
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 4,
-                                    "c": 6
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 5,
-                                    "c": 6
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 5,
-                                    "c": 7
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 5,
-                                    "c": 8
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 6,
-                                    "c": 8
+                                    "r": 1,
+                                    "c": 1
                                 }
                             ]
                         },
-                        "sum": 28
+                        "sum": 10
                     }
                 },
                 {
-                    "id": "1749643587707-szqq",
+                    "id": "1749643124435-6tkq",
                     "fields": {
                         "region": {
                             "__type__": "Region",
@@ -205,36 +230,21 @@
                             "items": [
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 7,
-                                    "c": 6
+                                    "r": 5,
+                                    "c": 4
                                 },
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 8,
-                                    "c": 6
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 8,
-                                    "c": 7
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 8,
-                                    "c": 8
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 7,
-                                    "c": 8
+                                    "r": 5,
+                                    "c": 5
                                 }
                             ]
                         },
-                        "sum": 28
+                        "sum": 10
                     }
                 },
                 {
-                    "id": "1749643595936-6qry",
+                    "id": "1749643129889-17sg",
                     "fields": {
                         "region": {
                             "__type__": "Region",
@@ -243,20 +253,20 @@
                                 {
                                     "__type__": "CellIdx",
                                     "r": 3,
-                                    "c": 2
+                                    "c": 5
                                 },
                                 {
                                     "__type__": "CellIdx",
                                     "r": 4,
-                                    "c": 2
+                                    "c": 5
                                 }
                             ]
                         },
-                        "sum": 8
+                        "sum": 10
                     }
                 },
                 {
-                    "id": "1749643602677-25zs",
+                    "id": "1749643133445-f0jg",
                     "fields": {
                         "region": {
                             "__type__": "Region",
@@ -264,26 +274,21 @@
                             "items": [
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 5,
-                                    "c": 0
+                                    "r": 3,
+                                    "c": 7
                                 },
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 5,
-                                    "c": 1
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 5,
-                                    "c": 2
+                                    "r": 4,
+                                    "c": 7
                                 }
                             ]
                         },
-                        "sum": 8
+                        "sum": 10
                     }
                 },
                 {
-                    "id": "1749643608384-m7gd",
+                    "id": "1749643138651-0rzn",
                     "fields": {
                         "region": {
                             "__type__": "Region",
@@ -291,46 +296,48 @@
                             "items": [
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 6,
-                                    "c": 0
+                                    "r": 3,
+                                    "c": 8
                                 },
                                 {
                                     "__type__": "CellIdx",
-                                    "r": 7,
-                                    "c": 0
+                                    "r": 4,
+                                    "c": 8
                                 }
                             ]
                         },
-                        "sum": 8
+                        "sum": 10
                     }
                 },
                 {
-                    "id": "1749643613490-batt",
+                    "id": "1749643143746-xznd",
                     "fields": {
                         "region": {
                             "__type__": "Region",
                             "type": "cells",
                             "items": [
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 8,
-                                    "c": 0
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 8,
-                                    "c": 1
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 8,
-                                    "c": 2
-                                },
                                 {
                                     "__type__": "CellIdx",
                                     "r": 7,
                                     "c": 2
                                 },
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 8,
+                                    "c": 2
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1749643147688-ul6y",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
                                 {
                                     "__type__": "CellIdx",
                                     "r": 7,
@@ -340,59 +347,56 @@
                                     "__type__": "CellIdx",
                                     "r": 7,
                                     "c": 4
+                                }
+                            ]
+                        },
+                        "sum": 10
+                    }
+                },
+                {
+                    "id": "1749643151494-b9sz",
+                    "fields": {
+                        "region": {
+                            "__type__": "Region",
+                            "type": "cells",
+                            "items": [
+                                {
+                                    "__type__": "CellIdx",
+                                    "r": 6,
+                                    "c": 8
                                 },
                                 {
                                     "__type__": "CellIdx",
                                     "r": 7,
-                                    "c": 5
+                                    "c": 8
                                 }
                             ]
                         },
-                        "sum": 38
+                        "sum": 10
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Anti-Chess",
+            "fields": {},
+            "rules": [
+                {
+                    "label": "Anti-Knight",
+                    "fields": {
+                        "enabled": true,
+                        "region": null,
+                        "NumberCanRepeat": true,
+                        "sums": ""
                     }
                 },
                 {
-                    "id": "1749643674344-g5nk",
+                    "label": "Anti-King",
                     "fields": {
-                        "region": {
-                            "__type__": "Region",
-                            "type": "cells",
-                            "items": [
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 1,
-                                    "c": 0
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 2,
-                                    "c": 0
-                                }
-                            ]
-                        },
-                        "sum": 8
-                    }
-                },
-                {
-                    "id": "1749643681625-wu9b",
-                    "fields": {
-                        "region": {
-                            "__type__": "Region",
-                            "type": "cells",
-                            "items": [
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 2,
-                                    "c": 1
-                                },
-                                {
-                                    "__type__": "CellIdx",
-                                    "r": 2,
-                                    "c": 2
-                                }
-                            ]
-                        },
-                        "sum": 8
+                        "enabled": false,
+                        "region": null,
+                        "NumberCanRepeat": true,
+                        "sums": ""
                     }
                 }
             ]

@@ -1,7 +1,6 @@
 #include "rule_parity.h"
 #include "../board/board.h"
 
-
 namespace sudoku {
 
 bool RuleParity::number_changed(CellIdx pos) {

@@ -1,7 +1,6 @@
 #include "rule_thermo.h"
 #include "../board/board.h"
 
-
 namespace sudoku {
 
 bool RuleThermo::number_changed(CellIdx pos) {
