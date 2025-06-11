@@ -58,7 +58,7 @@
             "rules": []
         },
         {
-            "type": "Thermos",
+            "type": "Thermo",
             "fields": {},
             "rules": [
                 {
@@ -304,7 +304,7 @@
             ]
         },
         {
-            "type": "Magic Square",
+            "type": "Magic-Square",
             "fields": {},
             "rules": [
                 {

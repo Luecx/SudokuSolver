@@ -4,8 +4,8 @@ import { SelectionMode } from "../board/board_selectionEnums.js";
 
 export class NumberedRoomsHandler extends RuleTypeHandler {
     constructor(board) {
-        super("Numbered-Rooms", board);
-        this.tag = "Numbered Rooms";
+        super("Numbered Rooms", board);
+        this.tag = "Numbered-Rooms";
         this.can_create_rules = true;
     }
 
@@ -39,7 +39,7 @@ export class NumberedRoomsHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-    In <b>Numbered Rooms</b>, a clue is placed outside the grid and applies to a specific row or column. 
+    In <b>Numbered-Rooms</b>, a clue is placed outside the grid and applies to a specific row or column. 
     The <b>first digit</b> in the indicated direction determines a position N, and the <b>Nth cell</b> in that direction must contain the given clue digit.<br><br>
     For example, if the outside clue shows a 4 and the first digit in the direction is a 3, then the <b>3rd cell</b> must be a 4.
     `;

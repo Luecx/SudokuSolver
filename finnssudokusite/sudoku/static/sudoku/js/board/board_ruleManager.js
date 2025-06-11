@@ -74,7 +74,7 @@ export class RuleManager {
         return this.getAllHandlers()
             .filter(h => h.enabled)
             .map(handler => ({
-                type: handler.name,
+                type: handler.tag,
                 fields: { ...handler.fields }, // copy all global fields
                 rules: handler.rules.map(rule => ({ ...rule })) // copy full rule object
             }));

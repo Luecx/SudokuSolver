@@ -66,7 +66,7 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
     }
 
     getDescriptionPlayHTML() {
-        return ` In <b>Extra Regions</b> the regions must contain <b>all numbers</b> from 1 to 9 exactly <b>once</b>.`;
+        return ` In <b>Extra-Regions</b> the regions must contain <b>all numbers</b> from 1 to 9 exactly <b>once</b>.`;
     }
 
     render(rule, ctx) {

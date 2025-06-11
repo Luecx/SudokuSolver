@@ -7,7 +7,7 @@
             "rules": []
         },
         {
-            "type": "Magic Square",
+            "type": "Magic-Square",
             "fields": {},
             "rules": [
                 {

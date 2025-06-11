@@ -80,21 +80,36 @@
 }
 
 .badge-Extra-Regions {
-    background-color: #17a2b8; /* pastel pruple */
+    background-color: #8e44ad; /* amethyst purple */
     color: white;
 }
 
 .badge-Irregular-Regions {
-    background-color: #6f8ab7; /* shadow blue */
+    background-color: #3498db; /* bright blue */
     color: white;
 }
 
 .badge-Custom-Sum {
-    background-color: #e5d3bd; /* light beige */
+    background-color: #f39c12; /* orange amber */
+    color: white;
+}
+
+.badge-Diagonal-Sum {
+    background-color: #e67e22; /* carrot orange */
     color: white;
 }
 
 .badge-Dutch-Flat {
-    background-color: #aeaba8;
+    background-color: #34495e; /* wet asphalt */
+    color: white;
+}
+
+.badge-Wild-Apples {
+    background-color: #c0392b; /* pomegranate red */
+    color: white;
+}
+
+.badge-Numbered-Rooms {
+    background-color: #795548; /* brown */
     color: white;
 }

@@ -25,19 +25,19 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleXV>(this);
             } else if (type == "Chevron") {
                 handler = std::make_shared<RuleChevron>(this);
-            } else if (type == "Extra Regions" || type == "Extra-Regions") {
+            } else if (type == "Extra-Regions") {
                 handler = std::make_shared<RuleExtraRegions>(this);
-            } else if (type == "Killer" || type == "Custom Sum") {
+            } else if (type == "Killer" || type == "Custom-Sum") {
                 handler = std::make_shared<RuleKiller>(this);
             } else if (type == "Clone") {
                 handler = std::make_shared<RuleClone>(this);
-            } else if (type == "Irregular Regions" || type == "Irregular-Regions") {
+            } else if (type == "Irregular-Regions") {
                 handler = std::make_shared<RuleIrregular>(this);
-            } else if (type == "Magic Square") {
+            } else if (type == "Magic-Square") {
                 handler = std::make_shared<RuleMagic>(this);
             } else if (type == "Palindrome") {
                 handler = std::make_shared<RulePalindrome>(this);
-            } else if (type == "Thermo" || type == "Thermos") {
+            } else if (type == "Thermo") {
                 handler = std::make_shared<RuleThermo>(this);
             } else if (type == "Parity") {
                 handler = std::make_shared<RuleParity>(this);
@@ -53,13 +53,13 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleAntiChess>(this);
             } else if (type == "Sandwich") {
                 handler = std::make_shared<RuleSandwich>(this);
-            } else if (type == "Diagonal Sum") {
+            } else if (type == "Diagonal-Sum") {
                 handler = std::make_shared<RuleDiagonalSum>(this);
             } else if (type == "Dutch-Flat") {
                 handler = std::make_shared<RuleDutchFlat>(this);
             } else if (type == "Numbered-Rooms") {
                 handler = std::make_shared<RuleNumberedRooms>(this);
-            } else if (type == "Wild Apples") {
+            } else if (type == "Wild-Apples") {
                 handler = std::make_shared<RuleWildApples>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);

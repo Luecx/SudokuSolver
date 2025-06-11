@@ -7,7 +7,7 @@
             "rules": []
         },
         {
-            "type": "Diagonal Sum",
+            "type": "Diagonal-Sum",
             "fields": {},
             "rules": [
                 {
