@@ -115,16 +115,10 @@ bool RuleWildApples::apply_apple_candidates(Cell &a, Cell &b) const {
     const int N = board_->size();
     NumberSet allowed(N);
 
-    for (Number n = 1; n <= N; ++n) {
-        if (!a.candidates.test(n))
-            continue;
-
+    for (const auto n: a.candidates) {
         bool valid = false;
         // check if b has any valid candidates for this n
-        for (Number m = 1; m <= N; ++m) {
-            if (!b.candidates.test(m))
-                continue;
-
+        for (const auto m: b.candidates) {
             // must be non-consecutive and different parity
             if (std::abs(static_cast<int>(n) - static_cast<int>(m)) != 1 && (n % 2) != (m % 2)) {
                 valid = true;

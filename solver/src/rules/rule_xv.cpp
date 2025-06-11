@@ -15,18 +15,14 @@ bool RuleXV::candidates_changed() {
     for (const auto &edge: m_x_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
-
         changed |= enforce_sum(a, b, 10);
-        changed |= enforce_sum(b, a, 10);
     }
 
     // process V edges
     for (const auto &edge: m_v_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
-
         changed |= enforce_sum(a, b, 5);
-        changed |= enforce_sum(b, a, 5);
     }
 
     // if all symbols are given, enforce constraints on cells without symbols
@@ -119,6 +115,15 @@ bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {
         return false;
     }
 
+    if (b.is_solved() && !a.is_solved()) {
+        Number target = sum - b.value;
+        if (target >= 1 && target <= a.max_number) {
+            NumberSet allowed(a.max_number, target);
+            return a.only_allow_candidates(allowed);
+        }
+        return false;
+    }
+
     // case 2: both cells are unsolved
     if (!a.is_solved() && !b.is_solved()) {
         bool changed = false;
@@ -167,21 +172,13 @@ bool RuleXV::denforce_missing_symbols() const {
 }
 
 bool RuleXV::denforce_sum(Cell &a, Cell &b, int sum) const {
-    // case 1: a cell is solved, b cell isn't
+    // a cell is solved, b cell isn't
     if (a.is_solved() && !b.is_solved()) {
         int diff = sum - a.value;
         if (diff < 1 || diff > b.max_number)
             return false;
         return b.remove_candidate(diff);
     }
-    // case 2: b cell is solved a cell isn't
-    if (!a.is_solved() && b.is_solved()) {
-        int diff = sum - b.value;
-        if (diff < 1 || diff > a.max_number)
-            return false;
-        return a.remove_candidate(diff);
-    }
-    // case 3: both cells are unsolved/solved
     return false;
 }
 

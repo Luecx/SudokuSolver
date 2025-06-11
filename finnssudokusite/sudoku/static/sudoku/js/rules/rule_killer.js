@@ -51,6 +51,26 @@ export class KillerHandler extends RuleTypeHandler {
         if (cage_region.connectedRegions().length > 1) {
             warnings.push("Cage has more than 1 region");
         }
+
+        // check for overlapping cages
+        for (const otherRule of this.rules) {
+            const otherRegion = otherRule.fields?.region;
+            if (!otherRegion || otherRegion.size() === 0) continue; 
+            if (otherRule === rule) continue; // skip self
+
+            // check if any cell in current cage exists in other cage
+            const hasOverlap = [...cage_region.values()].some(cell => 
+                [...otherRegion.values()].some(otherCell => 
+                    cell.r === otherCell.r && cell.c === otherCell.c
+                )
+            );
+
+            if (hasOverlap) {
+                warnings.push("Cage overlaps with another cage");
+                break; // only show warning once
+            }
+        }
+
         return warnings;
     }
 
