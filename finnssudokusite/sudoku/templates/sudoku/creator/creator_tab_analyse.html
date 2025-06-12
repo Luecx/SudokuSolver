@@ -33,15 +33,15 @@
                     </button>
                     <div class="dropdown-menu p-3 keep-open" style="min-width: 240px;">
                         <label for="normal-depth-select" class="form-label d-flex align-items-center">
-                            Normal Depth
+							{% trans "Normal Depth" %}
                             <i class="fas fa-info-circle ms-2 text-muted" data-bs-toggle="tooltip" data-bs-placement="right"
                                title="Normal analysis performs a single backtracking search and stops after a certain number of nodes or when more than 32 solutions are found."></i>
                         </label>
                         <select id="normal-depth-select" class="form-select mb-2">
-                            <option value="1024">Shallow [1024]</option>
-                            <option value="16384">Medium [16384]</option>
-                            <option value="128000">Deep [128000]</option>
-                            <option value="1000000">Ultra [1000000]</option>
+                            <option value="1024">{% trans "Shallow" %} [1024]</option>
+                            <option value="16384">{% trans "Medium" %} [16384]</option>
+                            <option value="128000">{% trans "Deep" %} [128000]</option>
+                            <option value="1000000">{% trans "Ultra" %} [1000000]</option>
                         </select>
 
                         <label for="complete-depth-select" class="form-label d-flex align-items-center">
@@ -50,10 +50,10 @@
                                title="Complete analysis tries every number on every square. For each case, a backtracking search checks if a valid solution exists. This reveals which values are possible or impossible per cell. This performs many backtracking searches and takes longer."></i>
                         </label>
                         <select id="complete-depth-select" class="form-select">
-                            <option value="128">Minimal [128]</option>
-                            <option value="1024">Light [1024]</option>
-                            <option value="16384">Solid [16384]</option>
-                            <option value="128000">Thorough [128000]</option>
+                            <option value="128">{% trans "Minimal" %} [128]</option>
+                            <option value="1024">{% trans "Light" %} [1024]</option>
+                            <option value="16384">{% trans "Solid" %} [16384]</option>
+                            <option value="128000">{% trans "Thorough" %} [128000]</option>
                         </select>
                     </div>
                 </div>

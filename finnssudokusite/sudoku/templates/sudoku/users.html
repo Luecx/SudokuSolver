@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Users{% endblock %}
+{% block title %}{% trans "Users" %}{% endblock %}
 
 {% block extra_css %}
 {% endblock %}
@@ -11,16 +11,16 @@
 <h2 class="text-center title">{% trans "All Users" %}</h2>
 
 <form method="get" class="mb-4">
-    <label class="form-label fw-semibold">Search puzzles:</label>
+    <label class="form-label fw-semibold">{% trans "Search puzzles:" %}</label>
     <div class="input-group">
         <!-- Text input -->
-        <input type="text" name="q" class="form-control" placeholder="Search by puzzle name..." value="{{ query }}">
+        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by puzzle name...' %}" value="{{ query }}">
         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-            Tags
-            <span class="visually-hidden">Toggle Dropdown</span>
+			{% trans "Tags" %}...
+            <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
         </button>
         <!-- Submit button -->
-        <button class="btn btn-primary" type="submit">Search</button>
+        <button class="btn btn-primary" type="submit">{% trans "Search" %}</button>
     </div>
 </form>
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-02 00:01+0200\n"
+"POT-Creation-Date: 2025-06-12 09:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,173 +19,855 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
-#: sudoku/templates/sudoku/base.html:30
-msgid "Finn's Sudoku App"
-msgstr ""
 
-#: sudoku/templates/sudoku/base.html:40
-msgid "Sudoku Creator"
-msgstr ""
-
-#: sudoku/templates/sudoku/base.html:45
-msgid "Puzzles"
-msgstr ""
-
-#: sudoku/templates/sudoku/base.html:50
-msgid "Leaderboards"
-msgstr ""
-
-#: sudoku/templates/sudoku/base.html:55
+#: sudoku/templates/sudoku/base.html:47
+#: sudoku/templates/sudoku/game_selection.html:38
+#: sudoku/templates/sudoku/game_selection.html:65
+#: sudoku/templates/sudoku/game_selection.html:92
+#: sudoku/templates/sudoku/game_selection.html:119
+#: sudoku/templates/sudoku/game_selection.html:146
 msgid "Play"
 msgstr ""
 
-#: sudoku/templates/sudoku/base.html:80
+#: sudoku/templates/sudoku/base.html:52
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:28
+msgid "Puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:57
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:31
+msgid "Leaderboards"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:62
+#: sudoku/templates/sudoku/creator/creator.html:5
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:34
+msgid "Sudoku Creator"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:88
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:15
+#: sudoku/templates/sudoku/profile/profile_user.html:7
+msgid "Your profile"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:91
+msgid "Puzzles done"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:94
+msgid "Ongoing Puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:97
+msgid "Puzzles Created"
+msgstr ""
+
+#: sudoku/templates/sudoku/base.html:104
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:19
 msgid "Logout"
 msgstr ""
 
-#: sudoku/templates/sudoku/base.html:87
+#: sudoku/templates/sudoku/base.html:113
 msgid "Login"
 msgstr ""
 
-#: sudoku/templates/sudoku/creator/creator.html:21
+#: sudoku/templates/sudoku/creator/creator.html:28
+msgid "Numbers"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator.html:33
+#: sudoku/templates/sudoku/game/game_offcanvas_rules.html:4
+msgid "Rules"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator.html:38
+msgid "Analysis"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator.html:43
+msgid "Publish"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:36
+msgid "Normal Depth"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:41
+msgid "Shallow"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:42
+#: sudoku/templates/sudoku/game_selection.html:45
+msgid "Medium"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:43
+msgid "Deep"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:44
+msgid "Ultra"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:53
+msgid "Minimal"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:54
+msgid "Light"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:55
+msgid "Solid"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_analyse.html:56
+msgid "Thorough"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_create.html:7
 msgid "Create Your Sudoku"
 msgstr ""
 
-#: sudoku/templates/sudoku/index.html:42
+#: sudoku/templates/sudoku/creator/creator_tab_create.html:10
+msgid "Start typing..."
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:15
+msgid "Name Provided"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:19
+msgid "Unique Solution"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:23
+msgid "Unique Puzzle"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:28
+msgid "Check Uniqueness"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:34
+msgid "Save Sudoku"
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:41
+msgid "Uploading Sudoku..."
+msgstr ""
+
+#: sudoku/templates/sudoku/creator/creator_tab_submit.html:45
+msgid "Preparing..."
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_completion.html:10
+msgid "Sudoku completed"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_completion.html:11
+#: sudoku/templates/sudoku/index.html:146
+#: sudoku/templates/sudoku/index.html:309
+msgid "Close"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_completion.html:23
+msgid "Finish"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:7
+msgid "Design & Settings"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:14
+msgid "Appearance"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:16
+msgid "Choose Background"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:18
+msgid "Classic"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:19
+msgid "Cement"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:20
+msgid "Glow"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:21
+msgid "Stone"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:22
+msgid "Wood"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:26
+msgid "Transparency"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:33
+msgid "Input"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:35
+msgid " Rotate number pad"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:41
+msgid "Fontsize"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:48
+msgid "Highlights"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:50
+msgid "Highlight Row"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:56
+msgid "Highlight Column"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:62
+msgid "Highlight Block"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:68
+msgid "Highlight Numbers"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:74
+msgid "Highlight Candidates"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:83
+msgid "Candidates"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_settings.html:85
+msgid "Auto-remove on input"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_start.html:8
+msgid "Let's go!"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_modal_validation.html:7
+msgid "Puzzle Check"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:25
+msgid "Home"
+msgstr ""
+
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:37
+msgid "About us"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:5
+msgid "Choose"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:18
+msgid "Easy"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:72
+msgid "Hard"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:99
+msgid "Expert"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:126
+msgid "Extreme"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:151
+msgid "Refresh"
+msgstr ""
+
+#: sudoku/templates/sudoku/game_selection.html:152
+msgid "Choose from Puzzle List"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:7
+msgid "Sudoku"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:39
 msgid "FINN'S SUDOKU APP"
 msgstr ""
 
-#: sudoku/templates/sudoku/index.html:47
+#: sudoku/templates/sudoku/index.html:44
 msgid "CHOOSE A PUZZLE TO PLAY"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:12
-msgid "For a detailed explanation of how the rating is computed, "
+#: sudoku/templates/sudoku/index.html:47
+msgid "LOGIN"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:13
-msgid "click here"
+#: sudoku/templates/sudoku/index.html:53
+msgid "ABOUT"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:22
+#: sudoku/templates/sudoku/index.html:96
+msgid "CONTACT"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:97
+msgid "IMPRINT"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:98
+msgid "HISTORY"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:109
+msgid "Send Finn a message"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:120
+msgid "Your Name"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:124
+msgid "Your E-Mail"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:130
+msgid "Message"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:133
+msgid "Send"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:144
+msgid "Message sent"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:145
+msgid "Thank you for your message! We will get back to you soon."
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:5
+msgid "Sudoku Leaderboard"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:73
+msgid "Leaderboard"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:101
+msgid "Search by username..."
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:105
+#: sudoku/templates/sudoku/puzzles.html:45
+#: sudoku/templates/sudoku/users.html:23
+msgid "Search"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:111
+#: sudoku/templates/sudoku/puzzles.html:51
+msgid "Reset"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:124
 msgid "Rank"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:23
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:130
 msgid "User"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:24
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:136
 msgid "Total Score"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:25
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:142
 msgid "Puzzles Solved"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:47
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:169
+msgid "No results yet."
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:178
+#, python-format
+msgid ""
+"\n"
+"\t\t\tFor a detailed explanation of how the rating is computed, "
+"%(link)sclick here</a>.\n"
+"\t\t\t"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard.html:214
 msgid "How Is Your Rating Calculated?"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:52
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:5
 msgid ""
 "\n"
-"            The leaderboard uses the <strong>Sudoku&nbsp;Power&nbsp;Index "
-"(SPI)</strong> &mdash; a 0‑100 score that rewards\n"
-"            <em>fast</em> solves on <em>hard</em> puzzles, values "
-"<em>recency</em>, and gives a gentle boost for\n"
-"            tackling lots of puzzles.\n"
-"            "
+"        The leaderboard now uses the\n"
+"        <strong>Sudoku Power Index (SPI)</strong> — a score from 0 to 100 "
+"that rewards\n"
+"        <em>fast</em> solves on <em>difficult</em> puzzles and consistent "
+"performance as you complete more puzzles.\n"
+"        "
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:63
-msgid "Per‑puzzle points"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:14
+msgid "Per‑puzzle contribution"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:65
-msgid "Each time you solve a puzzle you earn."
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:16
+msgid ""
+"\n"
+"        Each time you solve a puzzle, you earn a score \\( S_{u,s} \\) that "
+"reflects both the difficulty of the puzzle and how fast you solved it:\n"
+"        "
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:69
-msgid "Recency"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:31
+msgid ""
+"\n"
+"        Here, \\( \\bar{t}_s \\) is the average time (in seconds) to solve "
+"puzzle \\( s \\), and \\( t_{u,s} \\) is your time. The logarithmic term "
+"models puzzle difficulty (with diminishing returns), while the clamped time "
+"ratio rewards speed within bounds.\n"
+"        "
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:71
-msgid "60‑day half‑life"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:39
+msgid "Symbol"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:73
-msgid "Difficulty"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:40
+msgid "Meaning"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:75
-msgid "where"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:46
+msgid "Average solve time for puzzle \\(s\\) (in seconds)"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:77
-msgid "Speed bonus"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:50
+msgid "Your time to solve puzzle \\(s\\) (in seconds)"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:79
-msgid "Notation:"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:55
+msgid "Weight examples (based on avg. time in seconds)"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:80
-msgid "total solves"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:59
+msgid "Average time (s)"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:81
-msgid "attempts on the puzzle"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:77
+msgid ""
+"The weight grows faster for harder puzzles, with base-1.2 logarithmic "
+"scaling from 20 seconds upward."
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:82
-msgid "average solve time"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:82
+msgid "User score"
 msgstr ""
 
-#: sudoku/templates/sudoku/leaderboard.html:83
-msgid "your time"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:84
+msgid ""
+"\n"
+"        Your score \\( R_u \\) is the <strong>sum</strong> of your scores "
+"from the\n"
+"        <strong>last 100 puzzles</strong> you’ve completed. If you’ve solved "
+"fewer, only those count.\n"
+"        "
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:8
-msgid "All Published Sudoku Puzzles"
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:95
+msgid ""
+"\n"
+"        This setup rewards both quantity and quality: you must solve many "
+"puzzles — and solve them well — to reach the top.\n"
+"        "
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:14
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:102
+msgid "Leaderboard score"
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:104
+msgid ""
+"\n"
+"        Finally, all user scores are normalized to generate a clean "
+"leaderboard from 0 to 100:\n"
+"        "
+msgstr ""
+
+#: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:114
+msgid ""
+"\n"
+"        The closer your performance is to the best in the community, the "
+"closer your SPI will be to 100.\n"
+"        "
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_invalid.html:5
+msgid "Invalid Link"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_invalid.html:6
+msgid "That activation link is invalid or expired."
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_sent.html:11
+msgid "Activation Required"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_sent.html:13
+msgid ""
+"No emails are being sent at the moment. Please ask an administrator to "
+"activate your account."
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_success.html:5
+msgid "Account Activated!"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_success.html:6
+msgid "Your account is now active. You can "
+msgstr ""
+
+#: sudoku/templates/sudoku/login/activation_success.html:6
+#: sudoku/templates/sudoku/password/password_reset_complete.html:7
+msgid "log in"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/login.html:35
+#: sudoku/templates/sudoku/login/login_modal.html:39
+msgid "Forgot your password?"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/login.html:51
+#: sudoku/templates/sudoku/login/login_modal.html:52
+msgid "No account yet? Register now"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/login_modal.html:22
+msgid "Username or Email"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/login_modal.html:36
+msgid "Log In"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/login_modal.html:46
+msgid "Sign in with..."
+msgstr ""
+
+#: sudoku/templates/sudoku/login/register.html:6
+msgid "Register"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/register.html:29
+msgid "Create Account"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/register.html:33
+msgid "Already have an account?"
+msgstr ""
+
+#: sudoku/templates/sudoku/login/register.html:34
+msgid "Log in"
+msgstr ""
+
+#: sudoku/templates/sudoku/modal_language_picker.html:83
+msgid "Choose Your Preferred Language"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset.html:6
+msgid "Reset Your Password"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset.html:24
+msgid "Send reset link"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset.html:28
+msgid "Back to Login"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_complete.html:6
+msgid "Password Reset Complete"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_complete.html:7
+msgid "You can now"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_complete.html:7
+msgid "with your new password."
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_confirm.html:11
+msgid "Set a New Password"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_confirm.html:31
+msgid "Change Password"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_done.html:3
+msgid "Check your inbox!"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_done.html:4
+msgid "We've emailed you instructions for setting your password."
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_email.html:3
+msgid "Hello,"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_email.html:4
+msgid ""
+"You requested a password reset. Click the link below to set a new password:"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_email.html:5
+msgid "Reset your password"
+msgstr ""
+
+#: sudoku/templates/sudoku/password/password_reset_email.html:6
+msgid "If you didn't request this, just ignore this email."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_detail.html:21
+msgid "Last Login:"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_detail.html:22
+msgid "Solved puzzles :"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_detail.html:28
+msgid "Completed puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_detail.html:31
+msgid "Created puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_created.html:15
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:15
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:14
+#: sudoku/templates/sudoku/puzzles.html:85
+#: sudoku/templates/sudoku/users.html:33
 msgid "Name"
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:15
-msgid "Creator"
+#: sudoku/templates/sudoku/profile/profile_puzzles_created.html:16
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:17
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:16
+msgid "Solves"
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:16
-msgid "Solved / Attempts"
-msgstr ""
-
-#: sudoku/templates/sudoku/puzzles.html:17
+#: sudoku/templates/sudoku/profile/profile_puzzles_created.html:17
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:17
+#: sudoku/templates/sudoku/puzzles.html:58
+#: sudoku/templates/sudoku/puzzles.html:109
+#: sudoku/templates/sudoku/users.html:36
 msgid "Rating"
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:18
+#: sudoku/templates/sudoku/profile/profile_puzzles_created.html:18
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:20
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:18
+#: sudoku/templates/sudoku/puzzles.html:117
+#: sudoku/templates/sudoku/users.html:37
 msgid "Avg Time"
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:21
+#: sudoku/templates/sudoku/profile/profile_puzzles_created.html:69
+msgid "You haven’t created any puzzles yet."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_created.html:71
+msgid "hasn’t created any puzzles yet."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:16
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:15
+#: sudoku/templates/sudoku/puzzles.html:93
+#: sudoku/templates/sudoku/users.html:34
+msgid "Creator"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:18
+msgid "Your Rating"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:18
+msgid "Their Rating"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:21
+msgid "Completion Time"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:22
+msgid "Date Completed"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:111
+msgid "You haven’t finished any puzzles yet."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_done.html:113
+msgid "hasn’t finished any puzzles yet."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:19
+msgid "Your Time"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:81
+msgid "You don’t have any ongoing puzzles."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:83
+msgid "doesn’t have any ongoing puzzles."
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_user.html:11
+msgid "User name"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_user.html:31
+#: sudoku/templates/sudoku/profile/profile_user.html:40
+#: sudoku/templates/sudoku/profile/profile_user.html:79
+msgid "Change password"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/profile_user.html:41
+msgid "Schließen"
+msgstr ""
+
+#: sudoku/templates/sudoku/profile/search_filter.html:4
+#: sudoku/templates/sudoku/users.html:14
+msgid "Search puzzles:"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:6
+msgid "Sudoku Puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:35
+msgid "All Published Sudoku Puzzles"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:40
+#: sudoku/templates/sudoku/users.html:17
+msgid "Search by puzzle name..."
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:63
+#: sudoku/templates/sudoku/puzzles.html:123
+#: sudoku/templates/sudoku/users.html:19 sudoku/templates/sudoku/users.html:38
 msgid "Tags"
 msgstr ""
 
-#: sudoku/templates/sudoku/puzzles.html:74
+#: sudoku/templates/sudoku/puzzles.html:101
+#: sudoku/templates/sudoku/users.html:35
+msgid "Solved"
+msgstr ""
+
+#: sudoku/templates/sudoku/puzzles.html:184
+#: sudoku/templates/sudoku/users.html:104
 msgid "No puzzles available."
 msgstr ""
 
-#: sudoku_site/settings.py:86
+#: sudoku/templates/sudoku/users.html:5
+msgid "Users"
+msgstr ""
+
+#: sudoku/templates/sudoku/users.html:11
+msgid "All Users"
+msgstr ""
+
+#: sudoku/templates/sudoku/users.html:20
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: sudoku/views/contact.py:47
+msgid "Thank you for your message"
+msgstr ""
+
+#: sudoku/views/contact.py:52
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Thank you for your message to SudokuSphere.\n"
+"We will get back to you as soon as possible.\n"
+"\n"
+"Best regards,\n"
+"Finn and the SudokuSphere Team"
+msgstr ""
+
+#: sudoku/views/contact.py:60
+#, python-format
+msgid ""
+"\n"
+"            <p style=\"padding:2rem\"></p>\n"
+"            <div style=\"\n"
+"                width: 100%%;\n"
+"                max-width: 600px;\n"
+"                min-width: 60%%;\n"
+"                box-sizing: border-box;\n"
+"                padding: 1rem 4vw 4rem;\n"
+"                margin: auto;\n"
+"                border: 1px solid #cccccc;\n"
+"                border-radius: 3rem;\n"
+"                background-color: white;\n"
+"                text-align: center;\n"
+"            \">\n"
+"                <img src=\"https://ndb.one/logo.png\" alt=\"Logo\" "
+"width=\"80\" height=\"80\" style=\"display: block; margin: 0 auto;\" />\n"
+"                <p>SUDOKUSPHERE.COM</p>\n"
+"                <p style=\"text-align: left; margin-top: 6vh;\">\n"
+"                    Hello %(name)s,<br><br>\n"
+"                    Thank you for your message to SudokuSphere.<br>\n"
+"                    We will get back to you as soon as possible.<br><br>\n"
+"                    Best regards,<br>\n"
+"                    Finn and the SudokuSphere Team\n"
+"                </p>\n"
+"            </div>\n"
+"            <p style=\"padding:5rem\"></p>\n"
+"            "
+msgstr ""
+
+#: sudoku/views/contact.py:92
+msgid "Message sent successfully."
+msgstr ""
+
+#: sudoku_site/settings.py:85
 msgid "English"
 msgstr ""
 
-#: sudoku_site/settings.py:87
+#: sudoku_site/settings.py:86
 msgid "Deutsch"
 msgstr ""
 
-#: sudoku_site/settings.py:88
+#: sudoku_site/settings.py:87
 msgid "日本語"
 msgstr ""
