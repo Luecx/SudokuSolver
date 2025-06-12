@@ -34,6 +34,8 @@ namespace sudoku {
  * All other configurations are invalid and will throw.
  */
 struct ORCIdx {
+    static constexpr const char *region_type_name = "oriented_rowcol";
+
     Row row; ///< Row index (≥ 0 for row, < 0 otherwise)
     Col col; ///< Column index (≥ 0 for column, < 0 otherwise)
     bool reversed; ///< Direction of the row or column
@@ -84,6 +86,15 @@ struct ORCIdx {
             rev = node["reversed"].get<bool>();
 
         return ORCIdx(r, c, rev);
+    }
+
+    JSON to_json() const {
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "ORCIdx";
+        node["row"] = (row >= 0) ? static_cast<double>(row) : JSON();
+        node["col"] = (col >= 0) ? static_cast<double>(col) : JSON();
+        node["reversed"] = reversed;
+        return node;
     }
 
     friend std::ostream &operator<<(std::ostream &os, const ORCIdx &idx) {

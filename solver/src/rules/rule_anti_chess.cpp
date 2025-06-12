@@ -1,5 +1,8 @@
-#include "rule_anti_chess.h"
+#include <random>
+#include <set>
+
 #include "../board/board.h"
+#include "rule_anti_chess.h"
 
 namespace sudoku {
 
@@ -39,7 +42,7 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
         const attacks &pattern = (pair.label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
         for (const auto &attack: pattern) {
             CellIdx neighbor_pos = {pos.r + attack.first, pos.c + attack.second};
-            if (!in_bounds(neighbor_pos))
+            if (!rule_utils::pos_in_bounds(board_, neighbor_pos))
                 continue; // skip out of bounds neighbors
 
             if (pair.region.size() > 0 && !pair.region.has(neighbor_pos))
@@ -145,7 +148,7 @@ bool RuleAntiChess::valid() {
 
                 for (const auto &attack: move_pattern) {
                     CellIdx neighbor_pos{r + attack.first, c + attack.second};
-                    if (!in_bounds(neighbor_pos))
+                    if (!rule_utils::pos_in_bounds(board_, neighbor_pos))
                         continue;
 
                     if (region.size() > 0 && !region.has(neighbor_pos))
@@ -180,7 +183,7 @@ void RuleAntiChess::update_impact(ImpactMap &map) {
         for (const auto &pos: region.items()) {
             for (const auto &attack: move_pattern) {
                 CellIdx neighbor_pos{pos.r + attack.first, pos.c + attack.second};
-                if (!in_bounds(neighbor_pos))
+                if (!rule_utils::pos_in_bounds(board_, neighbor_pos))
                     continue;
                 map.increment(neighbor_pos);
             }
@@ -226,11 +229,107 @@ void RuleAntiChess::from_json(JSON &json) {
     }
 }
 
-// private member functions
+JSON RuleAntiChess::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Anti-Chess";
+    json["fields"] = JSON(JSON::object{});
 
-bool RuleAntiChess::in_bounds(const CellIdx &pos) {
-    return pos.r >= 0 && pos.r < board_->size() && pos.c >= 0 && pos.c < board_->size();
+    JSON::array rules;
+
+    for (int i = 0; i < 2; i++) {
+        const auto &pair = m_pair[i];
+
+        JSON rule = JSON(JSON::object{});
+        rule["label"] = pair.label;
+
+        JSON fields = JSON(JSON::object{});
+        fields["enabled"] = pair.enabled;
+        fields["NumberCanRepeat"] = pair.allow_repeats;
+        fields["region"] = pair.region.to_json();
+
+        // convert forbidden sums to comma-separated string
+        std::string sums_str;
+        for (size_t j = 0; j < pair.forbidden_sums.size(); j++) {
+            if (j > 0)
+                sums_str += ", ";
+            sums_str += std::to_string(pair.forbidden_sums[j]);
+        }
+        fields["sums"] = sums_str;
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+
+    return json;
 }
+
+void RuleAntiChess::init_randomly() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+
+    // reset
+    for (int i = 0; i < 2; i++) {
+        m_pair[i].label = (i == 0) ? "Anti-Knight" : "Anti-King";
+        m_pair[i].enabled = false;
+        m_pair[i].allow_repeats = false;
+        m_pair[i].region.clear();
+        m_pair[i].forbidden_sums.clear();
+    }
+
+    const int board_size = board_->size();
+    const int region_size_max = std::min(REGION_SIZE_ABS_MAX, board_size * board_size / REGION_SIZE_MAX_FACTOR);
+
+    std::uniform_int_distribution<> cell_dist(0, board_size - 1);
+    std::uniform_int_distribution<> region_size_dist(REGION_SIZE_MIN, region_size_max);
+
+    // generate random regions for each pair
+    for (int i = 0; i < 2; i++) {
+        if (dis(gen) <= REGION_EXIST_CHANCE) {
+            int region_size = region_size_dist(gen);
+            m_pair[i].region = rule_utils::generate_random_region(board_, region_size, gen);
+        }
+    }
+
+    // decide which regions are enabled
+    double random_value = dis(gen);
+    bool both_regions_exist = m_pair[0].region.size() > 0 && m_pair[1].region.size() > 0;
+    if (both_regions_exist) {
+        if (random_value < (1.0 - BOTH_REGIONS_ENABLED_CHANCE)) {
+            int selected = (dis(gen) < 0.5) ? 0 : 1;
+            m_pair[selected].enabled = true;
+        } else {
+            m_pair[0].enabled = true;
+            m_pair[1].enabled = true;
+        }
+    } else {
+        if (random_value < BOTH_REGIONS_ENABLED_CHANCE) {
+            int selected = (dis(gen) < 0.5) ? 0 : 1;
+            m_pair[selected].enabled = true;
+        } else {
+            m_pair[0].enabled = true;
+            m_pair[1].enabled = true;
+        }
+    }
+
+    // generate random forbidden sums for enabled pairs with regions
+    std::uniform_int_distribution<> sum_count_dist(FORBIDDEN_SUMS_MIN, FORBIDDEN_SUMS_MAX);
+    std::uniform_int_distribution<> sum_value_dist(2, board_size * 2);
+
+    for (int i = 0; i < 2; i++) {
+        if (m_pair[i].enabled && m_pair[i].region.size() > 0) {
+            int num_sums = sum_count_dist(gen);
+            std::set<int> unique_sums;
+            for (int j = 0; j < num_sums; j++)
+                unique_sums.insert(sum_value_dist(gen));
+            m_pair[i].forbidden_sums.assign(unique_sums.begin(), unique_sums.end());
+        }
+    }
+}
+
+// private member functions
 
 bool RuleAntiChess::is_cage_valid(const Region<CellIdx> &region, bool allow_repeats) {
     if (allow_repeats || region.size() == 0)

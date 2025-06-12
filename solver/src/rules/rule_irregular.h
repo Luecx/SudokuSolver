@@ -5,7 +5,7 @@
 #include "_rule_handler.h"
 
 namespace sudoku {
-    
+
 class RuleIrregular : public RuleHandler {
 public:
     explicit RuleIrregular(Board *board) : RuleHandler(board) {}
@@ -14,7 +14,11 @@ public:
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override {};
+
     void from_json(JSON &json) override;
+    JSON to_json() const override { return ""; }
+
+    void init_randomly() override {}
 
 private:
     std::vector<Region<CellIdx>> m_regions;

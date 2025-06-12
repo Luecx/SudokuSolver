@@ -3,54 +3,6 @@
 
 namespace sudoku {
 
-// cage helper function
-
-int maxSum(int small, int N, int maxC, bool number_can_repeat_) {
-    if (number_can_repeat_) {
-        return small + (N - 1) * maxC;
-    } else {
-        int total = small;
-        int val = maxC;
-        for (int i = 0; i < N - 1; ++i)
-            total += val--;
-        return total;
-    }
-}
-
-int minSum(int large, int N, int minC, bool number_can_repeat_) {
-    if (number_can_repeat_) {
-        return large + (N - 1) * minC;
-    } else {
-        int total = large;
-        int val = minC;
-        for (int i = 0; i < N - 1; ++i)
-            total += val++;
-        return total;
-    }
-}
-
-int lowerBound(int N, int sum, int maxC, int size, bool number_can_repeat_) {
-    for (int low = 1; low <= maxC - (number_can_repeat_ ? 0 : N - 1); ++low)
-        if (maxSum(low, N, maxC, number_can_repeat_) >= sum)
-            return low;
-    return size + 1;
-}
-
-int upperBound(int N, int sum, int minC, int size, bool number_can_repeat_) {
-    for (int high = size; high >= minC + (number_can_repeat_ ? 0 : N - 1); --high)
-        if (minSum(high, N, minC, number_can_repeat_) <= sum)
-            return high;
-    return 0;
-}
-
-std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_) {
-    int min = lowerBound(N, sum, maxC, size, number_can_repeat_);
-    int max = upperBound(N, sum, minC, size, number_can_repeat_);
-    return {min, max};
-}
-
-// RuleKiller methods
-
 bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
     for (const auto &pair: m_cage_pair) {
@@ -162,8 +114,8 @@ bool RuleKiller::check_cage(KillerPair &pair) {
     if (m_remaining_cells.size() == 0)
         return false;
 
-    auto [min, max] = getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_cand, max_cand, board_size,
-                                    m_number_can_repeat);
+    auto [min, max] = rule_utils::getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_cand, max_cand,
+                                                board_size, m_number_can_repeat);
 
     bool changed = false;
     for (const auto &item: m_remaining_cells) {

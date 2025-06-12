@@ -6,8 +6,6 @@
 
 namespace sudoku {
 
-std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_ = true);
-
 struct KillerPair {
     Region<CellIdx> region;
     int sum;
@@ -21,7 +19,11 @@ public:
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override {};
+
     void from_json(JSON &json) override;
+    JSON to_json() const override { return ""; }
+
+    void init_randomly() override {}
 
 private:
     bool m_number_can_repeat = false;

@@ -40,6 +40,8 @@ enum class DiagonalType {
  * For a board of size N, valid diagonals may range from index = -(N-1) to index = N-1.
  */
 struct DiagonalIdx {
+    static constexpr const char *region_type_name = "diagonal";
+
     DiagonalType type; ///< Type of the diagonal (MAIN or ANTI)
     int index; ///< Shift index from the main diagonal
 
@@ -105,6 +107,14 @@ struct DiagonalIdx {
         DiagonalType type = (type_str == "main") ? DiagonalType::MAIN : DiagonalType::ANTI;
 
         return {type, static_cast<int>(node["index"].get<double>())};
+    }
+
+    JSON to_json() const {
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "DiagonalIdx";
+        node["type"] = (type == DiagonalType::MAIN) ? "main" : "anti";
+        node["index"] = static_cast<double>(index);
+        return node;
     }
 
     /**

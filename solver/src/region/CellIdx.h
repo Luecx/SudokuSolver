@@ -27,6 +27,8 @@ namespace sudoku {
  * Provides basic comparison, stream output, and JSON parsing.
  */
 struct CellIdx {
+    static constexpr const char *region_type_name = "cells";
+
     Row r; ///< Zero-based row index
     Col c; ///< Zero-based column index
 
@@ -73,6 +75,14 @@ struct CellIdx {
             throw std::runtime_error("Invalid __type__ for CellIdx: expected 'CellIdx', got '" + type_tag + "'");
 
         return {static_cast<Row>(node["r"].get<double>()), static_cast<Col>(node["c"].get<double>())};
+    }
+
+    JSON to_json() const {
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "CellIdx";
+        node["r"] = static_cast<double>(r);
+        node["c"] = static_cast<double>(c);
+        return node;
     }
 
     /**

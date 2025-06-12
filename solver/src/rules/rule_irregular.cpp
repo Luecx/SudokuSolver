@@ -1,6 +1,6 @@
 #include "rule_irregular.h"
-#include "rule_standard.h"
 #include "../board/board.h"
+#include "rule_standard.h"
 
 namespace sudoku {
 
@@ -36,12 +36,12 @@ bool RuleIrregular::candidates_changed() {
 
     const int board_size = board_->size();
     for (int i = 0; i < board_size; i++) {
-        changed |= hidden_singles(board_, board_->get_row(i));
-        changed |= hidden_singles(board_, board_->get_col(i));
+        changed |= rule_utils::hidden_singles(board_, board_->get_row(i));
+        changed |= rule_utils::hidden_singles(board_, board_->get_col(i));
     }
 
     for (auto &unit: m_irregular_units)
-        changed |= hidden_singles(board_, unit);
+        changed |= rule_utils::hidden_singles(board_, unit);
 
     return changed;
 }
@@ -49,14 +49,14 @@ bool RuleIrregular::candidates_changed() {
 bool RuleIrregular::valid() {
     const int board_size = board_->size();
     for (int i = 0; i < board_size; i++) {
-        if (!is_group_valid(board_->get_row(i)))
+        if (!rule_utils::is_group_valid(board_->get_row(i)))
             return false;
-        if (!is_group_valid(board_->get_col(i)))
+        if (!rule_utils::is_group_valid(board_->get_col(i)))
             return false;
     }
 
     for (const auto &unit: m_irregular_units)
-        if (!is_group_valid(unit))
+        if (!rule_utils::is_group_valid(unit))
             return false;
 
     return true;

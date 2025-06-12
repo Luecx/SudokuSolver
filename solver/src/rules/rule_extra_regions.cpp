@@ -1,6 +1,6 @@
 #include "rule_extra_regions.h"
-#include "rule_standard.h"
 #include "../board/board.h"
+#include "rule_standard.h"
 
 namespace sudoku {
 
@@ -25,7 +25,7 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
 bool RuleExtraRegions::candidates_changed() {
     bool changed = false;
     for (auto &unit: m_units)
-        changed |= hidden_singles(board_, unit);
+        changed |= rule_utils::hidden_singles(board_, unit);
     return changed;
 }
 

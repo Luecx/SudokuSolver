@@ -1,6 +1,6 @@
 #include "rule_diagonal_sum.h"
-#include "rule_killer.h"
 #include "../board/board.h"
+#include "rule_killer.h"
 
 namespace sudoku {
 
@@ -121,7 +121,8 @@ bool RuleDiagonalSum::check_diagonal(DiagSumPair &pair) {
         reamining_size++;
     }
 
-    auto [min, max] = getSoftBounds(reamining_size, pair.sum - sum, min_candidate, max_candidate, board_size);
+    auto [min, max] =
+            rule_utils::getSoftBounds(reamining_size, pair.sum - sum, min_candidate, max_candidate, board_size);
 
     bool changed = false;
     for (const auto &pos: cells_pos) {

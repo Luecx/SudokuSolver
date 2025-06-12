@@ -19,9 +19,9 @@
 #include <cstdlib> // for std::strtod
 #include <exception>
 #include <iostream>
+#include <map>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -30,7 +30,7 @@ class JSON {
 public:
     // --- Type Aliases ---
     using array = std::vector<JSON>;
-    using object = std::unordered_map<std::string, JSON>;
+    using object = std::map<std::string, JSON>;
     using value_t = std::variant<std::nullptr_t, bool, double, std::string, array, object>;
 
 private:

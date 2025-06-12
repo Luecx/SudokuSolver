@@ -230,6 +230,26 @@ public:
         return out;
     }
 
+    JSON to_json() const {
+        if (items_.empty())
+            return JSON();
+
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "Region";
+
+        if constexpr (requires { IdxT::region_type_name; })
+            node["type"] = IdxT::region_type_name;
+        else
+            node["type"] = "unknown";
+
+        JSON::array items_json = JSON::array{};
+        for (const auto &idx: items_)
+            items_json.push_back(idx.to_json());
+
+        node["items"] = items_json;
+        return node;
+    }
+
     static Region all(const int board_size) {
         Region<IdxT> all_;
 

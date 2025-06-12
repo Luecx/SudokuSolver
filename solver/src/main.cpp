@@ -11,6 +11,8 @@
 #include "json/json.h"
 #include "solver_stats.h"
 
+#include "datagen.h"
+
 extern "C" {
 void solve(const char *json, int max_solutions, int max_nodes);
 void solveComplete(const char *json, int unused, int max_nodes);
@@ -82,6 +84,15 @@ int main(int argc, char *argv[]) {
         }
 
         bench::bench(argv[2], 17, 128000, false);
+        return 0;
+    } else if (command == "datagen") {
+        if (argc != 3) {
+            std::cerr << "Error: 'datagen' requires <json_path>\n";
+            print_help();
+            return 1;
+        }
+
+        datagen::generate_random_puzzle(argv[2], 17, 16384, 1000);
         return 0;
     }
 

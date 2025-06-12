@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cctype>
+#include <fstream>
 #include <stdexcept>
 
 #include "../rules/include.h"
@@ -101,6 +102,48 @@ void Board::from_json(JSON &json) {
 
     // Optionally update impact map right away
     update_impact_map();
+}
+
+void Board::to_json(const std::string file) const {
+    JSON json = JSON(JSON::object{});
+
+    // create fixedCells array
+    JSON::array fixed_cells;
+    for (Row r = 0; r < board_size_; ++r) {
+        for (Col c = 0; c < board_size_; ++c) {
+            const Cell &cell = grid_[r][c];
+            if (cell.value != 0) {
+                JSON cell_json = JSON(JSON::object{});
+                cell_json["r"] = static_cast<double>(r);
+                cell_json["c"] = static_cast<double>(c);
+                cell_json["value"] = static_cast<double>(cell.value);
+                fixed_cells.push_back(cell_json);
+            }
+        }
+    }
+    json["fixedCells"] = fixed_cells;
+
+    // create rules array
+    JSON::array rules;
+    for (const auto &handler: handlers_) {
+        try {
+            rules.push_back(handler->to_json());
+        } catch (const std::exception &e) {
+            std::cerr << "Error parsing rule JSON: " << e.what() << std::endl;
+            std::cerr << "JSON string was: " << handler->to_json() << std::endl;
+            throw;
+        }
+    }
+    json["rules"] = rules;
+
+    // write to file
+    std::ofstream file_stream(file);
+    if (file_stream.is_open()) {
+        file_stream << json;
+        file_stream.close();
+    } else {
+        throw std::runtime_error("Could not open file for writing: " + file);
+    }
 }
 
 } // namespace sudoku

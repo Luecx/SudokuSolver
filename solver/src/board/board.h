@@ -23,7 +23,6 @@
 #include <unordered_map>
 #include <vector>
 
-
 #include "../cell.h"
 #include "../impact_map.h"
 #include "../number_set.h"
@@ -54,6 +53,12 @@ public:
      * @param json
      */
     void from_json(JSON &json);
+
+    /**
+     * @brief Serialize the board to JSON.
+     * @return JSON representation of the board.
+     */
+    void to_json(const std::string file) const;
 
     /**
      * @brief Access a specific cell by index.
@@ -141,6 +146,11 @@ public:
     void update_impact_map();
 
     /**
+     * @brief Initializes every rule handler randomly
+     */
+    void init_randomly();
+
+    /**
      * @brief Get the current impact value at a given cell.
      */
     int get_impact(const CellIdx &idx) const;
@@ -164,6 +174,11 @@ public:
      * @brief Get the block dimension (e.g. 3 for 9x9).
      */
     int block_size() const { return block_size_; }
+
+    /**
+     * @brief Clear the board state, resetting all cells.
+     */
+    void clear();
 
     std::vector<Solution> solve(int max_solutions = 1, int max_nodes = 1024, SolverStats *stats_out = nullptr);
     CellIdx get_next_cell() const;
