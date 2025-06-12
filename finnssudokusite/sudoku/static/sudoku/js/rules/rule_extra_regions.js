@@ -20,12 +20,12 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
 
         let region = rule.fields.region;
         if (!region) {
-            warnings.push("Region is empty");
+            warnings.push(gettext("Region is empty"));
             return warnings;
         }
 
         if (region.size() < 2 || region.size() > 9) {
-            warnings.push(`Region must have 2 to 9 cells`);
+            warnings.push(gettext("Region must have 2 to 9 cells"));
         }
 
         return warnings;
@@ -36,37 +36,37 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
     }
 
     getSpecificRuleScheme() {
-        return [            
+        return [
             {
                 key: "region",
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Region"
+                label: gettext("Region")
             },
             {
                 key: "color",
                 type: "string",
                 defaultValue: "",
-                label: "Region Color (if not set, random color will be used)",
+                label: gettext("Region Color (if not set, random color will be used)"),
             }
         ];
     }
 
     getDescriptionHTML() {
         return `
-            Regions must follow these rules:
+            ${gettext("Regions must follow these rules:")}
             <ul>
-                <li>Can be any shape and anywhere.</li>
-                <li>Must contain all numbers from 1 to 9 exactly once.</li>
-                <li>Have between 2 and 9 cells.</li>
-                <li>Can overlap with each other.</li>
+                <li>${gettext("Can be any shape and anywhere.")}</li>
+                <li>${gettext("Must contain all numbers from 1 to 9 exactly once.")}</li>
+                <li>${gettext("Have between 2 and 9 cells.")}</li>
+                <li>${gettext("Can overlap with each other.")}</li>
             </ul>
         `;
     }
 
     getDescriptionPlayHTML() {
-        return ` In <b>Extra-Regions</b> the regions must contain <b>all numbers</b> from 1 to 9 exactly <b>once</b>.`;
+        return gettext("In <b>Extra-Regions</b> the regions must contain <b>all numbers</b> from 1 to 9 exactly <b>once</b>.");
     }
 
     render(rule, ctx) {
@@ -80,7 +80,6 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
         if (!rule.fields.color) rule.fields.color = this.getRandomColor();
 
         ctx.save();
-
         ctx.fillStyle = rule.fields.color;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
@@ -99,7 +98,7 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
         }
 
         ctx.fill();
-        ctx.restore();   
+        ctx.restore();
     }
 
     getRandomColor() {

@@ -22,7 +22,7 @@ export class KropkiHandler extends RuleTypeHandler {
                 key: "allDotsGiven",
                 type: "boolean",
                 default: false,
-                label: "All dots given"
+                label: gettext("All dots given")
             }
         ];
     }
@@ -34,7 +34,7 @@ export class KropkiHandler extends RuleTypeHandler {
                 type: "region",
                 regionType: RegionType.EDGES,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Kropki Dot Edges"
+                label: gettext("Kropki Dot Edges")
             }
         ];
     }
@@ -42,26 +42,23 @@ export class KropkiHandler extends RuleTypeHandler {
     getDescriptionHTML() {
         return `
         <ul>
-            <li>A <b>white dot</b> between two cells means the numbers are consecutive (for example, 3 and 4).</li>
-            <li>A <b>black dot</b> means one number is exactly double the other (for example, 2 and 4).</li>
+            <li>${gettext("A <b>white dot</b> between two cells means the numbers are consecutive (for example, 3 and 4).")}</li>
+            <li>${gettext("A <b>black dot</b> means one number is exactly double the other (for example, 2 and 4).")}</li>
         </ul>
-        If the option <b>All Dots Given</b> is enabled, then every adjacent pair of cells that satisfies one of these conditions will have a dot. 
-        This means that if there is no dot between two adjacent cells, then neither condition (consecutive nor double) applies.
-        If <b>All Dots Given</b> is not enabled, dots may only be placed selectively, and missing dots do not imply anything.
-    `;
+        ${gettext("If the option <b>All Dots Given</b> is enabled, then every adjacent pair of cells that satisfies one of these conditions will have a dot.")}
+        ${gettext("This means that if there is no dot between two adjacent cells, then neither condition (consecutive nor double) applies.")}
+        ${gettext("If <b>All Dots Given</b> is not enabled, dots may only be placed selectively, and missing dots do not imply anything.")}`;
     }
 
     getDescriptionPlayHTML() {
-        let desc = "In a <b>Kropki Sudoku</b>, a <b>white dot</b> means two digits are consecutive, and a <b>black dot</b> means one digit is double the other.";
+        let desc = gettext("In a <b>Kropki Sudoku</b>, a <b>white dot</b> means two digits are consecutive, and a <b>black dot</b> means one digit is double the other.");
         if (this.fields?.allDotsGiven) {
-            desc += " All valid pairs are marked, so if there's no dot between two adjacent cells, neither condition applies.";
+            desc += " " + gettext("All valid pairs are marked, so if there's no dot between two adjacent cells, neither condition applies.");
         } else {
-            desc += " Only some dots are given; the absence of a dot does not imply anything.";
+            desc += " " + gettext("Only some dots are given; the absence of a dot does not imply anything.");
         }
         return desc;
     }
-
-
 
     render(rule, ctx) {
         const region = rule.fields.region;
@@ -89,5 +86,4 @@ export class KropkiHandler extends RuleTypeHandler {
             ctx.restore();
         }
     }
-
 }

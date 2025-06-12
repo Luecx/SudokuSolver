@@ -19,39 +19,44 @@ export class MagicSquareHandler extends RuleTypeHandler {
 
     getSpecificRuleScheme() {
         return [
-            { key: "region", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Magic Square (3x3)" },
+            {
+                key: "region",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: SelectionMode.MULTIPLE,
+                label: gettext("Magic Square (3×3)")
+            }
         ];
     }
 
     getDescriptionPlayHTML() {
-        return "In a <b>Magic Square Sudoku</b>, every <b>gray 3×3 square</b> must have all its rows, columns, and diagonals sum to the same total.";
+        return gettext("In a <b>Magic Square Sudoku</b>, every <b>gray 3×3 square</b> must have all its rows, columns, and diagonals sum to the same total.");
     }
 
     getRuleWarnings(rule) {
-        let warnings = []
+        let warnings = [];
 
-        // check if empty, or undefined
-        if (!rule.fields.region || rule.fields.region.items.length === 0) {
-            warnings.push("Base cells are empty.");
+        const region = rule.fields.region;
+
+        if (!region || region.items.length === 0) {
+            warnings.push(gettext("Base cells are empty."));
             return warnings;
         }
 
-        // check if base is a 3x3 square
-        if (rule.fields.region && rule.fields.region.items.length !== 9) {
-            warnings.push("Base cells must be a 3x3 square.");
+        if (region.items.length !== 9) {
+            warnings.push(gettext("Base cells must be a 3×3 square."));
             return warnings;
         }
 
-        // check if base is a square
-        const base = rule.fields.region;
         const rows = new Set();
         const cols = new Set();
-        for (const { r, c } of base.items) {
+        for (const { r, c } of region.items) {
             rows.add(r);
             cols.add(c);
         }
+
         if (rows.size !== 3 || cols.size !== 3) {
-            warnings.push("Base cells must be a 3x3 square.");
+            warnings.push(gettext("Base cells must be a 3×3 square."));
         }
 
         return warnings;
@@ -59,7 +64,7 @@ export class MagicSquareHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-        In a <b>Magic Square</b>, the <b>rows, columns and diagonals</b> in the 3x3 square must sum to the same value.
+            ${gettext("In a <b>Magic Square</b>, the <b>rows, columns and diagonals</b> in the 3×3 square must sum to the same value.")}
         `;
     }
 
@@ -70,13 +75,13 @@ export class MagicSquareHandler extends RuleTypeHandler {
         const s = this.board.getCellSizeCTX();
         const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
 
-        // Determine if it's a proper 3x3 square
         const rows = new Set();
         const cols = new Set();
         for (const { x, y } of cells) {
             rows.add(y);
             cols.add(x);
         }
+
         const is3x3 = region.items.length === 9 && rows.size === 3 && cols.size === 3;
 
         ctx.save();
@@ -89,5 +94,4 @@ export class MagicSquareHandler extends RuleTypeHandler {
 
         ctx.restore();
     }
-
 }

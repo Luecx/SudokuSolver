@@ -19,8 +19,20 @@ export class ArrowHandler extends RuleTypeHandler {
 
     getSpecificRuleScheme() {
         return [
-            { key: "base", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Arrow Base Cells" },
-            { key: "path", type: "region", regionType: RegionType.CELLS, selectionMode: SelectionMode.MULTIPLE, label: "Arrow Path Cells" },
+            {
+                key: "base",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: SelectionMode.MULTIPLE,
+                label: gettext("Arrow Base Cells"),
+            },
+            {
+                key: "path",
+                type: "region",
+                regionType: RegionType.CELLS,
+                selectionMode: SelectionMode.MULTIPLE,
+                label: gettext("Arrow Path Cells"),
+            },
         ];
     }
 
@@ -30,21 +42,21 @@ export class ArrowHandler extends RuleTypeHandler {
         const path = rule.fields.path;
 
         if (base && path && base.intersection(path).size > 0) {
-            warnings.push("Base and path cells overlap.");
+            warnings.push(gettext("Base and path cells overlap."));
         }
         if (!base || base.size() === 0) {
-            warnings.push("Base cells are empty.");
+            warnings.push(gettext("Base cells are empty."));
         }
         if (!path || path.size() === 0) {
-            warnings.push("Path cells are empty.");
+            warnings.push(gettext("Path cells are empty."));
         }
         if (base && base.size() > 2) {
-            warnings.push("Base cells should be 1 or 2.");
+            warnings.push(gettext("Base cells should be 1 or 2."));
         }
         if (base && base.size() === 2) {
             const cells = base.items;
             if (cells[0].r !== cells[1].r && cells[0].c !== cells[1].c) {
-                warnings.push("Base cells must be adjacent and in the same row or column.");
+                warnings.push(gettext("Base cells must be adjacent and in the same row or column."));
             }
         }
 
@@ -53,16 +65,16 @@ export class ArrowHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-        In an Arrow Sudoku, the digits along the path of the arrow sum to the digit in the circle at the base.
+        ${gettext("In an Arrow Sudoku, the digits along the path of the arrow sum to the digit in the circle at the base.")}
         `;
     }
 
     getDescriptionPlayHTML() {
-        let desc = "In an <b>Arrow Sudoku</b>, the digits along the arrow path must sum to the value in the circle at the base.";
+        let desc = gettext("In an <b>Arrow Sudoku</b>, the digits along the arrow path must sum to the value in the circle at the base.");
         for (const rule of this.rules) {
             const base = rule.fields.base;
             if (base?.size() === 2) {
-                desc += " If the base has two cells, the <b>left or top cell is the tens digit</b> and the <b>right or bottom is the ones digit</b>.";
+                desc += " " + gettext("If the base has two cells, the <b>left or top cell is the tens digit</b> and the <b>right or bottom is the ones digit</b>.");
                 break;
             }
         }

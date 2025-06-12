@@ -10,33 +10,27 @@ export class WildApples extends RuleTypeHandler {
     }
 
     defaultRules() {
-        return [
-            { label: "Wild Apples", fields: {} },
-        ];
+        return [{ label: "Wild Apples", fields: {} }];
     }
 
-    getGeneralRuleScheme() {
-        return [];
-    }
+    getGeneralRuleScheme() { return []; }
 
-    getSpecificRuleScheme() {       
-        return [
-            {
-                key: "region",
-                type: "region",
-                regionType: RegionType.EDGES,
-                selectionMode: SelectionMode.MULTIPLE,
-                label:  "Wild Apple Symbol"
-            }
-        ];
+    getSpecificRuleScheme() {
+        return [{
+            key: "region",
+            type: "region",
+            regionType: RegionType.EDGES,
+            selectionMode: SelectionMode.MULTIPLE,
+            label: gettext("Wild Apple Symbol")
+        }];
     }
 
     getDescriptionHTML() {
-        return `<p>Digits separated by a red dot are non-consecutive and contain one even digit and one odd digit. All dots are given!</p>`;
+        return gettext(`<p>Digits separated by a red dot are non-consecutive and contain one even digit and one odd digit. All dots are given!</p>`);
     }
 
     getDescriptionPlayHTML() {
-        return "Digits separated by a <b>red dot</b> are <b>non-consecutive</b> and contain one <b>even digit</b> and one <b>odd digit</b>. All dots are given!";
+        return gettext("Digits separated by a <b>red dot</b> are <b>non-consecutive</b> and contain one <b>even digit</b> and one <b>odd digit</b>. All dots are given!");
     }
 
     render(rule, ctx) {

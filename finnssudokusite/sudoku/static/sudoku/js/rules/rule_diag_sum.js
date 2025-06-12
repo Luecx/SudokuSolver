@@ -24,7 +24,7 @@ export class DiagonalSumHandler extends RuleTypeHandler {
                 type: "region",
                 regionType: RegionType.DIAGONAL,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Diagonal"
+                label: gettext("Diagonal"),
             },
             {
                 key: "sum",
@@ -32,20 +32,19 @@ export class DiagonalSumHandler extends RuleTypeHandler {
                 min: 1,
                 max: 81,
                 default: 21,
-                label: "Diagonal Sum"
+                label: gettext("Diagonal Sum"),
             }
         ];
     }
 
     getDescriptionHTML() {
         return `
-        In a Diagonal Sum constraint, the digits along a specific diagonal must add up to a specified total.
-        Diagonals can be in either the ↘︎ or ↙︎ direction.
-        `;
+        ${gettext("In a Diagonal Sum constraint, the digits along a specific diagonal must add up to a specified total.")}<br>
+        ${gettext("Diagonals can be in either the ↘︎ or ↙︎ direction.")}`;
     }
 
     getDescriptionPlayHTML() {
-        return `In a <b>Diagonal Sum</b> puzzle, the marked diagonal must sum to the given total. `;
+        return gettext("In a <b>Diagonal Sum</b> puzzle, the marked diagonal must sum to the given total.");
     }
 
     render(rule, ctx) {
@@ -67,36 +66,33 @@ export class DiagonalSumHandler extends RuleTypeHandler {
         ctx.fillStyle = "#333";
 
         for (const diag of region.items) {
+            let target_x = 0;
+            let target_y = 0;
+            let dir = "";
 
-            let target_x = 0
-            let target_y = 0
-            let dir      = ''
-
-            if (diag.type === 'main') {
-
+            if (diag.type === "main") {
                 if (diag.index <= 0) {
-                    let tl = this.board.getCellTopLeftCTX(-diag.index, 0)
-                    target_x = tl.x
-                    target_y = tl.y
-                    dir = "botright"
+                    let tl = this.board.getCellTopLeftCTX(-diag.index, 0);
+                    target_x = tl.x;
+                    target_y = tl.y;
+                    dir = "botright";
                 } else {
-                    let tl = this.board.getCellTopLeftCTX(size - diag.index, size)
-                    target_x = tl.x
-                    target_y = tl.y
-                    dir = "topleft"
+                    let tl = this.board.getCellTopLeftCTX(size - diag.index, size);
+                    target_x = tl.x;
+                    target_y = tl.y;
+                    dir = "topleft";
                 }
-            }
-            else {
+            } else {
                 if (diag.index < 0) {
-                    let tl = this.board.getCellTopLeftCTX(0, size + diag.index,)
-                    target_x = tl.x
-                    target_y = tl.y
-                    dir = "botleft"
+                    let tl = this.board.getCellTopLeftCTX(0, size + diag.index);
+                    target_x = tl.x;
+                    target_y = tl.y;
+                    dir = "botleft";
                 } else {
-                    let tl = this.board.getCellTopLeftCTX(size, diag.index)
-                    target_x = tl.x
-                    target_y = tl.y
-                    dir = "topright"
+                    let tl = this.board.getCellTopLeftCTX(size, diag.index);
+                    target_x = tl.x;
+                    target_y = tl.y;
+                    dir = "topright";
                 }
             }
 
@@ -112,13 +108,11 @@ export class DiagonalSumHandler extends RuleTypeHandler {
             const base_y = target_y - dy * arrowLength;
 
             ctx.fillStyle = "black";
-            // Draw arrow shaft
             ctx.beginPath();
             ctx.moveTo(base_x, base_y);
             ctx.lineTo(target_x, target_y);
             ctx.stroke();
 
-            // Arrowhead
             const angle = Math.atan2(dy, dx);
             const headLength = s * 0.2;
             const leftAngle = angle + Math.PI / 6;
@@ -136,9 +130,6 @@ export class DiagonalSumHandler extends RuleTypeHandler {
             ctx.closePath();
             ctx.fill();
 
-            // fill the arrow backgroiund
-
-            // Draw the sum label above the arrow base
             const label_x = base_x - dx * s * 0.15;
             const label_y = base_y - dy * s * 0.15;
 
@@ -150,5 +141,4 @@ export class DiagonalSumHandler extends RuleTypeHandler {
 
         ctx.restore();
     }
-
 }

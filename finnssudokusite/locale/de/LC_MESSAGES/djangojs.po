@@ -1,0 +1,866 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-12 18:16+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:29
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:37
+msgid "Optional: Cage Region"
+msgstr "Optional: Käfigbereich"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:42
+msgid "Optional: Numbers can repeat"
+msgstr "Optional: Zahlen können sich wiederholen"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:49
+msgid "Optional: Forbidden Sums (comma-sep)"
+msgstr "Optional: Verbotene Summen (durch Komma getrennt)"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:63
+msgid "'sums' cannot be empty"
+msgstr "'Summen' darf nicht leer sein"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:69
+msgid "“%(value)s” is not a valid number"
+msgstr "„%(value)s“ ist keine gültige Zahl"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:75
+msgid "Too many numbers: maximum allowed is 18"
+msgstr "Zu viele Zahlen: maximal erlaubt sind 18"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:83
+msgid "Invalid numbers: %(numbers)s"
+msgstr "Ungültige Zahlen: %(numbers)s"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:90
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:109
+msgid "Anti-Chess Sudoku"
+msgstr "Anti-Schach Sudoku"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:92
+msgid "Cells a knight's move away cannot contain the same digit."
+msgstr "Zellen, die eine Springerbewegung entfernt sind, dürfen dieselbe Zahl nicht enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:93
+msgid "Cells a king's move away cannot contain the same digit."
+msgstr "Zellen, die eine Königszug entfernt sind, dürfen dieselbe Zahl nicht enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:94
+msgid "Within defined cages:"
+msgstr "Innerhalb definierter Käfige:"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:96
+msgid "Digits within must not sum to the given value(s)."
+msgstr "Die Zahlen innerhalb dürfen nicht die angegebenen Summe(n) ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:97
+msgid "The knight's and king's move restrictions apply."
+msgstr "Die Einschränkungen für Springer- und Königszüge gelten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:98
+msgid "Knight's and king's cages can coexist."
+msgstr "Springer- und Königskäfige können gleichzeitig existieren."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:101
+msgid "Blue cages are knight's cages."
+msgstr "Blaue Käfige sind Springer-Käfige."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:102
+msgid "Green cages are king's cages."
+msgstr "Grüne Käfige sind König-Käfige."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:103
+msgid ""
+"If no cage is defined, the knight's and king's move restrictions apply to "
+"the entire board."
+msgstr ""
+"Wenn kein Käfig definiert ist, gelten die Springer- und Königszug-Einschränkungen "
+"für das gesamte Spielfeld."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:124
+msgid "knight's move"
+msgstr "Springerzug"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:125
+msgid "king's move"
+msgstr "Königszug"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:128
+msgid "within a specified region"
+msgstr "innerhalb eines bestimmten Bereichs"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:129
+msgid "anywhere on the board"
+msgstr "über das gesamte Spielfeld"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:131
+msgid "no two identical digits may be a %(piece)s apart %(scope)s"
+msgstr "Keine zwei gleichen Ziffern dürfen %(piece)s auseinander sein %(scope)s"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:139
+msgid "must not sum to %(sums)s"
+msgstr "dürfen nicht die Summe %(sums)s ergeben"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:142
+msgid "must be distinct"
+msgstr "müssen verschieden sein"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:145
+msgid "and digits"
+msgstr "und Ziffern"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:145
+msgid "and"
+msgstr "und"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_anti_chess.js:154
+msgid "no constraints are active."
+msgstr "Es sind keine Einschränkungen aktiv."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:27
+msgid "Arrow Base Cells"
+msgstr "Pfeil-Basiszellen"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:34
+msgid "Arrow Path Cells"
+msgstr "Pfeil-Pfadzellen"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:45
+msgid "Base and path cells overlap."
+msgstr "Basis- und Pfadzellen überschneiden sich."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:48
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_magic_square.js:42
+msgid "Base cells are empty."
+msgstr "Basiszellen sind leer."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:51
+msgid "Path cells are empty."
+msgstr "Pfadzellen sind leer."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:54
+msgid "Base cells should be 1 or 2."
+msgstr "Basiszellen sollten 1 oder 2 sein."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:59
+msgid "Base cells must be adjacent and in the same row or column."
+msgstr "Basiszellen müssen benachbart und in derselben Reihe oder Spalte sein."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:68
+msgid ""
+"In an Arrow Sudoku, the digits along the path of the arrow sum to the digit "
+"in the circle at the base."
+msgstr ""
+"In einem Pfeil-Sudoku müssen die Ziffern entlang des Pfeilpfads die Zahl "
+"im Kreis an der Basis ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:73
+msgid ""
+"In an <b>Arrow Sudoku</b>, the digits along the arrow path must sum to the "
+"value in the circle at the base."
+msgstr ""
+"In einem <b>Pfeil-Sudoku</b> müssen die Ziffern entlang des Pfeilpfads die "
+"Wert im Kreis an der Basis ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_arrow.js:77
+msgid ""
+"If the base has two cells, the <b>left or top cell is the tens digit</b> and "
+"<b>the right or bottom is the ones digit</b>."
+msgstr ""
+"Hat die Basis zwei Zellen, ist die <b>linke oder obere Zelle die Zehnerstelle</b> "
+"und die <b>rechte oder untere die Einerstelle</b>."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_chevron.js:32
+msgid "Chevron Symbol"
+msgstr "Chevron-Symbol"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_chevron.js:38
+msgid "Chevrons point to the cell with the larger number."
+msgstr "Chevrons zeigen auf die Zelle mit der größeren Zahl."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_chevron.js:42
+msgid ""
+"In a <b>Chevron Sudoku</b>, each chevron points toward the cell with the "
+"<b>higher digit</b>."
+msgstr ""
+"In einem <b>Chevron-Sudoku</b> zeigt jeder Chevron auf die Zelle mit der "
+"<b>höheren Zahl</b>."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:24
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:23
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_renban.js:37
+msgid "Region is empty"
+msgstr "Region ist leer"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:32
+msgid "There are regions that have no clones"
+msgstr "Es gibt Regionen ohne Klone"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:49
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:45
+msgid "Region"
+msgstr "Region"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:55
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:51
+msgid "Region Color (if not set, random color will be used)"
+msgstr "Region-Farbe (wenn nicht gesetzt, wird eine zufällige Farbe verwendet)"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:62
+msgid "The <b>clones</b> must follow these rules:"
+msgstr "Die <b>Klone</b> müssen folgende Regeln erfüllen:"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:64
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:60
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:61
+msgid "Can be any shape and anywhere."
+msgstr "Können jede Form haben und überall sein."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:65
+msgid "Can overlap with each other and the regular Sudoku grid."
+msgstr "Können sich überschneiden und mit dem normalen Sudoku-Gitter."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:66
+msgid "Clones must have the same numbers in the same positions."
+msgstr "Klone müssen dieselben Zahlen an denselben Positionen haben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_clone.js:72
+msgid ""
+"In a <b>Clone Sudoku</b> clones with the same shape must have <b>matching</"
+"b> numbers."
+msgstr ""
+"In einem <b>Clone Sudoku</b> müssen Klone mit gleicher Form <b>übereinstimmende</b> Zahlen haben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_custom_sum.js:29
+msgid "Line Path"
+msgstr "Linienpfad"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_custom_sum.js:34
+msgid "Line Color"
+msgstr "Linienfarbe"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_custom_sum.js:40
+msgid "Sum along the line"
+msgstr "Summe entlang der Linie"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_custom_sum.js:49
+msgid ""
+"The values inside the cells that align with the line must sum up to the "
+"target sum."
+msgstr ""
+"Die Werte in den Zellen, die mit der Linie übereinstimmen, müssen die "
+"Zielsummme ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_custom_sum.js:53
+msgid ""
+"In <b>Custom Sum Sudoku</b> the numbers in cells crossed by a line must add "
+"up to the <b>target sum</b> shown on that line. Lines of the <b>same color</"
+"b> share the same target sum."
+msgstr ""
+"In <b>Custom Sum Sudoku</b> müssen die Zahlen in Zellen, die von einer Linie "
+"geschnitten werden, zur <b>Zielsummme</b> auf der Linie addiert werden. "
+"Linien der <b>gleichen Farbe</b> haben dieselbe Zielsummme."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diag_sum.js:27
+msgid "Diagonal"
+msgstr "Diagonale"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diag_sum.js:35
+msgid "Diagonal Sum"
+msgstr "Diagonalsumme"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diag_sum.js:42
+msgid ""
+"In a Diagonal Sum constraint, the digits along a specific diagonal must add "
+"up to a specified total."
+msgstr ""
+"Bei einer Diagonal-Summen-Beschränkung müssen die Ziffern entlang einer "
+"bestimmten Diagonale eine vorgegebene Summe ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diag_sum.js:43
+msgid "Diagonals can be in either the ↘︎ or ↙︎ direction."
+msgstr "Diagonalen können in ↘︎ oder ↙︎ Richtung verlaufen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diag_sum.js:47
+msgid ""
+"In a <b>Diagonal Sum</b> puzzle, the marked diagonal must sum to the given "
+"total."
+msgstr ""
+"In einem <b>Diagonal Sum</b>-Rätsel muss die markierte Diagonale die "
+"angegebene Summe ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:19
+msgid "Main Diagonal (<i class=\"bi bi-arrow-up-left\"></i>)"
+msgstr "Hauptdiagonale (<i class=\"bi bi-arrow-up-left\"></i>)"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:25
+msgid "Anti-Diagonal (<i class=\"bi bi-arrow-up-right\"></i>)"
+msgstr "Gegendiagonale (<i class=\"bi bi-arrow-up-right\"></i>)"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:37
+msgid ""
+"In <b>Diagonal Sudoku</b>, digits 1 to 9 must also appear exactly once on "
+"one or both diagonals."
+msgstr ""
+"In <b>Diagonal Sudoku</b> müssen die Ziffern 1 bis 9 auch genau einmal auf "
+"einer oder beiden Diagonalen erscheinen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:39
+msgid "Main Diagonal"
+msgstr "Hauptdiagonale"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:39
+msgid "From top-left to bottom-right."
+msgstr "Von oben links nach unten rechts."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:40
+msgid "Anti-Diagonal"
+msgstr "Gegendiagonale"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:40
+msgid "From top-right to bottom-left."
+msgstr "Von oben rechts nach unten links."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:42
+msgid "You can enable or disable each diagonal individually."
+msgstr "Sie können jede Diagonale einzeln aktivieren oder deaktivieren."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:51
+msgid ""
+"In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on both "
+"diagonals."
+msgstr ""
+"In einem <b>Diagonal Sudoku</b> müssen die Ziffern 1 bis 9 genau einmal auf "
+"beiden Diagonalen erscheinen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:53
+msgid ""
+"In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the "
+"<b>main diagonal</b> (top-left to bottom-right)."
+msgstr ""
+"In einem <b>Diagonal Sudoku</b> müssen die Ziffern 1 bis 9 genau einmal auf "
+"der <b>Hauptdiagonale</b> (oben links nach unten rechts) erscheinen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:55
+msgid ""
+"In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the "
+"<b>anti-diagonal</b> (top-right to bottom-left)."
+msgstr ""
+"In einem <b>Diagonal Sudoku</b> müssen die Ziffern 1 bis 9 genau einmal auf "
+"der <b>Gegendiagonale</b> (oben rechts nach unten links) erscheinen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_diagonal.js:57
+msgid "In a <b>Diagonal Sudoku</b>, diagonal constraints are disabled."
+msgstr "In einem <b>Diagonal Sudoku</b> sind die Diagonal-Einschränkungen deaktiviert."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_dutch_flat.js:24
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_dutch_flat.js:29
+msgid ""
+"In <b>Dutch-Flat Sudoku</b>, each 5 must have a 1 directly above it and/or a "
+"9 directly below it."
+msgstr ""
+"In <b>Dutch-Flat Sudoku</b> muss jede 5 eine 1 direkt darüber und/oder eine "
+"9 direkt darunter haben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:28
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_renban.js:42
+msgid "Region must have 2 to 9 cells"
+msgstr "Region muss 2 bis 9 Zellen enthalten"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:58
+msgid "Regions must follow these rules:"
+msgstr "Regionen müssen folgende Regeln erfüllen:"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:61
+msgid "Must contain all numbers from 1 to 9 exactly once."
+msgstr "Müssen alle Zahlen von 1 bis 9 genau einmal enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:62
+msgid "Have between 2 and 9 cells."
+msgstr "Haben zwischen 2 und 9 Zellen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:63
+msgid "Can overlap with each other."
+msgstr "Können sich überschneiden."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_extra_regions.js:69
+msgid ""
+"In <b>Extra-Regions</b> the regions must contain <b>all numbers</b> from 1 "
+"to 9 exactly <b>once</b>."
+msgstr ""
+"In <b>Extra-Regions</b> müssen die Regionen <b>alle Zahlen</b> von 1 bis 9 "
+"genau <b>einmal</b> enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:30
+msgid "Regions are empty"
+msgstr "Regionen sind leer"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:35
+msgid "Regions must have exactly 9 cells"
+msgstr "Regionen müssen genau 9 Zellen enthalten"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:59
+msgid "Irregular regions must follow these rules:"
+msgstr "Unregelmäßige Regionen müssen folgende Regeln erfüllen:"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:62
+msgid "Must have exactly 9 cells."
+msgstr "Müssen genau 9 Zellen enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:63
+msgid "Cannot overlap with each other."
+msgstr "Dürfen sich nicht überschneiden."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_irregular_regions.js:70
+msgid ""
+"In <b>Irregular Region Sudoku</b> standard Sudoku rules apply. Additionally, "
+"the grid is divided into irregularly shaped regions instead of standard 3x3 "
+"boxes. Each of these irregular regions must also contain all digits from 1 "
+"to 9 exactly once."
+msgstr ""
+"Im <b>Irregular Region Sudoku</b> gelten die Standard-Sudoku-Regeln. "
+"Zusätzlich ist das Gitter in unregelmäßig geformte Regionen anstelle der "
+"Standard 3x3-Blöcke unterteilt. Jede dieser unregelmäßigen Regionen muss "
+"ebenfalls alle Ziffern von 1 bis 9 genau einmal enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:22
+msgid "Cage region is empty"
+msgstr "Käfigbereich ist leer"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:29
+msgid "Cage sum is too large"
+msgstr "Käfigsumme ist zu groß"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:33
+msgid "Cage sum is too small"
+msgstr "Käfigsumme ist zu klein"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:37
+msgid "Cage sum is not a number"
+msgstr "Käfigsumme ist keine Zahl"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:41
+msgid "Cage sum is not an integer"
+msgstr "Käfigsumme ist keine ganze Zahl"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:45
+msgid "Cage sum is not a positive number"
+msgstr "Käfigsumme ist keine positive Zahl"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:49
+msgid "Cage has more than 1 region"
+msgstr "Käfig enthält mehr als eine Region"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:60
+msgid "Numbers can repeat within a cage"
+msgstr "Zahlen dürfen sich innerhalb eines Käfigs wiederholen"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:73
+msgid "Cage Region"
+msgstr "Käfigbereich"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:81
+msgid "Cage Sum"
+msgstr "Käfigsumme"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:88
+msgid ""
+"Inside <b>cages</b>, the sum of the numbers must equal the specified value "
+"in the top left corner of the cage."
+msgstr ""
+"Innerhalb der <b>Käfige</b> muss die Summe der Zahlen dem angegebenen Wert "
+"in der oberen linken Ecke des Käfigs entsprechen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:93
+msgid ""
+"In a <b>Killer Sudoku</b>, digits inside a cage must sum to the value shown "
+"in the top-left corner of the cage."
+msgstr ""
+"In einem <b>Killer Sudoku</b> müssen die Ziffern innerhalb eines Käfigs die "
+"Summe in der oberen linken Ecke des Käfigs ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:95
+msgid ""
+"In this puzzle, <b>digits may repeat</b> within a cage if they appear in "
+"different cells."
+msgstr ""
+"In diesem Rätsel dürfen sich <b>Ziffern innerhalb eines Käfigs wiederholen</b>, "
+"wenn sie in verschiedenen Zellen stehen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_killer.js:97
+msgid "Digits <b>must not repeat</b> within a cage."
+msgstr "Ziffern <b>dürfen sich nicht wiederholen</b> innerhalb eines Käfigs."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:25
+msgid "All dots given"
+msgstr "Alle Punkte angegeben"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:37
+msgid "Kropki Dot Edges"
+msgstr "Kropki-Punkt-Kanten"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:45
+msgid ""
+"A <b>white dot</b> between two cells means the numbers are consecutive (for "
+"example, 3 and 4)."
+msgstr ""
+"Ein <b>weißer Punkt</b> zwischen zwei Zellen bedeutet, dass die Zahlen "
+"aufeinanderfolgend sind (z. B. 3 und 4)."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:46
+msgid ""
+"A <b>black dot</b> means one number is exactly double the other (for "
+"example, 2 and 4)."
+msgstr ""
+"Ein <b>schwarzer Punkt</b> bedeutet, dass eine Zahl genau doppelt so groß "
+"ist wie die andere (z. B. 2 und 4)."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:48
+msgid ""
+"If the option <b>All Dots Given</b> is enabled, then every adjacent pair of "
+"cells that satisfies one of these conditions will have a dot."
+msgstr ""
+"Ist die Option <b>Alle Punkte angegeben</b> aktiviert, hat jedes benachbarte "
+"Paar von Zellen, das eine dieser Bedingungen erfüllt, einen Punkt."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:49
+msgid ""
+"This means that if there is no dot between two adjacent cells, then neither "
+"condition (consecutive nor double) applies."
+msgstr ""
+"Das bedeutet, dass wenn kein Punkt zwischen zwei benachbarten Zellen ist, "
+"dann gilt keine der beiden Bedingungen (aufeinanderfolgend oder doppelt)."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:50
+msgid ""
+"If <b>All Dots Given</b> is not enabled, dots may only be placed "
+"selectively, and missing dots do not imply anything."
+msgstr ""
+"Ist <b>Alle Punkte angegeben</b> nicht aktiviert, können Punkte nur "
+"selektiv gesetzt werden, und fehlende Punkte bedeuten nichts."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:54
+msgid ""
+"In a <b>Kropki Sudoku</b>, a <b>white dot</b> means two digits are "
+"consecutive, and a <b>black dot</b> means one digit is double the other."
+msgstr ""
+"In einem <b>Kropki Sudoku</b> bedeutet ein <b>weißer Punkt</b>, dass zwei "
+"Ziffern aufeinanderfolgend sind, und ein <b>schwarzer Punkt</b>, dass eine "
+"Ziffer doppelt so groß ist wie die andere."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:56
+msgid ""
+"All valid pairs are marked, so if there's no dot between two adjacent cells, "
+"neither condition applies."
+msgstr ""
+"Alle gültigen Paare sind markiert, sodass wenn kein Punkt zwischen zwei "
+"benachbarten Zellen ist, keine der Bedingungen zutrifft."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_kropki.js:58
+msgid "Only some dots are given; the absence of a dot does not imply anything."
+msgstr "Nur einige Punkte sind angegeben; das Fehlen eines Punktes bedeutet nichts."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_magic_square.js:27
+msgid "Magic Square (3×3)"
+msgstr "Magisches Quadrat (3×3)"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_magic_square.js:33
+msgid ""
+"In a <b>Magic Square Sudoku</b>, every <b>gray 3×3 square</b> must have all "
+"its rows, columns, and diagonals sum to the same total."
+msgstr ""
+"In einem <b>Magic Square Sudoku</b> muss jedes <b>graue 3×3 Quadrat</b> in "
+"allen Reihen, Spalten und Diagonalen dieselbe Summe haben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_magic_square.js:47
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_magic_square.js:59
+msgid "Base cells must be a 3×3 square."
+msgstr "Basiszellen müssen ein 3×3-Quadrat bilden."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_magic_square.js:67
+msgid ""
+"In a <b>Magic Square</b>, the <b>rows, columns and diagonals</b> in the 3×3 "
+"square must sum to the same value."
+msgstr ""
+"In einem <b>Magic Square</b> müssen die <b>Reihen, Spalten und Diagonalen</b> "
+"im 3×3-Quadrat die gleiche Summe ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_numbered_rooms.js:27
+msgid "Arrow Direction"
+msgstr "Pfeilrichtung"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_numbered_rooms.js:35
+msgid "Target Digit"
+msgstr "Zielziffer"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_numbered_rooms.js:42
+msgid ""
+"In <b>Numbered-Rooms</b>, a clue is placed outside the grid and applies to a "
+"specific row or column.\n"
+"            The <b>first digit</b> in the indicated direction determines a "
+"position N, and the <b>Nth cell</b> in that direction must contain the given "
+"clue digit.<br><br>\n"
+"            For example, if the outside clue shows a 4 and the first digit "
+"in the direction is a 3, then the <b>3rd cell</b> must be a 4."
+msgstr ""
+"In <b>Numbered-Rooms</b> wird ein Hinweis außerhalb des Gitters platziert "
+"und gilt für eine bestimmte Reihe oder Spalte.\n"
+"            Die <b>erste Ziffer</b> in der angegebenen Richtung bestimmt eine "
+"Position N, und die <b>N-te Zelle</b> in dieser Richtung muss die angegebene "
+"Ziffer enthalten.<br><br>\n"
+"            Zum Beispiel: Wenn der Außenhinweis eine 4 zeigt und die erste "
+"Ziffer in der Richtung eine 3 ist, muss die <b>3. Zelle</b> eine 4 sein."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_numbered_rooms.js:50
+msgid ""
+"A clue digit is placed outside the grid for a row or column.\n"
+"            The <b>first digit</b> seen from that side determines a position "
+"N, and the <b>Nth cell</b> must contain the clue digit."
+msgstr ""
+"Eine Hinweisziffer wird außerhalb des Gitters für eine Reihe oder Spalte "
+"platziert.\n"
+"            Die <b>erste Ziffer</b>, die von dieser Seite aus gesehen wird, "
+"bestimmt eine Position N, und die <b>N-te Zelle</b> muss die Hinweisziffer "
+"enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_palindrome.js:31
+msgid "Palindrome Path"
+msgstr "Palindrom-Pfad"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_palindrome.js:38
+msgid ""
+"Along a <b>palindrome line</b>, the digits must read the same forward and "
+"backward."
+msgstr ""
+"Entlang einer <b>Palindrom-Linie</b> müssen die Ziffern vorwärts und "
+"rückwärts gleich gelesen werden."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_palindrome.js:43
+msgid ""
+"In a <b>Palindrome Sudoku</b>, digits along each <b>blue palindrome line</b> "
+"must read the same forward and backward."
+msgstr ""
+"In einem <b>Palindrome Sudoku</b> müssen die Ziffern entlang jeder <b>blauen "
+"Palindrom-Linie</b> vorwärts und rückwärts gleich sein."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_parity.js:27
+msgid "Parity Line Path"
+msgstr "Paritätslinien-Pfad"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_parity.js:34
+msgid ""
+"Along a <b>parity line</b>, adjacent cells must have different parity (one "
+"odd, one even)."
+msgstr ""
+"Entlang einer <b>Paritätslinie</b> müssen benachbarte Zellen unterschiedliche "
+"Parität haben (eine ungerade, eine gerade)."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_parity.js:39
+msgid ""
+"In a <b>Parity Sudoku</b>, adjacent digits along each <b>green parity line</"
+"b> must alternate between odd and even."
+msgstr ""
+"In einem <b>Parity Sudoku</b> müssen benachbarte Ziffern entlang jeder <b>grünen "
+"Paritätslinie</b> abwechselnd ungerade und gerade sein."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_renban.js:27
+msgid "Renban Path"
+msgstr "Renban-Pfad"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_renban.js:50
+msgid ""
+"Along a <b>renban line</b>, the digits form a consecutive sequence, in any "
+"order."
+msgstr ""
+"Entlang einer <b>Renban-Linie</b> bilden die Ziffern eine aufeinanderfolgende "
+"Sequenz, in beliebiger Reihenfolge."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_renban.js:55
+msgid ""
+"In a <b>Renban Sudoku</b>, the digits on each <b>purple renban line</b> must "
+"form a consecutive set, in any order."
+msgstr ""
+"In einem <b>Renban Sudoku</b> müssen die Ziffern auf jeder <b>lila Renban-Linie</b> "
+"eine aufeinanderfolgende Menge bilden, in beliebiger Reihenfolge."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_sandwich.js:27
+msgid "Row/Column"
+msgstr "Reihe/Spalte"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_sandwich.js:35
+msgid "Sandwich Sum"
+msgstr "Sandwich-Summe"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_sandwich.js:42
+msgid ""
+"In a Sandwich Sudoku, the sum of the numbers between 1 and 9 (the \"bread\") "
+"in a given row or column must match the given total. Cells outside the "
+"sandwich or part of the \"bread\" itself do not count toward the sum."
+msgstr ""
+"In einem Sandwich Sudoku muss die Summe der Zahlen zwischen 1 und 9 (dem "
+"„Brot“) in einer bestimmten Reihe oder Spalte der angegebenen Gesamtsumme "
+"entsprechen. Zellen außerhalb des Sandwichs oder die „Brot“-Zellen selbst "
+"zählen nicht zur Summe."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_sandwich.js:47
+msgid ""
+"In a <b>Sandwich Sudoku</b>, the digits between <b>1</b> and <b>9</b> in a "
+"marked row or column must sum to the given total. The <b>1</b> and <b>9</b> "
+"act as the ends of the sandwich and are not included in the sum."
+msgstr ""
+"In einem <b>Sandwich Sudoku</b> müssen die Ziffern zwischen <b>1</b> und <b>9</b> "
+"in einer markierten Reihe oder Spalte die angegebene Summe ergeben. Die <b>1</b> "
+"und <b>9</b> bilden die Enden des Sandwichs und sind nicht in der Summe enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_standard.js:24
+msgid ""
+"In <b>Standard Sudoku</b>, each row, each column, and each 3×3 block must "
+"contain the numbers <b>1</b> to <b>9</b> exactly once, without repetition."
+msgstr ""
+"Im <b>Standard Sudoku</b> müssen jede Reihe, jede Spalte und jeder 3×3-Block "
+"die Zahlen <b>1</b> bis <b>9</b> genau einmal ohne Wiederholung enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_standard.js:29
+msgid ""
+"In a <b>Standard Sudoku</b>, every row, column, and 3×3 box must contain the "
+"digits <b>1</b> to <b>9</b> exactly once."
+msgstr ""
+"In einem <b>Standard Sudoku</b> muss jede Reihe, Spalte und 3×3-Box die Ziffern "
+"<b>1</b> bis <b>9</b> genau einmal enthalten."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_thermo.js:21
+msgid "Thermometer Path"
+msgstr "Thermometer-Pfad"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_thermo.js:26
+msgid ""
+"Along a <b>thermometer</b>, digits must increase from the bulb to the tip."
+msgstr ""
+"Entlang eines <b>Thermometers</b> müssen die Ziffern von der Birne zur Spitze zunehmen."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_thermo.js:30
+msgid ""
+"In a <b>Thermometer Sudoku</b>, digits must <b>strictly increase</b> along "
+"each <b>gray thermometer</b> from the bulb to the tip."
+msgstr ""
+"In einem <b>Thermometer Sudoku</b> müssen die Ziffern entlang jedes <b>grauen "
+"Thermometers</b> von der Birne bis zur Spitze <b>streng ansteigen</b>."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_whisper.js:23
+msgid "Whisper Line Path"
+msgstr "Flüsterlinien-Pfad"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_whisper.js:28
+msgid "Along a <b>whisper line</b>, adjacent digits must differ by at least 5."
+msgstr "Entlang einer <b>Flüsterlinie</b> müssen benachbarte Ziffern sich um mindestens 5 unterscheiden."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_whisper.js:32
+msgid ""
+"In a <b>Whisper Sudoku</b>, adjacent digits on each <b>teal whisper line</b> "
+"must differ by at least <b>5</b>."
+msgstr ""
+"In einem <b>Whisper Sudoku</b> müssen benachbarte Ziffern auf jeder <b>blauen "
+"Flüsterlinie</b> sich um mindestens <b>5</b> unterscheiden."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_wild_apples.js:24
+msgid "Wild Apple Symbol"
+msgstr "Wildapfel-Symbol"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_wild_apples.js:29
+msgid ""
+"<p>Digits separated by a red dot are non-consecutive and contain one even "
+"digit and one odd digit. All dots are given!</p>"
+msgstr ""
+"<p>Ziffern, die durch einen roten Punkt getrennt sind, sind nicht aufeinanderfolgend "
+"und enthalten eine gerade und eine ungerade Ziffer. Alle Punkte sind angegeben!</p>"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_wild_apples.js:33
+msgid ""
+"Digits separated by a <b>red dot</b> are <b>non-consecutive</b> and contain "
+"one <b>even digit</b> and one <b>odd digit</b>. All dots are given!"
+msgstr ""
+"Ziffern, die durch einen <b>roten Punkt</b> getrennt sind, sind <b>nicht "
+"aufeinanderfolgend</b> und enthalten eine <b>gerade Ziffer</b> und eine "
+"<b>ungerade Ziffer</b>. Alle Punkte sind angegeben!"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:15
+msgid "X Rule"
+msgstr "X-Regel"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:16
+msgid "V Rule"
+msgstr "V-Regel"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:25
+msgid "All symbols given"
+msgstr "Alle Symbole angegeben"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:35
+msgid "XV Symbol Edges"
+msgstr "XV-Symbol-Kanten"
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:40
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li><b>X</b>: The two cells sum to <b>10</b>.</li>\n"
+"                <li><b>V</b>: The two cells sum to <b>5</b>.</li>\n"
+"            </ul>\n"
+"            If the option <b>All Symbols Given</b> is enabled, every "
+"adjacent pair that sums to 5 or 10 must have a corresponding symbol.\n"
+"            If <b>All Symbols Given</b> is not enabled, symbols may only "
+"appear selectively, and missing symbols do not necessarily imply anything.\n"
+"        "
+msgstr ""
+"\n"
+"            <ul>\n"
+"                <li><b>X</b>: Die beiden Zellen ergeben zusammen <b>10</b>.</li>\n"
+"                <li><b>V</b>: Die beiden Zellen ergeben zusammen <b>5</b>.</li>\n"
+"            </ul>\n"
+"            Wenn die Option <b>Alle Symbole angegeben</b> aktiviert ist, muss "
+"jedes benachbarte Paar, das 5 oder 10 ergibt, ein entsprechendes Symbol haben.\n"
+"            Wenn <b>Alle Symbole angegeben</b> nicht aktiviert ist, können "
+"Symbole nur selektiv erscheinen, und fehlende Symbole bedeuten nicht "
+"unbedingt etwas.\n"
+"        "
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:51
+msgid ""
+"In an <b>XV Sudoku</b>, an <b>X</b> between two cells means they sum to "
+"<b>10</b>, and a <b>V</b> means they sum to <b>5</b>."
+msgstr ""
+"In einem <b>XV Sudoku</b> bedeutet ein <b>X</b> zwischen zwei Zellen, dass "
+"sie zusammen <b>10</b> ergeben, und ein <b>V</b> bedeutet, dass sie zusammen "
+"<b>5</b> ergeben."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:54
+msgid ""
+"All valid X and V pairs are shown — if there's no symbol, the sum is neither "
+"5 nor 10."
+msgstr ""
+"Alle gültigen X- und V-Paare werden angezeigt — wenn kein Symbol vorhanden "
+"ist, ist die Summe weder 5 noch 10."
+
+#: finnssudokusite/sudoku/static/sudoku/js/rules/rule_xv.js:56
+msgid ""
+"Symbols may be placed selectively — a missing symbol does not imply anything."
+msgstr ""
+"Symbole können selektiv gesetzt werden — ein fehlendes Symbol bedeutet nichts."

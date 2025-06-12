@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
+
 export class WhisperHandler extends RuleTypeHandler {
     constructor(board) {
         super("Whisper", board);
@@ -9,39 +10,30 @@ export class WhisperHandler extends RuleTypeHandler {
         this.can_create_rules = true;
     }
 
-    defaultRules() {
-        return [];
-    }
+    defaultRules() { return []; }
 
-    getGeneralRuleScheme() {
-        return [];
-    }
+    getGeneralRuleScheme() { return []; }
 
     getSpecificRuleScheme() {
-        return [
-            {
-                key: "path",
-                type: "region",
-                regionType: RegionType.CELLS,
-                selectionMode: SelectionMode.MULTIPLE,
-                label: "Whisper Line Path"
-            }
-        ];
+        return [{
+            key: "path",
+            type: "region",
+            regionType: RegionType.CELLS,
+            selectionMode: SelectionMode.MULTIPLE,
+            label: gettext("Whisper Line Path")
+        }];
     }
 
     getDescriptionHTML() {
-        return `
-        Along a <b>whisper line</b>, adjacent digits must differ by at least 5.
-        `;
+        return gettext(`Along a <b>whisper line</b>, adjacent digits must differ by at least 5.`);
     }
 
     getDescriptionPlayHTML() {
-        return "In a <b>Whisper Sudoku</b>, adjacent digits on each <b>teal whisper line</b> must differ by at least <b>5</b>.";
+        return gettext("In a <b>Whisper Sudoku</b>, adjacent digits on each <b>teal whisper line</b> must differ by at least <b>5</b>.");
     }
 
     render(rule, ctx) {
         if (!this.board) return;
-
         const path = rule.fields.path;
         if (!path || path.items.length < 2) return;
 
@@ -49,7 +41,7 @@ export class WhisperHandler extends RuleTypeHandler {
         const half = s / 2;
 
         ctx.save();
-        ctx.strokeStyle = "rgba(0, 150, 150, 0.2)"; // Teal-ish, semi-transparent
+        ctx.strokeStyle = "rgba(0, 150, 150, 0.2)";
         ctx.lineWidth = s * 0.2;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";

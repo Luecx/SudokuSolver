@@ -24,36 +24,35 @@ export class RenbanHandler extends RuleTypeHandler {
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Renban Path"
+                label: gettext("Renban Path")
             }
         ];
     }
 
     getRuleWarnings(rule) {
-        let warnings = [];
+        const warnings = [];
+        const path = rule.fields.path;
 
-        let path = rule.fields.path;
         if (!path) {
-            warnings.push("Region is empty");
+            warnings.push(gettext("Region is empty"));
             return warnings;
         }
 
         if (path.size() < 2 || path.size() > 9) {
-            warnings.push(`Region must have 2 to 9 cells`);
+            warnings.push(gettext("Region must have 2 to 9 cells"));
         }
 
         return warnings;
     }
 
-
     getDescriptionHTML() {
         return `
-        Along a <b>renban line</b>, the digits form a consecutive sequence, in any order.
+        ${gettext("Along a <b>renban line</b>, the digits form a consecutive sequence, in any order.")}
         `;
     }
 
     getDescriptionPlayHTML() {
-        return "In a <b>Renban Sudoku</b>, the digits on each <b>purple renban line</b> must form a consecutive set, in any order.";
+        return gettext("In a <b>Renban Sudoku</b>, the digits on each <b>purple renban line</b> must form a consecutive set, in any order.");
     }
 
     render(rule, ctx) {
@@ -66,7 +65,7 @@ export class RenbanHandler extends RuleTypeHandler {
         const half = s / 2;
 
         ctx.save();
-        ctx.strokeStyle = "rgba(150, 0, 150, 0.2)"; // Purple-ish, semi-transparent
+        ctx.strokeStyle = "rgba(150, 0, 150, 0.2)";
         ctx.lineWidth = s * 0.2;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";

@@ -16,13 +16,13 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
             {
                 key: "diagonal",
                 type: "boolean",
-                label: `Main Diagonal (<i class="bi bi-arrow-up-left"></i>)`,
+                label: gettext('Main Diagonal (<i class="bi bi-arrow-up-left"></i>)'),
                 default: true
             },
             {
                 key: "antiDiagonal",
                 type: "boolean",
-                label: `Anti-Diagonal (<i class="bi bi-arrow-up-right"></i>)`,
+                label: gettext('Anti-Diagonal (<i class="bi bi-arrow-up-right"></i>)'),
                 default: true
             }
         ];
@@ -34,12 +34,12 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
 
     getDescriptionHTML() {
         return `
-            In <b>Diagonal Sudoku</b>, digits 1 to 9 must also appear exactly once on one or both diagonals.
+            ${gettext("In <b>Diagonal Sudoku</b>, digits 1 to 9 must also appear exactly once on one or both diagonals.")}
             <ul>
-                <li><b>Main Diagonal (<i class="bi bi-arrow-up-left"></i>)</b>: From top-left to bottom-right.</li>
-                <li><b>Anti-Diagonal (<i class="bi bi-arrow-up-right"></i>)</b>: From top-right to bottom-left.</li>
+                <li><b>${gettext('Main Diagonal')} (<i class="bi bi-arrow-up-left"></i>)</b>: ${gettext("From top-left to bottom-right.")}</li>
+                <li><b>${gettext('Anti-Diagonal')} (<i class="bi bi-arrow-up-right"></i>)</b>: ${gettext("From top-right to bottom-left.")}</li>
             </ul>
-            You can enable or disable each diagonal individually.
+            ${gettext("You can enable or disable each diagonal individually.")}
         `;
     }
 
@@ -48,13 +48,13 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
         const anti = this.fields?.antiDiagonal;
 
         if (diag && anti) {
-            return "In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on both diagonals.";
+            return gettext("In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on both diagonals.");
         } else if (diag) {
-            return "In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the <b>main diagonal</b> (top-left to bottom-right).";
+            return gettext("In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the <b>main diagonal</b> (top-left to bottom-right).");
         } else if (anti) {
-            return "In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the <b>anti-diagonal</b> (top-right to bottom-left).";
+            return gettext("In a <b>Diagonal Sudoku</b>, digits 1 to 9 must appear exactly once on the <b>anti-diagonal</b> (top-right to bottom-left).");
         } else {
-            return "In a <b>Diagonal Sudoku</b>, diagonal constraints are disabled.";
+            return gettext("In a <b>Diagonal Sudoku</b>, diagonal constraints are disabled.");
         }
     }
 
@@ -65,7 +65,7 @@ export class DiagonalRuleHandler extends RuleTypeHandler {
 
     render(ctx) {
         ctx.save();
-        ctx.strokeStyle = "rgba(0, 0, 255, 0.5)"; // semi-transparent blue
+        ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
         ctx.lineWidth = 2;
 
         const gridSize = 9;

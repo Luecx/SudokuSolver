@@ -18,7 +18,7 @@ export class PalindromeHandler extends RuleTypeHandler {
     }
 
     getWarnings(rule) {
-
+        // No warnings currently implemented
     }
 
     getSpecificRuleScheme() {
@@ -28,32 +28,32 @@ export class PalindromeHandler extends RuleTypeHandler {
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Palindrome Path"
+                label: gettext("Palindrome Path")
             }
         ];
     }
 
     getDescriptionHTML() {
         return `
-        Along a <b>palindrome line</b>, the digits must read the same forward and backward.
+            ${gettext("Along a <b>palindrome line</b>, the digits must read the same forward and backward.")}
         `;
     }
 
     getDescriptionPlayHTML() {
-        return "In a <b>Palindrome Sudoku</b>, digits along each <b>blue palindrome line</b> must read the same forward and backward.";
+        return gettext("In a <b>Palindrome Sudoku</b>, digits along each <b>blue palindrome line</b> must read the same forward and backward.");
     }
 
     render(rule, ctx) {
         if (!this.board) return;
 
         const path = rule.fields.path;
-        if (!path || path.items.length < 2) return; // Need at least 2 cells to draw
+        if (!path || path.items.length < 2) return;
 
         const s = this.board.getCellSizeCTX();
         const half = s / 2;
 
         ctx.save();
-        ctx.strokeStyle = "rgba(0, 0, 150, 0.2)"; // Bluish, semi-transparent
+        ctx.strokeStyle = "rgba(0, 0, 150, 0.2)";
         ctx.lineWidth = s * 0.2;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
