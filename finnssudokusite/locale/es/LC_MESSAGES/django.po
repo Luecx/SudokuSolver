@@ -143,264 +143,264 @@ msgstr "Solución única"
 
 #: sudoku/templates/sudoku/creator/creator_tab_submit.html:23
 msgid "Unique Puzzle"
-msgstr ""
+msgstr "Puzle único"
 
 #: sudoku/templates/sudoku/creator/creator_tab_submit.html:28
 msgid "Check Uniqueness"
-msgstr ""
+msgstr "Comprobar unicidad"
 
 #: sudoku/templates/sudoku/creator/creator_tab_submit.html:34
 msgid "Save Sudoku"
-msgstr ""
+msgstr "Guardar Sudoku"
 
 #: sudoku/templates/sudoku/creator/creator_tab_submit.html:41
 msgid "Uploading Sudoku..."
-msgstr ""
+msgstr "Subiendo Sudoku..."
 
 #: sudoku/templates/sudoku/creator/creator_tab_submit.html:45
 msgid "Preparing..."
-msgstr ""
+msgstr "Preparando..."
 
 #: sudoku/templates/sudoku/game/game_modal_completion.html:10
 msgid "Sudoku completed"
-msgstr ""
+msgstr "Sudoku completado"
 
 #: sudoku/templates/sudoku/game/game_modal_completion.html:11
 #: sudoku/templates/sudoku/index.html:146
 #: sudoku/templates/sudoku/index.html:309
 msgid "Close"
-msgstr ""
+msgstr "Cerrar"
 
 #: sudoku/templates/sudoku/game/game_modal_completion.html:23
 msgid "Finish"
-msgstr ""
+msgstr "Finalizar"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:7
 msgid "Design & Settings"
-msgstr ""
+msgstr "Diseño y ajustes"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:14
 msgid "Appearance"
-msgstr ""
+msgstr "Apariencia"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:16
 msgid "Choose Background"
-msgstr ""
+msgstr "Elegir fondo"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:18
 msgid "Classic"
-msgstr ""
+msgstr "Clásico"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:19
 msgid "Cement"
-msgstr ""
+msgstr "Cemento"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:20
 msgid "Glow"
-msgstr ""
+msgstr "Brillo"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:21
 msgid "Stone"
-msgstr ""
+msgstr "Piedra"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:22
 msgid "Wood"
-msgstr ""
+msgstr "Madera"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:26
 msgid "Transparency"
-msgstr ""
+msgstr "Transparencia"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:33
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:35
 msgid " Rotate number pad"
-msgstr ""
+msgstr " Rotar teclado numérico"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:41
 msgid "Fontsize"
-msgstr ""
+msgstr "Tamaño de fuente"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:48
 msgid "Highlights"
-msgstr ""
+msgstr "Resaltados"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:50
 msgid "Highlight Row"
-msgstr ""
+msgstr "Resaltar fila"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:56
 msgid "Highlight Column"
-msgstr ""
+msgstr "Resaltar columna"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:62
 msgid "Highlight Block"
-msgstr ""
+msgstr "Resaltar bloque"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:68
 msgid "Highlight Numbers"
-msgstr ""
+msgstr "Resaltar números"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:74
 msgid "Highlight Candidates"
-msgstr ""
+msgstr "Resaltar candidatos"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:83
 msgid "Candidates"
-msgstr ""
+msgstr "Candidatos"
 
 #: sudoku/templates/sudoku/game/game_modal_settings.html:85
 msgid "Auto-remove on input"
-msgstr ""
+msgstr "Eliminar automáticamente al introducir"
 
 #: sudoku/templates/sudoku/game/game_modal_start.html:8
 msgid "Let's go!"
-msgstr ""
+msgstr "¡Vamos!"
 
 #: sudoku/templates/sudoku/game/game_modal_validation.html:7
 msgid "Puzzle Check"
-msgstr ""
+msgstr "Comprobación del puzle"
 
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:25
 msgid "Home"
-msgstr ""
+msgstr "Inicio"
 
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:37
 msgid "About us"
-msgstr ""
+msgstr "Sobre nosotros"
 
 #: sudoku/templates/sudoku/game_selection.html:5
 msgid "Choose"
-msgstr ""
+msgstr "Elegir"
 
 #: sudoku/templates/sudoku/game_selection.html:18
 msgid "Easy"
-msgstr ""
+msgstr "Fácil"
 
 #: sudoku/templates/sudoku/game_selection.html:72
 msgid "Hard"
-msgstr ""
+msgstr "Difícil"
 
 #: sudoku/templates/sudoku/game_selection.html:99
 msgid "Expert"
-msgstr ""
+msgstr "Experto"
 
 #: sudoku/templates/sudoku/game_selection.html:126
 msgid "Extreme"
-msgstr ""
+msgstr "Extremo"
 
 #: sudoku/templates/sudoku/game_selection.html:151
 msgid "Refresh"
-msgstr ""
+msgstr "Actualizar"
 
 #: sudoku/templates/sudoku/game_selection.html:152
 msgid "Choose from Puzzle List"
-msgstr ""
+msgstr "Elegir de la lista de puzles"
 
 #: sudoku/templates/sudoku/index.html:7
 msgid "Sudoku"
-msgstr ""
+msgstr "Sudoku"
 
 #: sudoku/templates/sudoku/index.html:39
 msgid "FINN'S SUDOKU APP"
-msgstr ""
+msgstr "LA APP DE SUDOKU DE FINN"
 
 #: sudoku/templates/sudoku/index.html:44
 msgid "CHOOSE A PUZZLE TO PLAY"
-msgstr ""
+msgstr "ELIGE UN PUZLE PARA JUGAR"
 
 #: sudoku/templates/sudoku/index.html:47
 msgid "LOGIN"
-msgstr ""
+msgstr "INICIAR SESIÓN"
 
 #: sudoku/templates/sudoku/index.html:53
 msgid "ABOUT"
-msgstr ""
+msgstr "SOBRE"
 
 #: sudoku/templates/sudoku/index.html:96
 msgid "CONTACT"
-msgstr ""
+msgstr "CONTACTO"
 
 #: sudoku/templates/sudoku/index.html:97
 msgid "IMPRINT"
-msgstr ""
+msgstr "AVISO LEGAL"
 
 #: sudoku/templates/sudoku/index.html:98
 msgid "HISTORY"
-msgstr ""
+msgstr "HISTORIA"
 
 #: sudoku/templates/sudoku/index.html:109
 msgid "Send Finn a message"
-msgstr ""
+msgstr "Enviar un mensaje a Finn"
 
 #: sudoku/templates/sudoku/index.html:120
 msgid "Your Name"
-msgstr ""
+msgstr "Tu nombre"
 
 #: sudoku/templates/sudoku/index.html:124
 msgid "Your E-Mail"
-msgstr ""
+msgstr "Tu correo electrónico"
 
 #: sudoku/templates/sudoku/index.html:130
 msgid "Message"
-msgstr ""
+msgstr "Mensaje"
 
 #: sudoku/templates/sudoku/index.html:133
 msgid "Send"
-msgstr ""
+msgstr "Enviar"
 
 #: sudoku/templates/sudoku/index.html:144
 msgid "Message sent"
-msgstr ""
+msgstr "Mensaje enviado"
 
 #: sudoku/templates/sudoku/index.html:145
 msgid "Thank you for your message! We will get back to you soon."
-msgstr ""
+msgstr "¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto."
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:5
 msgid "Sudoku Leaderboard"
-msgstr ""
+msgstr "Clasificación de Sudoku"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:73
 msgid "Leaderboard"
-msgstr ""
+msgstr "Clasificación"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:101
 msgid "Search by username..."
-msgstr ""
+msgstr "Buscar por nombre de usuario..."
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:105
 #: sudoku/templates/sudoku/puzzles.html:45
 #: sudoku/templates/sudoku/users.html:23
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:111
 #: sudoku/templates/sudoku/puzzles.html:51
 msgid "Reset"
-msgstr ""
+msgstr "Restablecer"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:124
 msgid "Rank"
-msgstr ""
+msgstr "Rango"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:130
 msgid "User"
-msgstr ""
+msgstr "Usuario"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:136
 msgid "Total Score"
-msgstr ""
+msgstr "Puntuación total"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:142
 msgid "Puzzles Solved"
-msgstr ""
+msgstr "Puzles resueltos"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:169
 msgid "No results yet."
-msgstr ""
+msgstr "Aún no hay resultados."
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:178
 #, python-format
@@ -410,10 +410,14 @@ msgid ""
 "%(link)sclick here</a>.\n"
 "\t\t\t"
 msgstr ""
+"\n"
+"\t\t\tPara una explicación detallada de cómo se calcula la puntuación, "
+"%(link)shaz clic aquí</a>.\n"
+"\t\t\t"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:214
 msgid "How Is Your Rating Calculated?"
-msgstr ""
+msgstr "¿Cómo se calcula tu puntuación?"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:5
 msgid ""
@@ -425,10 +429,15 @@ msgid ""
 "performance as you complete more puzzles.\n"
 "        "
 msgstr ""
+"\n"
+"        La clasificación ahora utiliza el\n"
+"        <strong>Índice de Potencia Sudoku (SPI)</strong>: una puntuación de 0 a 100 que premia\n"
+"        las resoluciones <em>rápidas</em> de puzles <em>difíciles</em> y el rendimiento constante a medida que completas más puzles.\n"
+"        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:14
 msgid "Per‑puzzle contribution"
-msgstr ""
+msgstr "Contribución por puzle"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:16
 msgid ""
@@ -437,6 +446,10 @@ msgid ""
 "reflects both the difficulty of the puzzle and how fast you solved it:\n"
 "        "
 msgstr ""
+"\n"
+"        Cada vez que resuelves un puzle, obtienes una puntuación \\( S_{u,s} \\) que\n"
+"        refleja tanto la dificultad del puzle como la rapidez con la que lo resolviste:\n"
+"        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:31
 msgid ""
@@ -447,40 +460,46 @@ msgid ""
 "ratio rewards speed within bounds.\n"
 "        "
 msgstr ""
+"\n"
+"        Aquí, \\( \\bar{t}_s \\) es el tiempo medio (en segundos) para resolver\n"
+"        el puzle \\( s \\), y \\( t_{u,s} \\) es tu tiempo. El término logarítmico\n"
+"        modela la dificultad del puzle (con rendimientos decrecientes), mientras que la proporción de tiempo limitada premia la rapidez dentro de unos límites.\n"
+"        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:39
 msgid "Symbol"
-msgstr ""
+msgstr "Símbolo"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:40
 msgid "Meaning"
-msgstr ""
+msgstr "Significado"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:46
 msgid "Average solve time for puzzle \\(s\\) (in seconds)"
-msgstr ""
+msgstr "Tiempo medio de resolución para el puzle \\(s\\) (en segundos)"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:50
 msgid "Your time to solve puzzle \\(s\\) (in seconds)"
-msgstr ""
+msgstr "Tu tiempo para resolver el puzle \\(s\\) (en segundos)"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:55
 msgid "Weight examples (based on avg. time in seconds)"
-msgstr ""
+msgstr "Ejemplos de peso (basados en el tiempo medio en segundos)"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:59
 msgid "Average time (s)"
-msgstr ""
+msgstr "Tiempo medio (s)"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:77
 msgid ""
 "The weight grows faster for harder puzzles, with base-1.2 logarithmic "
 "scaling from 20 seconds upward."
 msgstr ""
+"El peso crece más rápido para los puzles más difíciles, con una escala logarítmica de base 1,2 a partir de los 20 segundos."
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:82
 msgid "User score"
-msgstr ""
+msgstr "Puntuación del usuario"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:84
 msgid ""
@@ -491,6 +510,10 @@ msgid ""
 "fewer, only those count.\n"
 "        "
 msgstr ""
+"\n"
+"        Tu puntuación \\( R_u \\) es la <strong>suma</strong> de tus puntuaciones de los\n"
+"        <strong>últimos 100 puzles</strong> que has completado. Si has resuelto menos, solo cuentan esos.\n"
+"        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:95
 msgid ""
@@ -499,10 +522,13 @@ msgid ""
 "puzzles — and solve them well — to reach the top.\n"
 "        "
 msgstr ""
+"\n"
+"        Este sistema premia tanto la cantidad como la calidad: debes resolver muchos puzles —y resolverlos bien— para llegar a lo más alto.\n"
+"        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:102
 msgid "Leaderboard score"
-msgstr ""
+msgstr "Puntuación de la clasificación"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:104
 msgid ""
@@ -511,6 +537,9 @@ msgid ""
 "leaderboard from 0 to 100:\n"
 "        "
 msgstr ""
+"\n"
+"        Finalmente, todas las puntuaciones de los usuarios se normalizan para generar una clasificación clara de 0 a 100:\n"
+"        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:114
 msgid ""
@@ -519,152 +548,157 @@ msgid ""
 "closer your SPI will be to 100.\n"
 "        "
 msgstr ""
+"\n"
+"        Cuanto más se acerque tu rendimiento al mejor de la comunidad, más cerca estará tu SPI de 100.\n"
+"        "
 
 #: sudoku/templates/sudoku/login/activation_invalid.html:5
 msgid "Invalid Link"
-msgstr ""
+msgstr "Enlace no válido"
 
 #: sudoku/templates/sudoku/login/activation_invalid.html:6
 msgid "That activation link is invalid or expired."
-msgstr ""
+msgstr "Ese enlace de activación no es válido o ha caducado."
 
 #: sudoku/templates/sudoku/login/activation_sent.html:11
 msgid "Activation Required"
-msgstr ""
+msgstr "Activación requerida"
 
 #: sudoku/templates/sudoku/login/activation_sent.html:13
 msgid ""
 "No emails are being sent at the moment. Please ask an administrator to "
 "activate your account."
 msgstr ""
+"No se están enviando correos electrónicos en este momento. Por favor, pide a un administrador que active tu cuenta."
 
 #: sudoku/templates/sudoku/login/activation_success.html:5
 msgid "Account Activated!"
-msgstr ""
+msgstr "¡Cuenta activada!"
 
 #: sudoku/templates/sudoku/login/activation_success.html:6
 msgid "Your account is now active. You can "
-msgstr ""
+msgstr "Tu cuenta ya está activa. Puedes "
 
 #: sudoku/templates/sudoku/login/activation_success.html:6
 #: sudoku/templates/sudoku/password/password_reset_complete.html:7
 msgid "log in"
-msgstr ""
+msgstr "iniciar sesión"
 
 #: sudoku/templates/sudoku/login/login.html:35
 #: sudoku/templates/sudoku/login/login_modal.html:39
 msgid "Forgot your password?"
-msgstr ""
+msgstr "¿Has olvidado tu contraseña?"
 
 #: sudoku/templates/sudoku/login/login.html:51
 #: sudoku/templates/sudoku/login/login_modal.html:52
 msgid "No account yet? Register now"
-msgstr ""
+msgstr "¿Aún no tienes cuenta? Regístrate ahora"
 
 #: sudoku/templates/sudoku/login/login_modal.html:22
 msgid "Username or Email"
-msgstr ""
+msgstr "Nombre de usuario o correo electrónico"
 
 #: sudoku/templates/sudoku/login/login_modal.html:36
 msgid "Log In"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: sudoku/templates/sudoku/login/login_modal.html:46
 msgid "Sign in with..."
-msgstr ""
+msgstr "Iniciar sesión con..."
 
 #: sudoku/templates/sudoku/login/register.html:6
 msgid "Register"
-msgstr ""
+msgstr "Registrarse"
 
 #: sudoku/templates/sudoku/login/register.html:29
 msgid "Create Account"
-msgstr ""
+msgstr "Crear cuenta"
 
 #: sudoku/templates/sudoku/login/register.html:33
 msgid "Already have an account?"
-msgstr ""
+msgstr "¿Ya tienes una cuenta?"
 
 #: sudoku/templates/sudoku/login/register.html:34
 msgid "Log in"
-msgstr ""
+msgstr "Iniciar sesión"
 
 #: sudoku/templates/sudoku/modal_language_picker.html:83
 msgid "Choose Your Preferred Language"
-msgstr ""
+msgstr "Elige tu idioma preferido"
 
 #: sudoku/templates/sudoku/password/password_reset.html:6
 msgid "Reset Your Password"
-msgstr ""
+msgstr "Restablece tu contraseña"
 
 #: sudoku/templates/sudoku/password/password_reset.html:24
 msgid "Send reset link"
-msgstr ""
+msgstr "Enviar enlace de restablecimiento"
 
 #: sudoku/templates/sudoku/password/password_reset.html:28
 msgid "Back to Login"
-msgstr ""
+msgstr "Volver al inicio de sesión"
 
 #: sudoku/templates/sudoku/password/password_reset_complete.html:6
 msgid "Password Reset Complete"
-msgstr ""
+msgstr "Restablecimiento de contraseña completado"
 
 #: sudoku/templates/sudoku/password/password_reset_complete.html:7
 msgid "You can now"
-msgstr ""
+msgstr "Ahora puedes"
 
 #: sudoku/templates/sudoku/password/password_reset_complete.html:7
 msgid "with your new password."
-msgstr ""
+msgstr "con tu nueva contraseña."
 
 #: sudoku/templates/sudoku/password/password_reset_confirm.html:11
 msgid "Set a New Password"
-msgstr ""
+msgstr "Establecer una nueva contraseña"
 
 #: sudoku/templates/sudoku/password/password_reset_confirm.html:31
 msgid "Change Password"
-msgstr ""
+msgstr "Cambiar contraseña"
 
 #: sudoku/templates/sudoku/password/password_reset_done.html:3
 msgid "Check your inbox!"
-msgstr ""
+msgstr "¡Revisa tu bandeja de entrada!"
 
 #: sudoku/templates/sudoku/password/password_reset_done.html:4
 msgid "We've emailed you instructions for setting your password."
-msgstr ""
+msgstr "Te hemos enviado por correo electrónico las instrucciones para establecer tu contraseña."
 
 #: sudoku/templates/sudoku/password/password_reset_email.html:3
 msgid "Hello,"
-msgstr ""
+msgstr "Hola,"
 
 #: sudoku/templates/sudoku/password/password_reset_email.html:4
 msgid ""
 "You requested a password reset. Click the link below to set a new password:"
 msgstr ""
+"Has solicitado restablecer tu contraseña. Haz clic en el enlace de abajo para establecer una nueva contraseña:"
 
 #: sudoku/templates/sudoku/password/password_reset_email.html:5
 msgid "Reset your password"
-msgstr ""
+msgstr "Restablece tu contraseña"
 
 #: sudoku/templates/sudoku/password/password_reset_email.html:6
 msgid "If you didn't request this, just ignore this email."
-msgstr ""
+msgstr "Si no has solicitado esto, simplemente ignora este correo electrónico."
 
 #: sudoku/templates/sudoku/profile/profile_detail.html:21
 msgid "Last Login:"
-msgstr ""
+msgstr "Último acceso:"
 
 #: sudoku/templates/sudoku/profile/profile_detail.html:22
 msgid "Solved puzzles :"
-msgstr ""
+msgstr "Puzles resueltos:"
 
 #: sudoku/templates/sudoku/profile/profile_detail.html:28
 msgid "Completed puzzles"
-msgstr ""
+msgstr "Puzles completados"
 
 #: sudoku/templates/sudoku/profile/profile_detail.html:31
 msgid "Created puzzles"
-msgstr ""
+msgstr "Puzles creados"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_created.html:15
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:15
@@ -672,13 +706,13 @@ msgstr ""
 #: sudoku/templates/sudoku/puzzles.html:85
 #: sudoku/templates/sudoku/users.html:33
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_created.html:16
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:17
 #: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:16
 msgid "Solves"
-msgstr ""
+msgstr "Resoluciones"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_created.html:17
 #: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:17
@@ -686,7 +720,7 @@ msgstr ""
 #: sudoku/templates/sudoku/puzzles.html:109
 #: sudoku/templates/sudoku/users.html:36
 msgid "Rating"
-msgstr ""
+msgstr "Valoración"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_created.html:18
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:20
@@ -694,122 +728,122 @@ msgstr ""
 #: sudoku/templates/sudoku/puzzles.html:117
 #: sudoku/templates/sudoku/users.html:37
 msgid "Avg Time"
-msgstr ""
+msgstr "Tiempo medio"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_created.html:69
 msgid "You haven’t created any puzzles yet."
-msgstr ""
+msgstr "Todavía no has creado ningún puzle."
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_created.html:71
 msgid "hasn’t created any puzzles yet."
-msgstr ""
+msgstr "no ha creado ningún puzle todavía."
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:16
 #: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:15
 #: sudoku/templates/sudoku/puzzles.html:93
 #: sudoku/templates/sudoku/users.html:34
 msgid "Creator"
-msgstr ""
+msgstr "Creador"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:18
 msgid "Your Rating"
-msgstr ""
+msgstr "Tu valoración"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:18
 msgid "Their Rating"
-msgstr ""
+msgstr "Su valoración"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:21
 msgid "Completion Time"
-msgstr ""
+msgstr "Tiempo de finalización"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:22
 msgid "Date Completed"
-msgstr ""
+msgstr "Fecha de finalización"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:111
 msgid "You haven’t finished any puzzles yet."
-msgstr ""
+msgstr "Todavía no has terminado ningún puzle."
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_done.html:113
 msgid "hasn’t finished any puzzles yet."
-msgstr ""
+msgstr "no ha terminado ningún puzle todavía."
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:19
 msgid "Your Time"
-msgstr ""
+msgstr "Tu tiempo"
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:81
 msgid "You don’t have any ongoing puzzles."
-msgstr ""
+msgstr "No tienes ningún puzle en curso."
 
 #: sudoku/templates/sudoku/profile/profile_puzzles_ongoing.html:83
 msgid "doesn’t have any ongoing puzzles."
-msgstr ""
+msgstr "no tiene ningún puzle en curso."
 
 #: sudoku/templates/sudoku/profile/profile_user.html:11
 msgid "User name"
-msgstr ""
+msgstr "Nombre de usuario"
 
 #: sudoku/templates/sudoku/profile/profile_user.html:31
 #: sudoku/templates/sudoku/profile/profile_user.html:40
 #: sudoku/templates/sudoku/profile/profile_user.html:79
 msgid "Change password"
-msgstr ""
+msgstr "Cambiar contraseña"
 
 #: sudoku/templates/sudoku/profile/profile_user.html:41
 msgid "Schließen"
-msgstr ""
+msgstr "Cerrar"
 
 #: sudoku/templates/sudoku/profile/search_filter.html:4
 #: sudoku/templates/sudoku/users.html:14
 msgid "Search puzzles:"
-msgstr ""
+msgstr "Buscar puzles:"
 
 #: sudoku/templates/sudoku/puzzles.html:6
 msgid "Sudoku Puzzles"
-msgstr ""
+msgstr "Puzles de Sudoku"
 
 #: sudoku/templates/sudoku/puzzles.html:35
 msgid "All Published Sudoku Puzzles"
-msgstr ""
+msgstr "Todos los puzles de Sudoku publicados"
 
 #: sudoku/templates/sudoku/puzzles.html:40
 #: sudoku/templates/sudoku/users.html:17
 msgid "Search by puzzle name..."
-msgstr ""
+msgstr "Buscar por nombre del puzle..."
 
 #: sudoku/templates/sudoku/puzzles.html:63
 #: sudoku/templates/sudoku/puzzles.html:123
 #: sudoku/templates/sudoku/users.html:19 sudoku/templates/sudoku/users.html:38
 msgid "Tags"
-msgstr ""
+msgstr "Etiquetas"
 
 #: sudoku/templates/sudoku/puzzles.html:101
 #: sudoku/templates/sudoku/users.html:35
 msgid "Solved"
-msgstr ""
+msgstr "Resuelto"
 
 #: sudoku/templates/sudoku/puzzles.html:184
 #: sudoku/templates/sudoku/users.html:104
 msgid "No puzzles available."
-msgstr ""
+msgstr "No hay puzles disponibles."
 
 #: sudoku/templates/sudoku/users.html:5
 msgid "Users"
-msgstr ""
+msgstr "Usuarios"
 
 #: sudoku/templates/sudoku/users.html:11
 msgid "All Users"
-msgstr ""
+msgstr "Todos los usuarios"
 
 #: sudoku/templates/sudoku/users.html:20
 msgid "Toggle Dropdown"
-msgstr ""
+msgstr "Mostrar/ocultar menú desplegable"
 
 #: sudoku/views/contact.py:47
 msgid "Thank you for your message"
-msgstr ""
+msgstr "Gracias por tu mensaje"
 
 #: sudoku/views/contact.py:52
 #, python-format
@@ -822,6 +856,13 @@ msgid ""
 "Best regards,\n"
 "Finn and the SudokuSphere Team"
 msgstr ""
+"Hola %(name)s,\n"
+"\n"
+"Gracias por tu mensaje a SudokuSphere.\n"
+"Nos pondremos en contacto contigo lo antes posible.\n"
+"\n"
+"Un cordial saludo,\n"
+"Finn y el equipo de SudokuSphere"
 
 #: sudoku/views/contact.py:60
 #, python-format
@@ -854,19 +895,34 @@ msgid ""
 "            <p style=\"padding:5rem\"></p>\n"
 "            "
 msgstr ""
+"\n"
+"            <p style=\"padding:2rem\"></p>\n"
+"            <div style=\"\n"
+"                width: 100%%;\n"
+"                max-width: 600px;\n"
+"                min-width: 60%%;\n"
+"                box-sizing: border-box;\n"
+"                padding: 1rem 4vw 4rem;\n"
+"                margin: auto;\n"
+"                border: 1px solid #cccccc;\n"
+"                border-radius: 3rem;\n"
+"                background-color: white;\n"
+"                text-align: center;\n"
+"            \">\n"
+"                <img src=\"https://ndb.one/logo.png\" alt=\"Logo\" "
+"width=\"80\" height=\"80\" style=\"display: block; margin: 0 auto;\" />\n"
+"                <p>SUDOKUSPHERE.COM</p>\n"
+"                <p style=\"text-align: left; margin-top: 6vh;\">\n"
+"                    Hola %(name)s,<br><br>\n"
+"                    Gracias por tu mensaje a SudokuSphere.<br>\n"
+"                    Nos pondremos en contacto contigo lo antes posible.<br><br>\n"
+"                    Un cordial saludo,<br>\n"
+"                    Finn y el equipo de SudokuSphere\n"
+"                </p>\n"
+"            </div>\n"
+"            <p style=\"padding:5rem\"></p>\n"
+"            "
 
 #: sudoku/views/contact.py:92
 msgid "Message sent successfully."
-msgstr ""
-
-#: sudoku_site/settings.py:85
-msgid "English"
-msgstr ""
-
-#: sudoku_site/settings.py:86
-msgid "Deutsch"
-msgstr ""
-
-#: sudoku_site/settings.py:87
-msgid "日本語"
-msgstr ""
+msgstr "Mensaje enviado correctamente."
