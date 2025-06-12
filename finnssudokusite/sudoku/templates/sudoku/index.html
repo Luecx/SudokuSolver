@@ -4,7 +4,7 @@
 {% load static %}
 {% load widget_tweaks %}
 
-{% block title %}Sudoku{% endblock %}
+{% block title %}{% trans "Sudoku" %}{% endblock %}
 
 {% block extra_css %}
 <link href="{% static 'sudoku/css/index.css' %}" rel="stylesheet" />
@@ -102,7 +102,6 @@
 
 </div>
 
-<!-- Contact-Modal -->
 <div class="modal fade" id="contactModal" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -138,7 +137,6 @@
 	</div>
 </div>
 
-<!-- Erfolgs-Modal -->
 <div class="modal fade" id="successModal" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">

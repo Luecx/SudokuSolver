@@ -2,12 +2,11 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Choose{% endblock %}
+{% block title %}{% trans "Choose" %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'sudoku/css/game_selection.css' %}">
 {% endblock %}
-
 
 {% block container %}
 <div class="container-fluid full-height d-flex flex-column justify-content-center align-items-center">
@@ -16,7 +15,7 @@
 			<!--	Easy	-->
 			<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
 					<div class="text-center py-2 my_green">
-						<h4 class="mb-0">Easy</h4>
+						<h4 class="mb-0">{% trans "Easy" %}</h4>
 					</div>
 					
 					<div class="card-body bg-white p-3">
@@ -43,7 +42,7 @@
 			<!--	Medium	-->
 			<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
 					<div class="my_gold text-center py-2">
-						<h4 class="mb-0">Medium</h4>
+						<h4 class="mb-0">{% trans "Medium" %}</h4>
 					</div>
 					
 					<div class="card-body bg-white p-3">
@@ -70,7 +69,7 @@
 			<!--	Hard	-->
 			<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
 					<div class="my_red text-center py-2">
-						<h4 class="mb-0">Hard</h4>
+						<h4 class="mb-0">{% trans "Hard" %}</h4>
 					</div>
 					
 					<div class="card-body bg-white p-3">
@@ -97,7 +96,7 @@
 			<!--	Expert	-->
 			<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
 					<div class="my_violet text-center py-2">
-						<h4 class="mb-0">Expert</h4>
+						<h4 class="mb-0">{% trans "Expert" %}</h4>
 					</div>
 					
 					<div class="card-body bg-white p-3">
@@ -124,7 +123,7 @@
 			<!--	Extreme	-->
 			<div class="card m-1 w-100 border border-gray rounded-4 overflow-hidden">
 				<div class="my_black text-center py-2">
-					<h4 class="mb-0">Extreme</h4>
+					<h4 class="mb-0">{% trans "Extreme" %}</h4>
 				</div>
 				
 				<div class="card-body bg-white p-3">
@@ -149,8 +148,8 @@
 			</div>
 		</div>
 		<div class="w-100 d-flex justify-content-center mt-4">
-			<a href="#" class="link link--io my-text-btn mx-2" >Refresh</a>
-			<a href="{% url 'puzzles' %}" class="link link--io my-text-btn mx-2" >Choose from Puzzle List</a>
+			<a href="#" class="link link--io my-text-btn mx-2" >{% trans "Refresh" %}</a>
+			<a href="{% url 'puzzles' %}" class="link link--io my-text-btn mx-2" >{% trans "Choose from Puzzle List" %}</a>
 		</div>
 	</div>
 </div>

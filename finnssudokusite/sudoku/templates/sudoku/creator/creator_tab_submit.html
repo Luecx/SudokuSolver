@@ -12,38 +12,37 @@
         <div class="d-flex justify-content-around align-items-center text-center mb-3">
             <div id="status-name">
                 <i class="fa fa-times text-danger fa-lg"></i><br>
-                <small class="text-muted">Name Provided</small>
+                <small class="text-muted">{% trans "Name Provided" %}</small>
             </div>
             <div id="status-solution">
                 <i class="fa fa-times text-danger fa-lg"></i><br>
-                <small class="text-muted">Unique Solution</small>
+                <small class="text-muted">{% trans "Unique Solution" %}</small>
             </div>
             <div id="status-unique">
                 <i class="fa fa-times text-danger fa-lg"></i><br>
-                <small class="text-muted">Unique Puzzle</small>
+                <small class="text-muted">{% trans "Unique Puzzle" %}</small>
             </div>
         </div>
 
         <button type="button" id="check-uniqueness-btn" class="btn btn-outline-secondary w-100 mb-3">
-            <i class="fas fa-magic me-1"></i> Check Uniqueness
+            <i class="fas fa-magic me-2"></i>{% trans "Check Uniqueness" %}
         </button>
 
         <hr class="my-3">
 
         <button type="button" id="submit-sudoku-btn" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#modalSave">
-            <i class="fas fa-upload me-1"></i> Save Sudoku
+            <i class="fas fa-upload me-2"></i>{% trans "Save Sudoku" %}
         </button>
 
         <div id="upload-loading-box" class="mt-4" style="display: none;">
             <div class="progress mb-2" role="progressbar" style="height: 28px;">
                 <div id="upload-progress-bar"
                      class="progress-bar progress-bar-striped progress-bar-animated"
-                     style="width: 0%; background-color: gold;">
-                    Uploading Sudoku...
+                     style="width: 0%; background-color: gold;">{% trans "Uploading Sudoku..." %}
                 </div>
             </div>
             <div id="upload-progress-text" class="text-center text-muted small">
-                Preparing...
+				{% trans "Preparing..." %}
             </div>
         </div>
     </form>

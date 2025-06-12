@@ -1,7 +1,7 @@
 #include <set>
 
-#include "rule_magic.h"
 #include "../board/board.h"
+#include "rule_magic.h"
 
 namespace sudoku {
 
@@ -24,23 +24,15 @@ const std::array<std::array<int, 9>, 8> MAGIC_SQUARE_SOLUTIONS =
 
 bool RuleMagic::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &region: m_regions) {
-        initPossibleLayouts(region);
-        if (m_possible_layouts.empty())
-            continue;
+    for (const auto &region: m_regions)
         changed |= applyCandidates(region);
-    }
     return changed;
 }
 
 bool RuleMagic::candidates_changed() {
     bool changed = false;
-    for (const auto &region: m_regions) {
-        initPossibleLayouts(region);
-        if (m_possible_layouts.empty())
-            continue;
+    for (const auto &region: m_regions)
         changed |= applyCandidates(region);
-    }
     return changed;
 }
 
@@ -120,6 +112,10 @@ void RuleMagic::initPossibleLayouts(const Region<CellIdx> &region) {
 }
 
 bool RuleMagic::applyCandidates(const Region<CellIdx> &region) {
+    initPossibleLayouts(region);
+    if (m_possible_layouts.empty())
+        return false;
+
     bool changed = false;
 
     const std::vector<CellIdx> &items = region.items();

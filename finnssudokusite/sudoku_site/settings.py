@@ -36,11 +36,11 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
@@ -82,15 +82,15 @@ DATABASES = {
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = [
-    ('en', _('English')),
-    ('de', _('Deutsch')),
-    ('ja', _('日本語')),
-    # ('fr', _('Français')),
-    # ('es', _('Español')),
-    # ('it', _('Italiano')),
-    # ('zh-hans', _('中文 (简体)')),
-    # ('ru', _('Русский')),
-    # ('pt-br', _('Português (Brasil)')),
+    ('en', 'English'),
+    ('de', 'Deutsch'),
+    ('ja', '日本語'),
+    # ('fr', 'Français'),
+    ('es', 'Español'),
+    # ('it', 'Italiano'),
+    # ('zh-hans', '中文 (简体)'),
+    # ('ru', 'Русский'),
+    # ('pt-br', 'Português (Brasil)'),
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']

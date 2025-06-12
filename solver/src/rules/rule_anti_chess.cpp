@@ -36,13 +36,11 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
 
         changed |= check_cage(pair.region, pair.allow_repeats);
 
-        const auto &forbidden_sums = pair.forbidden_sums;
         const attacks &pattern = (pair.label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
-
         for (const auto &attack: pattern) {
             CellIdx neighbor_pos = {pos.r + attack.first, pos.c + attack.second};
             if (!in_bounds(neighbor_pos))
-                continue;
+                continue; // skip out of bounds neighbors
 
             if (pair.region.size() > 0 && !pair.region.has(neighbor_pos))
                 continue; // skip if neighbor is not in the region
@@ -52,14 +50,13 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
                 continue; // skip solved neighbors
 
             changed |= neighbor.remove_candidate(cell.value);
+
+            // enforce forbidden sums
             if (pair.forbidden_sums.empty())
-                return changed;
+                continue;
 
             for (const auto n: neighbor.candidates) {
-                int sum = cell.value + n;
-
-                auto it = std::find(forbidden_sums.begin(), forbidden_sums.end(), sum);
-                if (it != forbidden_sums.end())
+                if (contains_sum(cell.value + n, pair.forbidden_sums))
                     changed |= neighbor.remove_candidate(n);
             }
         }
@@ -69,39 +66,54 @@ bool RuleAntiChess::number_changed(CellIdx pos) {
 }
 
 bool RuleAntiChess::candidates_changed() {
+    // const int board_size = board_->size();
+
     bool changed = false;
     for (int i = 0; i < 2; i++) {
         const auto &pair = m_pair[i];
         if (!pair.enabled)
             continue;
-        changed |= check_cage(pair.region, pair.allow_repeats);
 
+        const Region<CellIdx> &region = pair.region;
+        changed |= check_cage(region, pair.allow_repeats);
+
+        // this helps reducing node count but it is very slow
         /*
-            you could technically use this code to remove candidates from c2
-            and c1 (if you run the exact same code with c1 and c2 swapped)
-            only if both are empty, this actually reduces nodes explored
-            but it is SLOW, so this probably needs more testing, for now leave it commented out
+        if (pair.forbidden_sums.empty())
+            continue; // skip if no forbidden sums
 
-            const Cell &c1 = board_->get_cell(pos);
-            Cell &c2 = board_->get_cell(c2);
+        const attacks &move_pattern = (pair.label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
 
-            for (const auto n: c2.candidates) {
-                bool disalowed = true;
-                for (const auto n2: c1.candidates) {
-                    int sum = n2 + n;
+        for (int r = 0; r < board_size; r++) {
+            for (int c = 0; c < board_size; c++) {
+                CellIdx pos{r, c};
 
-                    auto it = std::find(pair.forbidden_sums.begin(), pair.forbidden_sums.end(), sum);
-                    if (it == pair.forbidden_sums.end()) {
-                        disalowed = false;
-                        break;
-                    }
+                Cell &cell = board_->get_cell(pos);
+                if (cell.is_solved())
+                    continue;
+
+                if (!region.has(pos))
+                    continue; // skip if cell is not in the region
+
+                for (const auto &attack: move_pattern) {
+                    CellIdx neighbor_pos{r + attack.first, c + attack.second};
+                    if (!in_bounds(neighbor_pos))
+                        continue;
+
+                    if (!region.has(neighbor_pos))
+                        continue; // skip if neighbor is not in the region
+
+                    Cell &neighbor = board_->get_cell(neighbor_pos);
+                    if (neighbor.is_solved())
+                        continue; // skip solved neighbors
+
+                    changed |= enforce_forbidden_sums(cell, neighbor, pair);
+                    changed |= enforce_forbidden_sums(neighbor, cell, pair);
                 }
-
-                if (disalowed)
-                    changed |= c2.remove_candidate(n);
             }
-        */
+        }*/
     }
+
     return changed;
 }
 
@@ -109,14 +121,15 @@ bool RuleAntiChess::valid() {
     const int board_size = board_->size();
 
     for (int i = 0; i < 2; i++) {
-        if (!m_pair[i].enabled)
+        const auto &pair = m_pair[i];
+
+        if (!pair.enabled)
             continue;
 
-        const Region<CellIdx> &region = m_pair[i].region;
-        if (!is_cage_valid(region, m_pair[i].allow_repeats))
+        const Region<CellIdx> &region = pair.region;
+        if (!is_cage_valid(region, pair.allow_repeats))
             return false;
 
-        const std::vector<int> &forbidden_sums = m_pair[i].forbidden_sums;
         const attacks &move_pattern = (m_pair[i].label == "Anti-Knight") ? KNIGHT_PATTERN : KING_PATTERN;
 
         for (int r = 0; r < board_size; r++) {
@@ -146,9 +159,7 @@ bool RuleAntiChess::valid() {
                     if (neighbor.value == cell.value)
                         return false;
 
-                    // if neighbor cell plus current cell's value is in the forbidden sums, return false
-                    auto it = std::find(forbidden_sums.begin(), forbidden_sums.end(), cell.value + neighbor.value);
-                    if (it != forbidden_sums.end())
+                    if (contains_sum(cell.value + neighbor.value, pair.forbidden_sums))
                         return false;
                 }
             }
@@ -171,7 +182,6 @@ void RuleAntiChess::update_impact(ImpactMap &map) {
                 CellIdx neighbor_pos{pos.r + attack.first, pos.c + attack.second};
                 if (!in_bounds(neighbor_pos))
                     continue;
-
                 map.increment(neighbor_pos);
             }
         }
@@ -278,6 +288,32 @@ bool RuleAntiChess::check_cage(const Region<CellIdx> &region, bool allow_repeats
     return changed;
 }
 
+bool RuleAntiChess::enforce_forbidden_sums(const Cell &c1, Cell &c2, const AntiChessPair &pair) {
+    // if a certain candidate always ends up being in the forbidden sums
+    // then we can remove it as a candidate from c2
+
+    if (c1.candidates.count() > 4 || c2.candidates.count() > 5)
+        return false; // skip optimization
+
+    bool changed = false;
+    for (const auto n: c2.candidates) {
+        bool disallowed = true;
+        for (const auto n2: c1.candidates) {
+            int sum = n2 + n;
+
+            if (!contains_sum(sum, pair.forbidden_sums)) {
+                disallowed = false;
+                break;
+            }
+        }
+
+        if (disallowed)
+            changed |= c2.remove_candidate(n);
+    }
+
+    return changed;
+}
+
 // helper
 
 std::vector<int> RuleAntiChess::getForbiddenSums(const std::string input) {
@@ -288,7 +324,7 @@ std::vector<int> RuleAntiChess::getForbiddenSums(const std::string input) {
     std::istringstream ss(input);
     std::string token;
 
-    while (std::getline(ss, token, ',') && forbidden_sums.size() < 18) { // max possible number of sums is 18
+    while (std::getline(ss, token, ',') && forbidden_sums.size() < 6) {
         // trim whitespace
         size_t start = token.find_first_not_of(" \t\n\r\f\v");
         if (start == std::string::npos)
@@ -298,11 +334,19 @@ std::vector<int> RuleAntiChess::getForbiddenSums(const std::string input) {
         token = token.substr(start, end - start + 1);
 
         try {
-            forbidden_sums.push_back(std::stoi(token));
+            int forbidden_sum = std::stoi(token);
+            if (forbidden_sum < 2 || forbidden_sum > board_->size() * 2)
+                continue; // skip invalid sums
+            forbidden_sums.push_back(forbidden_sum);
         } catch (...) {
             // skip invalid numbers
         }
     }
+
+    // sort
+    std::sort(forbidden_sums.begin(), forbidden_sums.end());
+    // remove duplicates
+    forbidden_sums.erase(std::unique(forbidden_sums.begin(), forbidden_sums.end()), forbidden_sums.end());
 
     return forbidden_sums;
 }

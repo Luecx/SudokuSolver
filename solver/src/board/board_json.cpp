@@ -1,8 +1,25 @@
+#include <algorithm>
+#include <cctype>
 #include <stdexcept>
+
 #include "../rules/include.h"
 #include "board.h"
 
 namespace sudoku {
+
+std::string normalize_rule_type(const std::string &type) {
+    std::string normalized = type;
+
+    // Convert to lowercase
+    std::transform(normalized.begin(), normalized.end(), normalized.begin(), ::tolower);
+
+    // Remove hyphens and spaces
+    normalized.erase(std::remove(normalized.begin(), normalized.end(), '-'), normalized.end());
+    normalized.erase(std::remove(normalized.begin(), normalized.end(), ' '), normalized.end());
+    normalized.erase(std::remove(normalized.begin(), normalized.end(), '_'), normalized.end());
+
+    return normalized;
+}
 
 void Board::from_json(JSON &json) {
     if (!json.is_object())
@@ -15,51 +32,52 @@ void Board::from_json(JSON &json) {
                 throw std::runtime_error("Each rule must be an object");
 
             std::string type = rule_entry["type"].get<std::string>();
+            std::string normalized_type = normalize_rule_type(type);
             std::shared_ptr<RuleHandler> handler;
 
-            if (type == "Standard") {
+            if (normalized_type == "standard") {
                 handler = std::make_shared<RuleStandard>(this);
-            } else if (type == "Kropki") {
+            } else if (normalized_type == "kropki") {
                 handler = std::make_shared<RuleKropki>(this);
-            } else if (type == "XV") {
+            } else if (normalized_type == "xv") {
                 handler = std::make_shared<RuleXV>(this);
-            } else if (type == "Chevron") {
+            } else if (normalized_type == "chevron") {
                 handler = std::make_shared<RuleChevron>(this);
-            } else if (type == "Extra-Regions") {
+            } else if (normalized_type == "extraregions") {
                 handler = std::make_shared<RuleExtraRegions>(this);
-            } else if (type == "Killer" || type == "Custom-Sum") {
+            } else if (normalized_type == "killer" || normalized_type == "customsum") {
                 handler = std::make_shared<RuleKiller>(this);
-            } else if (type == "Clone") {
+            } else if (normalized_type == "clone") {
                 handler = std::make_shared<RuleClone>(this);
-            } else if (type == "Irregular-Regions") {
+            } else if (normalized_type == "irregularregions") {
                 handler = std::make_shared<RuleIrregular>(this);
-            } else if (type == "Magic-Square") {
+            } else if (normalized_type == "magicsquare") {
                 handler = std::make_shared<RuleMagic>(this);
-            } else if (type == "Palindrome") {
+            } else if (normalized_type == "palindrome") {
                 handler = std::make_shared<RulePalindrome>(this);
-            } else if (type == "Thermo") {
+            } else if (normalized_type == "thermo") {
                 handler = std::make_shared<RuleThermo>(this);
-            } else if (type == "Parity") {
+            } else if (normalized_type == "parity") {
                 handler = std::make_shared<RuleParity>(this);
-            } else if (type == "Diagonal") {
+            } else if (normalized_type == "diagonal") {
                 handler = std::make_shared<RuleDiagonal>(this);
-            } else if (type == "Renban") {
+            } else if (normalized_type == "renban") {
                 handler = std::make_shared<RuleRenban>(this);
-            } else if (type == "Whisper") {
+            } else if (normalized_type == "whisper") {
                 handler = std::make_shared<RuleWhisper>(this);
-            } else if (type == "Arrow") {
+            } else if (normalized_type == "arrow") {
                 handler = std::make_shared<RuleArrow>(this);
-            } else if (type == "Anti-Chess") {
+            } else if (normalized_type == "antichess") {
                 handler = std::make_shared<RuleAntiChess>(this);
-            } else if (type == "Sandwich") {
+            } else if (normalized_type == "sandwich") {
                 handler = std::make_shared<RuleSandwich>(this);
-            } else if (type == "Diagonal-Sum") {
+            } else if (normalized_type == "diagonalsum") {
                 handler = std::make_shared<RuleDiagonalSum>(this);
-            } else if (type == "Dutch-Flat") {
+            } else if (normalized_type == "dutchflat") {
                 handler = std::make_shared<RuleDutchFlat>(this);
-            } else if (type == "Numbered-Rooms") {
+            } else if (normalized_type == "numberedrooms") {
                 handler = std::make_shared<RuleNumberedRooms>(this);
-            } else if (type == "Wild-Apples") {
+            } else if (normalized_type == "wildapples") {
                 handler = std::make_shared<RuleWildApples>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);

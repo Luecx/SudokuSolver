@@ -71,8 +71,8 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         }
 
         const parts = trimmed.split(',');
-        if (parts.length > 18)
-            warnings.push(gettext("Too many numbers: maximum allowed is 18"));
+        if (parts.length > 5)
+            warnings.push(gettext("Too many forbidden sums: maximum allowed is 5"));
 
         const invalidParts = parts.filter(part => {
             const num = part.trim();
@@ -210,6 +210,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         const rectX = topLeft.x + s * 0.03;
         const rectY = topLeft.y + s * 0.05;
 
+        // Draw white rectangle background
         ctx.fillStyle = "white";
         ctx.fillRect(rectX, rectY, boxWidth, boxHeight);
 
@@ -238,6 +239,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         ctx.restore();
     }
 
+    // helper function
     getForbiddenSums(rule) {
         if (!rule?.fields) return [];
 
@@ -255,6 +257,6 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             .filter(num => {
                 return !isNaN(num) && Number.isInteger(num);
             })
-            .slice(0, 18);
+            .slice(0, 18); // take only the first 18 numbers
     }
 }

@@ -31,6 +31,13 @@ private:
     bool in_bounds(const CellIdx &pos);
     bool is_cage_valid(const Region<CellIdx> &region, bool allow_repeats);
     bool check_cage(const Region<CellIdx> &region, bool allow_repeats);
+    bool enforce_forbidden_sums(const Cell &c1, Cell& c2, const AntiChessPair &pair);
+
+    bool contains_sum(int sum, const std::vector<int> &forbidden_sums) {
+        if (forbidden_sums.empty())
+            return false;
+        return std::binary_search(forbidden_sums.begin(), forbidden_sums.end(), sum);
+    }
 
     std::vector<int> getForbiddenSums(const std::string input);
 };
