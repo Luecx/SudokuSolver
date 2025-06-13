@@ -7,10 +7,6 @@
 
 namespace sudoku {
 
-struct NumberedRoomsPair {
-    Region<ORCIdx> region;
-    int digit;
-};
 
 class RuleNumberedRooms : public RuleHandler {
 public:
@@ -22,11 +18,16 @@ public:
     void update_impact(ImpactMap &map) override;
 
     void from_json(JSON &json) override;
-    JSON to_json() const override { return ""; }
+    JSON to_json() const override;
 
     void init_randomly() override {}
 
 private:
+    struct NumberedRoomsPair {
+        Region<ORCIdx> region;
+        int digit;
+    };
+
     std::vector<NumberedRoomsPair> m_pairs;
 
     bool enforce_numbered_rooms(const NumberedRoomsPair &pair);

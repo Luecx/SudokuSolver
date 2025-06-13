@@ -28,6 +28,11 @@ bool hidden_singles(Board *board_, std::vector<Cell *> &unit);
 std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_ = true);
 
 /**
+ * @brief generates a random color in RGBA format.
+ */
+std::string random_rgba_color();
+
+/**
  * @brief Generate a random, connected region of given size.
  */
 Region<CellIdx> generate_random_region(Board *board, int region_size, std::mt19937 &gen);

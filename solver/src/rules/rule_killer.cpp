@@ -80,6 +80,31 @@ void RuleKiller::from_json(JSON &json) {
     }
 }
 
+JSON RuleKiller::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Killer";
+
+    JSON fields = JSON(JSON::object{});
+    fields["NumberCanRepeat"] = m_number_can_repeat;
+    json["fields"] = fields;
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &cage_pair: m_cage_pair) {
+        JSON rule = JSON(JSON::object{});
+        JSON rule_fields = JSON(JSON::object{});
+
+        rule_fields["region"] = cage_pair.region.to_json();
+        rule_fields["sum"] = static_cast<double>(cage_pair.sum);
+
+        rule["fields"] = rule_fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member functions
 
 bool RuleKiller::check_cage(KillerPair &pair) {

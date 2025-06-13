@@ -93,6 +93,17 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
     return {min, max};
 }
 
+std::string random_rgba_color() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 255);
+    std::uniform_real_distribution<> alpha_dis(0.2, 0.4);
+
+    std::ostringstream oss;
+    oss << "rgba(" << dis(gen) << ", " << dis(gen) << ", " << dis(gen) << ", " << alpha_dis(gen) << ")";
+    return oss.str();
+}
+
 Region<CellIdx> generate_random_region(Board *board, int region_size, std::mt19937 &gen) {
     const int board_size = board->size();
 

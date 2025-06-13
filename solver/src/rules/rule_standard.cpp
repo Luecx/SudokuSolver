@@ -63,12 +63,4 @@ bool RuleStandard::valid() {
     return true;
 }
 
-JSON RuleStandard::to_json() const {
-    JSON json = JSON(JSON::object{});
-    json["type"] = "Standard";
-    json["fields"] = JSON(JSON::object{});
-    json["rules"] = JSON::array{};
-    return json;
-}
-
 } // namespace sudoku

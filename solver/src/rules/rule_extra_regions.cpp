@@ -73,6 +73,27 @@ void RuleExtraRegions::from_json(JSON &json) {
     }
 }
 
+JSON RuleExtraRegions::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "ExtraRegions";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &region: m_regions) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = region.to_json();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member functions
 
 bool RuleExtraRegions::check_group(const std::vector<Cell *> &unit) {

@@ -219,11 +219,42 @@ void RuleKropki::from_json(JSON &json) {
     m_missing_dot_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
-bool RuleKropki::pos_in_edge(const CellIdx &pos, const EdgeIdx &edge) const {
-    CellIdx cell1(edge.r1, edge.c1);
-    CellIdx cell2(edge.r2, edge.c2);
-    return (pos == cell1 || pos == cell2);
-}
+JSON RuleKropki::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Kropki";
 
+    JSON fields = JSON(JSON::object{});
+    fields["allDotsGiven"] = m_all_dots_given;
+    json["fields"] = fields;
+
+    JSON::array rules = JSON::array();
+
+    // Add white edges if they exist
+    if (m_white_edges.size() > 0) {
+        JSON rule = JSON(JSON::object{});
+        JSON rule_fields = JSON(JSON::object{});
+
+        rule_fields["region"] = m_white_edges.to_json();
+        rule["fields"] = rule_fields;
+        rule["color"] = "white";
+
+        rules.push_back(rule);
+    }
+
+    // Add black edges if they exist
+    if (m_black_edges.size() > 0) {
+        JSON rule = JSON(JSON::object{});
+        JSON rule_fields = JSON(JSON::object{});
+
+        rule_fields["region"] = m_black_edges.to_json();
+        rule["fields"] = rule_fields;
+        rule["color"] = "black";
+
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
 
 } // namespace sudoku

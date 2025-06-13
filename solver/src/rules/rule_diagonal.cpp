@@ -49,6 +49,18 @@ void RuleDiagonal::from_json(JSON &json) {
         m_anti_diagonal = json["fields"]["antiDiagonal"].get<bool>();
 }
 
+JSON RuleDiagonal::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Diagonal";
+
+    JSON fields = JSON(JSON::object{});
+    fields["diagonal"] = m_diagonal;
+    fields["antiDiagonal"] = m_anti_diagonal;
+
+    json["fields"] = fields;
+    return json;
+}
+
 // private member function
 
 bool RuleDiagonal::check_unique_diagonal(bool is_main) {

@@ -16,7 +16,14 @@ public:
     void update_impact(ImpactMap &map) override {};
 
     void from_json(JSON &json) override {};
-    JSON to_json() const override { return ""; }
+
+    JSON to_json() const override {
+        JSON json = JSON(JSON::object{});
+        json["type"] = "Dutch-Flat";
+        json["fields"] = JSON(JSON::object{});
+        json["rules"] = JSON::array{};
+        return json;
+    }
 
     void init_randomly() override {}
 

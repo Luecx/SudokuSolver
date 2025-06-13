@@ -90,6 +90,28 @@ void RuleNumberedRooms::from_json(JSON &json) {
     }
 }
 
+JSON RuleNumberedRooms::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "NumberedRooms";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &pair: m_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = pair.region.to_json();
+        fields["digit"] = static_cast<double>(pair.digit);
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member functions
 
 bool RuleNumberedRooms::enforce_numbered_rooms(const NumberedRoomsPair &pair) {

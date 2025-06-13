@@ -6,10 +6,6 @@
 
 namespace sudoku {
 
-struct DiagSumPair {
-    Region<DiagonalIdx> region;
-    int sum = 0;
-};
 
 class RuleDiagonalSum : public RuleHandler {
 public:
@@ -21,11 +17,16 @@ public:
     void update_impact(ImpactMap &map) override;
 
     void from_json(JSON &json) override;
-    JSON to_json() const override { return ""; }
+    JSON to_json() const override;
 
     void init_randomly() override {}
 
 private:
+    struct DiagSumPair {
+        Region<DiagonalIdx> region;
+        int sum = 0;
+    };
+
     std::vector<DiagSumPair> m_diagsum_pairs;
 
     bool check_diagonal(DiagSumPair &pair);

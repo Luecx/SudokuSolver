@@ -16,9 +16,9 @@ public:
     void update_impact(ImpactMap &map) override;
 
     void from_json(JSON &json) override;
-    JSON to_json() const override { return ""; }
+    JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
     std::vector<Region<CellIdx>> m_regions;

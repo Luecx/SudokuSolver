@@ -6,11 +6,6 @@
 
 namespace sudoku {
 
-struct KillerPair {
-    Region<CellIdx> region;
-    int sum;
-};
-
 class RuleKiller : public RuleHandler {
 public:
     explicit RuleKiller(Board *board) : RuleHandler(board) {}
@@ -21,11 +16,16 @@ public:
     void update_impact(ImpactMap &map) override {};
 
     void from_json(JSON &json) override;
-    JSON to_json() const override { return ""; }
+    JSON to_json() const override;
 
     void init_randomly() override {}
 
 private:
+    struct KillerPair {
+        Region<CellIdx> region;
+        int sum;
+    };
+
     bool m_number_can_repeat = false;
 
     std::vector<KillerPair> m_cage_pair;

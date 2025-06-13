@@ -6,14 +6,6 @@
 
 namespace sudoku {
 
-struct AntiChessPair {
-    std::string label;
-    bool enabled = true;
-    bool allow_repeats = false;
-    Region<CellIdx> region; // can be of size 0
-    std::vector<int> forbidden_sums; // can be of size 0
-};
-
 class RuleAntiChess : public RuleHandler {
 public:
     explicit RuleAntiChess(Board *board) : RuleHandler(board) {}
@@ -37,6 +29,14 @@ private:
     const float BOTH_REGIONS_ENABLED_CHANCE = 0.75;
     const int FORBIDDEN_SUMS_MIN = 0;
     const int FORBIDDEN_SUMS_MAX = 5;
+
+    struct AntiChessPair {
+        std::string label;
+        bool enabled = true;
+        bool allow_repeats = false;
+        Region<CellIdx> region; // can be of size 0
+        std::vector<int> forbidden_sums; // can be of size 0
+    };
 
     // standard parameters
     AntiChessPair m_pair[2];

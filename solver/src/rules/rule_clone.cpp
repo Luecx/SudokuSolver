@@ -134,6 +134,29 @@ void RuleClone::from_json(JSON &json) {
     initCloneGroups();
 }
 
+JSON RuleClone::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Clone";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+    for (const auto &region: m_regions) {
+        JSON rule = JSON(JSON::object{});
+
+        JSON fields = JSON(JSON::object{});
+        fields["region"] = region.to_json();
+        fields["color"] = rule_utils::random_rgba_color();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+    json["rules"] = rules;
+
+    return json;
+}
+
+void RuleClone::init_randomly() { initCloneGroups(); }
+
 // private member function
 
 void RuleClone::initCloneGroups() {

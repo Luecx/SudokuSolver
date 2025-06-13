@@ -82,7 +82,19 @@ void RuleIrregular::from_json(JSON &json) {
     }
 }
 
-// private member functions
+JSON RuleIrregular::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Irregular-Regions";
 
+    JSON fields = JSON(JSON::object{});
+
+    for (size_t i = 0; i < m_regions.size() && i < 9; ++i) {
+        std::string region_key = "region" + std::to_string(i + 1);
+        fields[region_key] = m_regions[i].to_json();
+    }
+
+    json["fields"] = fields;
+    return json;
+}
 
 } // namespace sudoku

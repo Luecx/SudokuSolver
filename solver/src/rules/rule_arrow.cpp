@@ -93,6 +93,30 @@ void RuleArrow::from_json(JSON &json) {
     }
 }
 
+JSON RuleArrow::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Arrow";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &arrow_pair: m_arrow_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["base"] = arrow_pair.base.to_json();
+        fields["path"] = arrow_pair.path.to_json();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleArrow::init_randomly() {}
+
 // private member functions
 
 bool RuleArrow::determine_base_options(ArrowPair &arrow_pair) {

@@ -6,11 +6,6 @@
 
 namespace sudoku {
 
-struct SandwichPair {
-    Region<RCIdx> region;
-    int sum = 0;
-};
-
 class RuleSandwich : public RuleHandler {
 public:
     explicit RuleSandwich(Board *board) : RuleHandler(board) {}
@@ -22,11 +17,16 @@ public:
     void update_impact(ImpactMap &map) override;
 
     void from_json(JSON &json) override;
-    JSON to_json() const override { return ""; }
+    JSON to_json() const override;
 
     void init_randomly() override {}
 
 private:
+    struct SandwichPair {
+        Region<RCIdx> region;
+        int sum = 0;
+    };
+
     int *m_min_digits;
     int *m_max_digits;
 

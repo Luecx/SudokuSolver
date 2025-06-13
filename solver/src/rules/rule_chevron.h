@@ -17,9 +17,9 @@ public:
     void update_impact(ImpactMap &map) override;
 
     void from_json(JSON &json) override;
-    JSON to_json() const override { return ""; }
+    JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
     Region<EdgeIdx> m_up_edges;

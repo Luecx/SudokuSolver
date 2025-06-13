@@ -95,6 +95,27 @@ void RulePalindrome::from_json(JSON &json) {
     }
 }
 
+JSON RulePalindrome::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Palindrome";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &path: m_paths) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["path"] = path.to_json();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member functions
 
 bool RulePalindrome::enforce_symmetry(Cell &a, Cell &b) {

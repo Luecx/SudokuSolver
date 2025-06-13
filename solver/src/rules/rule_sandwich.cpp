@@ -99,6 +99,28 @@ void RuleSandwich::from_json(JSON &json) {
     initTables();
 }
 
+JSON RuleSandwich::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Sandwich";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &pair: m_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = pair.region.to_json();
+        fields["sum"] = static_cast<double>(pair.sum);
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member function
 
 void RuleSandwich::initTables() {

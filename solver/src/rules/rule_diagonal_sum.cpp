@@ -92,6 +92,29 @@ void RuleDiagonalSum::from_json(JSON &json) {
     }
 }
 
+JSON RuleDiagonalSum::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "DiagonalSum";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &diagsum_pair: m_diagsum_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = diagsum_pair.region.to_json();
+        fields["sum"] = static_cast<double>(diagsum_pair.sum);
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+
 // private member function
 
 bool RuleDiagonalSum::check_diagonal(DiagSumPair &pair) {
