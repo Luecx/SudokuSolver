@@ -104,8 +104,11 @@ std::string random_rgba_color() {
     return oss.str();
 }
 
-Region<CellIdx> generate_random_region(Board *board, int region_size, std::mt19937 &gen) {
+Region<CellIdx> generate_random_region(Board *board, int region_size) {
     const int board_size = board->size();
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
     std::uniform_int_distribution<> cell_dist(0, board_size - 1);
 
@@ -149,6 +152,65 @@ Region<CellIdx> generate_random_region(Board *board, int region_size, std::mt199
     for (const auto &cell: region_cells)
         region.add(cell);
     return region;
+}
+
+Region<CellIdx> generate_random_path(Board* board, int region_size) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    
+    const int board_size = board->size();
+    std::uniform_int_distribution<> cell_dist(0, board_size - 1);
+    
+    Region<CellIdx> path_region;
+    
+    // Start with random cell
+    CellIdx current_pos{cell_dist(gen), cell_dist(gen)};
+    path_region.add(current_pos);
+    
+    // Define movement directions: orthogonal + diagonals
+    int directions[][2] = {
+        {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // orthogonal
+        {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // diagonals
+    };
+    
+    // Generate path by connecting adjacent cells
+    for (int j = 1; j < region_size; j++) {
+        std::vector<CellIdx> valid_moves;
+        
+        // Find all valid adjacent positions from current position
+        for (int dir = 0; dir < 8; dir++) {
+            CellIdx next_pos{current_pos.r + directions[dir][0], current_pos.c + directions[dir][1]};
+            
+            if (rule_utils::pos_in_bounds(board, next_pos) && !path_region.has(next_pos)) {
+                valid_moves.push_back(next_pos);
+            }
+        }
+        
+        // If no valid moves, try from any existing cell in the path
+        if (valid_moves.empty()) {
+            for (const auto& existing_pos : path_region.items()) {
+                for (int dir = 0; dir < 8; dir++) {
+                    CellIdx next_pos{existing_pos.r + directions[dir][0], existing_pos.c + directions[dir][1]};
+                    
+                    if (rule_utils::pos_in_bounds(board, next_pos) && !path_region.has(next_pos)) {
+                        valid_moves.push_back(next_pos);
+                    }
+                }
+                if (!valid_moves.empty()) break;
+            }
+        }
+        
+        // If still no valid moves, break early
+        if (valid_moves.empty()) break;
+        
+        // Choose random valid move
+        std::uniform_int_distribution<> move_dist(0, valid_moves.size() - 1);
+        CellIdx next_pos = valid_moves[move_dist(gen)];
+        path_region.add(next_pos);
+        current_pos = next_pos;
+    }
+    
+    return path_region;
 }
 
 } // namespace sudoku::rule_utils

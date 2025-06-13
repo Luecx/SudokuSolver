@@ -31,10 +31,9 @@ namespace sudoku::datagen {
     // find a random solution
     while (true) {
         board.init_randomly();
-        auto solutions = board.solve(solutions_limit, 1024, &stats);
-
-        if (solutions.empty())
-            continue;
+        auto solutions = board.solve(solutions_limit, node_limit, &stats);
+        if (stats.solutions_found < 1) 
+            continue; // no solution found, try again
 
         int idx = rand() % solutions.size();
         const auto &solution = solutions[idx];
@@ -45,7 +44,7 @@ namespace sudoku::datagen {
                 board.get_cell({r, c}).set_value(solution.get(r, c));
         break;
     }
-
+    
     // try reducing clues while maintaining uniqueness
     std::vector<CellIdx> filled_pos;
     for (Row r = 0; r < board.size(); ++r)
@@ -73,7 +72,7 @@ namespace sudoku::datagen {
             keep_cell = true; // if we made too many guesses, keep the cell
 
         if (keep_cell)
-            cell.value = original_value;
+            cell.set_value(original_value);
         else
             stats = test_stats; // keep stats if we successfully reduced clues
     }
