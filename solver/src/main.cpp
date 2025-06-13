@@ -12,6 +12,7 @@
 #include "solver_stats.h"
 
 #include "datagen.h"
+#include "rules/include.h"
 
 extern "C" {
 void solve(const char *json, int max_solutions, int max_nodes);
@@ -24,7 +25,6 @@ void print_help() {
               << "  ./solver complete <json_path> <node_limit>\n"
               << "  ./solver bench <json_path>\n";
 }
-
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
             std::cerr << "Error: Cannot open file '" << json_path << "'\n";
             return 1;
         }
+
         std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         solve(json.c_str(), max_solutions, max_nodes);
         return 0;
@@ -71,6 +72,7 @@ int main(int argc, char *argv[]) {
             std::cerr << "Error: Cannot open file '" << json_path << "'\n";
             return 1;
         }
+
         std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         solveComplete(json.c_str(), 0, max_nodes);
         return 0;
@@ -87,12 +89,22 @@ int main(int argc, char *argv[]) {
         return 0;
     } else if (command == "datagen") {
         if (argc != 3) {
-            std::cerr << "Error: 'datagen' requires <json_path>\n";
+            std::cerr << "Error: 'datagen' requires <output_path>\n";
             print_help();
             return 1;
         }
 
-        datagen::generate_random_puzzle(argv[2], 17, 16384, 1000);
+        Board board{9};
+
+        // initialize all handlers needed
+        board.add_handler(std::make_shared<RuleStandard>(&board));
+
+        const int puzzle_count = 1;
+        for (int i = 0; i < puzzle_count; i++) {
+            std::cout << "Generating puzzle " << (i + 1) << "/" << puzzle_count << "...\n";
+            datagen::generate_random_puzzle(argv[2], board, 17, 16384, 50000);
+        }
+
         return 0;
     }
 

@@ -4,7 +4,6 @@
 #include <random>
 
 #include "board/board.h"
-#include "rules/include.h"
 
 namespace sudoku::datagen {
 
@@ -17,11 +16,16 @@ namespace sudoku::datagen {
  * @param guesses_limit Maximum number of guesses allowed (default: 0, meaning no limit)
  *
  */
-void generate_random_puzzle(const std::string &output_dir, int solutions_limit, int node_limit, int guesses_limit = 0) {
-    Board board(9);
-    board.add_handler(std::make_shared<RuleStandard>(&board));
-    board.add_handler(std::make_shared<RuleAntiChess>(&board));
-
+// clang-format off
+ void generate_random_puzzle
+(
+    const std::string &output_dir, 
+    Board& board, 
+    int solutions_limit, 
+    int node_limit, 
+    int guesses_limit = 0
+) {
+    // clang-format on
     SolverStats stats;
 
     // find a random solution
@@ -34,6 +38,7 @@ void generate_random_puzzle(const std::string &output_dir, int solutions_limit, 
 
         int idx = rand() % solutions.size();
         const auto &solution = solutions[idx];
+
         board.clear();
         for (Row r = 0; r < board.size(); ++r)
             for (Col c = 0; c < board.size(); ++c)
