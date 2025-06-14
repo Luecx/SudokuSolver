@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
         const int puzzle_count = 1;
         for (int i = 0; i < puzzle_count; i++) {
             std::cout << "Generating puzzle " << (i + 1) << "/" << puzzle_count << "...\n";
-            datagen::generate_random_puzzle(argv[2], board, 17, 128000);
+            datagen::generate_random_puzzle(argv[2], board, 17, 16384);
         }
 
         return 0;

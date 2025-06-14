@@ -162,7 +162,7 @@ void RuleClone::init_randomly() {
     m_regions.clear();
 
     for (int group_id = 0; group_id < num_clone_groups; group_id++) {
-        std::uniform_int_distribution<> size_dist(2, max_clone_group_size);
+        std::uniform_int_distribution<> size_dist(min_clone_group_size, max_clone_group_size);
         int group_size = size_dist(gen);
 
         std::uniform_int_distribution<> region_size_dist(2, 5);
