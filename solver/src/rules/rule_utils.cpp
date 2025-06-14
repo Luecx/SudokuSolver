@@ -3,75 +3,22 @@
 
 namespace sudoku::rule_utils {
 
-// helper functions
-
-CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen) {
-    const int board_size = board->size();
-    std::uniform_int_distribution<> cell_dist(0, board_size - 1);
-
-    CellIdx start_cell{-1, -1};
-    int attempts = 0;
-    const int max_attempts = board_size * board_size * 2;
-
-    do {
-        start_cell = {cell_dist(gen), cell_dist(gen)};
-        attempts++;
-
-        if (attempts > max_attempts)
-            return CellIdx{-1, -1}; // Invalid cell
-    } while (false); // No existing region check
-
-    return start_cell;
-}
-
-std::vector<CellIdx> get_orthogonal_neighbors(Board *board, //
-                                              const CellIdx &cell, //
-                                              const Region<CellIdx> &current_region) {
-    std::vector<CellIdx> neighbors;
-    const std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-    for (const auto &dir: directions) {
-        CellIdx neighbor = {cell.r + dir.first, cell.c + dir.second};
-        if (pos_in_bounds(board, neighbor) && !current_region.has(neighbor)) {
-            neighbors.push_back(neighbor);
-        }
+// helper function to find a valid starting cell in the board
+CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region = {}) {
+    if (available_region.size() == 0) {
+        std::uniform_int_distribution<> dist(0, board->size() - 1);
+        return {dist(gen), dist(gen)};
+    } else {
+        std::uniform_int_distribution<> cell_dist(0, available_region.size() - 1);
+        return available_region.items()[cell_dist(gen)];
     }
-    return neighbors;
-}
-
-std::vector<CellIdx> get_all_neighbors(Board *board, //
-                                       const CellIdx &cell, //
-                                       const Region<CellIdx> &current_region) {
-    std::vector<CellIdx> neighbors;
-    const int directions[][2] = {
-            {-1, 0},  {1, 0},  {0, -1}, {0, 1}, // orthogonal
-            {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // diagonals
-    };
-
-    for (int i = 0; i < 8; i++) {
-        CellIdx neighbor = {cell.r + directions[i][0], cell.c + directions[i][1]};
-        if (pos_in_bounds(board, neighbor) && !current_region.has(neighbor)) {
-            neighbors.push_back(neighbor);
-        }
-    }
-    return neighbors;
-}
-
-// helper to select random element and remove it from vector
-template<typename T>
-T select_and_remove_random(std::vector<T> &vec, std::mt19937 &gen) {
-    std::uniform_int_distribution<> dist(0, vec.size() - 1);
-    int idx = dist(gen);
-    T selected = vec[idx];
-    vec.erase(vec.begin() + idx);
-    return selected;
 }
 
 // helper to select random element without removing
 template<typename T>
-T select_random(const std::vector<T> &vec, std::mt19937 &gen) {
+T select_random(const Region<T> &vec, std::mt19937 &gen) {
     std::uniform_int_distribution<> dist(0, vec.size() - 1);
-    return vec[dist(gen)];
+    return vec.items()[dist(gen)];
 }
 
 // solver utils
@@ -177,70 +124,100 @@ std::string random_rgba_color() {
     return oss.str();
 }
 
-Region<CellIdx> generate_random_region(Board *board, int region_size) {
+
+Region<CellIdx> get_orthogonal_neighbors(Board *board, const CellIdx &cell) {
+    Region<CellIdx> neighbors;
+    const std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    for (const auto &dir: directions) {
+        CellIdx neighbor = {cell.r + dir.first, cell.c + dir.second};
+        if (pos_in_bounds(board, neighbor))
+            neighbors.add(neighbor);
+    }
+
+    return neighbors;
+}
+
+Region<CellIdx> get_all_neighbors(Board *board, const CellIdx &cell) {
+    Region<CellIdx> neighbors;
+    const int directions[8][2] = {
+            {-1, 0},  {1, 0},  {0, -1}, {0, 1}, // orthogonal
+            {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // diagonals
+    };
+
+    for (int i = 0; i < 8; i++) {
+        CellIdx neighbor = {cell.r + directions[i][0], cell.c + directions[i][1]};
+        if (pos_in_bounds(board, neighbor))
+            neighbors.add(neighbor);
+    }
+
+    return neighbors;
+}
+
+Region<CellIdx> generate_random_region(Board *board, //
+                                       const int max_region_size, //
+                                       Region<CellIdx> *available_region) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Find valid starting cell
-    CellIdx start_cell = find_valid_starting_cell(board, gen);
-    if (start_cell.r == -1)
-        return Region<CellIdx>(); // No valid starting cell found
+    CellIdx current = available_region ? find_valid_starting_cell(board, gen, *available_region)
+                                       : find_valid_starting_cell(board, gen);
 
     Region<CellIdx> region;
-    region.add(start_cell);
-    std::vector<CellIdx> candidates = {start_cell};
+    region.add(current);
 
-    while (static_cast<int>(region.items().size()) < region_size && !candidates.empty()) {
-        CellIdx current = select_and_remove_random(candidates, gen);
+    while ((int) region.items().size() < max_region_size) {
+        Region<CellIdx> neighbors = get_orthogonal_neighbors(board, current) - region;
 
-        std::vector<CellIdx> neighbors = get_orthogonal_neighbors(board, current, region);
+        if (available_region)
+            neighbors = neighbors & (*available_region);
 
-        if (!neighbors.empty()) {
+        if (neighbors.size()) {
             CellIdx new_cell = select_random(neighbors, gen);
             region.add(new_cell);
-            candidates.push_back(new_cell);
+            current = new_cell;
+
+            if (available_region)
+                *available_region = *available_region - region;
+        } else {
+            break;
         }
     }
 
     return region;
 }
 
-Region<CellIdx> generate_random_path(Board *board, int region_size) {
+Region<CellIdx> generate_random_path(Board *board, //
+                                     const int max_path_size, //
+                                     Region<CellIdx> *available_path) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    // Find valid starting cell
-    CellIdx current_pos = find_valid_starting_cell(board, gen);
-    if (current_pos.r == -1)
-        return Region<CellIdx>(); // No valid starting cell found
+    CellIdx current = available_path ? find_valid_starting_cell(board, gen, *available_path)
+                                     : find_valid_starting_cell(board, gen);
 
-    Region<CellIdx> path_region;
-    path_region.add(current_pos);
+    Region<CellIdx> path;
+    path.add(current);
 
-    // Generate path by connecting adjacent cells
-    for (int j = 1; j < region_size; j++) {
-        std::vector<CellIdx> valid_moves = get_all_neighbors(board, current_pos, path_region);
+    while ((int) path.items().size() < max_path_size) {
+        Region<CellIdx> neighbors = get_all_neighbors(board, current) - path;
 
-        // If no valid moves from current position, try from any existing cell in the path
-        if (valid_moves.empty()) {
-            for (const auto &existing_pos: path_region.items()) {
-                valid_moves = get_all_neighbors(board, existing_pos, path_region);
-                if (!valid_moves.empty())
-                    break;
-            }
-        }
+        if (available_path)
+            neighbors = neighbors & (*available_path);
 
-        // If still no valid moves, break early
-        if (valid_moves.empty())
+        if (neighbors.size()) {
+            CellIdx new_cell = select_random(neighbors, gen);
+            path.add(new_cell);
+            current = new_cell;
+
+            if (available_path)
+                *available_path = *available_path - path;
+        } else {
             break;
-
-        // Choose random valid move
-        CellIdx next_pos = select_random(valid_moves, gen);
-        path_region.add(next_pos);
-        current_pos = next_pos;
+        }
     }
 
-    return path_region;
+    return path;
 }
 
 } // namespace sudoku::rule_utils

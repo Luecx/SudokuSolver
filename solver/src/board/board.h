@@ -58,7 +58,7 @@ public:
      * @brief Serialize the board to JSON.
      * @return JSON representation of the board.
      */
-    void to_json(const std::string file) const;
+    void to_json(const std::string file_path) const;
 
     /**
      * @brief Access a specific cell by index.

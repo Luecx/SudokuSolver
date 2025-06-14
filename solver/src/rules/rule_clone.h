@@ -21,9 +21,16 @@ public:
     void init_randomly() override;
 
 private:
-    int num_clone_groups = 3; // Number of different clone groups to create
-    int min_clone_group_size = 2; // Minimum size of each clone group
-    int max_clone_group_size = 4; // Maximum size of each clone group
+    // Hyperparameters
+    // min/max number of different clone groups
+    const int min_clones = 3;
+    const int max_clones = 6;
+    // min/max number of clones in a group
+    const int min_clone_group_size = 2;
+    const int max_clone_group_size = 4;
+    // min/max size of a region
+    const int min_region_size = 2;
+    const int max_region_size = 6;
 
     // standard params
     std::vector<Region<CellIdx>> m_regions;

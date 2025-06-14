@@ -33,13 +33,31 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
 std::string random_rgba_color();
 
 /**
- * @brief Generate a random, connected region of given size.
+ * @brief Get all orthogonal neighbors of a cell.
  */
-Region<CellIdx> generate_random_region(Board *board, int region_size);
+Region<CellIdx> get_orthogonal_neighbors(Board *board, const CellIdx &cell);
 
 /**
- * @brief Generate a random path of given size.
+ * @brief Get all neighbors of a cell (orthogonal and diagonal).
  */
-Region<CellIdx> generate_random_path(Board *board, int region_size);
+Region<CellIdx> get_all_neighbors(Board *board, const CellIdx &cell);
+
+/**
+ * @brief Generate a random, connected region of given size inside available_region.
+ * @param max_region_size The region may not reach this size if no more cells are available.
+ * @param available_region The region will be updated inside the function if provided.
+ */
+Region<CellIdx> generate_random_region(Board *board, //
+                                       const int max_region_size, //
+                                       Region<CellIdx> *available_region = nullptr);
+
+/**
+ * @brief Generate a random, connected path of given size inside available_path.
+ * @param max_region_size The region may not reach this size if no more cells are available.
+ * @param available_path The region will be updated inside the function if provided.
+ */
+Region<CellIdx> generate_random_path(Board *board, //
+                                     const int max_path_size, //
+                                     Region<CellIdx> *available_path = nullptr);
 
 } // namespace sudoku::rule_utils

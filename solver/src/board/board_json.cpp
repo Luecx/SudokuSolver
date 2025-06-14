@@ -104,7 +104,7 @@ void Board::from_json(JSON &json) {
     update_impact_map();
 }
 
-void Board::to_json(const std::string file) const {
+void Board::to_json(const std::string file_path) const {
     JSON json = JSON(JSON::object{});
 
     // create fixedCells array
@@ -137,12 +137,12 @@ void Board::to_json(const std::string file) const {
     json["rules"] = rules;
 
     // write to file
-    std::ofstream file_stream(file);
+    std::ofstream file_stream(file_path);
     if (file_stream.is_open()) {
         file_stream << json;
         file_stream.close();
     } else {
-        throw std::runtime_error("Could not open file for writing: " + file);
+        throw std::runtime_error("Could not open file for writing: " + file_path);
     }
 }
 

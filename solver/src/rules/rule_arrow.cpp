@@ -96,10 +96,8 @@ void RuleArrow::from_json(JSON &json) {
 JSON RuleArrow::to_json() const {
     JSON json = JSON(JSON::object{});
     json["type"] = "Arrow";
-    json["fields"] = JSON(JSON::object{});
 
     JSON::array rules = JSON::array();
-
     for (const auto &arrow_pair: m_arrow_pairs) {
         JSON rule = JSON(JSON::object{});
         JSON fields = JSON(JSON::object{});
@@ -116,10 +114,11 @@ JSON RuleArrow::to_json() const {
 }
 
 void RuleArrow::init_randomly() {
+    // infinite loop may occur: TODO fix this that
+
     m_arrow_pairs.clear();
 
-    const int board_size = board_->size();
-    if (board_size != 9)
+    if (board_->size() != 9)
         return; // arrow rules only supported for 9x9 boards
 
     std::random_device rd;
@@ -132,60 +131,40 @@ void RuleArrow::init_randomly() {
 
     for (int i = 0; i < num_arrows; ++i) {
         while (true) {
-            int base_cell_size;
-            if (base_size_dist(gen) < BASE_SIZE_1_PROBABILITY)
-                base_cell_size = 1;
-            else
-                base_cell_size = 2;
-
             int path_length = path_length_dist(gen);
-            auto path_region = rule_utils::generate_random_path(board_, path_length);
-
-            Region<CellIdx> base_region;
-            CellIdx path_start = path_region.items()[0];
-
-            std::uniform_int_distribution<int> dir_dist(0, 3);
-            int directions[][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // up, down, left, right
+            Region<CellIdx> path = rule_utils::generate_random_path(board_, path_length);
 
             // find a valid adjacent position for base region
-            std::vector<CellIdx> valid_positions;
-            for (int dir = 0; dir < 4; ++dir) {
-                CellIdx adj_pos{path_start.r + directions[dir][0], path_start.c + directions[dir][1]};
+            Region<CellIdx> neighbors = rule_utils::get_orthogonal_neighbors(board_, path.items()[0]) - path;
 
-                if (rule_utils::pos_in_bounds(board_, adj_pos) && !path_region.has(adj_pos)) {
-                    valid_positions.push_back(adj_pos);
-                }
-            }
+            if (neighbors.size()) {
+                int base_cell_size = 1;
 
-            if (!valid_positions.empty()) {
-                std::uniform_int_distribution<int> pos_dist(0, valid_positions.size() - 1);
-                CellIdx base_start = valid_positions[pos_dist(gen)];
+                std::uniform_int_distribution<int> pos_dist(0, neighbors.size() - 1);
+                CellIdx base_start = neighbors.items()[pos_dist(gen)];
+
+                Region<CellIdx> base_region;
                 base_region.add(base_start);
 
                 // if base_cell_size is 2, add one more adjacent cell
                 if (base_cell_size == 2) {
-                    for (int dir = 0; dir < 4; ++dir) {
-                        CellIdx adj_pos{base_start.r + directions[dir][0], base_start.c + directions[dir][1]};
+                    neighbors = rule_utils::get_orthogonal_neighbors(board_, base_start) - base_region - path;
 
-                        if (path_region.has(adj_pos) || //
-                            base_region.has(adj_pos) || //
-                            !rule_utils::pos_in_bounds(board_, adj_pos)) {
-                            continue; // skip if out of bounds or already in path/base region
-                        }
-
-                        base_region.add(adj_pos);
-                        break;
+                    if (neighbors.size()) {
+                        pos_dist = std::uniform_int_distribution<int>(0, neighbors.size() - 1);
+                        CellIdx next_cell = neighbors.items()[pos_dist(gen)];
+                        base_region.add(next_cell);
                     }
                 }
 
                 // only add if we successfully created both regions
-                if ((int) base_region.size() < base_cell_size || (int) path_region.size() < MIN_PATH_LENGTH) {
+                if ((int) base_region.size() < base_cell_size || (int) path.size() < MIN_PATH_LENGTH) {
                     continue;
                 }
 
                 ArrowPair arrow_pair;
                 arrow_pair.base = base_region;
-                arrow_pair.path = path_region;
+                arrow_pair.path = path;
 
                 m_arrow_pairs.push_back(arrow_pair);
                 break;

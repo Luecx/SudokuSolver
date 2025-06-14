@@ -156,54 +156,58 @@ JSON RuleClone::to_json() const {
 }
 
 void RuleClone::init_randomly() {
+    // infinite loop may happen: TODO make sure that doenst happen
     std::random_device rd;
     std::mt19937 gen(rd());
 
     m_regions.clear();
 
-    for (int group_id = 0; group_id < num_clone_groups; group_id++) {
-        std::uniform_int_distribution<> size_dist(min_clone_group_size, max_clone_group_size);
-        int group_size = size_dist(gen);
+    std::uniform_int_distribution<> clone_group_dist(min_clones, max_clones);
+    const int num_clones = clone_group_dist(gen);
 
-        std::uniform_int_distribution<> region_size_dist(2, 5);
+    int clones_created = 0;
+    while (clones_created < num_clones) {
+        std::uniform_int_distribution<> region_size_dist(min_region_size, max_region_size);
         int region_size = region_size_dist(gen);
 
-        // Generate a base region
+        // generate a base region
         Region<CellIdx> base_region = rule_utils::generate_random_region(board_, region_size);
         if (base_region.items().size() < 2)
             continue;
 
-        // Add the base region
+        // check if shape is already present
+        for (const auto &region: m_regions)
+            if (isSameShape(base_region, region))
+                continue; // skip if shape already exists
+
+        // add the base region
         m_regions.push_back(base_region);
+        clones_created++;
+
+        std::uniform_int_distribution<> size_dist(min_clone_group_size, max_clone_group_size);
+        int group_size = size_dist(gen);
 
         // Create shifted clones
-        for (int i = 1; i < group_size; ++i) {
-            bool found = false;
-            int attempts = 0;
-            const int max_attempts = 100; // prevent infinite loops
+        int clones_in_group = 1;
+        while (clones_in_group < group_size) {
+            std::uniform_int_distribution<> shift_dist(-board_->size() + 1, board_->size() - 1);
+            int dr = shift_dist(gen);
+            int dc = shift_dist(gen);
 
-            while (!found && attempts < max_attempts) {
-                std::uniform_int_distribution<> shift_dist(-board_->size() + 1, board_->size() - 1);
-                int dr = shift_dist(gen);
-                int dc = shift_dist(gen);
-
-                Region<CellIdx> shifted_region;
-                bool valid = true;
-                for (const auto &cell: base_region.items()) {
-                    CellIdx shifted{cell.r + dr, cell.c + dc};
-                    if (!rule_utils::pos_in_bounds(board_, shifted)) {
-                        valid = false;
-                        break;
-                    }
-                    shifted_region.add(shifted);
+            Region<CellIdx> shifted_region;
+            bool valid = true;
+            for (const auto &cell: base_region.items()) {
+                CellIdx shifted{cell.r + dr, cell.c + dc};
+                if (!rule_utils::pos_in_bounds(board_, shifted)) {
+                    valid = false;
+                    break;
                 }
+                shifted_region.add(shifted);
+            }
 
-                if (valid) {
-                    m_regions.push_back(shifted_region);
-                    found = true;
-                }
-
-                attempts++;
+            if (valid) {
+                m_regions.push_back(shifted_region);
+                clones_in_group++;
             }
         }
     }

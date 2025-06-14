@@ -98,12 +98,12 @@ int main(int argc, char *argv[]) {
 
         // initialize all handlers needed
         board.add_handler(std::make_shared<RuleStandard>(&board));
-        board.add_handler(std::make_shared<RuleClone>(&board));
+        board.add_handler(std::make_shared<RuleArrow>(&board));
 
-        const int puzzle_count = 1;
+        const int puzzle_count = 6;
         for (int i = 0; i < puzzle_count; i++) {
             std::cout << "Generating puzzle " << (i + 1) << "/" << puzzle_count << "...\n";
-            datagen::generate_random_puzzle(argv[2], board, 17, 16384);
+            datagen::generate_random_puzzle(argv[2], board, 17, 128000);
         }
 
         return 0;
