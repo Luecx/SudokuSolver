@@ -21,6 +21,16 @@ public:
     void init_randomly() override;
 
 private:
+    // Hyperparameters
+    const int MIN_ARROWS = 3;
+    const int MAX_ARROWS = 10;
+    const int MIN_PATH_LENGTH = 2;
+    const int MAX_PATH_LENGTH = 5;
+    const double BASE_SIZE_1_PROBABILITY = 0.6; // 70% chance for size 1
+    const double BASE_SIZE_2_PROBABILITY = 0.4; // 30% chance for size 2
+
+    // standard params
+
     struct ArrowPair {
         Region<CellIdx> base;
         Region<CellIdx> path;

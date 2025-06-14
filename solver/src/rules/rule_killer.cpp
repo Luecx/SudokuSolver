@@ -105,6 +105,14 @@ JSON RuleKiller::to_json() const {
     return json;
 }
 
+void RuleKiller::init_randomly() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    m_cage_pair.clear();
+
+}
+
 // private member functions
 
 bool RuleKiller::check_cage(KillerPair &pair) {

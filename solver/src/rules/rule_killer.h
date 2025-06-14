@@ -18,9 +18,14 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
+    // Hyperparameters
+    const int min_region_size = 2;
+    const int max_region_size = 6;
+
+    // standard params
     struct KillerPair {
         Region<CellIdx> region;
         int sum;

@@ -35,6 +35,11 @@ std::string random_rgba_color();
 /**
  * @brief Generate a random, connected region of given size.
  */
-Region<CellIdx> generate_random_region(Board *board, int region_size, std::mt19937 &gen);
+Region<CellIdx> generate_random_region(Board *board, int region_size);
+
+/**
+ * @brief Generate a random path of given size.
+ */
+Region<CellIdx> generate_random_path(Board *board, int region_size);
 
 } // namespace sudoku::rule_utils

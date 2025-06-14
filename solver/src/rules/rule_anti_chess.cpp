@@ -289,7 +289,7 @@ void RuleAntiChess::init_randomly() {
     for (int i = 0; i < 2; i++) {
         if (dis(gen) <= REGION_EXIST_CHANCE) {
             int region_size = region_size_dist(gen);
-            m_pair[i].region = rule_utils::generate_random_region(board_, region_size, gen);
+            m_pair[i].region = rule_utils::generate_random_region(board_, region_size);
         }
     }
 

@@ -4,7 +4,6 @@
 #include <random>
 
 #include "board/board.h"
-#include "rules/include.h"
 
 namespace sudoku::datagen {
 
@@ -17,30 +16,35 @@ namespace sudoku::datagen {
  * @param guesses_limit Maximum number of guesses allowed (default: 0, meaning no limit)
  *
  */
-void generate_random_puzzle(const std::string &output_dir, int solutions_limit, int node_limit, int guesses_limit = 0) {
-    Board board(9);
-    board.add_handler(std::make_shared<RuleStandard>(&board));
-    board.add_handler(std::make_shared<RuleAntiChess>(&board));
-
+// clang-format off
+ void generate_random_puzzle
+(
+    const std::string &output_dir, 
+    Board& board, 
+    int solutions_limit, 
+    int node_limit, 
+    int guesses_limit = 0
+) {
+    // clang-format on
     SolverStats stats;
 
     // find a random solution
     while (true) {
         board.init_randomly();
-        auto solutions = board.solve(solutions_limit, 1024, &stats);
-
-        if (solutions.empty())
-            continue;
+        auto solutions = board.solve(solutions_limit, node_limit, &stats);
+        if (stats.solutions_found < 1) 
+            continue; // no solution found, try again
 
         int idx = rand() % solutions.size();
         const auto &solution = solutions[idx];
+
         board.clear();
         for (Row r = 0; r < board.size(); ++r)
             for (Col c = 0; c < board.size(); ++c)
                 board.get_cell({r, c}).set_value(solution.get(r, c));
         break;
     }
-
+    
     // try reducing clues while maintaining uniqueness
     std::vector<CellIdx> filled_pos;
     for (Row r = 0; r < board.size(); ++r)
@@ -68,7 +72,7 @@ void generate_random_puzzle(const std::string &output_dir, int solutions_limit, 
             keep_cell = true; // if we made too many guesses, keep the cell
 
         if (keep_cell)
-            cell.value = original_value;
+            cell.set_value(original_value);
         else
             stats = test_stats; // keep stats if we successfully reduced clues
     }
