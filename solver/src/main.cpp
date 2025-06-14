@@ -139,6 +139,7 @@ void solve(const char *json, int max_solutions, int max_nodes) {
 
         std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
         std::cout << "[INFO]nodes_explored=" << stats.nodes_explored << "\n";
+        std::cout << "[INFO]guesses_made=" << stats.guesses_made << "\n";
         std::cout << "[INFO]time_taken_ms=" << std::fixed << std::setprecision(3) << stats.time_taken_ms << "\n";
         std::cout << "[INFO]interrupted_by_node_limit=" << (stats.interrupted_by_node_limit ? "true" : "false") << "\n";
         std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false")
