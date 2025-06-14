@@ -103,6 +103,7 @@ export class CreatorAnalysis {
             solutions_found: 0,
             nodes_explored: 0,
             time_taken_ms: 0.0,
+            guesses_made: 0,
             interrupted_by_node_limit: false,
             interrupted_by_solution_limit: false,
             error: null
@@ -137,6 +138,7 @@ export class CreatorAnalysis {
     }
 
     onSolverMessage(msg) {
+        console.debug(msg);
         if (msg.startsWith("[SOLUTION]")) {
             const sol = Solution.fromFlatString(msg.replace("[SOLUTION]", "").trim(), 9);
             this.solutions_temp_list.push(sol);
@@ -221,7 +223,14 @@ export class CreatorAnalysis {
             console.error("Failed to build Solutions object:", e);
         }
 
-        const { solutions_found, interrupted_by_node_limit, interrupted_by_solution_limit, error, nodes_explored, time_taken_ms } = this.stats;
+        const {
+            solutions_found,
+            interrupted_by_node_limit,
+            interrupted_by_solution_limit,
+            error,
+            nodes_explored,
+            guesses_made,
+            time_taken_ms } = this.stats;
         const interrupted = interrupted_by_node_limit || interrupted_by_solution_limit;
 
         if (error) {
@@ -269,6 +278,7 @@ export class CreatorAnalysis {
                 <small>
                   <div><strong>Solutions:</strong> ${solutionText}</div>
                   <div><strong>Nodes:</strong> ${nodes_explored}</div>
+                  <div><strong>Guesses:</strong> ${guesses_made} <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="A value of 0 implies the puzzle may be solvable with basic logic. A non-zero guess count does not necessarily mean it's too hard for humans—just that advanced human strategies aren't implemented."></i></div>
                   <div><strong>Time:</strong> ${time_taken_ms.toFixed(1)} ms</div>
                 </small>
               </div>
