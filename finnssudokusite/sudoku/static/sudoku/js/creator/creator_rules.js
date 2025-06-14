@@ -6,8 +6,8 @@ export class CreatorRules {
     }
 
     init() {
-        // this.registerBoardChangeListeners(); (moved to CreatorRules)
-        // this.renderActiveTags(); (moved to CreatorRules)
+        this.registerBoardChangeListeners(); // activate rule-related listeners
+        this.renderActiveTags();             // render initial active rule tags
     }
 
     registerBoardChangeListeners() {
