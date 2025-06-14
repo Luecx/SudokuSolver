@@ -172,7 +172,7 @@ def register(request):
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user),
             })
-            send_mail(subject, message, 'noreply@sudoku.com', [user.email])
+            send_mail(subject, message, 'noreply@sudokusphere.com', [user.email])
             return render(request, 'sudoku/login/activation_sent.html')
         else:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
