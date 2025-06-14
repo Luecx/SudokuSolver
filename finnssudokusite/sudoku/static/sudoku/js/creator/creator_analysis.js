@@ -32,16 +32,21 @@ export class CreatorAnalysis {
         }[type];
 
         alertBox.innerHTML = `
-            <div class="alert alert-${color}" role="alert">
-                <div class="progress mb-2" style="height: 28px;">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-${color}" style="width: 100%;">
-                        <span id="loading-text">${text}</span>
-                    </div>
+        <div class="alert alert-${color}" role="alert">
+            <div class="progress mb-2" style="height: 28px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-${color}" style="width: 100%;">
+                    <span id="loading-text">${text}</span>
                 </div>
-                <div id="alertContent">${html}</div>
             </div>
-        `;
+            <div id="alertContent">${html}</div>
+        </div>
+    `;
+
+        // 🧠 Re-initialize tooltips for dynamic content
+        const tooltips = alertBox.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(el => new bootstrap.Tooltip(el, { trigger: 'hover' }));
     }
+
 
     initAnalysisButtons() {
         const get = this.parent.get.bind(this.parent);
@@ -278,7 +283,15 @@ export class CreatorAnalysis {
                 <small>
                   <div><strong>Solutions:</strong> ${solutionText}</div>
                   <div><strong>Nodes:</strong> ${nodes_explored}</div>
-                  <div><strong>Guesses:</strong> ${guesses_made} <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="A value of 0 implies the puzzle may be solvable with basic logic. A non-zero guess count does not necessarily mean it's too hard for humans—just that advanced human strategies aren't implemented."></i></div>
+                  <div class="d-flex align-items-center">
+                    <strong>Guesses: </strong> ${guesses_made}
+                    <i class="fas fa-info-circle ms-2 text-muted"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       title="A value of 0 implies the puzzle is solvable with basic logic. 
+                       A non-zero guess count does not necessarily mean it's too hard for humans—just that advanced human strategies aren't implemented.">
+                    </i>
+                  </div>
                   <div><strong>Time:</strong> ${time_taken_ms.toFixed(1)} ms</div>
                 </small>
               </div>
