@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 
         // initialize all handlers needed
         board.add_handler(std::make_shared<RuleStandard>(&board));
-        board.add_handler(std::make_shared<RuleArrow>(&board));
+        board.add_handler(std::make_shared<RuleClone>(&board));
 
         const int puzzle_count = 1;
         for (int i = 0; i < puzzle_count; i++) {

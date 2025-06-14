@@ -21,6 +21,10 @@ public:
     void init_randomly() override;
 
 private:
+    int num_clone_groups = 3; // Number of different clone groups to create
+    int max_clone_group_size = 4; // Maximum size of each clone group
+
+    // standard params
     std::vector<Region<CellIdx>> m_regions;
     std::vector<std::vector<int>> m_units;
 

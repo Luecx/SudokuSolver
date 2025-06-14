@@ -3,6 +3,98 @@
 
 namespace sudoku::rule_utils {
 
+// helper functions
+
+template<typename CellType>
+bool is_cell_in_existing_regions(const CellType &cell, const std::vector<Region<CellType>> &existing_regions) {
+    for (const auto &region: existing_regions) {
+        if (region.has(cell)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+template<typename CellType>
+CellType find_valid_starting_cell(Board *board, //
+                                  std::mt19937 &gen, //
+                                  const std::vector<Region<CellType>> &existing_regions) {
+    const int board_size = board->size();
+    std::uniform_int_distribution<> cell_dist(0, board_size - 1);
+
+    CellType start_cell{-1, -1};
+    int attempts = 0;
+    const int max_attempts = board_size * board_size * 2;
+
+    do {
+        start_cell = {cell_dist(gen), cell_dist(gen)};
+        attempts++;
+
+        if (attempts > max_attempts) {
+            return CellType{-1, -1}; // Invalid cell
+        }
+    } while (is_cell_in_existing_regions(start_cell, existing_regions));
+
+    return start_cell;
+}
+
+template<typename CellType>
+std::vector<CellType> get_orthogonal_neighbors(Board *board, const CellType &cell,
+                                               const Region<CellType> &current_region,
+                                               const std::vector<Region<CellType>> &existing_regions) {
+    std::vector<CellType> neighbors;
+    const std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    for (const auto &dir: directions) {
+        CellType neighbor = {cell.r + dir.first, cell.c + dir.second};
+        if (pos_in_bounds(board, neighbor) && !current_region.has(neighbor) &&
+            !is_cell_in_existing_regions(neighbor, existing_regions)) {
+            neighbors.push_back(neighbor);
+        }
+    }
+    return neighbors;
+}
+
+template<typename CellType>
+std::vector<CellType> get_all_neighbors(Board *board, //
+                                        const CellType &cell, //
+                                        const Region<CellType> &current_region, //
+                                        const std::vector<Region<CellType>> &existing_regions) {
+    std::vector<CellType> neighbors;
+    const int directions[][2] = {
+            {-1, 0},  {1, 0},  {0, -1}, {0, 1}, // orthogonal
+            {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // diagonals
+    };
+
+    for (int i = 0; i < 8; i++) {
+        CellType neighbor = {cell.r + directions[i][0], cell.c + directions[i][1]};
+        if (pos_in_bounds(board, neighbor) && !current_region.has(neighbor) &&
+            !is_cell_in_existing_regions(neighbor, existing_regions)) {
+            neighbors.push_back(neighbor);
+        }
+    }
+    return neighbors;
+}
+
+// helper to select random element and remove it from vector
+template<typename T>
+T select_and_remove_random(std::vector<T> &vec, std::mt19937 &gen) {
+    std::uniform_int_distribution<> dist(0, vec.size() - 1);
+    int idx = dist(gen);
+    T selected = vec[idx];
+    vec.erase(vec.begin() + idx);
+    return selected;
+}
+
+// helper to select random element without removing
+template<typename T>
+T select_random(const std::vector<T> &vec, std::mt19937 &gen) {
+    std::uniform_int_distribution<> dist(0, vec.size() - 1);
+    return vec[dist(gen)];
+}
+
+// solver utils
+
 bool pos_in_bounds(const Board *board, const CellIdx &pos) {
     return pos.r >= 0 && pos.r < board->size() && pos.c >= 0 && pos.c < board->size();
 }
@@ -104,112 +196,69 @@ std::string random_rgba_color() {
     return oss.str();
 }
 
-Region<CellIdx> generate_random_region(Board *board, int region_size) {
-    const int board_size = board->size();
-
+Region<CellIdx> generate_random_region(Board *board, int region_size, std::vector<Region<CellIdx>> existing_regions) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    std::uniform_int_distribution<> cell_dist(0, board_size - 1);
+    // Find valid starting cell
+    CellIdx start_cell = find_valid_starting_cell(board, gen, existing_regions);
+    if (start_cell.r == -1)
+        return Region<CellIdx>(); // No valid starting cell found
 
-    // Start with a random seed cell
-    int start_r = cell_dist(gen);
-    int start_c = cell_dist(gen);
-    std::vector<CellIdx> region_cells = {{start_r, start_c}};
-    std::vector<CellIdx> candidates = {{start_r, start_c}};
+    Region<CellIdx> region;
+    region.add(start_cell);
+    std::vector<CellIdx> candidates = {start_cell};
 
-    while (static_cast<int>(region_cells.size()) < region_size && !candidates.empty()) {
-        std::uniform_int_distribution<> candidate_dist(0, candidates.size() - 1);
-        int idx = candidate_dist(gen);
-        CellIdx current = candidates[idx];
+    while (static_cast<int>(region.items().size()) < region_size && !candidates.empty()) {
+        CellIdx current = select_and_remove_random(candidates, gen);
 
-        // Find all valid orthogonal neighbors not already in region
-        std::vector<CellIdx> neighbors;
-        const std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-        for (const auto &dir: directions) {
-            CellIdx neighbor = {current.r + dir.first, current.c + dir.second};
-            if (pos_in_bounds(board, neighbor)) {
-                bool already_exists =
-                        std::any_of(region_cells.begin(), region_cells.end(), [&](const CellIdx &existing) {
-                            return existing.r == neighbor.r && existing.c == neighbor.c;
-                        });
-                if (!already_exists)
-                    neighbors.push_back(neighbor);
-            }
-        }
+        std::vector<CellIdx> neighbors = get_orthogonal_neighbors(board, current, region, existing_regions);
 
         if (!neighbors.empty()) {
-            std::uniform_int_distribution<> neighbor_dist(0, neighbors.size() - 1);
-            CellIdx new_cell = neighbors[neighbor_dist(gen)];
-            region_cells.push_back(new_cell);
+            CellIdx new_cell = select_random(neighbors, gen);
+            region.add(new_cell);
             candidates.push_back(new_cell);
-        } else {
-            candidates.erase(candidates.begin() + idx);
         }
     }
 
-    Region<CellIdx> region;
-    for (const auto &cell: region_cells)
-        region.add(cell);
     return region;
 }
 
-Region<CellIdx> generate_random_path(Board* board, int region_size) {
+Region<CellIdx> generate_random_path(Board *board, int region_size, std::vector<Region<CellIdx>> existing_regions) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    
-    const int board_size = board->size();
-    std::uniform_int_distribution<> cell_dist(0, board_size - 1);
-    
+
+    // Find valid starting cell
+    CellIdx current_pos = find_valid_starting_cell(board, gen, existing_regions);
+    if (current_pos.r == -1)
+        return Region<CellIdx>(); // No valid starting cell found
+
     Region<CellIdx> path_region;
-    
-    // Start with random cell
-    CellIdx current_pos{cell_dist(gen), cell_dist(gen)};
     path_region.add(current_pos);
-    
-    // Define movement directions: orthogonal + diagonals
-    int directions[][2] = {
-        {-1, 0}, {1, 0}, {0, -1}, {0, 1},  // orthogonal
-        {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // diagonals
-    };
-    
+
     // Generate path by connecting adjacent cells
     for (int j = 1; j < region_size; j++) {
-        std::vector<CellIdx> valid_moves;
-        
-        // Find all valid adjacent positions from current position
-        for (int dir = 0; dir < 8; dir++) {
-            CellIdx next_pos{current_pos.r + directions[dir][0], current_pos.c + directions[dir][1]};
-            
-            if (rule_utils::pos_in_bounds(board, next_pos) && !path_region.has(next_pos)) {
-                valid_moves.push_back(next_pos);
-            }
-        }
-        
-        // If no valid moves, try from any existing cell in the path
+        std::vector<CellIdx> valid_moves = get_all_neighbors(board, current_pos, path_region, existing_regions);
+
+        // If no valid moves from current position, try from any existing cell in the path
         if (valid_moves.empty()) {
-            for (const auto& existing_pos : path_region.items()) {
-                for (int dir = 0; dir < 8; dir++) {
-                    CellIdx next_pos{existing_pos.r + directions[dir][0], existing_pos.c + directions[dir][1]};
-                    
-                    if (rule_utils::pos_in_bounds(board, next_pos) && !path_region.has(next_pos)) {
-                        valid_moves.push_back(next_pos);
-                    }
-                }
-                if (!valid_moves.empty()) break;
+            for (const auto &existing_pos: path_region.items()) {
+                valid_moves = get_all_neighbors(board, existing_pos, path_region, existing_regions);
+                if (!valid_moves.empty())
+                    break;
             }
         }
-        
+
         // If still no valid moves, break early
-        if (valid_moves.empty()) break;
-        
+        if (valid_moves.empty())
+            break;
+
         // Choose random valid move
-        std::uniform_int_distribution<> move_dist(0, valid_moves.size() - 1);
-        CellIdx next_pos = valid_moves[move_dist(gen)];
+        CellIdx next_pos = select_random(valid_moves, gen);
         path_region.add(next_pos);
         current_pos = next_pos;
     }
-    
+
     return path_region;
 }
 

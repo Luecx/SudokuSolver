@@ -155,11 +155,67 @@ JSON RuleClone::to_json() const {
     return json;
 }
 
-void RuleClone::init_randomly() { initCloneGroups(); }
+void RuleClone::init_randomly() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    m_regions.clear();
+
+    for (int group_id = 0; group_id < num_clone_groups; group_id++) {
+        std::uniform_int_distribution<> size_dist(2, max_clone_group_size);
+        int group_size = size_dist(gen);
+
+        std::uniform_int_distribution<> region_size_dist(2, 5);
+        int region_size = region_size_dist(gen);
+
+        // Generate a base region
+        Region<CellIdx> base_region = rule_utils::generate_random_region(board_, region_size);
+        if (base_region.items().size() < 2)
+            continue;
+
+        // Add the base region
+        m_regions.push_back(base_region);
+
+        // Create shifted clones
+        for (int i = 1; i < group_size; ++i) {
+            bool found = false;
+            int attempts = 0;
+            const int max_attempts = 100; // prevent infinite loops
+
+            while (!found && attempts < max_attempts) {
+                std::uniform_int_distribution<> shift_dist(-board_->size() + 1, board_->size() - 1);
+                int dr = shift_dist(gen);
+                int dc = shift_dist(gen);
+
+                Region<CellIdx> shifted_region;
+                bool valid = true;
+                for (const auto &cell: base_region.items()) {
+                    CellIdx shifted{cell.r + dr, cell.c + dc};
+                    if (!rule_utils::pos_in_bounds(board_, shifted)) {
+                        valid = false;
+                        break;
+                    }
+                    shifted_region.add(shifted);
+                }
+
+                if (valid) {
+                    m_regions.push_back(shifted_region);
+                    found = true;
+                }
+
+                attempts++;
+            }
+        }
+    }
+
+    initCloneGroups();
+}
 
 // private member function
 
 void RuleClone::initCloneGroups() {
+    m_units.clear();
+
     const int max_regions = m_regions.size();
     std::vector<bool> processed(max_regions, false);
 
