@@ -11,9 +11,9 @@ bool RuleDiagonalSum::number_changed(CellIdx pos) {
     bool changed = false;
     for (auto &pair: m_diagsum_pairs) {
         if (pair.region.has(main))
-            changed |= check_diagonal(pair);
+            changed |= check_diagonal(main, pair.sum);
         if (pair.region.has(anti))
-            changed |= check_diagonal(pair);
+            changed |= check_diagonal(anti, pair.sum);
     }
     return changed;
 }
@@ -21,32 +21,33 @@ bool RuleDiagonalSum::number_changed(CellIdx pos) {
 bool RuleDiagonalSum::candidates_changed() {
     bool changed = false;
     for (auto &pair: m_diagsum_pairs)
-        changed |= check_diagonal(pair);
+        for (const auto &diag: pair.region)
+            changed |= check_diagonal(diag, pair.sum);
     return changed;
 };
 
 bool RuleDiagonalSum::valid() {
-    const int board_size = board_->size();
-
     for (const auto &pair: m_diagsum_pairs) {
-        const Region<CellIdx> &cell_pos = pair.region.attached_cells(board_size);
+        for (const auto &diag: pair.region) {
+            const std::vector<CellIdx> &cell_pos = diag.attached_cells(board_->size());
 
-        bool all_solved = true;
-        int sum = 0;
-        for (const auto &pos: cell_pos) {
-            Cell &c = board_->get_cell(pos);
-            if (c.is_solved())
-                sum += c.value;
-            else
-                all_solved = false;
+            bool all_solved = true;
+            int sum = 0;
+            for (const auto &pos: cell_pos) {
+                Cell &c = board_->get_cell(pos);
+                if (c.is_solved())
+                    sum += c.value;
+                else
+                    all_solved = false;
+            }
+            // if sum is greater than the target sum, return false
+            // since it doesnt matter if cell aren't fully solved
+            // otherwise if cells are all solved and sum is not equal to target sum, return false
+            // if cells are not all solved but the sum is equal to target sum, return false
+            // since adding any number to the sum will make it greater than target sum
+            if (sum > pair.sum || (sum == pair.sum) != all_solved)
+                return false;
         }
-        // if sum is greater than the target sum, return false
-        // since it doesnt matter if cell aren't fully solved
-        // otherwise if cells are all solved and sum is not equal to target sum, return false
-        // if cells are not all solved but the sum is equal to target sum, return false
-        // since adding any number to the sum will make it greater than target sum
-        if (sum > pair.sum || (sum == pair.sum) != all_solved)
-            return false;
     }
 
     return true;
@@ -117,9 +118,9 @@ JSON RuleDiagonalSum::to_json() const {
 
 // private member function
 
-bool RuleDiagonalSum::check_diagonal(DiagSumPair &pair) {
+bool RuleDiagonalSum::check_diagonal(const DiagonalIdx &diag, const int pair_sum) {
     const int board_size = board_->size();
-    const Region<CellIdx> &cells_pos = pair.region.attached_cells(board_size);
+    const std::vector<CellIdx> &cells_pos = diag.attached_cells(board_size);
 
     int reamining_size = 0;
     int sum = 0;
@@ -145,7 +146,7 @@ bool RuleDiagonalSum::check_diagonal(DiagSumPair &pair) {
     }
 
     auto [min, max] =
-            rule_utils::getSoftBounds(reamining_size, pair.sum - sum, min_candidate, max_candidate, board_size);
+            rule_utils::getSoftBounds(reamining_size, pair_sum - sum, min_candidate, max_candidate, board_size);
 
     bool changed = false;
     for (const auto &pos: cells_pos) {

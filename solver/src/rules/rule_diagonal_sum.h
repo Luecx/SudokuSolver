@@ -29,7 +29,7 @@ private:
 
     std::vector<DiagSumPair> m_diagsum_pairs;
 
-    bool check_diagonal(DiagSumPair &pair);
+    bool check_diagonal(const DiagonalIdx &diag, const int pair_sum);
 };
 
 } // namespace sudoku

@@ -77,6 +77,7 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
     // statistics for the benchmark
     int total_puzzles = 0;
     int total_solutions = 0;
+    int total_guesses = 0;
     uint64_t total_nodes = 0;
     int successful_solutions = 0;
     float total_time_ms = 0;
@@ -113,6 +114,7 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
 
             total_solutions += stats.solutions_found;
             total_nodes += stats.nodes_explored;
+            total_guesses += stats.guesses_made;
             total_time_ms += stats.time_taken_ms;
 
             if (!sol.empty())
@@ -142,6 +144,10 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
     std::cout << "| " << std::setw(26) << std::left << "Total nodes:";
     std::cout << std::setw(12) << std::right << total_nodes << " |\n";
 
+    // Total guesses row
+    std::cout << "| " << std::setw(26) << std::left << "Total guesses:";
+    std::cout << std::setw(12) << std::right << total_guesses << " |\n";
+    
     // Total time row
     std::cout << "| " << std::setw(26) << std::left << "Total time (ms):";
     std::stringstream time_ss;
