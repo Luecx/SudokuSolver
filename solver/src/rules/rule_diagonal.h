@@ -19,6 +19,7 @@ public:
     JSON to_json() const override;
 
     void init_randomly() override;
+
 private:
     // Hyperparameters
     double BOTH_DIAGONALS_EXIST_CHANCE = 0.5;

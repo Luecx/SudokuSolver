@@ -25,7 +25,7 @@ private:
     // Hyperparameters
     const int MIN_PAIRS = 1;
     const int MAX_PAIRS = 3;
-    const int MIN_REGION_SIZE = 1; 
+    const int MIN_REGION_SIZE = 1;
     const int MAX_REGION_SIZE = 2;
 
     // Standard parameters

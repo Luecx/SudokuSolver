@@ -19,6 +19,7 @@ public:
     JSON to_json() const override;
 
     void init_randomly() override;
+
 private:
     std::vector<Region<CellIdx>> m_regions;
     std::vector<std::vector<Cell *>> m_irregular_units;

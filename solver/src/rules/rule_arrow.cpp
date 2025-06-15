@@ -123,7 +123,7 @@ void RuleArrow::init_randomly() {
 
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    
+
     std::uniform_int_distribution<int> arrow_dist(MIN_ARROWS, MAX_ARROWS);
     std::uniform_int_distribution<int> path_length_dist(MIN_PATH_LENGTH, MAX_PATH_LENGTH);
     std::uniform_real_distribution<double> base_size_dist(0.0, 1.0);

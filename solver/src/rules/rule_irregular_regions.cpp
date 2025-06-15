@@ -1,5 +1,5 @@
-#include "../board/board.h"
 #include "rule_irregular_regions.h"
+#include "../board/board.h"
 #include "rule_standard.h"
 
 namespace sudoku {
@@ -100,7 +100,6 @@ JSON RuleIrregularRegions::to_json() const {
 void RuleIrregularRegions::init_randomly() {
     m_regions.clear();
     m_irregular_units.clear();
-
 }
 
 } // namespace sudoku

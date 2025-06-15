@@ -122,7 +122,6 @@ void RuleKiller::init_randomly() {
     m_number_can_repeat = repeat_dist(gen) < NUMBER_CAN_REPEAT_PROBABILITY;
 
     Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
-
 }
 
 // private member functions

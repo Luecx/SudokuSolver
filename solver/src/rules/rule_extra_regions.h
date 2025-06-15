@@ -19,6 +19,7 @@ public:
     JSON to_json() const override;
 
     void init_randomly() override;
+
 private:
     // Hyperparameters
     const int MIN_NUM_REGIONS = 1;
