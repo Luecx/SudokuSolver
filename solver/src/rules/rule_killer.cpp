@@ -5,13 +5,12 @@ namespace sudoku {
 
 bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &pair: m_cage_pair) {
+    for (auto &pair: m_cage_pair) {
         const Region<CellIdx> &region = pair.region;
         if (!region.has(pos))
             continue;
 
-        for (auto &pair: m_cage_pair)
-            changed |= check_cage(pair);
+        changed |= check_cage(pair);
         break; // regions can't overlap
     }
     return changed;
@@ -106,11 +105,12 @@ JSON RuleKiller::to_json() const {
 }
 
 void RuleKiller::init_randomly() {
+    m_cage_pair.clear();
+
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    m_cage_pair.clear();
-
+    
 }
 
 // private member functions
@@ -151,8 +151,8 @@ bool RuleKiller::check_cage(KillerPair &pair) {
                                                 board_size, m_number_can_repeat);
 
     bool changed = false;
-    for (const auto &item: m_remaining_cells) {
-        Cell &cell = board_->get_cell(item);
+    for (const auto &pos: m_remaining_cells) {
+        Cell &cell = board_->get_cell(pos);
         for (const auto n: cell.candidates) {
             if ((!m_number_can_repeat && seen.test(n)) || n < min || n > max)
                 changed |= cell.remove_candidate(n);

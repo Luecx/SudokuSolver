@@ -154,9 +154,7 @@ Region<CellIdx> get_all_neighbors(Board *board, const CellIdx &cell) {
     return neighbors;
 }
 
-Region<CellIdx> generate_random_region(Board *board, //
-                                       const int max_region_size, //
-                                       Region<CellIdx> *available_region) {
+Region<CellIdx> generate_random_region(Board *board, const int max_region_size, Region<CellIdx> *available_region) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
@@ -187,9 +185,7 @@ Region<CellIdx> generate_random_region(Board *board, //
     return region;
 }
 
-Region<CellIdx> generate_random_path(Board *board, //
-                                     const int max_path_size, //
-                                     Region<CellIdx> *available_path) {
+Region<CellIdx> generate_random_path(Board *board, const int max_path_size, Region<CellIdx> *available_path) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
