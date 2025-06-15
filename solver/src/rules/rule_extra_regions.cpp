@@ -116,11 +116,8 @@ void RuleExtraRegions::init_randomly() {
         int region_size = region_size_dis(gen);
         Region<CellIdx> region = rule_utils::generate_random_region(board_, region_size, &available_region);
 
-        if (region.size() < 1)
-            continue;
-
-        m_regions.push_back(region);
-        available_region = available_region - region;
+        if (region.size() > 0)
+            m_regions.push_back(region);
     }
 }
 

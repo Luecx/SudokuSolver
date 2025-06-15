@@ -1,10 +1,10 @@
-#include "rule_irregular.h"
 #include "../board/board.h"
+#include "rule_irregular_regions.h"
 #include "rule_standard.h"
 
 namespace sudoku {
 
-bool RuleIrregular::number_changed(CellIdx pos) {
+bool RuleIrregularRegions::number_changed(CellIdx pos) {
     Cell &cell = board_->get_cell(pos);
     bool changed = false;
 
@@ -31,7 +31,7 @@ bool RuleIrregular::number_changed(CellIdx pos) {
     return changed;
 }
 
-bool RuleIrregular::candidates_changed() {
+bool RuleIrregularRegions::candidates_changed() {
     bool changed = false;
 
     const int board_size = board_->size();
@@ -46,7 +46,7 @@ bool RuleIrregular::candidates_changed() {
     return changed;
 }
 
-bool RuleIrregular::valid() {
+bool RuleIrregularRegions::valid() {
     const int board_size = board_->size();
     for (int i = 0; i < board_size; i++) {
         if (!rule_utils::is_group_valid(board_->get_row(i)))
@@ -62,7 +62,7 @@ bool RuleIrregular::valid() {
     return true;
 }
 
-void RuleIrregular::from_json(JSON &json) {
+void RuleIrregularRegions::from_json(JSON &json) {
     m_regions.clear();
     m_irregular_units.clear();
 
@@ -82,7 +82,7 @@ void RuleIrregular::from_json(JSON &json) {
     }
 }
 
-JSON RuleIrregular::to_json() const {
+JSON RuleIrregularRegions::to_json() const {
     JSON json = JSON(JSON::object{});
     json["type"] = "Irregular-Regions";
 
@@ -95,6 +95,12 @@ JSON RuleIrregular::to_json() const {
 
     json["fields"] = fields;
     return json;
+}
+
+void RuleIrregularRegions::init_randomly() {
+    m_regions.clear();
+    m_irregular_units.clear();
+
 }
 
 } // namespace sudoku

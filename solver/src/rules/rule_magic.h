@@ -20,9 +20,14 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
+    // Hyperparameters
+    const int MIN_MAGIC_SQUARES = 1;
+    const int MAX_MAGIC_SQUARES = 3;
+
+    // Standard parameters
     std::vector<Region<CellIdx>> m_regions;
     std::vector<std::array<int, 9>> m_possible_layouts;
 

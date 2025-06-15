@@ -30,15 +30,12 @@ namespace sudoku::datagen {
 
     // initialize all handlers needed
     board.add_handler(std::make_shared<RuleStandard>(&board));
-    board.add_handler(std::make_shared<RuleExtraRegions>(&board));
+    board.add_handler(std::make_shared<RuleSandwich>(&board));
 
     std::vector<CellIdx> filled_pos;
 
     // find a random solution
     while (true) {
-        // something weird is happening here
-        // some sodukus who have no solution, still return a solution
-        // this only gets noticed when the jsons are loaded and benchmarked
         board.clear();
         board.init_randomly();
 

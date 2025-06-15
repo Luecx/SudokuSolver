@@ -110,7 +110,19 @@ void RuleKiller::init_randomly() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
-    
+    std::uniform_int_distribution<int> region_count_dist(MIN_REGIONS, MAX_REGIONS);
+    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+
+    std::uniform_real_distribution<double> fill_dist(0.0, 1.0);
+    std::uniform_real_distribution<double> repeat_dist(0.0, 1.0);
+
+    int num_regions = region_count_dist(gen);
+
+    bool fill_board = fill_dist(gen) < FILL_BOARD_WITH_CAGES;
+    m_number_can_repeat = repeat_dist(gen) < NUMBER_CAN_REPEAT_PROBABILITY;
+
+    Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
+
 }
 
 // private member functions

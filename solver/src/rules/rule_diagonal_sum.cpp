@@ -95,7 +95,7 @@ void RuleDiagonalSum::from_json(JSON &json) {
 
 JSON RuleDiagonalSum::to_json() const {
     JSON json = JSON(JSON::object{});
-    json["type"] = "DiagonalSum";
+    json["type"] = "Diagonal-Sum";
     json["fields"] = JSON(JSON::object{});
 
     JSON::array rules = JSON::array();
@@ -113,6 +113,60 @@ JSON RuleDiagonalSum::to_json() const {
 
     json["rules"] = rules;
     return json;
+}
+
+void RuleDiagonalSum::init_randomly() {
+    m_diagsum_pairs.clear();
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<int> diag_count_dist(MIN_PAIRS, MAX_PAIRS);
+    int diag_count = diag_count_dist(gen);
+
+    const int board_size = board_->size();
+
+    std::uniform_int_distribution<int> index_dist(-(board_size - 1), board_size - 1);
+    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+
+    Region<DiagonalIdx> occupied_region;
+
+    int attempts = 0;
+    while ((int) m_diagsum_pairs.size() < diag_count && attempts < 100) {
+        int region_size = region_size_dist(gen);
+
+        Region<DiagonalIdx> region;
+
+        int min_length = board_size;
+        int max_length = 0;
+
+        int region_attempts = 0;
+        while ((int) region.size() < region_size && region_attempts < 25) {
+            // randomly select a diagonal type and index
+            DiagonalType type = (rand() % 2 == 0) ? DiagonalType::MAIN : DiagonalType::ANTI;
+            int index = index_dist(gen);
+
+            DiagonalIdx diag(type, index);
+            if (occupied_region.has(diag))
+                continue; // already used this diagonal
+
+            region.add(diag);
+            occupied_region.add(diag);
+
+            min_length = std::min(min_length, diagonal_length(diag));
+            max_length = std::max(max_length, diagonal_length(diag));
+            region_attempts++;
+        }
+
+        std::uniform_int_distribution<int> sum_dist(min_length, max_length * board_->size());
+
+        int sum = sum_dist(gen);
+        m_diagsum_pairs.push_back({region, sum});
+
+        attempts++;
+        if ((int) region.size() != region_size)
+            break; // prevent infinite loop if not enough space
+    }
 }
 
 
@@ -159,6 +213,20 @@ bool RuleDiagonalSum::check_diagonal(const DiagonalIdx &diag, const int pair_sum
         }
     }
     return changed;
+}
+
+int RuleDiagonalSum::diagonal_length(const DiagonalIdx &diag) const {
+    const int board_size = board_->size();
+
+    if (diag.type == DiagonalType::MAIN) {
+        int start_c = std::max(0, diag.index);
+        int end_c = std::min(board_size, board_size + diag.index);
+        return std::max(0, end_c - start_c);
+    } else {
+        int start_c = std::max(0, -diag.index);
+        int end_c = std::min(board_size, board_size - diag.index);
+        return std::max(0, end_c - start_c);
+    }
 }
 
 } // namespace sudoku

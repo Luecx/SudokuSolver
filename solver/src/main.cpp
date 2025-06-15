@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        bench::bench(argv[2], 17, 128000, false);
+        bench::bench(argv[2], 17, 16384, false);
         return 0;
     } else if (command == "datagen") {
         if (argc != 3) {
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        const int puzzle_count = 10;
+        const int puzzle_count = 3;
         for (int i = 0; i < puzzle_count; i++) {
             std::cout << "Generating puzzle " << (i + 1) << "/" << puzzle_count << "...\n";
             datagen::generate_random_puzzle(argv[2], 17, 128000);

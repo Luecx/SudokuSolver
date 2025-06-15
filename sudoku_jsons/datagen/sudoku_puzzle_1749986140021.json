@@ -98,10 +98,8 @@
   ],
   "rules": [
     {
-      "fields": {
-      },
-      "rules": [
-      ],
+      "fields": {},
+      "rules": [],
       "type": "Standard"
     },
     {

@@ -51,7 +51,7 @@ void Board::from_json(JSON &json) {
             } else if (normalized_type == "clone") {
                 handler = std::make_shared<RuleClone>(this);
             } else if (normalized_type == "irregularregions") {
-                handler = std::make_shared<RuleIrregular>(this);
+                handler = std::make_shared<RuleIrregularRegions>(this);
             } else if (normalized_type == "magicsquare") {
                 handler = std::make_shared<RuleMagic>(this);
             } else if (normalized_type == "palindrome") {

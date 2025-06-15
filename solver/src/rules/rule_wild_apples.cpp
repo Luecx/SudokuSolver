@@ -87,7 +87,7 @@ void RuleWildApples::from_json(JSON &json) {
 
 JSON RuleWildApples::to_json() const {
     JSON json = JSON(JSON::object{});
-    json["type"] = "WildApples";
+    json["type"] = "Wild-Apples";
     json["fields"] = JSON(JSON::object{});
 
     JSON::array rules = JSON::array();

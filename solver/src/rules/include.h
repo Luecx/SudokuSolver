@@ -8,7 +8,7 @@
 #include "rule_diagonal_sum.h"
 #include "rule_dutch_flat.h"
 #include "rule_extra_regions.h"
-#include "rule_irregular.h"
+#include "rule_irregular_regions.h"
 #include "rule_killer.h"
 #include "rule_kropki.h"
 #include "rule_magic.h"

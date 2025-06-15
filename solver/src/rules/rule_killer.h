@@ -22,10 +22,14 @@ public:
 
 private:
     // Hyperparameters
-    const int min_region_size = 2;
-    const int max_region_size = 6;
+    const double FILL_BOARD_WITH_CAGES = 0.75; // likelihood of the whole board being filled with cages
+    const double NUMBER_CAN_REPEAT_PROBABILITY = 0.5;
+    const int MIN_REGIONS = 1;
+    const int MAX_REGIONS = 10;
+    const int MIN_REGION_SIZE = 2;
+    const int MAX_REGION_SIZE = 6;
 
-    // standard params
+    // Standard parameter
     struct KillerPair {
         Region<CellIdx> region;
         int sum;

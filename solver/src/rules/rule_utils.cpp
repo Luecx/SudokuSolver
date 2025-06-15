@@ -3,17 +3,6 @@
 
 namespace sudoku::rule_utils {
 
-// helper function to find a valid starting cell in the board
-CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region = {}) {
-    if (available_region.size() == 0) {
-        std::uniform_int_distribution<> dist(0, board->size() - 1);
-        return {dist(gen), dist(gen)};
-    } else {
-        std::uniform_int_distribution<> cell_dist(0, available_region.size() - 1);
-        return available_region.items()[cell_dist(gen)];
-    }
-}
-
 // helper to select random element without removing
 template<typename T>
 T select_random(const Region<T> &vec, std::mt19937 &gen) {
@@ -124,6 +113,15 @@ std::string random_rgba_color() {
     return oss.str();
 }
 
+CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region) {
+    if (available_region.size() == 0) {
+        std::uniform_int_distribution<> dist(0, board->size() - 1);
+        return {dist(gen), dist(gen)};
+    } else {
+        std::uniform_int_distribution<> cell_dist(0, available_region.size() - 1);
+        return available_region.items()[cell_dist(gen)];
+    }
+}
 
 Region<CellIdx> get_orthogonal_neighbors(Board *board, const CellIdx &cell) {
     Region<CellIdx> neighbors;

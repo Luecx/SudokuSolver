@@ -33,6 +33,12 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
 std::string random_rgba_color();
 
 /**
+ * @brief Find a valid starting cell for random region generation.
+ * If available_region is empty, it will select any cell.
+ */
+CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region = {});
+
+/**
  * @brief Get all orthogonal neighbors of a cell.
  */
 Region<CellIdx> get_orthogonal_neighbors(Board *board, const CellIdx &cell);
