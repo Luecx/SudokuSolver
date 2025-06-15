@@ -21,18 +21,27 @@ namespace sudoku::datagen {
  void generate_random_puzzle
 (
     const std::string &output_dir, 
-    Board& board, 
     int solutions_limit, 
     int node_limit, 
     int guesses_limit = 0
 ) {
     // clang-format on
+    Board board{9};
+
+    // initialize all handlers needed
+    board.add_handler(std::make_shared<RuleStandard>(&board));
+    board.add_handler(std::make_shared<RuleExtraRegions>(&board));
+
     std::vector<CellIdx> filled_pos;
 
     // find a random solution
     while (true) {
+        // something weird is happening here
+        // some sodukus who have no solution, still return a solution
+        // this only gets noticed when the jsons are loaded and benchmarked
+        board.clear();
         board.init_randomly();
-        
+
         SolverStats stats;
         auto solutions = board.solve(solutions_limit, node_limit, &stats);
         if (stats.solutions_found < 1)
@@ -45,7 +54,7 @@ namespace sudoku::datagen {
             for (Col c = 0; c < board.size(); ++c) {
                 CellIdx pos{r, c};
                 filled_pos.push_back(pos);
-                board.set_cell(pos, solution.get(r, c), true);
+                board.get_cell(pos).set_value(solution.get(r, c));
             }
         }
 

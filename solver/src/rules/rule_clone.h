@@ -23,14 +23,14 @@ public:
 private:
     // Hyperparameters
     // min/max number of different clone groups
-    const int min_clones = 3;
-    const int max_clones = 6;
+    const int MIN_CLONES = 3;
+    const int MAX_CLONES = 6;
     // min/max number of clones in a group
-    const int min_clone_group_size = 2;
-    const int max_clone_group_size = 4;
+    const int MIN_CLONE_GROUP_SIZE = 2;
+    const int MAX_CLONE_GROUP_SIZE = 4;
     // min/max size of a region
-    const int min_region_size = 2;
-    const int max_region_size = 6;
+    const int MIN_REGION_SIZE = 2;
+    const int MAX_REGION_SIZE = 6;
 
     // standard params
     std::vector<Region<CellIdx>> m_regions;

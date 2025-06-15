@@ -266,8 +266,8 @@ JSON RuleAntiChess::to_json() const {
 }
 
 void RuleAntiChess::init_randomly() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0.0, 1.0);
 
     // reset

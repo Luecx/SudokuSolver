@@ -155,8 +155,8 @@ Region<CellIdx> get_all_neighbors(Board *board, const CellIdx &cell) {
 }
 
 Region<CellIdx> generate_random_region(Board *board, const int max_region_size, Region<CellIdx> *available_region) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
     CellIdx current = available_region ? find_valid_starting_cell(board, gen, *available_region)
                                        : find_valid_starting_cell(board, gen);
@@ -186,8 +186,8 @@ Region<CellIdx> generate_random_region(Board *board, const int max_region_size, 
 }
 
 Region<CellIdx> generate_random_path(Board *board, const int max_path_size, Region<CellIdx> *available_path) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
     CellIdx current = available_path ? find_valid_starting_cell(board, gen, *available_path)
                                      : find_valid_starting_cell(board, gen);

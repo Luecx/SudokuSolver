@@ -22,17 +22,30 @@ bool RuleExtraRegions::number_changed(CellIdx pos) {
     return changed;
 }
 
-bool RuleExtraRegions::candidates_changed() {
-    bool changed = false;
-    for (auto &unit: m_units)
-        changed |= rule_utils::hidden_singles(board_, unit);
-    return changed;
-}
+bool RuleExtraRegions::candidates_changed() { return false; }
 
 bool RuleExtraRegions::valid() {
-    for (auto &unit: m_units)
-        if (!check_group(unit))
-            return false;
+    const int board_size = board_->size();
+
+    for (auto &region: m_regions) {
+        NumberSet seen(board_size);
+        NumberSet combined(board_size);
+
+        for (const auto &pos: region) {
+            Cell &cell = board_->get_cell(pos);
+
+            if (cell.is_solved()) {
+                if (seen.test(cell.value))
+                    return false;
+                seen.add(cell.value);
+                combined |= NumberSet(cell.max_number, cell.value);
+            } else {
+                combined |= cell.get_candidates();
+            }
+        }
+
+        return combined.count() >= static_cast<int>(region.size());
+    }
     return true;
 }
 
@@ -60,31 +73,23 @@ void RuleExtraRegions::from_json(JSON &json) {
             continue;
 
         Region<CellIdx> region = Region<CellIdx>::from_json(rule["fields"]["region"]);
-        if (region.size() > 0) {
+        if (region.size() > 0)
             m_regions.push_back(region);
-            // create a unit for each region
-            std::vector<Cell *> unit;
-            for (const auto &pos: region.items()) {
-                Cell &cell = board_->get_cell(pos);
-                unit.push_back(&cell);
-            }
-            m_units.push_back(unit);
-        }
     }
 }
 
 JSON RuleExtraRegions::to_json() const {
     JSON json = JSON(JSON::object{});
-    json["type"] = "ExtraRegions";
+    json["type"] = "Extra-Regions";
     json["fields"] = JSON(JSON::object{});
 
     JSON::array rules = JSON::array();
-
     for (const auto &region: m_regions) {
         JSON rule = JSON(JSON::object{});
         JSON fields = JSON(JSON::object{});
 
         fields["region"] = region.to_json();
+        fields["color"] = rule_utils::random_rgba_color();
 
         rule["fields"] = fields;
         rules.push_back(rule);
@@ -94,27 +99,29 @@ JSON RuleExtraRegions::to_json() const {
     return json;
 }
 
-// private member functions
+void RuleExtraRegions::init_randomly() {
+    m_regions.clear();
 
-bool RuleExtraRegions::check_group(const std::vector<Cell *> &unit) {
-    const int board_size = board_->size();
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
-    NumberSet seen(board_size);
-    seen.clear();
-    NumberSet combined(board_size);
+    std::uniform_int_distribution<int> num_regions_dis(MIN_NUM_REGIONS, MAX_NUM_REGIONS);
+    int num_regions = num_regions_dis(gen);
 
-    for (const auto &c: unit) {
-        if (c->is_solved()) {
-            if (seen.test(c->value))
-                return false;
-            seen.add(c->value);
-            combined |= NumberSet(c->max_number, c->value);
-        } else {
-            combined |= c->get_candidates();
-        }
+    std::uniform_int_distribution<int> region_size_dis(2, board_->size());
+
+    Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
+
+    for (int i = 0; i < num_regions; i++) {
+        int region_size = region_size_dis(gen);
+        Region<CellIdx> region = rule_utils::generate_random_region(board_, region_size, &available_region);
+
+        if (region.size() < 1)
+            continue;
+
+        m_regions.push_back(region);
+        available_region = available_region - region;
     }
-
-    return combined.count() >= static_cast<int>(unit.size());
 }
 
 } // namespace sudoku

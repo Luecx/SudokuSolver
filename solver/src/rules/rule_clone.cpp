@@ -157,17 +157,17 @@ JSON RuleClone::to_json() const {
 
 void RuleClone::init_randomly() {
     // infinite loop may happen: TODO make sure that doenst happen
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
     m_regions.clear();
 
-    std::uniform_int_distribution<> clone_group_dist(min_clones, max_clones);
+    std::uniform_int_distribution<> clone_group_dist(MIN_CLONES, MAX_CLONES);
     const int num_clones = clone_group_dist(gen);
 
     int clones_created = 0;
     while (clones_created < num_clones) {
-        std::uniform_int_distribution<> region_size_dist(min_region_size, max_region_size);
+        std::uniform_int_distribution<> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
         int region_size = region_size_dist(gen);
 
         // generate a base region
@@ -184,7 +184,7 @@ void RuleClone::init_randomly() {
         m_regions.push_back(base_region);
         clones_created++;
 
-        std::uniform_int_distribution<> size_dist(min_clone_group_size, max_clone_group_size);
+        std::uniform_int_distribution<> size_dist(MIN_CLONE_GROUP_SIZE, MAX_CLONE_GROUP_SIZE);
         int group_size = size_dist(gen);
 
         // Create shifted clones

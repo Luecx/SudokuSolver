@@ -190,6 +190,7 @@ export class CreatorAnalysis {
         this.preSolveNumbers = this.board.getFixedNumbers();
 
         const json = this.board.saveBoard();
+        console.log(json);
         this.worker.postMessage(["solve", json, 32, this.normalDepth]);
     }
 

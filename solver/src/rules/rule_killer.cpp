@@ -107,8 +107,8 @@ JSON RuleKiller::to_json() const {
 void RuleKiller::init_randomly() {
     m_cage_pair.clear();
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
 
     
 }

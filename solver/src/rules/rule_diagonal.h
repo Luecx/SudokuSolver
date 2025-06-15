@@ -18,10 +18,13 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
-
+    void init_randomly() override;
 private:
-    bool m_diagonal = false;
+    // Hyperparameters
+    double BOTH_DIAGONALS_EXIST_CHANCE = 0.5;
+
+    // Standard parameters
+    bool m_main_diagonal = false;
     bool m_anti_diagonal = false;
 
     bool check_unique_diagonal(bool is_main);

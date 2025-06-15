@@ -18,14 +18,14 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-
-    void init_randomly() override {}
-
+    void init_randomly() override;
 private:
-    std::vector<Region<CellIdx>> m_regions;
-    std::vector<std::vector<Cell *>> m_units;
+    // Hyperparameters
+    const int MIN_NUM_REGIONS = 1;
+    const int MAX_NUM_REGIONS = 5;
 
-    bool check_group(const std::vector<Cell *> &unit);
+    // Standard parameters
+    std::vector<Region<CellIdx>> m_regions;
 };
 
 } // namespace sudoku
