@@ -35,6 +35,8 @@ namespace sudoku {
  * All other configurations are invalid and will throw.
  */
 struct RCIdx {
+    static constexpr const char *region_type_name = "rowcol";
+
     Row row; ///< Row index (≥ 0 for rows, < 0 if unused)
     Col col; ///< Column index (≥ 0 for columns, < 0 if unused)
 
@@ -117,6 +119,14 @@ struct RCIdx {
             c = static_cast<Col>(node["col"].get<double>());
 
         return RCIdx(r, c);
+    }
+
+    JSON to_json() const {
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "RCIdx";
+        node["row"] = (row >= 0) ? static_cast<double>(row) : JSON();
+        node["col"] = (col >= 0) ? static_cast<double>(col) : JSON();
+        return node;
     }
 
     /**

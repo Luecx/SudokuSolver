@@ -29,6 +29,8 @@ namespace sudoku {
  * - Otherwise, the two points are swapped for consistency.
  */
 struct EdgeIdx {
+    static constexpr const char *region_type_name = "edges";
+
     Row r1, r2; ///< Row indices of the two connected cells
     Col c1, c2; ///< Column indices of the two connected cells
 
@@ -93,6 +95,16 @@ struct EdgeIdx {
 
         return {static_cast<Row>(node["r1"].get<double>()), static_cast<Col>(node["c1"].get<double>()),
                 static_cast<Row>(node["r2"].get<double>()), static_cast<Col>(node["c2"].get<double>())};
+    }
+
+    JSON to_json() const {
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "EdgeIdx";
+        node["r1"] = static_cast<double>(r1);
+        node["c1"] = static_cast<double>(c1);
+        node["r2"] = static_cast<double>(r2);
+        node["c2"] = static_cast<double>(c2);
+        return node;
     }
 
     /**

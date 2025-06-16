@@ -102,6 +102,36 @@ void RuleXV::from_json(JSON &json) {
     m_missing_symbol_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
+JSON RuleXV::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "XV";
+
+    JSON fields = JSON(JSON::object{});
+    fields["allDotsGiven"] = m_all_dots_given;
+    json["fields"] = fields;
+
+    JSON::array rules = JSON::array();
+
+    auto add_rule = [&rules](const auto &edges, const std::string &label) {
+        if (edges.size() > 0) {
+            JSON rule = JSON(JSON::object{});
+            rule["label"] = label;
+            JSON rule_fields = JSON(JSON::object{});
+
+            rule_fields["region"] = edges.to_json();
+            rule["fields"] = rule_fields;
+
+            rules.push_back(rule);
+        }
+    };
+
+    add_rule(m_x_edges, "X Rule");
+    add_rule(m_v_edges, "V Rule");
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member functions
 
 bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {

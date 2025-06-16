@@ -34,6 +34,8 @@ namespace sudoku {
  * interpreted as the bottom-right of the corner.
  */
 struct CornerIdx {
+    static constexpr const char *region_type_name = "corners";
+
     Row r; ///< Row index of the bottom-right cell sharing the corner
     Col c; ///< Column index of the bottom-right cell sharing the corner
 
@@ -82,6 +84,14 @@ struct CornerIdx {
             throw std::runtime_error("Invalid __type__ for CornerIdx: expected 'CornerIdx', got '" + type_tag + "'");
 
         return {static_cast<Row>(node["r"].get<double>()), static_cast<Col>(node["c"].get<double>())};
+    }
+
+    JSON to_json() const {
+        JSON node = JSON(JSON::object{});
+        node["__type__"] = "CornerIdx";
+        node["r"] = static_cast<double>(r);
+        node["c"] = static_cast<double>(c);
+        return node;
     }
 
     /**

@@ -100,6 +100,7 @@ std::vector<Solution> Board::solve_complete(SolverStats *stats_out, int max_node
 std::vector<Solution> Board::solve(int max_solutions, int max_nodes, SolverStats *stats_out) {
     std::vector<Solution> solutions;
     int nodes_explored = 0;
+    int guesses_made = 0;
     bool interrupted_by_node_limit = false;
     bool interrupted_by_solution_limit = false;
 
@@ -124,6 +125,11 @@ std::vector<Solution> Board::solve(int max_solutions, int max_nodes, SolverStats
         const CellIdx pos = get_next_cell();
         const Cell &cell = get_cell(pos);
 
+        // Count as a guess if more than one candidate
+        if (cell.candidates.count() > 1) {
+            ++guesses_made;
+        }
+
         for (Number n: cell.candidates) {
             if (set_cell(pos, n)) {
                 bool keep_going = backtrack();
@@ -144,6 +150,7 @@ std::vector<Solution> Board::solve(int max_solutions, int max_nodes, SolverStats
     if (stats_out) {
         *stats_out = SolverStats{.solutions_found = static_cast<int>(solutions.size()),
                                  .nodes_explored = nodes_explored,
+                                 .guesses_made = guesses_made,
                                  .time_taken_ms = elapsed_ms,
                                  .interrupted_by_node_limit = interrupted_by_node_limit,
                                  .interrupted_by_solution_limit = interrupted_by_solution_limit};

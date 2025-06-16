@@ -99,6 +99,76 @@ void RuleSandwich::from_json(JSON &json) {
     initTables();
 }
 
+JSON RuleSandwich::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Sandwich";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &pair: m_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = pair.region.to_json();
+        fields["sum"] = static_cast<double>(pair.sum);
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleSandwich::init_randomly() {
+    m_pairs.clear();
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    const int board_size = board_->size();
+
+    std::uniform_int_distribution<int> pairs_dist(MIN_PAIRS, MAX_PAIRS);
+    int num_pairs = pairs_dist(gen);
+
+    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+    std::uniform_int_distribution<int> sum_dist(1, (board_size - 2) * (board_size + 1) / 2);
+
+    Region<RCIdx> occupied_region;
+
+    int attempts = 0;
+    while ((int) m_pairs.size() < num_pairs && attempts < 100) {
+        int region_size = region_size_dist(gen);
+        Region<RCIdx> region;
+
+        int region_attempts = 0;
+        while ((int) region.size() < region_size && region_attempts < 25) {
+            Row r = -1;
+            Col c = -1;
+            if (rand() % 2 == 0)
+                r = rand() % board_size; // use row
+            else
+                c = rand() % board_size; // use column
+
+            RCIdx pos(r, c);
+            if (!occupied_region.has(pos)) {
+                region.add(pos);
+                occupied_region.add(pos);
+            }
+
+            region_attempts++;
+        }
+
+        int sum = sum_dist(gen);
+        m_pairs.push_back({region, sum});
+
+        attempts++;
+    }
+
+    initTables();
+}
+
 // private member function
 
 void RuleSandwich::initTables() {

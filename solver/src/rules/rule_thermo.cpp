@@ -122,4 +122,47 @@ void RuleThermo::from_json(JSON &json) {
     }
 }
 
+JSON RuleThermo::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Thermo";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &path: m_paths) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["path"] = path.to_json();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleThermo::init_randomly() {
+    m_paths.clear();
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<int> path_length_dist(MIN_PATH_LENGTH, MAX_PATH_LENGTH);
+    std::uniform_int_distribution<int> path_count_dist(MIN_PATHS, MAX_PATHS);
+
+    Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
+
+    int path_count = path_count_dist(gen);
+    while ((int) m_paths.size() < path_count) {
+        int path_length = path_length_dist(gen);
+        Region<CellIdx> path = rule_utils::generate_random_path(board_, path_length, &available_region);
+
+        if (path.size() < 2)
+            continue; // skip paths that are too short
+        m_paths.push_back(path);
+    }
+}
+
 } // namespace sudoku

@@ -6,11 +6,6 @@
 
 namespace sudoku {
 
-struct ArrowPair {
-    Region<CellIdx> base;
-    Region<CellIdx> path;
-};
-
 class RuleArrow : public RuleHandler {
 public:
     explicit RuleArrow(Board *board) : RuleHandler(board) {}
@@ -19,9 +14,28 @@ public:
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override;
+
     void from_json(JSON &json) override;
+    JSON to_json() const override;
+
+    void init_randomly() override;
 
 private:
+    // Hyperparameters
+    const int MIN_ARROWS = 3;
+    const int MAX_ARROWS = 10;
+    const int MIN_PATH_LENGTH = 2;
+    const int MAX_PATH_LENGTH = 5;
+    const double BASE_SIZE_1_PROBABILITY = 0.6; // 60% chance for size 1
+    const double BASE_SIZE_2_PROBABILITY = 0.4; // 40% chance for size 2
+
+    // standard params
+
+    struct ArrowPair {
+        Region<CellIdx> base;
+        Region<CellIdx> path;
+    };
+
     std::vector<ArrowPair> m_arrow_pairs;
 
     bool determine_base_options(ArrowPair &arrow_pair);

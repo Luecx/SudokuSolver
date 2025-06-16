@@ -1,7 +1,7 @@
 #include <set>
 
-#include "rule_clone.h"
 #include "../board/board.h"
+#include "rule_clone.h"
 
 namespace sudoku {
 
@@ -134,9 +134,92 @@ void RuleClone::from_json(JSON &json) {
     initCloneGroups();
 }
 
+JSON RuleClone::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Clone";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+    for (const auto &region: m_regions) {
+        JSON rule = JSON(JSON::object{});
+
+        JSON fields = JSON(JSON::object{});
+        fields["region"] = region.to_json();
+        fields["color"] = rule_utils::random_rgba_color();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+    json["rules"] = rules;
+
+    return json;
+}
+
+void RuleClone::init_randomly() {
+    // infinite loop may happen: TODO make sure that doenst happen
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    m_regions.clear();
+
+    std::uniform_int_distribution<> clone_group_dist(MIN_CLONES, MAX_CLONES);
+    const int num_clones = clone_group_dist(gen);
+
+    int clones_created = 0;
+    while (clones_created < num_clones) {
+        std::uniform_int_distribution<> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+        int region_size = region_size_dist(gen);
+
+        // generate a base region
+        Region<CellIdx> base_region = rule_utils::generate_random_region(board_, region_size);
+        if (base_region.items().size() < 2)
+            continue;
+
+        // check if shape is already present
+        for (const auto &region: m_regions)
+            if (isSameShape(base_region, region))
+                continue; // skip if shape already exists
+
+        // add the base region
+        m_regions.push_back(base_region);
+        clones_created++;
+
+        std::uniform_int_distribution<> size_dist(MIN_CLONE_GROUP_SIZE, MAX_CLONE_GROUP_SIZE);
+        int group_size = size_dist(gen);
+
+        // Create shifted clones
+        int clones_in_group = 1;
+        while (clones_in_group < group_size) {
+            std::uniform_int_distribution<> shift_dist(-board_->size() + 1, board_->size() - 1);
+            int dr = shift_dist(gen);
+            int dc = shift_dist(gen);
+
+            Region<CellIdx> shifted_region;
+            bool valid = true;
+            for (const auto &cell: base_region.items()) {
+                CellIdx shifted{cell.r + dr, cell.c + dc};
+                if (!rule_utils::pos_in_bounds(board_, shifted)) {
+                    valid = false;
+                    break;
+                }
+                shifted_region.add(shifted);
+            }
+
+            if (valid) {
+                m_regions.push_back(shifted_region);
+                clones_in_group++;
+            }
+        }
+    }
+
+    initCloneGroups();
+}
+
 // private member function
 
 void RuleClone::initCloneGroups() {
+    m_units.clear();
+
     const int max_regions = m_regions.size();
     std::vector<bool> processed(max_regions, false);
 

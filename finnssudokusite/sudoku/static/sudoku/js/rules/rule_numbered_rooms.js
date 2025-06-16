@@ -14,7 +14,7 @@ export class NumberedRoomsHandler extends RuleTypeHandler {
     }
 
     getGeneralRuleScheme() {
-        return []; // no global settings
+        return [];
     }
 
     getSpecificRuleScheme() {
@@ -24,7 +24,7 @@ export class NumberedRoomsHandler extends RuleTypeHandler {
                 type: "region",
                 regionType: RegionType.ORIENTED_ROWCOL,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Arrow Direction"
+                label: gettext("Arrow Direction")
             },
             {
                 key: "digit",
@@ -32,26 +32,25 @@ export class NumberedRoomsHandler extends RuleTypeHandler {
                 min: 1,
                 max: 9,
                 default: 5,
-                label: "Target Digit"
+                label: gettext("Target Digit")
             }
         ];
     }
 
     getDescriptionHTML() {
         return `
-    In <b>Numbered-Rooms</b>, a clue is placed outside the grid and applies to a specific row or column. 
-    The <b>first digit</b> in the indicated direction determines a position N, and the <b>Nth cell</b> in that direction must contain the given clue digit.<br><br>
-    For example, if the outside clue shows a 4 and the first digit in the direction is a 3, then the <b>3rd cell</b> must be a 4.
-    `;
+            ${gettext(`In <b>Numbered-Rooms</b>, a clue is placed outside the grid and applies to a specific row or column.
+            The <b>first digit</b> in the indicated direction determines a position N, and the <b>Nth cell</b> in that direction must contain the given clue digit.<br><br>
+            For example, if the outside clue shows a 4 and the first digit in the direction is a 3, then the <b>3rd cell</b> must be a 4.`)}
+        `;
     }
 
     getDescriptionPlayHTML() {
         return `
-    A clue digit is placed outside the grid for a row or column. 
-    The <b>first digit</b> seen from that side determines a position N, and the <b>Nth cell</b> must contain the clue digit.
-    `;
+            ${gettext(`A clue digit is placed outside the grid for a row or column.
+            The <b>first digit</b> seen from that side determines a position N, and the <b>Nth cell</b> must contain the clue digit.`)}
+        `;
     }
-
 
     render(rule, ctx) {
         const region = rule.fields.region;
@@ -71,19 +70,17 @@ export class NumberedRoomsHandler extends RuleTypeHandler {
             let x, y;
 
             if (!isNaN(item.row) && item.row != null) {
-                // Row hint — placed left or right of the grid
                 const cell = this.board.getCellTopLeftCTX(item.row, item.reversed ? 8 : 0);
                 y = cell.y + s / 2;
                 x = item.reversed
-                    ? cell.x + s + offsetDist   // right side of last cell
-                    : cell.x - offsetDist;      // left side of first cell
+                    ? cell.x + s + offsetDist
+                    : cell.x - offsetDist;
             } else if (!isNaN(item.col) && item.col != null) {
-                // Column hint — placed above or below the grid
                 const cell = this.board.getCellTopLeftCTX(item.reversed ? 8 : 0, item.col);
                 x = cell.x + s / 2;
                 y = item.reversed
-                    ? cell.y + s + offsetDist   // below last cell
-                    : cell.y - offsetDist;      // above first cell
+                    ? cell.y + s + offsetDist
+                    : cell.y - offsetDist;
             } else {
                 continue;
             }
@@ -101,5 +98,4 @@ export class NumberedRoomsHandler extends RuleTypeHandler {
             ctx.restore();
         }
     }
-
 }

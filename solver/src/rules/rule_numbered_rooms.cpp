@@ -90,6 +90,82 @@ void RuleNumberedRooms::from_json(JSON &json) {
     }
 }
 
+JSON RuleNumberedRooms::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Numbered-Rooms";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &pair: m_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = pair.region.to_json();
+        fields["digit"] = static_cast<double>(pair.digit);
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleNumberedRooms::init_randomly() {
+    m_pairs.clear();
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    const int board_size = board_->size();
+
+    std::uniform_int_distribution<int> num_rooms_dist(MIN_PAIRS, MAX_PAIRS);
+    int num_rooms = num_rooms_dist(gen);
+
+    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+
+    std::uniform_int_distribution<int> digit_dist(2, board_size);
+
+    Region<ORCIdx> occupied_region;
+
+    int attempts = 0;
+    while ((int) m_pairs.size() < num_rooms && attempts < 100) {
+        int region_size = region_size_dist(gen);
+        Region<ORCIdx> region;
+
+        int region_attempts = 0;
+        while ((int) region.size() < region_size && region_attempts < 25) {
+            // randomly select a row or column
+            bool reversed = (rand() % 2 == 0);
+
+            Row r = -1;
+            Col c = -1;
+
+            if (rand() % 2 == 0)
+                r = rand() % board_size; // use row
+            else
+                c = rand() % board_size; // use col
+
+            ORCIdx orc(r, c, reversed);
+            if (occupied_region.has(orc))
+                continue; // already used this row/column
+
+            occupied_region.add(orc);
+            region.add(orc);
+
+            region_attempts++;
+        }
+
+        int digit = digit_dist(gen);
+        m_pairs.push_back({region, digit});
+
+        attempts++;
+        if ((int) region.size() != region_size)
+            break; // prevent infinite loop if not enough space
+    }
+}
+
 // private member functions
 
 bool RuleNumberedRooms::enforce_numbered_rooms(const NumberedRoomsPair &pair) {

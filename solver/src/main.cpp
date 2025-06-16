@@ -11,6 +11,9 @@
 #include "json/json.h"
 #include "solver_stats.h"
 
+#include "datagen.h"
+#include "rules/include.h"
+
 extern "C" {
 void solve(const char *json, int max_solutions, int max_nodes);
 void solveComplete(const char *json, int unused, int max_nodes);
@@ -22,7 +25,6 @@ void print_help() {
               << "  ./solver complete <json_path> <node_limit>\n"
               << "  ./solver bench <json_path>\n";
 }
-
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -49,6 +51,7 @@ int main(int argc, char *argv[]) {
             std::cerr << "Error: Cannot open file '" << json_path << "'\n";
             return 1;
         }
+
         std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         solve(json.c_str(), max_solutions, max_nodes);
         return 0;
@@ -69,6 +72,7 @@ int main(int argc, char *argv[]) {
             std::cerr << "Error: Cannot open file '" << json_path << "'\n";
             return 1;
         }
+
         std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         solveComplete(json.c_str(), 0, max_nodes);
         return 0;
@@ -81,7 +85,21 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        bench::bench(argv[2], 17, 128000, false);
+        bench::bench(argv[2], 17, 16384, false);
+        return 0;
+    } else if (command == "datagen") {
+        if (argc != 3) {
+            std::cerr << "Error: 'datagen' requires <output_path>\n";
+            print_help();
+            return 1;
+        }
+
+        const int puzzle_count = 3;
+        for (int i = 0; i < puzzle_count; i++) {
+            std::cout << "Generating puzzle " << (i + 1) << "/" << puzzle_count << "...\n";
+            datagen::generate_random_puzzle(argv[2], 17, 128000);
+        }
+
         return 0;
     }
 
@@ -115,6 +133,7 @@ void solve(const char *json, int max_solutions, int max_nodes) {
 
         std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
         std::cout << "[INFO]nodes_explored=" << stats.nodes_explored << "\n";
+        std::cout << "[INFO]guesses_made=" << stats.guesses_made << "\n";
         std::cout << "[INFO]time_taken_ms=" << std::fixed << std::setprecision(3) << stats.time_taken_ms << "\n";
         std::cout << "[INFO]interrupted_by_node_limit=" << (stats.interrupted_by_node_limit ? "true" : "false") << "\n";
         std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false")

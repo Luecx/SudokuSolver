@@ -3,63 +3,14 @@
 
 namespace sudoku {
 
-// cage helper function
-
-int maxSum(int small, int N, int maxC, bool number_can_repeat_) {
-    if (number_can_repeat_) {
-        return small + (N - 1) * maxC;
-    } else {
-        int total = small;
-        int val = maxC;
-        for (int i = 0; i < N - 1; ++i)
-            total += val--;
-        return total;
-    }
-}
-
-int minSum(int large, int N, int minC, bool number_can_repeat_) {
-    if (number_can_repeat_) {
-        return large + (N - 1) * minC;
-    } else {
-        int total = large;
-        int val = minC;
-        for (int i = 0; i < N - 1; ++i)
-            total += val++;
-        return total;
-    }
-}
-
-int lowerBound(int N, int sum, int maxC, int size, bool number_can_repeat_) {
-    for (int low = 1; low <= maxC - (number_can_repeat_ ? 0 : N - 1); ++low)
-        if (maxSum(low, N, maxC, number_can_repeat_) >= sum)
-            return low;
-    return size + 1;
-}
-
-int upperBound(int N, int sum, int minC, int size, bool number_can_repeat_) {
-    for (int high = size; high >= minC + (number_can_repeat_ ? 0 : N - 1); --high)
-        if (minSum(high, N, minC, number_can_repeat_) <= sum)
-            return high;
-    return 0;
-}
-
-std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_) {
-    int min = lowerBound(N, sum, maxC, size, number_can_repeat_);
-    int max = upperBound(N, sum, minC, size, number_can_repeat_);
-    return {min, max};
-}
-
-// RuleKiller methods
-
 bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
-    for (const auto &pair: m_cage_pair) {
+    for (auto &pair: m_cage_pair) {
         const Region<CellIdx> &region = pair.region;
         if (!region.has(pos))
             continue;
 
-        for (auto &pair: m_cage_pair)
-            changed |= check_cage(pair);
+        changed |= check_cage(pair);
         break; // regions can't overlap
     }
     return changed;
@@ -128,6 +79,51 @@ void RuleKiller::from_json(JSON &json) {
     }
 }
 
+JSON RuleKiller::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Killer";
+
+    JSON fields = JSON(JSON::object{});
+    fields["NumberCanRepeat"] = m_number_can_repeat;
+    json["fields"] = fields;
+
+    JSON::array rules = JSON::array();
+
+    for (const auto &cage_pair: m_cage_pair) {
+        JSON rule = JSON(JSON::object{});
+        JSON rule_fields = JSON(JSON::object{});
+
+        rule_fields["region"] = cage_pair.region.to_json();
+        rule_fields["sum"] = static_cast<double>(cage_pair.sum);
+
+        rule["fields"] = rule_fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleKiller::init_randomly() {
+    m_cage_pair.clear();
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<int> region_count_dist(MIN_REGIONS, MAX_REGIONS);
+    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+
+    std::uniform_real_distribution<double> fill_dist(0.0, 1.0);
+    std::uniform_real_distribution<double> repeat_dist(0.0, 1.0);
+
+    int num_regions = region_count_dist(gen);
+
+    bool fill_board = fill_dist(gen) < FILL_BOARD_WITH_CAGES;
+    m_number_can_repeat = repeat_dist(gen) < NUMBER_CAN_REPEAT_PROBABILITY;
+
+    Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
+}
+
 // private member functions
 
 bool RuleKiller::check_cage(KillerPair &pair) {
@@ -162,12 +158,12 @@ bool RuleKiller::check_cage(KillerPair &pair) {
     if (m_remaining_cells.size() == 0)
         return false;
 
-    auto [min, max] = getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_cand, max_cand, board_size,
-                                    m_number_can_repeat);
+    auto [min, max] = rule_utils::getSoftBounds(m_remaining_cells.size(), pair.sum - sum, min_cand, max_cand,
+                                                board_size, m_number_can_repeat);
 
     bool changed = false;
-    for (const auto &item: m_remaining_cells) {
-        Cell &cell = board_->get_cell(item);
+    for (const auto &pos: m_remaining_cells) {
+        Cell &cell = board_->get_cell(pos);
         for (const auto n: cell.candidates) {
             if ((!m_number_can_repeat && seen.test(n)) || n < min || n > max)
                 changed |= cell.remove_candidate(n);

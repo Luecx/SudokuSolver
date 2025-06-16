@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
 
+
 export class XVRuleHandler extends RuleTypeHandler {
     constructor(board) {
         super("XV", board);
@@ -11,61 +12,55 @@ export class XVRuleHandler extends RuleTypeHandler {
 
     defaultRules() {
         return [
-            { label: "X Rule", symbol: "X", fields: {} },
-            { label: "V Rule", symbol: "V", fields: {} }
+            { label: gettext("X Rule"), symbol: "X", fields: {} },
+            { label: gettext("V Rule"), symbol: "V", fields: {} }
         ];
     }
 
     getGeneralRuleScheme() {
-        return [
-            {
-                key: "allDotsGiven",
-                type: "boolean",
-                default: false,
-                label: "All symbols given"
-            }
-        ];
+        return [{
+            key: "allDotsGiven",
+            type: "boolean",
+            default: false,
+            label: gettext("All symbols given")
+        }];
     }
 
     getSpecificRuleScheme() {
-        return [
-            {
-                key: "region",
-                type: "region",
-                regionType: RegionType.EDGES,
-                selectionMode: SelectionMode.MULTIPLE,
-                label: "XV Symbol Edges"
-            }
-        ];
+        return [{
+            key: "region",
+            type: "region",
+            regionType: RegionType.EDGES,
+            selectionMode: SelectionMode.MULTIPLE,
+            label: gettext("XV Symbol Edges")
+        }];
     }
 
     getDescriptionHTML() {
-        return `
+        return gettext(`
             <ul>
                 <li><b>X</b>: The two cells sum to <b>10</b>.</li>
                 <li><b>V</b>: The two cells sum to <b>5</b>.</li>
             </ul>
             If the option <b>All Symbols Given</b> is enabled, every adjacent pair that sums to 5 or 10 must have a corresponding symbol.
             If <b>All Symbols Given</b> is not enabled, symbols may only appear selectively, and missing symbols do not necessarily imply anything.
-        `;
+        `);
     }
 
     getDescriptionPlayHTML() {
-        let desc = "In an <b>XV Sudoku</b>, an <b>X</b> between two cells means they sum to <b>10</b>, and a <b>V</b> means they sum to <b>5</b>.";
+        let desc = gettext("In an <b>XV Sudoku</b>, an <b>X</b> between two cells means they sum to <b>10</b>, and a <b>V</b> means they sum to <b>5</b>.");
 
         if (this.fields?.allDotsGiven) {
-            desc += " All valid X and V pairs are shown — if there's no symbol, the sum is neither 5 nor 10.";
+            desc += " " + gettext("All valid X and V pairs are shown — if there's no symbol, the sum is neither 5 nor 10.");
         } else {
-            desc += " Symbols may be placed selectively — a missing symbol does not imply anything.";
+            desc += " " + gettext("Symbols may be placed selectively — a missing symbol does not imply anything.");
         }
 
         return desc;
     }
 
-
     render(rule, ctx) {
         const region = rule.fields.region;
-
         if (!region) return;
 
         const s = this.board.getCellSizeCTX();
@@ -79,7 +74,7 @@ export class XVRuleHandler extends RuleTypeHandler {
             const cy = (a.y + b.y + s) / 2;
 
             ctx.save();
-            ctx.font = `${Math.floor(s * 0.4)}px Arial`; // Better font size
+            ctx.font = `${Math.floor(s * 0.4)}px Arial`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillStyle = "black";

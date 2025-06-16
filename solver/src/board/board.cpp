@@ -69,4 +69,18 @@ void Board::add_handler(std::shared_ptr<RuleHandler> handler) {
     this->process_rule_candidates();
 }
 
+void Board::init_randomly() {
+    for (const auto &handler: handlers_)
+        handler->init_randomly();
+}
+
+void Board::clear() {
+    for (Row r = 0; r < board_size_; ++r) {
+        for (Col c = 0; c < board_size_; ++c) {
+            grid_[r][c].clear();
+        }
+    }
+    impact_map_.reset();
+}
+
 } // namespace sudoku

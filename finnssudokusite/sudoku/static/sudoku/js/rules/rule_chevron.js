@@ -22,26 +22,25 @@ export class ChevronHandler extends RuleTypeHandler {
         return [];
     }
 
-    getSpecificRuleScheme() {       
+    getSpecificRuleScheme() {
         return [
             {
                 key: "region",
                 type: "region",
                 regionType: RegionType.EDGES,
                 selectionMode: SelectionMode.MULTIPLE,
-                label:  "Chevron Symbol"
+                label: gettext("Chevron Symbol"),
             }
         ];
     }
 
     getDescriptionHTML() {
-        return `<p>Chevrons point to the cell with the larger number.</p>`;
+        return `<p>${gettext("Chevrons point to the cell with the larger number.")}</p>`;
     }
 
     getDescriptionPlayHTML() {
-        return "In a <b>Chevron Sudoku</b>, each chevron points toward the cell with the <b>higher digit</b>.";
+        return gettext("In a <b>Chevron Sudoku</b>, each chevron points toward the cell with the <b>higher digit</b>.");
     }
-
 
     render(rule, ctx) {
         const region = rule.fields.region;
@@ -67,18 +66,15 @@ export class ChevronHandler extends RuleTypeHandler {
         }
     }
 
-    // Helper function
     drawChevron(ctx, x, y, direction = 'down') {
         const size = 28;
 
         ctx.translate(x, y);
         ctx.scale(size / 24, size / 24);
-        
-        // Center the drawing 
-        ctx.translate(-12, -12); // Shift back by half the icon size
-        
+        ctx.translate(-12, -12); // center the symbol
+
         ctx.beginPath();
-        
+
         if (direction === 'down') {
             ctx.moveTo(5.293, 8.293);
             ctx.lineTo(12, 15);
@@ -86,7 +82,7 @@ export class ChevronHandler extends RuleTypeHandler {
             ctx.lineTo(20.121, 9.707);
             ctx.lineTo(12, 17.828);
             ctx.lineTo(3.879, 9.707);
-        } 
+        }
         else if (direction === 'up') {
             ctx.moveTo(5.293, 15.707);
             ctx.lineTo(12, 9);
@@ -111,7 +107,7 @@ export class ChevronHandler extends RuleTypeHandler {
             ctx.lineTo(6.172, 12);
             ctx.lineTo(14.293, 3.879);
         }
-        
+
         ctx.closePath();
         ctx.fill();
     }

@@ -1,6 +1,6 @@
 #include "rule_arrow.h"
-#include "rule_killer.h"
 #include "../board/board.h"
+#include "rule_killer.h"
 
 namespace sudoku {
 
@@ -89,6 +89,87 @@ void RuleArrow::from_json(JSON &json) {
             arrow_pair.path = path;
 
             m_arrow_pairs.push_back(arrow_pair);
+        }
+    }
+}
+
+JSON RuleArrow::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Arrow";
+
+    JSON::array rules = JSON::array();
+    for (const auto &arrow_pair: m_arrow_pairs) {
+        JSON rule = JSON(JSON::object{});
+        JSON fields = JSON(JSON::object{});
+
+        fields["base"] = arrow_pair.base.to_json();
+        fields["path"] = arrow_pair.path.to_json();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleArrow::init_randomly() {
+    // infinite loop may occur: TODO fix this that
+
+    m_arrow_pairs.clear();
+
+    if (board_->size() != 9)
+        return; // arrow rules only supported for 9x9 boards
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<int> arrow_dist(MIN_ARROWS, MAX_ARROWS);
+    std::uniform_int_distribution<int> path_length_dist(MIN_PATH_LENGTH, MAX_PATH_LENGTH);
+    std::uniform_real_distribution<double> base_size_dist(0.0, 1.0);
+
+    int num_arrows = arrow_dist(gen);
+
+    for (int i = 0; i < num_arrows; ++i) {
+        while (true) {
+            int path_length = path_length_dist(gen);
+            Region<CellIdx> path = rule_utils::generate_random_path(board_, path_length);
+
+            // find a valid adjacent position for base region
+            Region<CellIdx> neighbors = rule_utils::get_orthogonal_neighbors(board_, path.items()[0]) - path;
+
+            if (neighbors.size()) {
+                int base_cell_size = 1;
+
+                std::uniform_int_distribution<int> pos_dist(0, neighbors.size() - 1);
+                CellIdx base_start = neighbors.items()[pos_dist(gen)];
+
+                Region<CellIdx> base_region;
+                base_region.add(base_start);
+
+                // if base_cell_size is 2, add one more adjacent cell
+                if (base_cell_size == 2) {
+                    neighbors = rule_utils::get_orthogonal_neighbors(board_, base_start) - base_region - path;
+
+                    if (neighbors.size()) {
+                        pos_dist = std::uniform_int_distribution<int>(0, neighbors.size() - 1);
+                        CellIdx next_cell = neighbors.items()[pos_dist(gen)];
+                        base_region.add(next_cell);
+                    }
+                }
+
+                // only add if we successfully created both regions
+                if ((int) base_region.size() < base_cell_size || (int) path.size() < MIN_PATH_LENGTH) {
+                    continue;
+                }
+
+                ArrowPair arrow_pair;
+                arrow_pair.base = base_region;
+                arrow_pair.path = path;
+
+                m_arrow_pairs.push_back(arrow_pair);
+                break;
+            }
         }
     }
 }

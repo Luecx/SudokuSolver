@@ -15,7 +15,11 @@ public:
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override;
+
     void from_json(JSON &json) override;
+    JSON to_json() const override;
+
+    void init_randomly() override {}
 
 private:
     bool m_all_dots_given = false;
@@ -24,8 +28,6 @@ private:
     Region<EdgeIdx> m_black_edges;
     Region<EdgeIdx> m_combined_edges;
     Region<EdgeIdx> m_missing_dot_edges;
-
-    bool pos_in_edge(const CellIdx &pos, const EdgeIdx &edge) const;
 
     bool apply_white_number(Cell &source, Cell &target) const;
     bool apply_black_number(Cell &source, Cell &target) const;

@@ -9,7 +9,7 @@ bool RuleDiagonal::number_changed(CellIdx pos) {
 
     bool changed = false;
 
-    if (m_diagonal && pos.r == pos.c) {
+    if (m_main_diagonal && pos.r == pos.c) {
         for (int i = 0; i < board_size; ++i) {
             Cell &diag_cell = board_->get_cell({i, i});
             if (diag_cell.is_solved())
@@ -35,7 +35,7 @@ bool RuleDiagonal::candidates_changed() {
 }
 
 bool RuleDiagonal::valid() {
-    if (m_diagonal && !check_unique_diagonal(true))
+    if (m_main_diagonal && !check_unique_diagonal(true))
         return false;
     if (m_anti_diagonal && !check_unique_diagonal(false))
         return false;
@@ -44,9 +44,41 @@ bool RuleDiagonal::valid() {
 
 void RuleDiagonal::from_json(JSON &json) {
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("diagonal"))
-        m_diagonal = json["fields"]["diagonal"].get<bool>();
+        m_main_diagonal = json["fields"]["diagonal"].get<bool>();
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("antiDiagonal"))
         m_anti_diagonal = json["fields"]["antiDiagonal"].get<bool>();
+}
+
+JSON RuleDiagonal::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Diagonal";
+
+    JSON fields = JSON(JSON::object{});
+    fields["diagonal"] = m_main_diagonal;
+    fields["antiDiagonal"] = m_anti_diagonal;
+
+    json["fields"] = fields;
+    return json;
+}
+
+void RuleDiagonal::init_randomly() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+    if (dis(gen) < BOTH_DIAGONALS_EXIST_CHANCE) {
+        m_main_diagonal = true;
+        m_anti_diagonal = true;
+    } else {
+        // If both aren't enabled, 50% chance for main diagonal
+        if (dis(gen) < 0.5) {
+            m_main_diagonal = true;
+            m_anti_diagonal = false;
+        } else {
+            m_main_diagonal = false;
+            m_anti_diagonal = true;
+        }
+    }
 }
 
 // private member function

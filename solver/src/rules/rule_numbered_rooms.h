@@ -7,10 +7,6 @@
 
 namespace sudoku {
 
-struct NumberedRoomsPair {
-    Region<ORCIdx> region;
-    int digit;
-};
 
 class RuleNumberedRooms : public RuleHandler {
 public:
@@ -20,9 +16,25 @@ public:
     bool candidates_changed() override;
     bool valid() override;
     void update_impact(ImpactMap &map) override;
+
     void from_json(JSON &json) override;
+    JSON to_json() const override;
+
+    void init_randomly() override;
 
 private:
+    // Hyperparameters
+    const int MIN_PAIRS = 2;
+    const int MAX_PAIRS = 4;
+    const int MIN_REGION_SIZE = 1;
+    const int MAX_REGION_SIZE = 3;
+
+    // Standard Parameters
+    struct NumberedRoomsPair {
+        Region<ORCIdx> region;
+        int digit;
+    };
+
     std::vector<NumberedRoomsPair> m_pairs;
 
     bool enforce_numbered_rooms(const NumberedRoomsPair &pair);

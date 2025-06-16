@@ -85,6 +85,29 @@ void RuleWildApples::from_json(JSON &json) {
     m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_apple_edges;
 }
 
+JSON RuleWildApples::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Wild-Apples";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    // Add Wild Apples if they exist
+    if (m_apple_edges.size() > 0) {
+        JSON rule = JSON(JSON::object{});
+        rule["label"] = "Wild Apples";
+        JSON fields = JSON(JSON::object{});
+
+        fields["region"] = m_apple_edges.to_json();
+
+        rule["fields"] = fields;
+        rules.push_back(rule);
+    }
+
+    json["rules"] = rules;
+    return json;
+}
+
 // private member functions
 
 bool RuleWildApples::apply_apple_number(Cell &source, Cell &target) const {

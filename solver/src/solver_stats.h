@@ -23,6 +23,7 @@
 struct SolverStats {
     int solutions_found = 0; ///< Number of valid solutions found.
     int nodes_explored = 0; ///< Number of nodes (decisions) explored.
+    int guesses_made = 0; ///< Total guesses made during solving.
     float time_taken_ms = 0.0f; ///< Elapsed time in milliseconds.
 
     bool interrupted_by_node_limit = false; ///< Whether solving was interrupted due to a node limit.
@@ -51,6 +52,9 @@ inline std::ostream &operator<<(std::ostream &os, const SolverStats &stats) {
 
     os << "| " << std::setw(26) << std::left << "Nodes Explored:";
     os << std::setw(12) << std::right << stats.nodes_explored << " |\n";
+
+    os << "| " << std::setw(26) << std::left << "Guesses Made:";
+    os << std::setw(12) << std::right << stats.guesses_made << " |\n";
 
     os << "| " << std::setw(26) << std::left << "Time (ms):";
     std::stringstream time_ss;

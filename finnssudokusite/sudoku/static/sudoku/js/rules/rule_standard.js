@@ -8,35 +8,32 @@ export class StandardRuleHandler extends RuleTypeHandler {
     }
 
     defaultRules() {
-        return []; // << now completely empty
+        return [];
     }
 
     getGeneralRuleScheme() {
-        return []; // no options
+        return [];
     }
 
     getSpecificRuleScheme() {
-        return []; // no per-rule options
+        return [];
     }
 
     getDescriptionHTML() {
         return `
-            In <b>Standard Sudoku</b>, each row, each column, and each 3×3 block must contain the numbers <b>1</b> to <b>9</b> exactly once, without repetition.
+            ${gettext("In <b>Standard Sudoku</b>, each row, each column, and each 3×3 block must contain the numbers <b>1</b> to <b>9</b> exactly once, without repetition.")}
         `;
     }
 
     getDescriptionPlayHTML() {
-        return "In a <b>Standard Sudoku</b>, every row, column, and 3×3 box must contain the digits <b>1</b> to <b>9</b> exactly once.";
+        return gettext("In a <b>Standard Sudoku</b>, every row, column, and 3×3 box must contain the digits <b>1</b> to <b>9</b> exactly once.");
     }
 
-
-    // === IMPORTANT: override renderAll() ===
     renderAll(ctx) {
         if (!this.enabled) return;
-        this.render(ctx); // just call render directly
+        this.render(ctx);
     }
 
-    // === Modified render() signature ===
     render(ctx) {
         ctx.save();
         ctx.strokeStyle = "#000";
@@ -45,7 +42,6 @@ export class StandardRuleHandler extends RuleTypeHandler {
         const gridSize = 9;
         const s = this.board.getCellSizeCTX();
 
-        // Bold horizontal lines at rows 3 and 6
         for (let row = 3; row < gridSize; row += 3) {
             const { y } = this.board.getCellTopLeftCTX(row, 0);
             const { x: xStart } = this.board.getCellTopLeftCTX(0, 0);
@@ -56,7 +52,6 @@ export class StandardRuleHandler extends RuleTypeHandler {
             ctx.stroke();
         }
 
-        // Bold vertical lines at columns 3 and 6
         for (let col = 3; col < gridSize; col += 3) {
             const { x } = this.board.getCellTopLeftCTX(0, col);
             const { y: yStart } = this.board.getCellTopLeftCTX(0, 0);
@@ -69,5 +64,4 @@ export class StandardRuleHandler extends RuleTypeHandler {
 
         ctx.restore();
     }
-
 }

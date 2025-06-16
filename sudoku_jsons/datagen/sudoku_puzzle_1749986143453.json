@@ -1,0 +1,214 @@
+{
+  "fixedCells": [
+    {
+      "c": 1,
+      "r": 1,
+      "value": 8
+    },
+    {
+      "c": 3,
+      "r": 1,
+      "value": 7
+    },
+    {
+      "c": 7,
+      "r": 1,
+      "value": 6
+    },
+    {
+      "c": 6,
+      "r": 2,
+      "value": 4
+    },
+    {
+      "c": 8,
+      "r": 2,
+      "value": 7
+    },
+    {
+      "c": 1,
+      "r": 3,
+      "value": 9
+    },
+    {
+      "c": 4,
+      "r": 3,
+      "value": 2
+    },
+    {
+      "c": 5,
+      "r": 3,
+      "value": 5
+    },
+    {
+      "c": 6,
+      "r": 3,
+      "value": 3
+    },
+    {
+      "c": 2,
+      "r": 4,
+      "value": 4
+    },
+    {
+      "c": 6,
+      "r": 4,
+      "value": 2
+    },
+    {
+      "c": 0,
+      "r": 5,
+      "value": 2
+    },
+    {
+      "c": 4,
+      "r": 5,
+      "value": 3
+    },
+    {
+      "c": 2,
+      "r": 6,
+      "value": 1
+    },
+    {
+      "c": 5,
+      "r": 6,
+      "value": 8
+    },
+    {
+      "c": 8,
+      "r": 6,
+      "value": 5
+    },
+    {
+      "c": 1,
+      "r": 7,
+      "value": 7
+    },
+    {
+      "c": 6,
+      "r": 7,
+      "value": 6
+    },
+    {
+      "c": 8,
+      "r": 7,
+      "value": 9
+    },
+    {
+      "c": 1,
+      "r": 8,
+      "value": 3
+    }
+  ],
+  "rules": [
+    {
+      "fields": {},
+      "rules": [],
+      "type": "Standard"
+    },
+    {
+      "rules": [
+        {
+          "fields": {
+            "base": {
+              "__type__": "Region",
+              "items": [
+                {
+                  "__type__": "CellIdx",
+                  "c": 5,
+                  "r": 5
+                }
+              ],
+              "type": "cells"
+            },
+            "path": {
+              "__type__": "Region",
+              "items": [
+                {
+                  "__type__": "CellIdx",
+                  "c": 4,
+                  "r": 5
+                },
+                {
+                  "__type__": "CellIdx",
+                  "c": 4,
+                  "r": 4
+                }
+              ],
+              "type": "cells"
+            }
+          }
+        },
+        {
+          "fields": {
+            "base": {
+              "__type__": "Region",
+              "items": [
+                {
+                  "__type__": "CellIdx",
+                  "c": 5,
+                  "r": 1
+                }
+              ],
+              "type": "cells"
+            },
+            "path": {
+              "__type__": "Region",
+              "items": [
+                {
+                  "__type__": "CellIdx",
+                  "c": 5,
+                  "r": 0
+                },
+                {
+                  "__type__": "CellIdx",
+                  "c": 4,
+                  "r": 1
+                },
+                {
+                  "__type__": "CellIdx",
+                  "c": 5,
+                  "r": 2
+                }
+              ],
+              "type": "cells"
+            }
+          }
+        },
+        {
+          "fields": {
+            "base": {
+              "__type__": "Region",
+              "items": [
+                {
+                  "__type__": "CellIdx",
+                  "c": 0,
+                  "r": 7
+                }
+              ],
+              "type": "cells"
+            },
+            "path": {
+              "__type__": "Region",
+              "items": [
+                {
+                  "__type__": "CellIdx",
+                  "c": 0,
+                  "r": 8
+                },
+                {
+                  "__type__": "CellIdx",
+                  "c": 1,
+                  "r": 8
+                }
+              ],
+              "type": "cells"
+            }
+          }
+        }
+      ],
+      "type": "Arrow"
+    }
+  ]
+}

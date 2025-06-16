@@ -73,9 +73,8 @@ bool Board::set_cell(const CellIdx &idx, Number number, bool force) {
     if (!force)
         push_history();
 
-    Cell &cell = grid_[idx.r][idx.c];
-    cell.value = number;
-    cell.candidates = NumberSet(board_size_, number);
+    Cell &cell = get_cell(idx);
+    cell.set_value(number);
 
     process_rule_number_changed(idx);
     process_rule_candidates();

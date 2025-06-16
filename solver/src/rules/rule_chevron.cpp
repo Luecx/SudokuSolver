@@ -90,6 +90,35 @@ void RuleChevron::from_json(JSON &json) {
     }
 }
 
+JSON RuleChevron::to_json() const {
+    JSON json = JSON(JSON::object{});
+    json["type"] = "Chevron";
+    json["fields"] = JSON(JSON::object{});
+
+    JSON::array rules = JSON::array();
+
+    auto add_chevron = [&rules](const auto &edges, const std::string &label) {
+        if (edges.size() > 0) {
+            JSON rule = JSON(JSON::object{});
+            rule["label"] = label;
+            JSON fields = JSON(JSON::object{});
+            fields["region"] = edges.to_json();
+            rule["fields"] = fields;
+            rules.push_back(rule);
+        }
+    };
+
+    add_chevron(m_up_edges, "Up Chevron");
+    add_chevron(m_down_edges, "Down Chevron");
+    add_chevron(m_right_edges, "Right Chevron");
+    add_chevron(m_left_edges, "Left Chevron");
+
+    json["rules"] = rules;
+    return json;
+}
+
+void RuleChevron::init_randomly() {}
+
 // privte member functions
 
 bool RuleChevron::enforce() const {

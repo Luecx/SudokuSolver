@@ -14,7 +14,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         return [
             { label: "Anti-Knight", fields: {} },
             { label: "Anti-King", fields: {} }
-        ]; 
+        ];
     }
 
     getGeneralRuleScheme() {
@@ -23,10 +23,10 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
 
     getSpecificRuleScheme() {
         return [
-           {
+            {
                 key: "enabled",
                 type: "boolean",
-                label: `Enabled`,
+                label: gettext("Enabled"),
                 default: false
             },
             {
@@ -34,21 +34,21 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
                 type: "region",
                 regionType: RegionType.CELLS,
                 selectionMode: SelectionMode.MULTIPLE,
-                label: "Optional: Cage Region"
+                label: gettext("Optional: Cage Region")
             },
             {
                 key: "NumberCanRepeat",
                 type: "boolean",
-                label: `Optional: Numbers can repeat`,
+                label: gettext("Optional: Numbers can repeat"),
                 default: true
             },
             {
                 key: "sums",
                 type: "string",
                 default: "",
-                label: "Optional: Forbidden Sums (comma-sep)"
+                label: gettext("Optional: Forbidden Sums (comma-sep)")
             }
-        ]; 
+        ];
     }
 
     getRuleWarnings(rule) {
@@ -60,53 +60,53 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
 
         const trimmed = sums.trim();
         if (trimmed === '') {
-            warnings.push("'sums' cannot be empty");
+            warnings.push(gettext("'sums' cannot be empty"));
             return warnings;
         }
 
         if (!trimmed.includes(',')) {
             if (isNaN(Number(trimmed)))
-                warnings.push(`'${trimmed}' is not a valid number`);
+                warnings.push(gettext("“%(value)s” is not a valid number").replace("%(value)s", trimmed));
             return warnings;
         }
 
         const parts = trimmed.split(',');
         if (parts.length > 5)
-            warnings.push(`Too many forbidden sums: maximum allowed is ${5}`);
-        
+            warnings.push(gettext("Too many forbidden sums: maximum allowed is 5"));
+
         const invalidParts = parts.filter(part => {
             const num = part.trim();
             return num === '' || isNaN(Number(num));
         });
 
         if (invalidParts.length > 0)
-            warnings.push(`Invalid numbers: ${invalidParts.join(', ')}`);
+            warnings.push(gettext("Invalid numbers: %(numbers)s").replace("%(numbers)s", invalidParts.join(', ')));
 
         return warnings;
     }
 
     getDescriptionHTML() {
         return `
-            <b>Anti-Chess Sudoku</b>:
+            <b>${gettext("Anti-Chess Sudoku")}</b>:
             <ul>
-                <li>Cells a knight's move away cannot contain the same digit.</li>
-                <li>Cells a king's move away cannot contain the same digit.</li>
-                <li>Within defined cages:
+                <li>${gettext("Cells a knight's move away cannot contain the same digit.")}</li>
+                <li>${gettext("Cells a king's move away cannot contain the same digit.")}</li>
+                <li>${gettext("Within defined cages:")}
                     <ul>
-                        <li>Digits within must not sum to the given value(s).</li>
-                        <li>The knight's and king's move restrictions apply.</li>
-                        <li>Knight's and king's cages can coexist.</li>
+                        <li>${gettext("Digits within must not sum to the given value(s).")}</li>
+                        <li>${gettext("The knight's and king's move restrictions apply.")}</li>
+                        <li>${gettext("Knight's and king's cages can coexist.")}</li>
                     </ul>
                 </li>
-                <li>Blue cages are knight's cages.</li>
-                <li>Green cages are king's cages.</li>
-                <li>If no cage is defined, the knight's and king's move restrictions apply to the entire board.</li>
+                <li>${gettext("Blue cages are knight's cages.")}</li>
+                <li>${gettext("Green cages are king's cages.")}</li>
+                <li>${gettext("If no cage is defined, the knight's and king's move restrictions apply to the entire board.")}</li>
             </ul>
         `;
     }
 
     getDescriptionPlayHTML() {
-        let desc = "<b>Anti-Chess Sudoku</b>: ";
+        let desc = `<b>${gettext("Anti-Chess Sudoku")}</b>: `;
         const parts = [];
 
         for (const label of ["Anti-Knight", "Anti-King"]) {
@@ -120,24 +120,29 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
                 const sums = rule.fields?.sums?.trim();
                 const hasForbiddenSums = sums && sums.length > 0;
 
-                const piece = label === "Anti-Knight" ? "knight's move" : "king's move";
-                const scope = regionSet
-                    ? "within a specified region"
-                    : "anywhere on the board";
+                const piece = label === "Anti-Knight"
+                    ? gettext("knight's move")
+                    : gettext("king's move");
 
-                let text = `no two identical digits may be a ${piece} apart ${scope}`;
+                const scope = regionSet
+                    ? gettext("within a specified region")
+                    : gettext("anywhere on the board");
+
+                let text = gettext("no two identical digits may be a %(piece)s apart %(scope)s")
+                    .replace("%(piece)s", piece)
+                    .replace("%(scope)s", scope);
 
                 if (regionSet) {
                     const extras = [];
 
                     if (hasForbiddenSums)
-                        extras.push(`must not sum to ${sums}`);
+                        extras.push(gettext("must not sum to %(sums)s").replace("%(sums)s", sums));
 
                     if (!allowRepeats)
-                        extras.push("must be distinct");
+                        extras.push(gettext("must be distinct"));
 
                     if (extras.length > 0)
-                        text += `, and digits ${extras.join(" and ")}`;
+                        text += ", " + gettext("and digits") + " " + extras.join(" " + gettext("and") + " ");
                 }
 
                 text += ".";
@@ -146,7 +151,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         }
 
         if (parts.length === 0) {
-            return desc + "no constraints are active.";
+            return desc + gettext("no constraints are active.");
         }
 
         return desc + parts.join(" ");
@@ -154,24 +159,24 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
 
     render(rule, ctx) {
         const region = rule.fields.region;
-        
+
         if (!rule || !region || region.size() === 0) return;
-                
+
         const s = this.board.getCellSize();
         const insetPx = 5;
         const inset = insetPx / s;
-            
+
         const cells = region.items.map(({ r, c }) => ({ x: c, y: r }));
         const loops = buildInsetPath(cells, inset);
-            
+
         ctx.save();
         ctx.strokeStyle = rule.label == "Anti-Knight" ? "rgb(158, 107, 73)" : "rgb(125, 196, 62)";
-        ctx.lineWidth = 3;
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
-            
+        ctx.lineWidth   = 3;
+        ctx.lineJoin    = "round";
+        ctx.lineCap     = "round";
+
         ctx.setLineDash([10, 10]);
-            
+
         for (const loop of loops) {
             ctx.beginPath();
             loop.forEach((pt, i) => {
@@ -194,12 +199,11 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
 
         const firstPoint = [...region.values()].reduce((a, b) => (b.r < a.r || (b.r === a.r && b.c < a.c)) ? b : a);
         const topLeft = this.board.getCellTopLeftCTX(firstPoint.r, firstPoint.c);
-            
-        // Calculate responsive font size with minimum size for mobile
+
         const devicePixelRatio = window.devicePixelRatio || 1;
         const baseFontSize = s * 0.22;
         const fontSize = Math.max(baseFontSize * devicePixelRatio, 10);
-        
+
         const boxWidth = s * 0.22 * totalNumbers;
         const boxHeight = s * 0.25;
 
@@ -231,7 +235,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         ctx.moveTo(textX, middleY);
         ctx.lineTo(textX + textMetrics.width, middleY);
         ctx.stroke();
-        
+
         ctx.restore();
     }
 
@@ -240,7 +244,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         if (!rule?.fields) return [];
 
         const sumsInput = rule.fields.sums;
-        
+
         if (sumsInput == null) return [];
         if (sumsInput.trim() === '') return [];
 
@@ -255,5 +259,4 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             })
             .slice(0, 18); // take only the first 18 numbers
     }
-
 }
