@@ -22,6 +22,9 @@ public:
     void init_randomly() override {}
 
 private:
+    // hyperparameters
+
+    // standard parameters
     bool m_all_dots_given = false;
 
     Region<EdgeIdx> m_x_edges;
@@ -29,6 +32,7 @@ private:
     Region<EdgeIdx> m_combined_edges;
     Region<EdgeIdx> m_missing_symbol_edges;
 
+    // private member functions
     bool enforce_sum(Cell &a, Cell &b, int sum) const;
 
     bool denforce_missing_symbols() const;

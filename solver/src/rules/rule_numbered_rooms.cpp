@@ -96,7 +96,6 @@ JSON RuleNumberedRooms::to_json() const {
     json["fields"] = JSON(JSON::object{});
 
     JSON::array rules = JSON::array();
-
     for (const auto &pair: m_pairs) {
         JSON rule = JSON(JSON::object{});
         JSON fields = JSON(JSON::object{});
@@ -121,48 +120,38 @@ void RuleNumberedRooms::init_randomly() {
     const int board_size = board_->size();
 
     std::uniform_int_distribution<int> num_rooms_dist(MIN_PAIRS, MAX_PAIRS);
-    int num_rooms = num_rooms_dist(gen);
-
-    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
+    const int num_rooms = num_rooms_dist(gen);
 
     std::uniform_int_distribution<int> digit_dist(2, board_size);
+    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
 
-    Region<ORCIdx> occupied_region;
+    Region<ORCIdx> occupied_region; // use this so regions don't overlap
 
     int attempts = 0;
-    while ((int) m_pairs.size() < num_rooms && attempts < 100) {
+    while ((int) m_pairs.size() < num_rooms && attempts++ < 100) {
         int region_size = region_size_dist(gen);
         Region<ORCIdx> region;
 
         int region_attempts = 0;
-        while ((int) region.size() < region_size && region_attempts < 25) {
-            // randomly select a row or column
-            bool reversed = (rand() % 2 == 0);
-
-            Row r = -1;
-            Col c = -1;
-
+        while ((int) region.size() < region_size && region_attempts++ < 25) {
+            int r = -1, c = -1;
             if (rand() % 2 == 0)
                 r = rand() % board_size; // use row
             else
                 c = rand() % board_size; // use col
 
+            bool reversed = (rand() % 2 == 0);
+
             ORCIdx orc(r, c, reversed);
             if (occupied_region.has(orc))
-                continue; // already used this row/column
+                continue;
 
             occupied_region.add(orc);
             region.add(orc);
-
-            region_attempts++;
         }
 
         int digit = digit_dist(gen);
         m_pairs.push_back({region, digit});
-
-        attempts++;
-        if ((int) region.size() != region_size)
-            break; // prevent infinite loop if not enough space
     }
 }
 

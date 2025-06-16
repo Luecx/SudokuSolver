@@ -22,11 +22,15 @@ public:
     void init_randomly() override;
 
 private:
+    // hyperparameters
+
+    // standard parameters
     Region<EdgeIdx> m_up_edges;
     Region<EdgeIdx> m_down_edges;
     Region<EdgeIdx> m_right_edges;
     Region<EdgeIdx> m_left_edges;
 
+    // private member functions
     bool enforce() const;
     bool enforce_greater_less(Cell &cell, Cell &neighbor, std::string symbol) const;
     bool check_pair(Cell &cell, Cell &neighbor, std::string symbol) const;

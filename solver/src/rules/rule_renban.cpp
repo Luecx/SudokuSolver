@@ -44,7 +44,7 @@ bool RuleRenban::valid() {
             solved_values.add(cell.value);
         }
 
-        int path_size = static_cast<int>(path.size());
+        int path_size = path.size();
         if (solved_values.count() != path_size)
             continue;
 
@@ -106,8 +106,10 @@ void RuleRenban::init_randomly() {
 
     Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
 
-    int path_count = path_count_dist(gen);
-    while ((int) m_paths.size() < path_count) {
+    const int path_count = path_count_dist(gen);
+
+    int attempts = 0;
+    while ((int) m_paths.size() < path_count && attempts++ < 100) {
         int path_length = path_length_dist(gen);
         Region<CellIdx> path = rule_utils::generate_random_path(board_, path_length, &available_region);
 

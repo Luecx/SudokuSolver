@@ -21,13 +21,14 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
+    // hyperparameter
     double BOTH_DIAGONALS_EXIST_CHANCE = 0.5;
 
-    // Standard parameters
+    // standard parameters
     bool m_main_diagonal = false;
     bool m_anti_diagonal = false;
 
+    // private member functions
     bool check_unique_diagonal(bool is_main);
 };
 

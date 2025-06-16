@@ -12,7 +12,6 @@
 #include "solver_stats.h"
 
 #include "datagen.h"
-#include "rules/include.h"
 
 extern "C" {
 void solve(const char *json, int max_solutions, int max_nodes);

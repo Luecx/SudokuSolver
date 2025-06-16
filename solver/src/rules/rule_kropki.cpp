@@ -176,7 +176,7 @@ bool RuleKropki::remove_forbidden(Cell &a, Cell &b) const {
 
     for (Number i = 1; i <= N; ++i) {
         // consecutive numbers need a white dot
-        if (std::abs(static_cast<int>(i) - b.value) == 1)
+        if (std::abs(int(i) - b.value) == 1)
             forbidden.add(i);
         // double/half relationships need a black dot
         if (i == 2 * b.value || b.value == 2 * i)

@@ -22,6 +22,9 @@ public:
     void init_randomly() override {}
 
 private:
+    // hyperparameters
+
+    // standard parameters
     bool m_all_dots_given = false;
 
     Region<EdgeIdx> m_white_edges;
@@ -29,6 +32,7 @@ private:
     Region<EdgeIdx> m_combined_edges;
     Region<EdgeIdx> m_missing_dot_edges;
 
+    // private member functions
     bool apply_white_number(Cell &source, Cell &target) const;
     bool apply_black_number(Cell &source, Cell &target) const;
     bool apply_white_candidates(Cell &a, Cell &b) const;

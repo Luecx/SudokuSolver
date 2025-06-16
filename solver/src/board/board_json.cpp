@@ -46,7 +46,7 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleChevron>(this);
             } else if (normalized_type == "extraregions") {
                 handler = std::make_shared<RuleExtraRegions>(this);
-            } else if (normalized_type == "killer" || normalized_type == "customsum") {
+            } else if (normalized_type == "killer") {
                 handler = std::make_shared<RuleKiller>(this);
             } else if (normalized_type == "clone") {
                 handler = std::make_shared<RuleClone>(this);
@@ -80,6 +80,8 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleNumberedRooms>(this);
             } else if (normalized_type == "wildapples") {
                 handler = std::make_shared<RuleWildApples>(this);
+            } else if (normalized_type == "customsum") {
+                handler = std::make_shared<RuleCustomSum>(this);
             } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }

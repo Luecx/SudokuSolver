@@ -23,20 +23,21 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
-    const int MIN_PAIRS = 2;
-    const int MAX_PAIRS = 4;
-    const int MIN_REGION_SIZE = 1;
-    const int MAX_REGION_SIZE = 3;
-
-    // Standard Parameters
     struct NumberedRoomsPair {
         Region<ORCIdx> region;
         int digit;
     };
 
+    // hyperparameters
+    const int MIN_PAIRS = 2;
+    const int MAX_PAIRS = 4;
+    const int MIN_REGION_SIZE = 1;
+    const int MAX_REGION_SIZE = 3;
+
+    // standard parameter
     std::vector<NumberedRoomsPair> m_pairs;
 
+    // private member functions
     bool enforce_numbered_rooms(const NumberedRoomsPair &pair);
 
     Cell &get_first_cell(const ORCIdx &orc);

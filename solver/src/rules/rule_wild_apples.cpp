@@ -119,7 +119,7 @@ bool RuleWildApples::apply_apple_number(Cell &source, Cell &target) const {
 
     for (Number i = 1; i <= N; ++i) {
         // must be non-consecutive
-        if (std::abs(static_cast<int>(i) - source.value) == 1)
+        if (std::abs(int(i) - source.value) == 1)
             continue;
         // must have different parity (one even, one odd)
         if ((i % 2) == (source.value % 2))
@@ -143,7 +143,7 @@ bool RuleWildApples::apply_apple_candidates(Cell &a, Cell &b) const {
         // check if b has any valid candidates for this n
         for (const auto m: b.candidates) {
             // must be non-consecutive and different parity
-            if (std::abs(static_cast<int>(n) - static_cast<int>(m)) != 1 && (n % 2) != (m % 2)) {
+            if (std::abs(int(n) - int(m)) != 1 && (n % 2) != (m % 2)) {
                 valid = true;
                 break;
             }
@@ -180,7 +180,7 @@ bool RuleWildApples::remove_apple_forbidden(Cell &a, Cell &b) const {
     for (Number i = 1; i <= N; ++i) {
         // if this would create an apple constraint, forbid it
         // (non-consecutive AND different parity)
-        bool non_consecutive = std::abs(static_cast<int>(i) - b.value) != 1;
+        bool non_consecutive = std::abs(int(i) - b.value) != 1;
         bool different_parity = (i % 2) != (b.value % 2);
 
         if (non_consecutive && different_parity)
