@@ -43,5 +43,5 @@ class UsernameOrEmailPasswordResetForm(PasswordResetForm):
         cleaned_data = super().clean()
         value = self.cleaned_data.get("email")
         if not list(self.get_users(value)):
-            raise forms.ValidationError("No user found with the given email or username.")
+            raise forms.ValidationError("_('No user found with the given email or username.')")
         return cleaned_data

@@ -49,7 +49,7 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'puzzles' %}">
-						<i class="fas fa-th-list me-2"></i>{% trans "Puzzles" %}
+						<i class="fas fa-th-list me-2"></i>{% trans "Sudokus" %}
 					</a>
 				</li>
 				<li class="nav-item">
@@ -70,7 +70,7 @@
 				{% get_current_language as LANGUAGE_CODE %}
 				<li class="nav-item">
 					<a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#language-picker-modal" role="button">
-						<i class="fas fa-globe me-2"></i><span id="langactiv"></span>
+						<i class="fas fa-globe me-2"></i><span id="currentLang"></span>
 					</a>
 				</li>
 				
@@ -88,13 +88,13 @@
 							<a class="dropdown-item" href="{% url 'profile' %}#profile"><i class="fas fa-user me-2"></i>{% trans "Your profile" %}</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="{% url 'profile' %}#done"><i class="bi bi-check-lg me-2"></i>{% trans "Puzzles done" %}</a>
+							<a class="dropdown-item" href="{% url 'profile' %}#done"><i class="bi bi-check-lg me-2"></i>{% trans "Sudokus done" %}</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="{% url 'profile' %}#ongoing"><i class="bi bi-arrow-right me-2"></i>{% trans "Ongoing Puzzles" %}</a>
+							<a class="dropdown-item" href="{% url 'profile' %}#ongoing"><i class="bi bi-arrow-right me-2"></i>{% trans "Ongoing Sudokus" %}</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="{% url 'profile' %}#created"><i class="bi bi-grid-3x3 me-2"></i>{% trans "Puzzles Created" %}</a>
+							<a class="dropdown-item" href="{% url 'profile' %}#created"><i class="bi bi-grid-3x3 me-2"></i>{% trans "Sudokus Created" %}</a>
 						</li>
 						<hr>
 						<li>
@@ -109,19 +109,11 @@
 				</li>
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" onclick="openLoginModal()">
-						<i class="fas fa-sign-in-alt me-2"></i> {% trans "Login" %}
-					</a>
+					<button class="navbar-link btn btn-link my-text-btn" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">{% trans "Login" %}</button>
 				</li>
 				{% endif %}
 			</ul>
-			<!-- Unsichtbares Formular für die Sprachumschaltung -->
-			<form id="languageForm" method="post" action="{% url 'set_language' %}" style="display: none;">
-				{% csrf_token %}
-				<input type="hidden" name="language" id="languageInput">
-				<input type="hidden" name="next" value="{{ request.path }}">
-			</form>
-		
+			
 		</div>
 	</div>
 </nav>
@@ -133,22 +125,185 @@
 </div>
 {% endblock %}
 
-<!-- Login Modal -->
-{% include "sudoku/login/login_modal.html" %}
+<!-- Modal -->
+{% include "sudoku/login/login.html" %}
+{% include "sudoku/login/register_modal.html" %}
+{% include "sudoku/password/password_reset_modal.html" %}
 
+
+
+<script>
+	const currentLang = "{{ LANGUAGE_CODE|default:'en' }}";
+	localStorage.setItem("preferredLanguage", currentLang);
+</script>
 <!-- language picker Modal -->
 {% include "sudoku/modal_language_picker.html" %}
+<script>
+	const currentLangSpan = document.getElementById('currentLang');
+	if (currentLangSpan && languages[currentLang]) {
+		currentLangSpan.textContent = languages[currentLang].n;
+	}
+</script>
+
 
 <!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 {% block extra_scripts %}
-<!-- zusätzliche Scripts hier -->
+
+<!--  Script for Login Modal  -->
+<script>
+	function bindLoginFormHandler() {
+		const loginForm = document.getElementById("loginForm");
+		const modalContent = document.getElementById("modalContentContainer") || document.getElementById("loginFormContainer");
+		const errorContainer = document.getElementById("loginErrors");
+		if (!loginForm || !modalContent) return;
+		console.log("Login-Form gebunden");
+		
+		loginForm.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			
+			const formData = new FormData(loginForm);
+			
+			try {
+				const response = await fetch(loginForm.action, {
+					method: loginForm.method,
+					body: formData,
+					headers: {
+						"X-Requested-With": "XMLHttpRequest"
+					}
+				});
+				
+				const text = await response.text();
+				
+				let data;
+				try {
+					data = JSON.parse(text);
+					console.log("Login response", data);
+				} catch {
+					data = null;
+				}
+				
+				if (data && data.success) {
+					const modalInstance = bootstrap.Modal.getInstance(document.getElementById("loginModal"));
+					modalInstance?.hide();
+					document.body.classList.remove("modal-open");
+					document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+					if (data.redirect_url) {
+						window.location.href = data.redirect_url;
+					} else {
+						window.location.reload();
+					}
+				} else {
+					if (errorContainer) {
+						errorContainer.innerHTML = "";
+						loginForm.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+						if (data && data.errors) {
+							for (const [field, errorList] of Object.entries(data.errors)) {
+								errorList.forEach(err => {
+									const div = document.createElement("div");
+									div.classList.add("alert", "alert-danger", "py-1", "mb-1");
+									div.textContent = err.message;
+									errorContainer.appendChild(div);
+								});
+								const fieldEl = loginForm.querySelector(`[name="${field}"]`);
+								if (fieldEl) {
+									fieldEl.classList.add("is-invalid");
+								}
+							}
+						}
+					} else {
+						modalContent.innerHTML = text;
+					}
+				}
+			} catch (error) {
+				console.error("Fehler beim Login-Request:", error);
+				modalContent.innerHTML = '<div class="alert alert-danger">Fehler beim Senden des Formulars. Bitte versuche es erneut.</div>';
+			}
+		});
+	}
+	
+	// Fallback-Funktion, die wiederholt prüft, ob das Formular verfügbar ist
+	function initLoginHandler() {
+		const form = document.getElementById("loginForm");
+		if (!form) {
+			console.warn("LoginForm nicht gefunden – versuche später erneut");
+			setTimeout(initLoginHandler, 300);
+			return;
+		}
+		bindLoginFormHandler();
+	}
+	window.addEventListener("load", initLoginHandler);
+	
+	// Modal-Wechsel: Erst anderes Modal schließen, dann öffnen
+	document.querySelector('[data-bs-target="#loginModal"]')?.addEventListener("click", (e) => {
+		const registerModal = bootstrap.Modal.getInstance(document.getElementById("registerModal"));
+		registerModal?.hide();
+		setTimeout(() => {
+			const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+			loginModal.show();
+		}, 300);
+	});
+	document.querySelector('[data-bs-target="#registerModal"]')?.addEventListener("click", (e) => {
+		const loginModal = bootstrap.Modal.getInstance(document.getElementById("loginModal"));
+		loginModal?.hide();
+		setTimeout(() => {
+			const registerModal = new bootstrap.Modal(document.getElementById("registerModal"));
+			registerModal.show();
+		}, 300);
+	});
+	
+<!--  Script for Register Modal  -->
+	function bindRegisterFormHandler() {
+		const form = document.querySelector("#registerModal form");
+		if (!form) return;
+
+		form.addEventListener("submit", async function (e) {
+			e.preventDefault();
+
+			try {
+				const response = await fetch(form.action, {
+					method: "POST",
+					body: new FormData(form),
+					headers: { "X-Requested-With": "XMLHttpRequest" }
+				});
+				const text = await response.text();
+
+				let data = null;
+				try { data = JSON.parse(text); } catch (_) {}
+
+				if (data && data.success) {
+					bootstrap.Modal.getInstance(document.getElementById("registerModal"))?.hide();
+					alert("Bitte bestätige deine Registrierung per E-Mail.");
+				} else {
+					const container = document.getElementById("registerFormContainer");
+					if (container) {
+						container.innerHTML = text;
+						requestAnimationFrame(bindRegisterFormHandler);
+					} else {
+						console.error("registerFormContainer not found – kann Formular nicht aktualisieren");
+					}
+				}
+			} catch (err) {
+				console.error("Fehler beim Registrieren:", err);
+			}
+		});
+	}
+
+	document.addEventListener("DOMContentLoaded", bindRegisterFormHandler);
+	
+	const registerModalEl = document.getElementById("registerModal");
+	registerModalEl?.addEventListener("shown.bs.modal", () => {
+		requestAnimationFrame(bindRegisterFormHandler);
+	});
+</script>
+
+
+<!--  Script for Password Reset Modal  -->
+
+
 {% endblock %}
 
-<!-- Login Modal Script -->
-<script src="{% static 'sudoku/js/base_loginModal.js' %}"></script>
 
 </body>
 </html>
-

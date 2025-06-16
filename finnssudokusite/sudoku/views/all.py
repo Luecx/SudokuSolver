@@ -4,7 +4,7 @@ import json
 import zlib
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, update_session_auth_hash, get_user_model
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -23,6 +23,21 @@ from ..models import Sudoku, UserSudokuDone, UserSudokuOngoing, Tag
 from ..forms import UserRegisterForm
 from ..util.leaderboard import compute_leaderboard_scores
 
+def modal_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return JsonResponse({"success": True})
+        else:
+            return JsonResponse({
+                "success": False,
+                "errors": form.errors.get_json_data()
+            })
+    else:
+        form = AuthenticationForm()
+    return render(request, "sudoku/login/login.html", {"login_form": form})
 
 def index(request):
     sudokus = Sudoku.objects.annotate(
@@ -155,8 +170,7 @@ def user_profile(request, username):
         "created_puzzles": created_puzzles,
     })
 
-
-def register(request):
+def modal_register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -173,14 +187,16 @@ def register(request):
                 'token': default_token_generator.make_token(user),
             })
             send_mail(subject, message, 'noreply@sudoku.com', [user.email])
+
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True})
             return render(request, 'sudoku/login/activation_sent.html')
         else:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return render(request, 'sudoku/login/register.html', {'form': form})
+            print("Form is invalid:", form.errors)
+            return render(request, "sudoku/login/register_form_fragment.html", {"form": form})
     else:
         form = UserRegisterForm()
-
-    return render(request, 'sudoku/login/register.html', {'form': form})
+        return render(request, 'sudoku/login/register_modal.html', {'form': form})
 
 
 def activate(request, uid, token):
@@ -204,3 +220,24 @@ def game_selection_view(request):
 
 def help(request):
     return render(request, 'sudoku/help.html')
+
+def modal_password_reset(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                from_email='noreply@sudoku.com',
+                email_template_name='sudoku/password/password_reset_email.html',
+                subject_template_name='sudoku/password/password_reset_subject.txt',
+            )
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True})
+            return render(request, 'sudoku/password/reset_password_done.html')
+        else:
+            template = 'sudoku/password/password_reset_modal.html'
+            return render(request, template, {'form': form})
+    else:
+        form = PasswordResetForm()
+        return render(request, 'sudoku/password/password_reset_modal.html', {'form': form})

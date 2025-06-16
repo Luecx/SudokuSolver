@@ -19,6 +19,7 @@ from django.contrib.auth import views as auth_views
 from sudoku.forms import UsernameOrEmailPasswordResetForm
 from . import views as views
 from sudoku.views.contact import kontaktformular_view
+from sudoku.views import modal_login
 
 urlpatterns = [
     # --- Core Views ---
@@ -30,7 +31,6 @@ urlpatterns = [
     path('play-sudoku/<int:sudoku_id>/' , views.play_sudoku         , name='play_sudoku'),
     path('profile/'                     , views.profile             , name='profile'),
     path('puzzles/'                     , views.puzzles_view        , name='puzzles'),
-    path('register/'                    , views.register            , name='register'),
     path('save-sudoku/'                 , views.save_sudoku         , name='save_sudoku'),
     path('user/<str:username>/'         , views.user_profile        , name='user_profile'),
 
@@ -41,14 +41,12 @@ urlpatterns = [
     path('activate/<uid>/<token>/', views.activate, name='activate'),
 
     # --- Authentication ---
-    path('login/', auth_views.LoginView.as_view(
-        template_name='sudoku/login/login.html'
-    ), name='login'),
+    path('login/', modal_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # --- Password Reset Workflow ---
     path('password_reset/', auth_views.PasswordResetView.as_view(
-        template_name='sudoku/password/password_reset.html',
+        template_name='sudoku/password/password_reset_modal.html',
         form_class=UsernameOrEmailPasswordResetForm,
         email_template_name='sudoku/password/password_reset_email.html',
         subject_template_name='sudoku/password/password_reset_subject.txt',
@@ -75,5 +73,6 @@ urlpatterns = [
     path("kontakt/", kontaktformular_view, name="kontaktformular"),
 
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
-]
 
+
+]

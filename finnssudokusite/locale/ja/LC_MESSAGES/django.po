@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 09:25+0200\n"
+"POT-Creation-Date: 2025-06-12 19:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,9 +28,10 @@ msgid "Play"
 msgstr "プレイ"
 
 #: sudoku/templates/sudoku/base.html:52
-#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:28
-msgid "Puzzles"
-msgstr "パズル"
+#, fuzzy
+#| msgid "Sudoku Creator"
+msgid "Sudokus"
+msgstr "数独"
 
 #: sudoku/templates/sudoku/base.html:57
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:31
@@ -51,21 +52,21 @@ msgstr "あなたのプロフィール"
 
 #: sudoku/templates/sudoku/base.html:91
 #, fuzzy
-#| msgid "Puzzles Solved"
-msgid "Puzzles done"
-msgstr "解決済みパズル"
+#| msgid "Sudoku Creator"
+msgid "Sudokus done"
+msgstr "数独"
 
 #: sudoku/templates/sudoku/base.html:94
 #, fuzzy
 #| msgid "Puzzles"
-msgid "Ongoing Puzzles"
+msgid "Ongoing Sudokus"
 msgstr "進行中のパズル"
 
 #: sudoku/templates/sudoku/base.html:97
 #, fuzzy
-#| msgid "Puzzles Solved"
-msgid "Puzzles Created"
-msgstr "作成したパズル"
+#| msgid "Sudoku Creator"
+msgid "Sudokus Created"
+msgstr "数独作成"
 
 #: sudoku/templates/sudoku/base.html:104
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:19
@@ -280,6 +281,10 @@ msgstr "パズルチェック"
 msgid "Home"
 msgstr "ホーム"
 
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:28
+msgid "Puzzles"
+msgstr "パズル"
+
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:37
 msgid "About us"
 msgstr "私たちについて"
@@ -323,15 +328,23 @@ msgid "FINN'S SUDOKU APP"
 msgstr "フィンの数独アプリ"
 
 #: sudoku/templates/sudoku/index.html:44
-msgid "CHOOSE A PUZZLE TO PLAY"
+#, fuzzy
+#| msgid "CHOOSE A PUZZLE TO PLAY"
+msgid "CHOOSE A SUDOKU TO PLAY"
 msgstr "プレイするパズルを選択"
+
+#: sudoku/templates/sudoku/index.html:46
+msgid "OR"
+msgstr "または"
 
 #: sudoku/templates/sudoku/index.html:47
 msgid "LOGIN"
 msgstr "ログイン"
 
 #: sudoku/templates/sudoku/index.html:53
-msgid "ABOUT"
+#, fuzzy
+#| msgid "ABOUT"
+msgid "ABOUT US"
 msgstr "概要"
 
 #: sudoku/templates/sudoku/index.html:96
@@ -460,8 +473,10 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"            ランキングは<strong>数独パワーインデックス（SPI）</strong>を使用しています。SPIは0〜100のスコアで、\n"
-"            <em>難しい</em>パズルを<em>速く</em>解くこと、<em>最近の活動</em>、そして多くのパズルに挑戦することを評価します。\n"
+"            ランキングは<strong>数独パワーインデックス（SPI）</strong>を使用"
+"しています。SPIは0〜100のスコアで、\n"
+"            <em>難しい</em>パズルを<em>速く</em>解くこと、<em>最近の活動</"
+"em>、そして多くのパズルに挑戦することを評価します。\n"
 "            "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:14
@@ -478,7 +493,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        パズルを解くたびに、その難易度と解答速度に応じたスコア \\( S_{u,s} \\) を獲得します：\n"
+"        パズルを解くたびに、その難易度と解答速度に応じたスコア \\( S_{u,s} "
+"\\) を獲得します：\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:31
@@ -491,7 +507,9 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        ここで、\\( \\bar{t}_s \\) はパズル \\( s \\) の平均解答時間（秒）、\\( t_{u,s} \\) はあなたの解答時間です。対数項はパズルの難易度を表し、時間比は一定範囲内でスピードを評価します。\n"
+"        ここで、\\( \\bar{t}_s \\) はパズル \\( s \\) の平均解答時間（秒）、"
+"\\( t_{u,s} \\) はあなたの解答時間です。対数項はパズルの難易度を表し、時間比"
+"は一定範囲内でスピードを評価します。\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:39
@@ -524,7 +542,9 @@ msgstr "平均時間（秒）"
 msgid ""
 "The weight grows faster for harder puzzles, with base-1.2 logarithmic "
 "scaling from 20 seconds upward."
-msgstr "重みは難しいパズルほど急速に増加し、20秒から対数スケール（底1.2）で計算されます。"
+msgstr ""
+"重みは難しいパズルほど急速に増加し、20秒から対数スケール（底1.2）で計算されま"
+"す。"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:82
 msgid "User score"
@@ -540,7 +560,9 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        あなたのスコア \\( R_u \\) は、<strong>直近100問</strong>のパズルのスコアの<strong>合計</strong>です。100問未満の場合はその分だけが計算されます。\n"
+"        あなたのスコア \\( R_u \\) は、<strong>直近100問</strong>のパズルのス"
+"コアの<strong>合計</strong>です。100問未満の場合はその分だけが計算されま"
+"す。\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:95
@@ -551,7 +573,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        この仕組みは、量と質の両方を評価します。たくさんのパズルを、しかも上手に解くことでトップを目指せます。\n"
+"        この仕組みは、量と質の両方を評価します。たくさんのパズルを、しかも上"
+"手に解くことでトップを目指せます。\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:102
@@ -568,7 +591,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        最後に、すべてのユーザースコアは0から100に正規化され、ランキングが作成されます：\n"
+"        最後に、すべてのユーザースコアは0から100に正規化され、ランキングが作"
+"成されます：\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:114
@@ -579,7 +603,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        あなたの成績がコミュニティのトップに近いほど、SPIは100に近づきます。\n"
+"        あなたの成績がコミュニティのトップに近いほど、SPIは100に近づきま"
+"す。\n"
 "        "
 
 #: sudoku/templates/sudoku/login/activation_invalid.html:5
@@ -598,7 +623,9 @@ msgstr "アクティベーションが必要です"
 msgid ""
 "No emails are being sent at the moment. Please ask an administrator to "
 "activate your account."
-msgstr "現在メールは送信されていません。管理者にアカウントの有効化を依頼してください。"
+msgstr ""
+"現在メールは送信されていません。管理者にアカウントの有効化を依頼してくださ"
+"い。"
 
 #: sudoku/templates/sudoku/login/activation_success.html:5
 msgid "Account Activated!"
@@ -614,40 +641,40 @@ msgid "log in"
 msgstr "ログイン"
 
 #: sudoku/templates/sudoku/login/login.html:35
-#: sudoku/templates/sudoku/login/login_modal.html:39
+#: sudoku/templates/sudoku/login/login.html:39
 msgid "Forgot your password?"
 msgstr "パスワードをお忘れですか？"
 
 #: sudoku/templates/sudoku/login/login.html:51
-#: sudoku/templates/sudoku/login/login_modal.html:52
+#: sudoku/templates/sudoku/login/login.html:52
 msgid "No account yet? Register now"
 msgstr "アカウントがありませんか？今すぐ登録"
 
-#: sudoku/templates/sudoku/login/login_modal.html:22
+#: sudoku/templates/sudoku/login/login.html:22
 msgid "Username or Email"
 msgstr "ユーザー名またはメールアドレス"
 
-#: sudoku/templates/sudoku/login/login_modal.html:36
+#: sudoku/templates/sudoku/login/login.html:36
 msgid "Log In"
 msgstr "ログイン"
 
-#: sudoku/templates/sudoku/login/login_modal.html:46
+#: sudoku/templates/sudoku/login/login.html:46
 msgid "Sign in with..."
 msgstr "...でサインイン"
 
-#: sudoku/templates/sudoku/login/register.html:6
+#: sudoku/templates/sudoku/login/register_modal.html:6
 msgid "Register"
 msgstr "登録"
 
-#: sudoku/templates/sudoku/login/register.html:29
+#: sudoku/templates/sudoku/login/register_modal.html:29
 msgid "Create Account"
 msgstr "アカウント作成"
 
-#: sudoku/templates/sudoku/login/register.html:33
+#: sudoku/templates/sudoku/login/register_modal.html:33
 msgid "Already have an account?"
 msgstr "すでにアカウントをお持ちですか？"
 
-#: sudoku/templates/sudoku/login/register.html:34
+#: sudoku/templates/sudoku/login/register_modal.html:34
 msgid "Log in"
 msgstr "ログイン"
 
@@ -702,7 +729,9 @@ msgstr "こんにちは、"
 #: sudoku/templates/sudoku/password/password_reset_email.html:4
 msgid ""
 "You requested a password reset. Click the link below to set a new password:"
-msgstr "パスワードリセットをリクエストされました。下記リンクをクリックして新しいパスワードを設定してください："
+msgstr ""
+"パスワードリセットをリクエストされました。下記リンクをクリックして新しいパス"
+"ワードを設定してください："
 
 #: sudoku/templates/sudoku/password/password_reset_email.html:5
 msgid "Reset your password"
@@ -955,7 +984,8 @@ msgstr ""
 "                background-color: white;\n"
 "                text-align: center;\n"
 "            \">\n"
-"                <img src=\"https://ndb.one/logo.png\" alt=\"ロゴ\" width=\"80\" height=\"80\" style=\"display: block; margin: 0 auto;\" />\n"
+"                <img src=\"https://ndb.one/logo.png\" alt=\"ロゴ\" "
+"width=\"80\" height=\"80\" style=\"display: block; margin: 0 auto;\" />\n"
 "                <p>SUDOKUSPHERE.COM</p>\n"
 "                <p style=\"text-align: left; margin-top: 6vh;\">\n"
 "                    %(name)s 様<br><br>\n"
@@ -971,3 +1001,13 @@ msgstr ""
 #: sudoku/views/contact.py:92
 msgid "Message sent successfully."
 msgstr "メッセージが正常に送信されました。"
+
+#, fuzzy
+#~| msgid "Puzzles Solved"
+#~ msgid "Puzzles done"
+#~ msgstr "解決済みパズル"
+
+#, fuzzy
+#~| msgid "Puzzles Solved"
+#~ msgid "Puzzles Created"
+#~ msgstr "作成したパズル"

@@ -97,6 +97,13 @@
 		</div>
 	</div>
 </div>
+<!-- Unsichtbares Formular für die Sprachumschaltung -->
+<form id="languageForm" method="post" action="{% url 'set_language' %}" style="display: none;">
+	{% csrf_token %}
+	<input type="hidden" name="language" id="languageInput">
+	<input type="hidden" name="next" value="{{ request.path }}">
+</form>
+
 
 <script>
 	const languages = {
@@ -226,9 +233,9 @@
 					pickerList.appendChild(li);
 				}
 			}
-			const langActivSpan = document.getElementById('langactiv');
-			if (langActivSpan && languages[currentLang]) {
-				langActivSpan.textContent = languages[currentLang].n;
+			const currentLangSpan = document.getElementById('currentLang');
+			if (currentLangSpan && languages[currentLang]) {
+				currentLangSpan.textContent = languages[currentLang].n;
 			}
 		}
 		

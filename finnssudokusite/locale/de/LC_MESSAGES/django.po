@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 09:24+0200\n"
+"POT-Creation-Date: 2025-06-12 19:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,19 +29,21 @@ msgstr "Spielen"
 
 #: sudoku/templates/sudoku/base.html:52
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:28
-msgid "Puzzles"
-msgstr "Rätsel"
+#, fuzzy
+#| msgid "Sudoku Creator"
+msgid "Sudokus"
+msgstr "Sudoku-Erstellen"
 
 #: sudoku/templates/sudoku/base.html:57
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:31
 msgid "Leaderboards"
-msgstr "Bestenlisten"
+msgstr "Bestenliste"
 
 #: sudoku/templates/sudoku/base.html:62
 #: sudoku/templates/sudoku/creator/creator.html:5
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:34
 msgid "Sudoku Creator"
-msgstr "Sudoku-Ersteller"
+msgstr "Sudoku erstellen"
 
 #: sudoku/templates/sudoku/base.html:88
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:15
@@ -51,21 +53,21 @@ msgstr "Dein Profil"
 
 #: sudoku/templates/sudoku/base.html:91
 #, fuzzy
-#| msgid "Puzzles Solved"
-msgid "Puzzles done"
-msgstr "Gelöste Rätsel"
+#| msgid "Sudoku Creator"
+msgid "Sudokus done"
+msgstr "Fertige Sudokus"
 
 #: sudoku/templates/sudoku/base.html:94
 #, fuzzy
 #| msgid "Puzzles"
-msgid "Ongoing Puzzles"
-msgstr "Rätsel"
+msgid "Ongoing Sudokus"
+msgstr "Laufende Sudokus"
 
 #: sudoku/templates/sudoku/base.html:97
 #, fuzzy
-#| msgid "Puzzles Solved"
-msgid "Puzzles Created"
-msgstr "Gelöste Rätsel"
+#| msgid "Sudoku Creator"
+msgid "Sudokus Created"
+msgstr "Erstellte Sudokus"
 
 #: sudoku/templates/sudoku/base.html:104
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:19
@@ -174,7 +176,7 @@ msgstr "Wird vorbereitet..."
 #, fuzzy
 #| msgid "Sudoku Creator"
 msgid "Sudoku completed"
-msgstr "Sudoku-Ersteller"
+msgstr "Sudoku abgeschlossen"
 
 #: sudoku/templates/sudoku/game/game_modal_completion.html:11
 #: sudoku/templates/sudoku/index.html:146
@@ -274,7 +276,7 @@ msgstr "Los geht's!"
 #, fuzzy
 #| msgid "Puzzles"
 msgid "Puzzle Check"
-msgstr "Rätsel"
+msgstr "Prüfen"
 
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:25
 msgid "Home"
@@ -316,23 +318,31 @@ msgstr "Aus Rätselliste auswählen"
 #, fuzzy
 #| msgid "Sudoku Creator"
 msgid "Sudoku"
-msgstr "Sudoku-Ersteller"
+msgstr "Sudoku-Erstellen"
 
 #: sudoku/templates/sudoku/index.html:39
 msgid "FINN'S SUDOKU APP"
 msgstr "FINNS SUDOKU-APP"
 
 #: sudoku/templates/sudoku/index.html:44
-msgid "CHOOSE A PUZZLE TO PLAY"
-msgstr "WÄHLE EIN RÄTSEL ZUM SPIELEN"
+#, fuzzy
+#| msgid "CHOOSE A PUZZLE TO PLAY"
+msgid "CHOOSE A SUDOKU TO PLAY"
+msgstr "WÄHLE EIN SUDOKU"
+
+#: sudoku/templates/sudoku/index.html:46
+msgid "OR"
+msgstr "ODER"
 
 #: sudoku/templates/sudoku/index.html:47
 msgid "LOGIN"
 msgstr "LOGIN"
 
 #: sudoku/templates/sudoku/index.html:53
-msgid "ABOUT"
-msgstr "ÜBER"
+#, fuzzy
+#| msgid "ABOUT"
+msgid "ABOUT US"
+msgstr "ÜBER UNS"
 
 #: sudoku/templates/sudoku/index.html:96
 msgid "CONTACT"
@@ -380,13 +390,13 @@ msgstr "Vielen Dank für deine Nachricht! Wir melden uns bald bei dir."
 #, fuzzy
 #| msgid "Leaderboards"
 msgid "Sudoku Leaderboard"
-msgstr "Bestenlisten"
+msgstr "Bestenliste"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:73
 #, fuzzy
 #| msgid "Leaderboards"
 msgid "Leaderboard"
-msgstr "Bestenlisten"
+msgstr "Bestenliste"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:101
 msgid "Search by username..."
@@ -409,11 +419,11 @@ msgstr "Rang"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:130
 msgid "User"
-msgstr "Benutzer"
+msgstr "Spieler"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:136
 msgid "Total Score"
-msgstr "Gesamtpunktzahl"
+msgstr "Punkte"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard.html:142
 msgid "Puzzles Solved"
@@ -462,8 +472,10 @@ msgid ""
 msgstr ""
 "\n"
 "        Die Bestenliste verwendet jetzt den\n"
-"        <strong>Sudoku Power Index (SPI)</strong> — eine Punktzahl von 0 bis 100,\n"
-"        die schnelle Lösungen bei schwierigen Rätseln und eine konstante Leistung beim Lösen vieler Rätsel belohnt.\n"
+"        <strong>Sudoku Power Index (SPI)</strong> — eine Punktzahl von 0 bis "
+"100,\n"
+"        die schnelle Lösungen bei schwierigen Rätseln und eine konstante "
+"Leistung beim Lösen vieler Rätsel belohnt.\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:14
@@ -478,8 +490,10 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        Jedes Mal, wenn du ein Rätsel löst, erhältst du eine Punktzahl \\( S_{u,s} \\),\n"
-"        die sowohl den Schwierigkeitsgrad des Rätsels als auch deine Lösungszeit berücksichtigt:\n"
+"        Jedes Mal, wenn du ein Rätsel löst, erhältst du eine Punktzahl \\"
+"( S_{u,s} \\),\n"
+"        die sowohl den Schwierigkeitsgrad des Rätsels als auch deine "
+"Lösungszeit berücksichtigt:\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:31
@@ -492,9 +506,12 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        Hierbei ist \\( \\bar{t}_s \\) die durchschnittliche Zeit (in Sekunden), um das Rätsel \\( s \\) zu lösen,\n"
-"        und \\( t_{u,s} \\) ist deine Zeit. Der logarithmische Term modelliert die Schwierigkeit des Rätsels (mit abnehmendem Ertrag),\n"
-"        während das begrenzte Zeitverhältnis Schnelligkeit innerhalb bestimmter Grenzen belohnt.\n"
+"        Hierbei ist \\( \\bar{t}_s \\) die durchschnittliche Zeit (in "
+"Sekunden), um das Rätsel \\( s \\) zu lösen,\n"
+"        und \\( t_{u,s} \\) ist deine Zeit. Der logarithmische Term "
+"modelliert die Schwierigkeit des Rätsels (mit abnehmendem Ertrag),\n"
+"        während das begrenzte Zeitverhältnis Schnelligkeit innerhalb "
+"bestimmter Grenzen belohnt.\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:39
@@ -528,7 +545,8 @@ msgid ""
 "The weight grows faster for harder puzzles, with base-1.2 logarithmic "
 "scaling from 20 seconds upward."
 msgstr ""
-"Das Gewicht wächst bei schwierigeren Rätseln schneller, mit einer logarithmischen Skalierung zur Basis 1,2 ab 20 Sekunden."
+"Das Gewicht wächst bei schwierigeren Rätseln schneller, mit einer "
+"logarithmischen Skalierung zur Basis 1,2 ab 20 Sekunden."
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:82
 msgid "User score"
@@ -544,8 +562,10 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        Deine Punktzahl \\( R_u \\) ist die <strong>Summe</strong> deiner Punktzahlen\n"
-"        aus den <strong>letzten 100 gelösten Rätseln</strong>. Wenn du weniger gelöst hast, zählen nur diese.\n"
+"        Deine Punktzahl \\( R_u \\) ist die <strong>Summe</strong> deiner "
+"Punktzahlen\n"
+"        aus den <strong>letzten 100 gelösten Rätseln</strong>. Wenn du "
+"weniger gelöst hast, zählen nur diese.\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:95
@@ -556,14 +576,15 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        Dieses System belohnt sowohl Quantität als auch Qualität: Du musst viele Rätsel lösen — und sie gut lösen — um an die Spitze zu kommen.\n"
+"        Dieses System belohnt sowohl Quantität als auch Qualität: Du musst "
+"viele Rätsel lösen — und sie gut lösen — um an die Spitze zu kommen.\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:102
 #, fuzzy
 #| msgid "Leaderboards"
 msgid "Leaderboard score"
-msgstr "Bestenlistenpunktzahl"
+msgstr "Punkte"
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:104
 msgid ""
@@ -573,7 +594,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        Schließlich werden alle Benutzerpunktzahlen normalisiert, um eine übersichtliche Bestenliste von 0 bis 100 zu erstellen:\n"
+"        Schließlich werden alle Benutzerpunktzahlen normalisiert, um eine "
+"übersichtliche Bestenliste von 0 bis 100 zu erstellen:\n"
 "        "
 
 #: sudoku/templates/sudoku/leaderboard/leaderboard_explanation.html:114
@@ -584,7 +606,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"        Je näher deine Leistung an der besten der Community ist, desto näher liegt dein SPI bei 100.\n"
+"        Je näher deine Leistung an der besten der Community ist, desto näher "
+"liegt dein SPI bei 100.\n"
 "        "
 
 #: sudoku/templates/sudoku/login/activation_invalid.html:5
@@ -604,7 +627,8 @@ msgid ""
 "No emails are being sent at the moment. Please ask an administrator to "
 "activate your account."
 msgstr ""
-"Derzeit werden keine E-Mails versendet. Bitte wende dich an einen Administrator, um dein Konto zu aktivieren."
+"Derzeit werden keine E-Mails versendet. Bitte wende dich an einen "
+"Administrator, um dein Konto zu aktivieren."
 
 #: sudoku/templates/sudoku/login/activation_success.html:5
 msgid "Account Activated!"
@@ -620,40 +644,40 @@ msgid "log in"
 msgstr "anmelden"
 
 #: sudoku/templates/sudoku/login/login.html:35
-#: sudoku/templates/sudoku/login/login_modal.html:39
+#: sudoku/templates/sudoku/login/login.html:39
 msgid "Forgot your password?"
 msgstr "Passwort vergessen?"
 
 #: sudoku/templates/sudoku/login/login.html:51
-#: sudoku/templates/sudoku/login/login_modal.html:52
+#: sudoku/templates/sudoku/login/login.html:52
 msgid "No account yet? Register now"
 msgstr "Noch kein Konto? Jetzt registrieren"
 
-#: sudoku/templates/sudoku/login/login_modal.html:22
+#: sudoku/templates/sudoku/login/login.html:22
 msgid "Username or Email"
 msgstr "Benutzername oder E-Mail"
 
-#: sudoku/templates/sudoku/login/login_modal.html:36
+#: sudoku/templates/sudoku/login/login.html:36
 msgid "Log In"
 msgstr "Anmelden"
 
-#: sudoku/templates/sudoku/login/login_modal.html:46
+#: sudoku/templates/sudoku/login/login.html:46
 msgid "Sign in with..."
 msgstr "Anmelden mit..."
 
-#: sudoku/templates/sudoku/login/register.html:6
+#: sudoku/templates/sudoku/login/register_modal.html:6
 msgid "Register"
 msgstr "Registrieren"
 
-#: sudoku/templates/sudoku/login/register.html:29
+#: sudoku/templates/sudoku/login/register_modal.html:29
 msgid "Create Account"
 msgstr "Konto erstellen"
 
-#: sudoku/templates/sudoku/login/register.html:33
+#: sudoku/templates/sudoku/login/register_modal.html:33
 msgid "Already have an account?"
 msgstr "Bereits ein Konto?"
 
-#: sudoku/templates/sudoku/login/register.html:34
+#: sudoku/templates/sudoku/login/register_modal.html:34
 msgid "Log in"
 msgstr "Anmelden"
 
@@ -708,8 +732,7 @@ msgstr "Hallo,"
 #: sudoku/templates/sudoku/password/password_reset_email.html:4
 msgid ""
 "You requested a password reset. Click the link below to set a new password:"
-msgstr ""
-"Du hast eine Zurücksetzung deines Passworts angefordert. Klicke auf den folgenden Link, um ein neues Passwort festzulegen:"
+msgstr "Du hast eine Zurücksetzung deines Passworts angefordert. Klicke auf den folgenden Link, um ein neues Passwort festzulegen:"
 
 #: sudoku/templates/sudoku/password/password_reset_email.html:5
 msgid "Reset your password"
@@ -731,7 +754,7 @@ msgstr "Gelöste Rätsel:"
 
 #: sudoku/templates/sudoku/profile/profile_detail.html:28
 msgid "Completed puzzles"
-msgstr "Abgeschlossene Rätsel"
+msgstr "Geköste Rätsel"
 
 #: sudoku/templates/sudoku/profile/profile_detail.html:31
 msgid "Created puzzles"
@@ -968,7 +991,8 @@ msgstr ""
 "                <p style=\"text-align: left; margin-top: 6vh;\">\n"
 "                    Hallo %(name)s,<br><br>\n"
 "                    Vielen Dank für deine Nachricht an SudokuSphere.<br>\n"
-"                    Wir werden uns so bald wie möglich bei dir melden.<br><br>\n"
+"                    Wir werden uns so bald wie möglich bei dir melden."
+"<br><br>\n"
 "                    Viele Grüße,<br>\n"
 "                    Finn und das SudokuSphere-Team\n"
 "                </p>\n"
@@ -979,3 +1003,4 @@ msgstr ""
 #: sudoku/views/contact.py:92
 msgid "Message sent successfully."
 msgstr "Nachricht erfolgreich gesendet."
+
