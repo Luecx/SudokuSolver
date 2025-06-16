@@ -19,10 +19,12 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
     // hyperparameters
+    const int MIN_WILD_APPLES = 1;
+    const int MAX_WILD_APPLES = 3;
 
     // standard parameters
     Region<EdgeIdx> m_apple_edges;

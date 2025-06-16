@@ -101,6 +101,10 @@ JSON RuleChevron::to_json() const {
         if (edges.size() > 0) {
             JSON rule = JSON(JSON::object{});
             rule["label"] = label;
+
+            std::string first_word = label.substr(0, label.find(' '));
+            rule["symbol"] = rule_utils::tolower_str(first_word);
+
             JSON fields = JSON(JSON::object{});
             fields["region"] = edges.to_json();
             rule["fields"] = fields;
@@ -117,7 +121,51 @@ JSON RuleChevron::to_json() const {
     return json;
 }
 
-void RuleChevron::init_randomly() {}
+void RuleChevron::init_randomly() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<int> up_dist(MIN_UP_EDGES, MAX_UP_EDGES);
+    const int num_up = up_dist(gen);
+
+    std::uniform_int_distribution<int> down_dist(MIN_DOWN_EDGES, MAX_DOWN_EDGES);
+    const int num_down = down_dist(gen);
+
+    Region<EdgeIdx> available_ver_edges;
+    // only get vertical edges
+    for (Row r = 0; r < board_->size(); ++r) {
+        for (Col c = 0; c < board_->size(); ++c) {
+            if (r > 0)
+                available_ver_edges.add(EdgeIdx(r, c, r - 1, c)); // up edge
+            if (r < board_->size() - 1)
+                available_ver_edges.add(EdgeIdx(r, c, r + 1, c)); // down edge
+        }
+    }
+
+    m_up_edges = rule_utils::generate_random_edges(board_, num_up, &available_ver_edges);
+    m_down_edges = rule_utils::generate_random_edges(board_, num_down, &available_ver_edges);
+
+    std::uniform_int_distribution<int> right_dist(MIN_RIGHT_EDGES, MAX_RIGHT_EDGES);
+    const int num_right = right_dist(gen);
+
+    std::uniform_int_distribution<int> left_dist(MIN_LEFT_EDGES, MAX_LEFT_EDGES);
+    const int num_left = left_dist(gen);
+
+    Region<EdgeIdx> available_hor_edges;
+    // only get horizontal edges
+    for (Row r = 0; r < board_->size(); ++r) {
+        for (Col c = 0; c < board_->size(); ++c) {
+            if (c > 0)
+                available_hor_edges.add(EdgeIdx(r, c, r, c - 1)); // left edge
+            if (c < board_->size() - 1)
+                available_hor_edges.add(EdgeIdx(r, c, r, c + 1)); // right edge
+        }
+    }
+
+    m_right_edges = rule_utils::generate_random_edges(board_, num_right, &available_hor_edges);
+    m_left_edges = rule_utils::generate_random_edges(board_, num_left, &available_hor_edges);
+}
+
 
 // privte member functions
 

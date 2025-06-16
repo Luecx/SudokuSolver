@@ -23,6 +23,15 @@ public:
 
 private:
     // hyperparameters
+    const int MIN_UP_EDGES = 1;
+    const int MAX_UP_EDGES = 3;
+    const int MIN_DOWN_EDGES = 1;
+    const int MAX_DOWN_EDGES = 3;
+
+    const int MIN_RIGHT_EDGES = 1;
+    const int MAX_RIGHT_EDGES = 3;
+    const int MIN_LEFT_EDGES = 1;
+    const int MAX_LEFT_EDGES = 3;
 
     // standard parameters
     Region<EdgeIdx> m_up_edges;

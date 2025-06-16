@@ -7,6 +7,14 @@
 
 namespace sudoku::rule_utils {
 
+inline std::string tolower_str(const std::string &str) {
+    std::string lower_str;
+    lower_str.reserve(str.size());
+    for (char c: str)
+        lower_str.push_back(std::tolower(c));
+    return lower_str;
+};
+
 /**
  * @brief True if pos is within board bounds.
  */
@@ -31,12 +39,6 @@ std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, 
  * @brief generates a random color in RGBA format.
  */
 std::string random_rgba_color();
-
-/**
- * @brief Find a valid starting cell for random region generation.
- * If available_region is empty, it will select any cell.
- */
-CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region = {});
 
 /**
  * @brief Get all orthogonal neighbors of a cell.
@@ -65,5 +67,14 @@ Region<CellIdx> generate_random_region(Board *board, //
 Region<CellIdx> generate_random_path(Board *board, //
                                      const int max_path_size, //
                                      Region<CellIdx> *available_path = nullptr);
+
+/**
+ * @brief Generate a random, connected edges of given size inside available_edges.
+ * @param max_edge_count The edges may not reach this size if no more edges are available.
+ * @param available_edges The edges will be updated inside the function.
+ */
+Region<EdgeIdx> generate_random_edges(Board *board, //
+                                      const int max_edge_count, //
+                                      Region<EdgeIdx> *available_edges);
 
 } // namespace sudoku::rule_utils

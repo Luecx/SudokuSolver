@@ -30,7 +30,7 @@ namespace sudoku::datagen {
 
     // initialize all handlers needed
     board.add_handler(std::make_shared<RuleStandard>(&board));
-    board.add_handler(std::make_shared<RuleCustomSum>(&board));
+    board.add_handler(std::make_shared<RuleChevron>(&board));
 
     std::vector<CellIdx> filled_pos;
 

@@ -19,10 +19,14 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
     // hyperparameters
+    const int MIN_WHITE_EDGES = 1;
+    const int MAX_WHITE_EDGES = 3;
+    const int MIN_BLACK_EDGES = 1;
+    const int MAX_BLACK_EDGES = 3;
 
     // standard parameters
     bool m_all_dots_given = false;
@@ -30,7 +34,7 @@ private:
     Region<EdgeIdx> m_white_edges;
     Region<EdgeIdx> m_black_edges;
     Region<EdgeIdx> m_combined_edges;
-    Region<EdgeIdx> m_missing_dot_edges;
+    Region<EdgeIdx> m_missing_edges;
 
     // private member functions
     bool apply_white_number(Cell &source, Cell &target) const;

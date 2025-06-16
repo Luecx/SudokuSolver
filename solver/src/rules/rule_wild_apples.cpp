@@ -108,6 +108,19 @@ JSON RuleWildApples::to_json() const {
     return json;
 }
 
+void RuleWildApples::init_randomly() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<int> dist(MIN_WILD_APPLES, MAX_WILD_APPLES);
+    const int num_apples = dist(gen);
+
+    Region<EdgeIdx> available_edges = Region<EdgeIdx>::all(board_->size());
+
+    m_apple_edges = rule_utils::generate_random_edges(board_, num_apples, &available_edges);
+    m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_apple_edges;
+}
+
 // private member functions
 
 bool RuleWildApples::apply_apple_number(Cell &source, Cell &target) const {
