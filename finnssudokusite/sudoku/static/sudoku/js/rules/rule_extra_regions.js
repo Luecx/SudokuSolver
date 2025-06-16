@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
+import * as utils from "./rule_utils.js";
 
 export class ExtraRegionsHandler extends RuleTypeHandler {
     constructor(board) {
@@ -9,6 +10,7 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
         this.tag = "Extra-Regions";
         this.can_create_rules = true;
         this.usedColors = new Set();
+        this.collidingCells = [];
     }
 
     defaultRules() {
@@ -21,6 +23,11 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
         let region = rule.fields.region;
         if (!region) {
             warnings.push(gettext("Region is empty"));
+            return warnings;
+        }
+
+        if (this.collidingCells.length > 0) {
+            warnings.push(gettext("Regions cannot overlap with each other"));
             return warnings;
         }
 
@@ -98,7 +105,40 @@ export class ExtraRegionsHandler extends RuleTypeHandler {
         }
 
         ctx.fill();
+
+        this.collidingCells = this.findCollidingCells();
+        for (const cell of this.collidingCells) {
+            utils.drawCollisionX(this.board, ctx, cell);
+        }
+
         ctx.restore();
+    }
+
+    findCollidingCells() {
+        const cellCounts = new Map();
+        for (const rule of this.rules) {
+            const region = rule.fields?.region;
+            if (!region) continue;
+
+            for (const item of region.items) {
+                const cellKey = `${item.r},${item.c}`;
+                if (!cellCounts.has(cellKey)) {
+                    cellCounts.set(cellKey, { count: 1, cell: item, regions: [rule] });
+                } else {
+                    const entry = cellCounts.get(cellKey);
+                    entry.count += 1;
+                    entry.regions.push(rule);
+                }
+            }
+        }
+
+        const collidingCells = [];
+        for (const [_, entry] of cellCounts.entries()) {
+            if (entry.count > 1) 
+                collidingCells.push(entry.cell);
+        }
+
+        return collidingCells;
     }
 
     getRandomColor() {
