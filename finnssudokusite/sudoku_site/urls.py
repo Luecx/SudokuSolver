@@ -9,7 +9,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),         # for login with...
 
     path("auth/login/", views.modal_login, name="modal_login"),
-    path("auth/register/", views.modal_register, name="modal_register"),
-    path("auth/password_reset/", views.modal_password_reset, name="modal_password_reset"),
+    path("auth/register/", views.register, name="modal_register"),
+    # path("auth/password_reset/", views.password_reset, name="modal_password_reset"),
 
 ]
