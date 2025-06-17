@@ -44,7 +44,7 @@ bool RuleExtraRegions::valid() {
             }
         }
 
-        return combined.count() >= static_cast<int>(region.size());
+        return combined.count() >= (int) region.size();
     }
     return true;
 }

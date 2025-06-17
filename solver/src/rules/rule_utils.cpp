@@ -10,6 +10,17 @@ T select_random(const Region<T> &vec, std::mt19937 &gen) {
     return vec.items()[dist(gen)];
 }
 
+// helper to find a valid starting point in the board
+CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region = {}) {
+    if (available_region.size() == 0) {
+        std::uniform_int_distribution<> dist(0, board->size() - 1);
+        return {dist(gen), dist(gen)};
+    } else {
+        std::uniform_int_distribution<> cell_dist(0, available_region.size() - 1);
+        return available_region.items()[cell_dist(gen)];
+    }
+}
+
 // solver utils
 
 bool pos_in_bounds(const Board *board, const CellIdx &pos) {
@@ -113,16 +124,6 @@ std::string random_rgba_color() {
     return oss.str();
 }
 
-CellIdx find_valid_starting_cell(Board *board, std::mt19937 &gen, const Region<CellIdx> &available_region) {
-    if (available_region.size() == 0) {
-        std::uniform_int_distribution<> dist(0, board->size() - 1);
-        return {dist(gen), dist(gen)};
-    } else {
-        std::uniform_int_distribution<> cell_dist(0, available_region.size() - 1);
-        return available_region.items()[cell_dist(gen)];
-    }
-}
-
 Region<CellIdx> get_orthogonal_neighbors(Board *board, const CellIdx &cell) {
     Region<CellIdx> neighbors;
     const std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -138,13 +139,13 @@ Region<CellIdx> get_orthogonal_neighbors(Board *board, const CellIdx &cell) {
 
 Region<CellIdx> get_all_neighbors(Board *board, const CellIdx &cell) {
     Region<CellIdx> neighbors;
-    const int directions[8][2] = {
+    const std::vector<std::pair<int, int>> directions = {
             {-1, 0},  {1, 0},  {0, -1}, {0, 1}, // orthogonal
             {-1, -1}, {-1, 1}, {1, -1}, {1, 1} // diagonals
     };
 
-    for (int i = 0; i < 8; i++) {
-        CellIdx neighbor = {cell.r + directions[i][0], cell.c + directions[i][1]};
+    for (const auto &[r, c]: directions) {
+        CellIdx neighbor = {cell.r + r, cell.c + c};
         if (pos_in_bounds(board, neighbor))
             neighbors.add(neighbor);
     }
@@ -162,6 +163,9 @@ Region<CellIdx> generate_random_region(Board *board, const int max_region_size, 
     Region<CellIdx> region;
     region.add(current);
 
+    if (available_region)
+        *available_region = *available_region - current;
+
     while ((int) region.items().size() < max_region_size) {
         Region<CellIdx> neighbors = get_orthogonal_neighbors(board, current) - region;
 
@@ -174,7 +178,7 @@ Region<CellIdx> generate_random_region(Board *board, const int max_region_size, 
             current = new_cell;
 
             if (available_region)
-                *available_region = *available_region - region;
+                *available_region = *available_region - new_cell;
         } else {
             break;
         }
@@ -212,6 +216,22 @@ Region<CellIdx> generate_random_path(Board *board, const int max_path_size, Regi
     }
 
     return path;
+}
+
+Region<EdgeIdx> generate_random_edges(Board *board, const int max_edge_count, Region<EdgeIdx> *available_edges) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    Region<EdgeIdx> edges;
+
+    while ((int) edges.items().size() < max_edge_count && available_edges->size() > 0) {
+        EdgeIdx random_edge = select_random(*available_edges, gen);
+        edges.add(random_edge);
+
+        *available_edges = *available_edges - random_edge;
+    }
+
+    return edges;
 }
 
 } // namespace sudoku::rule_utils

@@ -19,16 +19,24 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
+    // hyperparameters
+    const int MIN_X_EDGES = 1;
+    const int MAX_X_EDGES = 3;
+    const int MIN_V_EDGES = 1;
+    const int MAX_V_EDGES = 3;
+
+    // standard parameters
     bool m_all_dots_given = false;
 
     Region<EdgeIdx> m_x_edges;
     Region<EdgeIdx> m_v_edges;
     Region<EdgeIdx> m_combined_edges;
-    Region<EdgeIdx> m_missing_symbol_edges;
+    Region<EdgeIdx> m_missing_edges;
 
+    // private member functions
     bool enforce_sum(Cell &a, Cell &b, int sum) const;
 
     bool denforce_missing_symbols() const;

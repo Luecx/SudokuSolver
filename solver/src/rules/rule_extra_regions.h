@@ -21,11 +21,11 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
+    // hyperparameters
     const int MIN_NUM_REGIONS = 1;
     const int MAX_NUM_REGIONS = 5;
 
-    // Standard parameters
+    // standard parameter
     std::vector<Region<CellIdx>> m_regions;
 };
 

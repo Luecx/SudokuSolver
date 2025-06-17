@@ -15,22 +15,13 @@ namespace sudoku::datagen {
  * @param solutions_limit Maximum number of solutions to find
  * @param node_limit Node limit for uniqueness check
  * @param guesses_limit Maximum number of guesses allowed (default: 0, meaning no limit)
- *
  */
-// clang-format off
- void generate_random_puzzle
-(
-    const std::string &output_dir, 
-    int solutions_limit, 
-    int node_limit, 
-    int guesses_limit = 0
-) {
-    // clang-format on
+void generate_random_puzzle(const std::string &output_dir, int solutions_limit, int node_limit, int guesses_limit = 0) {
     Board board{9};
 
     // initialize all handlers needed
     board.add_handler(std::make_shared<RuleStandard>(&board));
-    board.add_handler(std::make_shared<RuleSandwich>(&board));
+    board.add_handler(std::make_shared<RuleKiller>(&board));
 
     std::vector<CellIdx> filled_pos;
 

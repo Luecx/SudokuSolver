@@ -22,24 +22,25 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
-    const int MIN_PAIRS = 1;
-    const int MAX_PAIRS = 5;
-    const int MIN_REGION_SIZE = 1;
-    const int MAX_REGION_SIZE = 3;
-
-    // Standard Parameters
     struct SandwichPair {
         Region<RCIdx> region;
         int sum = 0;
     };
 
+    // hyperparameters
+    const int MIN_PAIRS = 1;
+    const int MAX_PAIRS = 5;
+    const int MIN_REGION_SIZE = 1;
+    const int MAX_REGION_SIZE = 3;
+
+    // standard parameters
     int *m_min_digits;
     int *m_max_digits;
 
     std::vector<std::vector<NumberSet>> m_union_sets;
     std::vector<SandwichPair> m_pairs;
 
+    // private member functions
     void initTables();
 
     bool check_sandwich(const RCIdx &pos, const int sum);

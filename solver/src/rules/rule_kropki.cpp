@@ -155,7 +155,7 @@ bool RuleKropki::enforce_missing_dots() {
     bool changed = false;
 
     // process cells that have no dot between them
-    for (const auto &edge: m_missing_dot_edges.items()) {
+    for (const auto &edge: m_missing_edges.items()) {
         Cell &a = board_->get_cell(CellIdx(edge.r1, edge.c1));
         Cell &b = board_->get_cell(CellIdx(edge.r2, edge.c2));
         if (!a.is_solved() && !b.is_solved())
@@ -176,7 +176,7 @@ bool RuleKropki::remove_forbidden(Cell &a, Cell &b) const {
 
     for (Number i = 1; i <= N; ++i) {
         // consecutive numbers need a white dot
-        if (std::abs(static_cast<int>(i) - b.value) == 1)
+        if (std::abs(int(i) - b.value) == 1)
             forbidden.add(i);
         // double/half relationships need a black dot
         if (i == 2 * b.value || b.value == 2 * i)
@@ -190,7 +190,7 @@ void RuleKropki::from_json(JSON &json) {
     m_white_edges.clear();
     m_black_edges.clear();
     m_combined_edges.clear();
-    m_missing_dot_edges.clear();
+    m_missing_edges.clear();
     m_all_dots_given = false;
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("allDotsGiven"))
@@ -216,7 +216,7 @@ void RuleKropki::from_json(JSON &json) {
     }
 
     m_combined_edges = m_white_edges | m_black_edges;
-    m_missing_dot_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
+    m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
 JSON RuleKropki::to_json() const {
@@ -229,32 +229,44 @@ JSON RuleKropki::to_json() const {
 
     JSON::array rules = JSON::array();
 
-    // Add white edges if they exist
-    if (m_white_edges.size() > 0) {
-        JSON rule = JSON(JSON::object{});
-        JSON rule_fields = JSON(JSON::object{});
+    auto add_edges = [&rules](const auto &edges, const std::string &color) {
+        if (edges.size() > 0) {
+            JSON rule = JSON(JSON::object{});
+            JSON rule_fields = JSON(JSON::object{});
 
-        rule_fields["region"] = m_white_edges.to_json();
-        rule["fields"] = rule_fields;
-        rule["color"] = "white";
+            rule_fields["region"] = edges.to_json();
+            rule["fields"] = rule_fields;
+            rule["color"] = color;
 
-        rules.push_back(rule);
-    }
+            rules.push_back(rule);
+        }
+    };
 
-    // Add black edges if they exist
-    if (m_black_edges.size() > 0) {
-        JSON rule = JSON(JSON::object{});
-        JSON rule_fields = JSON(JSON::object{});
-
-        rule_fields["region"] = m_black_edges.to_json();
-        rule["fields"] = rule_fields;
-        rule["color"] = "black";
-
-        rules.push_back(rule);
-    }
+    add_edges(m_white_edges, "white");
+    add_edges(m_black_edges, "black");
 
     json["rules"] = rules;
     return json;
+}
+
+void RuleKropki::init_randomly() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    m_all_dots_given = rand() % 2 == 0;
+
+    std::uniform_int_distribution<int> white_dist(MIN_WHITE_EDGES, MAX_WHITE_EDGES);
+    const int num_white = white_dist(gen);
+
+    std::uniform_int_distribution<int> black_dist(MIN_WHITE_EDGES, MAX_WHITE_EDGES);
+    const int num_black = black_dist(gen);
+
+    Region<EdgeIdx> available_edges = Region<EdgeIdx>::all(board_->size());
+
+    m_white_edges = rule_utils::generate_random_edges(board_, num_white, &available_edges);
+    m_black_edges = rule_utils::generate_random_edges(board_, num_black, &available_edges);
+    m_combined_edges = m_white_edges | m_black_edges;
+    m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
 } // namespace sudoku

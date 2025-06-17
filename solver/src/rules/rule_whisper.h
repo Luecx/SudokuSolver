@@ -21,15 +21,16 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
+    // hyperparameters
     const int MIN_PATH_LENGTH = 2;
     const int MAX_PATH_LENGTH = 5;
     const int MIN_PATHS = 1;
     const int MAX_PATHS = 5;
 
-    // Standard Parameters
+    // standard parameters
     std::vector<Region<CellIdx>> m_paths;
 
+    // private member functions
     bool apply_number_contraint(Cell &cell1, Cell &cell2);
     bool apply_candidate_contraint(Cell &cell1, Cell &cell2);
     bool valid_pair(Cell &cell1, Cell &cell2);

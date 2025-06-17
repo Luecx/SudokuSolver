@@ -128,6 +128,20 @@ public:
     }
 
     /**
+     * @brief Returns a new region with elements from this but not the specified index.
+     * @param idx The index to exclude.
+     * @return Resulting region without the specified index.
+     */
+    Region operator-(const IdxT &idx) const {
+        Region result;
+        for (const auto &item: items_) {
+            if (!(item == idx))
+                result.items_.push_back(item);
+        }
+        return result;
+    }
+
+    /**
      * @brief Returns all cells covered by the region.
      * @param board_size Size of the Sudoku board (default: 9).
      * @return Vector of covered CellIdx entries.

@@ -22,11 +22,24 @@ public:
     void init_randomly() override;
 
 private:
+    // hyperparameters
+    const int MIN_UP_EDGES = 1;
+    const int MAX_UP_EDGES = 3;
+    const int MIN_DOWN_EDGES = 1;
+    const int MAX_DOWN_EDGES = 3;
+
+    const int MIN_RIGHT_EDGES = 1;
+    const int MAX_RIGHT_EDGES = 3;
+    const int MIN_LEFT_EDGES = 1;
+    const int MAX_LEFT_EDGES = 3;
+
+    // standard parameters
     Region<EdgeIdx> m_up_edges;
     Region<EdgeIdx> m_down_edges;
     Region<EdgeIdx> m_right_edges;
     Region<EdgeIdx> m_left_edges;
 
+    // private member functions
     bool enforce() const;
     bool enforce_greater_less(Cell &cell, Cell &neighbor, std::string symbol) const;
     bool check_pair(Cell &cell, Cell &neighbor, std::string symbol) const;

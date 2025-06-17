@@ -19,12 +19,18 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override {}
+    void init_randomly() override;
 
 private:
+    // hyperparameters
+    const int MIN_WILD_APPLES = 1;
+    const int MAX_WILD_APPLES = 3;
+
+    // standard parameters
     Region<EdgeIdx> m_apple_edges;
     Region<EdgeIdx> m_missing_edges;
 
+    // private member functions
     bool apply_apple_number(Cell &source, Cell &target) const;
     bool apply_apple_candidates(Cell &a, Cell &b) const;
 

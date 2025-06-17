@@ -23,14 +23,15 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
+    // hyperparameters
     const int MIN_MAGIC_SQUARES = 1;
     const int MAX_MAGIC_SQUARES = 3;
 
-    // Standard parameters
+    // standard parameters
     std::vector<Region<CellIdx>> m_regions;
     std::vector<std::array<int, 9>> m_possible_layouts;
 
+    // private member functions
     bool is3x3Square(const Region<CellIdx> &region);
 
     bool isValidLayout(const Region<CellIdx> &region, const std::array<int, 9> &layout);

@@ -21,7 +21,7 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
+    // hyperparameters
     // min/max number of different clone groups
     const int MIN_CLONES = 3;
     const int MAX_CLONES = 6;
@@ -32,10 +32,11 @@ private:
     const int MIN_REGION_SIZE = 2;
     const int MAX_REGION_SIZE = 6;
 
-    // standard params
+    // standard parameters
     std::vector<Region<CellIdx>> m_regions;
     std::vector<std::vector<int>> m_units;
 
+    // private member functions
     void initCloneGroups();
     bool isSameShape(const Region<CellIdx> &region1, const Region<CellIdx> &region2);
 };

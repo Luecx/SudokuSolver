@@ -4,6 +4,7 @@
 #include "rule_arrow.h"
 #include "rule_chevron.h"
 #include "rule_clone.h"
+#include "rule_custom_sum.h"
 #include "rule_diagonal.h"
 #include "rule_diagonal_sum.h"
 #include "rule_dutch_flat.h"

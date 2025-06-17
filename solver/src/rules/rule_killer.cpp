@@ -5,7 +5,7 @@ namespace sudoku {
 
 bool RuleKiller::number_changed(CellIdx pos) {
     bool changed = false;
-    for (auto &pair: m_cage_pair) {
+    for (auto &pair: m_pairs) {
         const Region<CellIdx> &region = pair.region;
         if (!region.has(pos))
             continue;
@@ -18,13 +18,13 @@ bool RuleKiller::number_changed(CellIdx pos) {
 
 bool RuleKiller::candidates_changed() {
     bool changed = false;
-    for (auto &pair: m_cage_pair)
+    for (auto &pair: m_pairs)
         changed |= check_cage(pair);
     return changed;
 }
 
 bool RuleKiller::valid() {
-    for (const auto &pair: m_cage_pair) {
+    for (const auto &pair: m_pairs) {
         int sum = 0;
         NumberSet seen_values(board_->size());
         bool all_solved = true;
@@ -53,7 +53,7 @@ bool RuleKiller::valid() {
 }
 
 void RuleKiller::from_json(JSON &json) {
-    m_cage_pair.clear();
+    m_pairs.clear();
 
     if (json["fields"].is_object() && json["fields"].get<JSON::object>().count("NumberCanRepeat"))
         m_number_can_repeat = json["fields"]["NumberCanRepeat"].get<bool>();
@@ -74,14 +74,14 @@ void RuleKiller::from_json(JSON &json) {
             KillerPair cage_pair;
             cage_pair.region = region;
             cage_pair.sum = static_cast<int>(rule["fields"]["sum"].get<double>());
-            m_cage_pair.push_back(cage_pair);
+            m_pairs.push_back(cage_pair);
         }
     }
 }
 
 JSON RuleKiller::to_json() const {
     JSON json = JSON(JSON::object{});
-    json["type"] = "Killer";
+    json["type"] = name;
 
     JSON fields = JSON(JSON::object{});
     fields["NumberCanRepeat"] = m_number_can_repeat;
@@ -89,7 +89,7 @@ JSON RuleKiller::to_json() const {
 
     JSON::array rules = JSON::array();
 
-    for (const auto &cage_pair: m_cage_pair) {
+    for (const auto &cage_pair: m_pairs) {
         JSON rule = JSON(JSON::object{});
         JSON rule_fields = JSON(JSON::object{});
 
@@ -102,26 +102,6 @@ JSON RuleKiller::to_json() const {
 
     json["rules"] = rules;
     return json;
-}
-
-void RuleKiller::init_randomly() {
-    m_cage_pair.clear();
-
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-
-    std::uniform_int_distribution<int> region_count_dist(MIN_REGIONS, MAX_REGIONS);
-    std::uniform_int_distribution<int> region_size_dist(MIN_REGION_SIZE, MAX_REGION_SIZE);
-
-    std::uniform_real_distribution<double> fill_dist(0.0, 1.0);
-    std::uniform_real_distribution<double> repeat_dist(0.0, 1.0);
-
-    int num_regions = region_count_dist(gen);
-
-    bool fill_board = fill_dist(gen) < FILL_BOARD_WITH_CAGES;
-    m_number_can_repeat = repeat_dist(gen) < NUMBER_CAN_REPEAT_PROBABILITY;
-
-    Region<CellIdx> available_region = Region<CellIdx>::all(board_->size());
 }
 
 // private member functions

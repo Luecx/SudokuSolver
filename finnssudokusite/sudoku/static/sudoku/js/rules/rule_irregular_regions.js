@@ -2,6 +2,7 @@ import { RegionType } from "../region/RegionType.js";
 import { RuleTypeHandler } from "./rule_handler.js";
 import { buildInsetPath } from "../util/inset_path.js";
 import { SelectionMode } from "../board/board_selectionEnums.js";
+import * as utils from "./rule_utils.js";
 
 export class IrregularRegionsHandler extends RuleTypeHandler {
     constructor(board) {
@@ -14,6 +15,8 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
             'region4', 'region5', 'region6',
             'region7', 'region8', 'region9'
         ];
+
+        this.collidingCells = [];
     }
 
     defaultRules() {
@@ -22,6 +25,11 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
 
     getGeneralWarnings() {
         let warnings = [];
+
+        if (this.collidingCells.length > 0) {
+            warnings.push(gettext("Regions cannot overlap with each other"));
+            return warnings;
+        }
 
         for (const key of this.regionKeys) {
             const region = this.fields?.[key];
@@ -105,10 +113,9 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
             this.drawRegions(ctx, this.fields[key], regionColors[i]);
         }
 
-        const collidingCells = this.findCollidingCells();
-
-        for (const collision of collidingCells) {
-            this.drawCollisionX(ctx, collision.cell);
+        this.collidingCells = this.findCollidingCells();
+        for (const cell of this.collidingCells) {
+            utils.drawCollisionX(this.board, ctx, cell);
         }
 
         ctx.restore();
@@ -116,7 +123,6 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
 
     findCollidingCells() {
         const cellCounts = new Map();
-
         for (const key of this.regionKeys) {
             const region = this.fields?.[key];
             if (!region) continue;
@@ -135,12 +141,8 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
 
         const collidingCells = [];
         for (const [_, entry] of cellCounts.entries()) {
-            if (entry.count > 1) {
-                collidingCells.push({
-                    cell: entry.cell,
-                    regions: entry.regions
-                });
-            }
+            if (entry.count > 1) 
+                collidingCells.push(entry.cell);
         }
 
         return collidingCells;
@@ -170,27 +172,5 @@ export class IrregularRegionsHandler extends RuleTypeHandler {
         }
 
         ctx.fill();
-    }
-
-    drawCollisionX(ctx, cell) {
-        const { r, c } = cell;
-        const topLeft = this.board.getCellTopLeftCTX(r, c);
-        const cellSize = this.board.getCellSize();
-
-        const x = topLeft.x;
-        const y = topLeft.y;
-
-        ctx.save();
-        ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-
-        ctx.moveTo(x + cellSize * 0.2, y + cellSize * 0.2);
-        ctx.lineTo(x + cellSize * 0.8, y + cellSize * 0.8);
-        ctx.moveTo(x + cellSize * 0.8, y + cellSize * 0.2);
-        ctx.lineTo(x + cellSize * 0.2, y + cellSize * 0.8);
-
-        ctx.stroke();
-        ctx.restore();
     }
 }

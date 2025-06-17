@@ -73,7 +73,7 @@ void RuleXV::from_json(JSON &json) {
     m_x_edges.clear();
     m_v_edges.clear();
     m_combined_edges.clear();
-    m_missing_symbol_edges.clear();
+    m_missing_edges.clear();
     m_all_dots_given = false;
 
     // NOTE: in xv rules allDotsGiven is given instead of allSymbolsGivenq
@@ -99,7 +99,7 @@ void RuleXV::from_json(JSON &json) {
     }
 
     m_combined_edges = m_x_edges | m_v_edges;
-    m_missing_symbol_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
+    m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
 JSON RuleXV::to_json() const {
@@ -116,6 +116,7 @@ JSON RuleXV::to_json() const {
         if (edges.size() > 0) {
             JSON rule = JSON(JSON::object{});
             rule["label"] = label;
+            rule["symbol"] = rule_utils::tolower_str(label.substr(0, 1));
             JSON rule_fields = JSON(JSON::object{});
 
             rule_fields["region"] = edges.to_json();
@@ -130,6 +131,26 @@ JSON RuleXV::to_json() const {
 
     json["rules"] = rules;
     return json;
+}
+
+void RuleXV::init_randomly() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    m_all_dots_given = rand() % 2 == 0;
+
+    std::uniform_int_distribution<int> x_dist(MIN_X_EDGES, MAX_X_EDGES);
+    const int num_x = x_dist(gen);
+
+    std::uniform_int_distribution<int> v_dist(MIN_V_EDGES, MAX_V_EDGES);
+    const int num_v = v_dist(gen);
+
+    Region<EdgeIdx> available_edges = Region<EdgeIdx>::all(board_->size());
+
+    m_x_edges = rule_utils::generate_random_edges(board_, num_x, &available_edges);
+    m_v_edges = rule_utils::generate_random_edges(board_, num_v, &available_edges);
+    m_combined_edges = m_x_edges | m_v_edges;
+    m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }
 
 // private member functions
@@ -188,7 +209,7 @@ bool RuleXV::enforce_sum(Cell &a, Cell &b, int sum) const {
 bool RuleXV::denforce_missing_symbols() const {
     bool changed = false;
 
-    for (const auto &edge: m_missing_symbol_edges.items()) {
+    for (const auto &edge: m_missing_edges.items()) {
         Cell &a = board_->get_cell(CellIdx{edge.r1, edge.c1});
         Cell &b = board_->get_cell(CellIdx{edge.r2, edge.c2});
 

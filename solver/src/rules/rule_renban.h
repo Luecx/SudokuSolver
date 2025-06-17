@@ -21,15 +21,16 @@ public:
     void init_randomly() override;
 
 private:
-    // Hyperparameters
+    // hyperparameters
     const int MIN_PATH_LENGTH = 2;
     const int MAX_PATH_LENGTH = 5;
     const int MIN_PATHS = 1;
     const int MAX_PATHS = 5;
 
-    // Standard Parameters
+    // standard parameter
     std::vector<Region<CellIdx>> m_paths;
 
+    // private member function
     bool enforce_renban(const Region<CellIdx> &path);
 };
 
