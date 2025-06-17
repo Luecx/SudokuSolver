@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 09:24+0200\n"
+"POT-Creation-Date: 2025-06-12 19:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,8 +28,7 @@ msgid "Play"
 msgstr ""
 
 #: sudoku/templates/sudoku/base.html:52
-#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:28
-msgid "Puzzles"
+msgid "Sudokus"
 msgstr ""
 
 #: sudoku/templates/sudoku/base.html:57
@@ -50,15 +49,15 @@ msgid "Your profile"
 msgstr ""
 
 #: sudoku/templates/sudoku/base.html:91
-msgid "Puzzles done"
+msgid "Sudokus done"
 msgstr ""
 
 #: sudoku/templates/sudoku/base.html:94
-msgid "Ongoing Puzzles"
+msgid "Ongoing Sudokus"
 msgstr ""
 
 #: sudoku/templates/sudoku/base.html:97
-msgid "Puzzles Created"
+msgid "Sudokus Created"
 msgstr ""
 
 #: sudoku/templates/sudoku/base.html:104
@@ -266,6 +265,10 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+#: sudoku/templates/sudoku/game/game_offcanvas_menu.html:28
+msgid "Puzzles"
+msgstr ""
+
 #: sudoku/templates/sudoku/game/game_offcanvas_menu.html:37
 msgid "About us"
 msgstr ""
@@ -307,7 +310,11 @@ msgid "FINN'S SUDOKU APP"
 msgstr ""
 
 #: sudoku/templates/sudoku/index.html:44
-msgid "CHOOSE A PUZZLE TO PLAY"
+msgid "CHOOSE A SUDOKU TO PLAY"
+msgstr ""
+
+#: sudoku/templates/sudoku/index.html:46
+msgid "OR"
 msgstr ""
 
 #: sudoku/templates/sudoku/index.html:47
@@ -315,7 +322,7 @@ msgid "LOGIN"
 msgstr ""
 
 #: sudoku/templates/sudoku/index.html:53
-msgid "ABOUT"
+msgid "ABOUT US"
 msgstr ""
 
 #: sudoku/templates/sudoku/index.html:96
@@ -551,40 +558,40 @@ msgid "log in"
 msgstr ""
 
 #: sudoku/templates/sudoku/login/login.html:35
-#: sudoku/templates/sudoku/login/login_modal.html:39
+#: sudoku/templates/sudoku/login/login.html:39
 msgid "Forgot your password?"
 msgstr ""
 
 #: sudoku/templates/sudoku/login/login.html:51
-#: sudoku/templates/sudoku/login/login_modal.html:52
+#: sudoku/templates/sudoku/login/login.html:52
 msgid "No account yet? Register now"
 msgstr ""
 
-#: sudoku/templates/sudoku/login/login_modal.html:22
+#: sudoku/templates/sudoku/login/login.html:22
 msgid "Username or Email"
 msgstr ""
 
-#: sudoku/templates/sudoku/login/login_modal.html:36
+#: sudoku/templates/sudoku/login/login.html:36
 msgid "Log In"
 msgstr ""
 
-#: sudoku/templates/sudoku/login/login_modal.html:46
+#: sudoku/templates/sudoku/login/login.html:46
 msgid "Sign in with..."
 msgstr ""
 
-#: sudoku/templates/sudoku/login/register.html:6
+#: sudoku/templates/sudoku/login/register_modal.html:6
 msgid "Register"
 msgstr ""
 
-#: sudoku/templates/sudoku/login/register.html:29
+#: sudoku/templates/sudoku/login/register_modal.html:29
 msgid "Create Account"
 msgstr ""
 
-#: sudoku/templates/sudoku/login/register.html:33
+#: sudoku/templates/sudoku/login/register_modal.html:33
 msgid "Already have an account?"
 msgstr ""
 
-#: sudoku/templates/sudoku/login/register.html:34
+#: sudoku/templates/sudoku/login/register_modal.html:34
 msgid "Log in"
 msgstr ""
 
@@ -856,16 +863,4 @@ msgstr ""
 
 #: sudoku/views/contact.py:92
 msgid "Message sent successfully."
-msgstr ""
-
-#: sudoku_site/settings.py:85
-msgid "English"
-msgstr ""
-
-#: sudoku_site/settings.py:86
-msgid "Deutsch"
-msgstr ""
-
-#: sudoku_site/settings.py:87
-msgid "日本語"
 msgstr ""

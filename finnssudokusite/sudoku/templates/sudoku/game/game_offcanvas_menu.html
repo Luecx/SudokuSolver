@@ -25,7 +25,7 @@
                 <i class="bi bi-house me-3"></i>{% trans "Home" %}
             </a>
             <a class="nav-link" href="{% url 'puzzles' %}">
-                <i class="fas fa-th-list me-3"></i>{% trans "Puzzles" %}
+                <i class="fas fa-th-list me-3"></i>{% trans "Sudokus" %}
             </a>
             <a class="nav-link" href="{% url 'leaderboard' %}">
                 <i class="fas fa-trophy me-3"></i>{% trans "Leaderboards" %}
@@ -41,34 +41,16 @@
             {% get_current_language as LANGUAGE_CODE %}
             <!-- Sprachwahl mit Select-Feld -->
             <div class="nav-link d-flex align-items-center">
-                <i class="fas fa-globe me-1"></i>
-                <select id="languageSelect" class="form-select">
-                    <option value="en"{% if LANGUAGE_CODE == 'en' %} selected{% endif %}>English</option>
-                    <option value="de"{% if LANGUAGE_CODE == 'de' %} selected{% endif %}>Deutsch</option>
-                    <option value="ja"{% if LANGUAGE_CODE == 'ja' %} selected{% endif %}>日本語</option>
-                </select>
+				<a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#language-picker-modal" role="button">
+					<i class="fas fa-globe me-2"></i><span id="currentLang"></span>
+				</a>
             </div>
-            <!-- Unsichtbares Formular für die Sprachumschaltung -->
-            <form id="languageForm" method="post" action="{% url 'set_language' %}" style="display: none;">
-                {% csrf_token %}
-                <input type="hidden" name="language" id="languageInput">
-                <input type="hidden" name="next" value="{{ request.path }}">
-            </form>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const select = document.getElementById("languageSelect");
-                    const form = document.getElementById("languageForm");
-                    const input = document.getElementById("languageInput");
-                    if (select && form && input) {
-                        select.addEventListener("change", function () {
-                            input.value = select.value;
-                            form.submit();
-                        });
-                    }
-                });
-            </script>
+            
 
         </nav>
     </div>
 </div>
+
+<!-- language picker Modal -->
+{% include "sudoku/modal_language_picker.html" %}
+

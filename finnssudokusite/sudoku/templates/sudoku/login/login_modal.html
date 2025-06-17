@@ -8,7 +8,7 @@
 		<div class="modal-content border rounded-5 shadow-sm">
 			<div id="modalContentContainer" class="modal-body p-4">
 				<h3 class="card-title text-center mb-4">Login</h3>
-				<form method="post" action="{% url 'login' %}" novalidate>
+				<form method="post" action="{% url 'modal_login' %}" novalidate>
 					{% csrf_token %}
 					{% if login_form.non_field_errors %}
 					<div class="alert alert-danger">
@@ -36,7 +36,7 @@
 					<button type="submit" class="btn btn-primary w-100 mt-2">{% trans "Log In" %}</button>
 				</form>
 				<div class="col-auto d-flex justify-content-center mt-2">
-					<a class="link link--io my-text-btn" href="#" onclick="switchModalContent('{% url 'password_reset' %}')">{% trans "Forgot your password?" %}</a>
+					<button class="btn btn-link my-text-btn" data-bs-toggle="modal" data-bs-target="#passwordresetModal" data-bs-dismiss="modal">{% trans "Forgot your password?" %}</button>
 				</div>
 				<hr class="my-4">
 				
@@ -49,9 +49,10 @@
 					</a>
 				</div>
 				<div class="text-center mt-3">
-					<a class="link link--io my-text-btn" href="#" onclick="switchModalContent('{% url 'register' %}','L')">{% trans "No account yet? Register now" %}</a>
+					<button class="btn btn-link m-0 p-0 link link--io my-text-btn" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">{% trans "No account yet? Register now" %}</button>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+

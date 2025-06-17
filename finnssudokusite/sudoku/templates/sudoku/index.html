@@ -43,8 +43,8 @@
 		<div class="col-auto d-flex justify-content-center">
 			<a href="{% url 'game_selection' %}" class="link link--io my-text-btn">{% trans "CHOOSE A PUZZLE TO PLAY" %}</a>
 			{% if not user.is_authenticated %}
-			<span class="mx-3">OR</span>
-			<a class="link link--io my-text-btn" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" onclick="openLoginModal()">{% trans "LOGIN" %}</a>
+			<span class="mx-3">{% trans "OR" %}</span>
+			<button class="btn btn-link m-0 p-0 link link--io my-text-btn" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">{% trans "LOGIN" %}</button>
 			{% endif %}
 		</div>
 	</div>

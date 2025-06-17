@@ -24,27 +24,22 @@ export class QuadrupleRuleHandler extends RuleTypeHandler {
             },
             {
                 key: "values",
-                type: "string",
-                default: "",
-                label: gettext("Values (e.g. 1,2,3,4)")
+                type: "list",
+                label: gettext("Digits"),
+                default: [],
+                max_num_count: 4,
+                min: 1,
+                max: this.board.getGridSize(),
             }
         ];
     }
 
     getRuleWarnings(rule) {
         const warnings = [];
-        const str = (rule.fields.values || "").trim();
+        const digits = rule.fields.values || [];
         const maxDigit = this.board.getGridSize();
 
-        if (str === "") return warnings;
-
-        const parts = str.split(",").map(s => s.trim());
-        const digits = parts.map(ch => parseInt(ch, 10)).filter(n => !isNaN(n));
-
-        if (parts.length !== digits.length) {
-            warnings.push(gettext("Only digits separated by commas are allowed."));
-            return warnings;
-        }
+        if (!Array.isArray(digits)) return warnings;
 
         if (digits.length > 4) {
             warnings.push(gettext("Too many values: maximum is 4."));
@@ -82,13 +77,13 @@ export class QuadrupleRuleHandler extends RuleTypeHandler {
         const region = rule.fields.region;
         if (!region || !region.items || region.items.length === 0) return;
 
-        const str = (rule.fields.values || "").trim();
-        const digits = str.split(",").map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n)).slice(0, 4);
+        const digits = (rule.fields.values || []).slice(0, 4).map(n => parseInt(n, 10)).filter(n => !isNaN(n));
 
         const cellSize = this.board.getCellSizeCTX();
         const radius = cellSize * 0.22;
         const fontSize = cellSize * 0.2;
-        const gap = radius * 0.48; // 🔧 spacing adjusted here
+        const gap = radius * 0.48;
+        const gap4 = radius * 0.38;
 
         for (const corner of region.items) {
             const { r, c } = corner;
@@ -99,7 +94,7 @@ export class QuadrupleRuleHandler extends RuleTypeHandler {
             ctx.save();
             ctx.translate(cx, cy);
 
-            // Circle
+            // Draw circle
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, 2 * Math.PI);
             ctx.fillStyle = "white";
@@ -108,7 +103,7 @@ export class QuadrupleRuleHandler extends RuleTypeHandler {
             ctx.lineWidth = 1;
             ctx.stroke();
 
-            // Digits
+            // Draw digits
             ctx.fillStyle = "black";
             ctx.font = `${fontSize}px sans-serif`;
             ctx.textAlign = "center";
@@ -126,10 +121,10 @@ export class QuadrupleRuleHandler extends RuleTypeHandler {
                 ctx.fillText(digits[2].toString(),  gap * 0.8, gap * 0.6);
             } else if (n === 4) {
                 const positions = [
-                    [-gap, -gap],
-                    [ gap, -gap],
-                    [-gap,  gap],
-                    [ gap,  gap],
+                    [-gap4, -gap4],
+                    [ gap4, -gap4],
+                    [-gap4,  gap4],
+                    [ gap4,  gap4],
                 ];
                 for (let i = 0; i < 4; i++) {
                     const [dx, dy] = positions[i];

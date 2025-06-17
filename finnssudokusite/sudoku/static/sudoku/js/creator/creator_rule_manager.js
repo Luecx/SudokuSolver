@@ -1,6 +1,7 @@
 import { BooleanOption } from "./option_bool.js";
 import { NumberOption } from "./option_number.js";
 import { StringOption } from "./option_string.js";
+import { ListOption } from "./option_list.js";
 import { RegionSelectorOption } from "./option_region.js";
 import { createSelectionConfig } from "../board/board_selectionConfig.js";
 import { Region } from "../region/Region.js";
@@ -354,6 +355,13 @@ export class CreatorRuleManager {
         switch (desc.type) {
             case "boolean":
                 return new BooleanOption(shared);
+            case "list":
+                return new ListOption({
+                    ...shared,
+                    max_num_count: desc.max_num_count || 4,
+                    min: desc.min ?? 0,
+                    max: desc.max ?? 9
+                });
             case "number":
                 return new NumberOption({
                     ...shared,
