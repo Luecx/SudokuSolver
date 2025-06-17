@@ -73,6 +73,39 @@ bool hidden_singles(Board *board_, std::vector<Cell *> &unit) {
     return changed;
 }
 
+std::vector<int> parseValues(const std::string input, int board_size) {
+    std::vector<int> values;
+    if (input.empty())
+        return values;
+
+    std::istringstream ss(input);
+    std::string token;
+
+    while (std::getline(ss, token, ',') && values.size() < 6) {
+        // trim whitespace
+        size_t start = token.find_first_not_of(" \t\n\r\f\v");
+        if (start == std::string::npos)
+            continue;
+
+        size_t end = token.find_last_not_of(" \t\n\r\f\v");
+        token = token.substr(start, end - start + 1);
+
+        try {
+            int value = std::stoi(token);
+            values.push_back(value);
+        } catch (...) {
+            // skip invalid numbers
+        }
+    }
+
+    // sort
+    std::sort(values.begin(), values.end());
+    // remove duplicates
+    values.erase(std::unique(values.begin(), values.end()), values.end());
+
+    return values;
+}
+
 std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_) {
     // Compute min bound
     int min = size + 1;

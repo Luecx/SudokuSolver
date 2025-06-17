@@ -52,8 +52,6 @@ private:
             return false;
         return std::binary_search(forbidden_sums.begin(), forbidden_sums.end(), sum);
     }
-
-    std::vector<int> getForbiddenSums(const std::string input);
 };
 
 } // namespace sudoku

@@ -221,7 +221,8 @@ void RuleAntiChess::from_json(JSON &json) {
         m_pair[count].enabled = enabled;
         m_pair[count].allow_repeats = number_can_repeat;
         m_pair[count].region = region;
-        m_pair[count].forbidden_sums = getForbiddenSums(forbidden_sums);
+        m_pair[count].forbidden_sums = rule_utils::parseValues(forbidden_sums, board_->size());
+
         count++;
 
         if (count >= 2)
@@ -411,43 +412,6 @@ bool RuleAntiChess::enforce_forbidden_sums(const Cell &c1, Cell &c2, const AntiC
     }
 
     return changed;
-}
-
-// helper
-
-std::vector<int> RuleAntiChess::getForbiddenSums(const std::string input) {
-    std::vector<int> forbidden_sums;
-    if (input.empty())
-        return forbidden_sums;
-
-    std::istringstream ss(input);
-    std::string token;
-
-    while (std::getline(ss, token, ',') && forbidden_sums.size() < 6) {
-        // trim whitespace
-        size_t start = token.find_first_not_of(" \t\n\r\f\v");
-        if (start == std::string::npos)
-            continue;
-
-        size_t end = token.find_last_not_of(" \t\n\r\f\v");
-        token = token.substr(start, end - start + 1);
-
-        try {
-            int forbidden_sum = std::stoi(token);
-            if (forbidden_sum < 2 || forbidden_sum > board_->size() * 2)
-                continue; // skip invalid sums
-            forbidden_sums.push_back(forbidden_sum);
-        } catch (...) {
-            // skip invalid numbers
-        }
-    }
-
-    // sort
-    std::sort(forbidden_sums.begin(), forbidden_sums.end());
-    // remove duplicates
-    forbidden_sums.erase(std::unique(forbidden_sums.begin(), forbidden_sums.end()), forbidden_sums.end());
-
-    return forbidden_sums;
 }
 
 } // namespace sudoku

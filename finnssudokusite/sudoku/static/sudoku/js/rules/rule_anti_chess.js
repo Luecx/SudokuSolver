@@ -65,22 +65,65 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         }
 
         if (!trimmed.includes(',')) {
-            if (isNaN(Number(trimmed)))
+            // Single number validation
+            if (isNaN(Number(trimmed))) {
                 warnings.push(gettext("“%(value)s” is not a valid number").replace("%(value)s", trimmed));
+            } else {
+                const num = Number(trimmed);
+                if (num < 3 || num > 17) {
+                    warnings.push(gettext("Sum %(sum)s is out of valid range (3 to 17)").replace("%(sum)s", num));
+                }
+            }
             return warnings;
         }
 
+        // Multiple numbers validation
         const parts = trimmed.split(',');
-        if (parts.length > 5)
+        if (parts.length > 5) {
             warnings.push(gettext("Too many forbidden sums: maximum allowed is 5"));
+        }
 
-        const invalidParts = parts.filter(part => {
-            const num = part.trim();
-            return num === '' || isNaN(Number(num));
-        });
+        const invalidParts = [];
+        const validNumbers = [];
+        const outOfRangeNumbers = [];
+        const duplicates = new Set();
+        const seenNumbers = new Set();
 
-        if (invalidParts.length > 0)
+        for (const part of parts) {
+            const numStr = part.trim();
+            if (numStr === '' || isNaN(Number(numStr))) {
+                invalidParts.push(part);
+                continue;
+            }
+
+            const num = Number(numStr);
+
+            // Check range
+            if (num < 3 || num > 17) {
+                outOfRangeNumbers.push(num);
+                continue;
+            }
+
+            // Check for duplicates
+            if (seenNumbers.has(num)) {
+                duplicates.add(num);
+            } else {
+                seenNumbers.add(num);
+                validNumbers.push(num);
+            }
+        }
+
+        if (invalidParts.length > 0) {
             warnings.push(gettext("Invalid numbers: %(numbers)s").replace("%(numbers)s", invalidParts.join(', ')));
+        }
+
+        if (outOfRangeNumbers.length > 0) {
+            warnings.push(gettext("Numbers %(numbers)s are out of valid range (3 to 17)").replace("%(numbers)s", outOfRangeNumbers.join(', ')));
+        }
+
+        if (duplicates.size > 0) {
+            warnings.push(gettext("Duplicate sums found: %(numbers)s").replace("%(numbers)s", Array.from(duplicates).join(', ')));
+        }
 
         return warnings;
     }
@@ -171,9 +214,9 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
 
         ctx.save();
         ctx.strokeStyle = rule.label == "Anti-Knight" ? "rgb(158, 107, 73)" : "rgb(125, 196, 62)";
-        ctx.lineWidth   = 3;
-        ctx.lineJoin    = "round";
-        ctx.lineCap     = "round";
+        ctx.lineWidth = 3;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
 
         ctx.setLineDash([10, 10]);
 
@@ -229,8 +272,8 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         const textMetrics = ctx.measureText(forbiddenSumsText);
         const middleY = textY + (textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent) / 1.75;
 
-        ctx.strokeStyle = "rgb(61, 50, 42, 0.5)";
-        ctx.lineWidth = 0.7;
+        ctx.strokeStyle = "rgba(61, 50, 42, 0.7)";
+        ctx.lineWidth = 2.0;
         ctx.beginPath();
         ctx.moveTo(textX, middleY);
         ctx.lineTo(textX + textMetrics.width, middleY);

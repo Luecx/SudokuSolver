@@ -82,7 +82,9 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleWildApples>(this);
             } else if (normalized_type == "customsum") {
                 handler = std::make_shared<RuleCustomSum>(this);
-            } else {
+            } else if (normalized_type == "quadruple") {
+                handler = std::make_shared<RuleQuadruple>(this);
+            }  else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }
 

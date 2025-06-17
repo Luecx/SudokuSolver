@@ -23,3 +23,4 @@
 #include "rule_whisper.h"
 #include "rule_wild_apples.h"
 #include "rule_xv.h"
+#include "rule_quadruple.h"

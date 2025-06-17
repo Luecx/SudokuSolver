@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        bench::bench(argv[2], 17, 16384, false);
+        bench::bench(argv[2], 17, 128000, false);
         return 0;
     } else if (command == "datagen") {
         if (argc != 3) {
