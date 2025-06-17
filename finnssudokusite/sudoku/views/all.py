@@ -19,6 +19,9 @@ from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+# Added for modal_login
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as auth_login
 
 from ..models import Sudoku, UserSudokuDone, UserSudokuOngoing, Tag
 from ..forms import UserRegisterForm
@@ -41,19 +44,27 @@ def index(request):
 
 
 @csrf_protect
-@require_POST
 def modal_login(request):
-    form = AuthenticationForm(request, data=request.POST)
-    if form.is_valid():
-        user = form.get_user()
-        auth_login(request, user)
-        return JsonResponse({"success": True})
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            return JsonResponse({"success": True})
+        else:
+            errors = {
+                field: [{"message": str(e)} for e in error_list]
+                for field, error_list in form.errors.items()
+            }
+            return JsonResponse({"success": False, "errors": errors}, status=400)
     else:
-        errors = {
-            field: [{"message": str(e)} for e in error_list]
-            for field, error_list in form.errors.items()
-        }
-        return JsonResponse({"success": False, "errors": errors}, status=400)
+        form = AuthenticationForm()
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return render(request, "sudoku/login/login_modal.html", {"login_form": form})
+        return JsonResponse({
+            "success": False,
+            "html": render_to_string("sudoku/login/login_modal.html", {"login_form": form}, request=request)
+        }, status=400)
 
 def game(request):
     return render(request, "sudoku/game/game.html")
@@ -195,7 +206,7 @@ def register(request):
             return render(request, 'sudoku/login/activation_sent.html')
         else:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return render(request, 'sudoku/login/register.html', {'form': form})
+                return render(request, 'sudoku/login/register_modal.html', {'form': form})
     else:
         form = UserRegisterForm()
 
