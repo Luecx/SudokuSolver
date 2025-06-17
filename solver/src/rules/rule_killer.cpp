@@ -104,8 +104,6 @@ JSON RuleKiller::to_json() const {
     return json;
 }
 
-void RuleKiller::init_randomly() { m_pairs.clear(); }
-
 // private member functions
 
 bool RuleKiller::check_cage(KillerPair &pair) {

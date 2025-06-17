@@ -18,7 +18,7 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override;
+    void init_randomly() override { assert(false); }
 
 private:
     std::vector<Region<CellIdx>> m_regions;

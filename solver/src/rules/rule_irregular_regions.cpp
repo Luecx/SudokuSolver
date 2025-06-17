@@ -97,9 +97,4 @@ JSON RuleIrregularRegions::to_json() const {
     return json;
 }
 
-void RuleIrregularRegions::init_randomly() {
-    m_regions.clear();
-    m_irregular_units.clear();
-}
-
 } // namespace sudoku

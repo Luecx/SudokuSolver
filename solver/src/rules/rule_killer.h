@@ -18,7 +18,7 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override;
+    void init_randomly() override { assert(false); }
 
 private:
     struct KillerPair {
@@ -34,9 +34,6 @@ private:
     bool check_cage(KillerPair &pair);
 
 protected:
-    // hyperparameters
-
-    // standard parameter
     std::string name = "Killer";
     std::vector<KillerPair> m_pairs; // used by RuleCustomSum
 };

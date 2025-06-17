@@ -163,6 +163,9 @@ Region<CellIdx> generate_random_region(Board *board, const int max_region_size, 
     Region<CellIdx> region;
     region.add(current);
 
+    if (available_region)
+        *available_region = *available_region - current;
+
     while ((int) region.items().size() < max_region_size) {
         Region<CellIdx> neighbors = get_orthogonal_neighbors(board, current) - region;
 
@@ -175,7 +178,7 @@ Region<CellIdx> generate_random_region(Board *board, const int max_region_size, 
             current = new_cell;
 
             if (available_region)
-                *available_region = *available_region - region;
+                *available_region = *available_region - new_cell;
         } else {
             break;
         }
@@ -215,9 +218,7 @@ Region<CellIdx> generate_random_path(Board *board, const int max_path_size, Regi
     return path;
 }
 
-Region<EdgeIdx> generate_random_edges(Board *board, //
-                                      const int max_edge_count, //
-                                      Region<EdgeIdx> *available_edges) {
+Region<EdgeIdx> generate_random_edges(Board *board, const int max_edge_count, Region<EdgeIdx> *available_edges) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
