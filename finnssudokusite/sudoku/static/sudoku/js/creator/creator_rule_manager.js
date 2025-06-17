@@ -100,7 +100,7 @@ export class CreatorRuleManager {
             }
 
             if(handler.rules.some(rule => this.ruleWarnings.has(rule.id)))
-                this.handlerWarnings.set(handler.name, "Some rules have warnings");            
+                this.handlerWarnings.set(handler.name, gettext("Some rules have warnings"));
         }
 
         for (const handler of Object.values(this.ruleHandlers)) {

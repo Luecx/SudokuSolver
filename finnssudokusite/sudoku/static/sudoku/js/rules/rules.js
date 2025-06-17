@@ -21,6 +21,7 @@ import { DiagonalSumHandler } from "./rule_diag_sum.js";
 import { NumberedRoomsHandler } from "./rule_numbered_rooms.js";
 import { DutchFlatRuleHandler } from "./rule_dutch_flat.js";
 import { WildApples } from "./rule_wild_apples.js";
+import { QuadrupleRuleHandler } from "./rule_quadruples.js";
 
 // Add any new rule handlers here
 export function createAllRuleHandlers(board) {
@@ -47,6 +48,7 @@ export function createAllRuleHandlers(board) {
         new DiagonalSumHandler(board),
         new NumberedRoomsHandler(board),
         new DutchFlatRuleHandler(board),
-        new WildApples(board)
+        new WildApples(board),
+        new QuadrupleRuleHandler(board)
     ];
 }
