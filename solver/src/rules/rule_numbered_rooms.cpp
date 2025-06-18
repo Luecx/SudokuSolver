@@ -4,6 +4,8 @@
 namespace sudoku {
 
 bool RuleNumberedRooms::number_changed(CellIdx pos) {
+    const Cell &cell = board_->get_cell(pos);
+
     bool changed = false;
     for (const auto &pair: m_pairs) {
         const Region<ORCIdx> &region = pair.region;
@@ -13,6 +15,20 @@ bool RuleNumberedRooms::number_changed(CellIdx pos) {
             !region.has(ORCIdx(-1, pos.c, true))) {
             continue;
         }
+
+        for (const auto &orc: pair.region) {
+            Cell &first_cell = get_first_cell(orc);
+            if (first_cell.is_solved())
+                continue;
+
+            Cell &target_cell = get_target_cell(orc, cell.value - 1);
+            if (target_cell.pos.r != pos.r && target_cell.pos.c != pos.c)
+                continue; // at least one of dimensions must match
+
+            if (!target_cell.is_solved())
+                changed |= target_cell.remove_candidate(pair.digit);
+        }
+
         changed |= enforce_numbered_rooms(pair);
     }
     return changed;
@@ -47,15 +63,6 @@ void RuleNumberedRooms::update_impact(ImpactMap &map) {
             Cell &first_cell = get_first_cell(orc);
             if (!first_cell.is_solved())
                 map.increment(first_cell.pos);
-            /*
-            unsure if this make it faster or slower
-            probably needs more testing
-            for (Number n = 1; n <= board_->size(); n++) {
-                Cell &target_cell = get_target_cell(orc, n - 1);
-                if (target_cell.candidates.test(pair.digit)) {
-                    map.increment(target_cell.pos);
-                }
-            }*/
         }
     }
 }
@@ -83,8 +90,27 @@ void RuleNumberedRooms::from_json(JSON &json) {
 
             for (const auto &orc: pair.region) {
                 Cell &first_cell = get_first_cell(orc);
-                // value 1 cannot be used in the first cell in numbered rooms
+                if (first_cell.is_solved())
+                    continue;
+
+                // value 1 and digit cannot be used in the first cell in numbered rooms
                 first_cell.remove_candidate(Number(1));
+                first_cell.remove_candidate(pair.digit);
+
+                const std::vector<CellIdx> cells = orc.attached_cells(board_->size());
+                for (const CellIdx &pos: cells) {
+                    if (pos == first_cell.pos)
+                        continue; // skip the first cell
+
+                    Cell &cell = board_->get_cell(pos);
+                    if (!cell.is_solved())
+                        continue;
+
+                    Cell &target_cell = get_target_cell(orc, cell.value - 1);
+                    if (target_cell.pos.r != pos.r && target_cell.pos.c != pos.c)
+                        continue; // at least one of dimensions must match
+                    target_cell.remove_candidate(pair.digit);
+                }
             }
         }
     }
@@ -166,6 +192,8 @@ bool RuleNumberedRooms::enforce_numbered_rooms(const NumberedRoomsPair &pair) {
             // if so, we know what first cell must be equal to
             for (Number n = 1; n <= board_->size(); n++) {
                 Cell &target_cell = get_target_cell(orc, n - 1);
+                if (target_cell.pos == first_cell.pos)
+                    continue; // skip the first cell
                 if (target_cell.is_solved() && target_cell.value == pair.digit) {
                     changed |= first_cell.only_allow_candidates(NumberSet(first_cell.max_number, n));
                     break;
