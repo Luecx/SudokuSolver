@@ -32,7 +32,7 @@
       "fields": {},
       "rules": [
         {
-          "id": "1750183949254-tsim",
+          "id": "1750181780140-be01",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -45,14 +45,11 @@
                 }
               ]
             },
-            "values": [
-              1,
-              9
-            ]
+            "values": "1,9"
           }
         },
         {
-          "id": "1750183963592-8ld6",
+          "id": "1750181789888-eg39",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -61,82 +58,15 @@
                 {
                   "__type__": "CornerIdx",
                   "r": 6,
-                  "c": 4
+                  "c": 2
                 }
               ]
             },
-            "values": [
-              1,
-              3,
-              7
-            ]
+            "values": "3,6,7,8"
           }
         },
         {
-          "id": "1750183973692-je8o",
-          "fields": {
-            "region": {
-              "__type__": "Region",
-              "type": "corners",
-              "items": [
-                {
-                  "__type__": "CornerIdx",
-                  "r": 7,
-                  "c": 6
-                }
-              ]
-            },
-            "values": [
-              2,
-              5,
-              6,
-              7
-            ]
-          }
-        },
-        {
-          "id": "1750183996191-zf3p",
-          "fields": {
-            "region": {
-              "__type__": "Region",
-              "type": "corners",
-              "items": [
-                {
-                  "__type__": "CornerIdx",
-                  "r": 6,
-                  "c": 7
-                }
-              ]
-            },
-            "values": [
-              8,
-              9
-            ]
-          }
-        },
-        {
-          "id": "1750184001466-r8o3",
-          "fields": {
-            "region": {
-              "__type__": "Region",
-              "type": "corners",
-              "items": [
-                {
-                  "__type__": "CornerIdx",
-                  "r": 5,
-                  "c": 6
-                }
-              ]
-            },
-            "values": [
-              2,
-              4,
-              6
-            ]
-          }
-        },
-        {
-          "id": "1750184006476-kvv3",
+          "id": "1750181804648-ia8y",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -145,20 +75,15 @@
                 {
                   "__type__": "CornerIdx",
                   "r": 3,
-                  "c": 7
+                  "c": 2
                 }
               ]
             },
-            "values": [
-              1,
-              5,
-              6,
-              8
-            ]
+            "values": "2,9"
           }
         },
         {
-          "id": "1750184013078-ezx3",
+          "id": "1750181811372-0jqy",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -167,18 +92,15 @@
                 {
                   "__type__": "CornerIdx",
                   "r": 2,
-                  "c": 6
+                  "c": 3
                 }
               ]
             },
-            "values": [
-              7,
-              9
-            ]
+            "values": "4,5,7,8"
           }
         },
         {
-          "id": "1750184020746-y83b",
+          "id": "1750181821737-jycq",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -191,15 +113,11 @@
                 }
               ]
             },
-            "values": [
-              1,
-              3,
-              5
-            ]
+            "values": "1,3,5"
           }
         },
         {
-          "id": "1750184026609-8foz",
+          "id": "1750181830703-wnj9",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -208,20 +126,15 @@
                 {
                   "__type__": "CornerIdx",
                   "r": 2,
-                  "c": 3
+                  "c": 6
                 }
               ]
             },
-            "values": [
-              4,
-              5,
-              7,
-              8
-            ]
+            "values": "7,9"
           }
         },
         {
-          "id": "1750184032306-z4d1",
+          "id": "1750181836821-s6gw",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -230,18 +143,15 @@
                 {
                   "__type__": "CornerIdx",
                   "r": 3,
-                  "c": 2
+                  "c": 7
                 }
               ]
             },
-            "values": [
-              2,
-              9
-            ]
+            "values": "1,5,6,8"
           }
         },
         {
-          "id": "1750184038342-gv7m",
+          "id": "1750181844421-8lif",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -254,15 +164,11 @@
                 }
               ]
             },
-            "values": [
-              2,
-              4,
-              8
-            ]
+            "values": "2,4,8"
           }
         },
         {
-          "id": "1750184055855-2wpl",
+          "id": "1750181854598-wzbi",
           "fields": {
             "region": {
               "__type__": "Region",
@@ -271,16 +177,62 @@
                 {
                   "__type__": "CornerIdx",
                   "r": 6,
-                  "c": 2
+                  "c": 4
                 }
               ]
             },
-            "values": [
-              3,
-              6,
-              7,
-              8
-            ]
+            "values": "1,3,7"
+          }
+        },
+        {
+          "id": "1750181860145-kdzk",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "corners",
+              "items": [
+                {
+                  "__type__": "CornerIdx",
+                  "r": 5,
+                  "c": 6
+                }
+              ]
+            },
+            "values": "2,4,6"
+          }
+        },
+        {
+          "id": "1750181866938-tgg1",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "corners",
+              "items": [
+                {
+                  "__type__": "CornerIdx",
+                  "r": 6,
+                  "c": 7
+                }
+              ]
+            },
+            "values": "8,9"
+          }
+        },
+        {
+          "id": "1750181872993-q6ti",
+          "fields": {
+            "region": {
+              "__type__": "Region",
+              "type": "corners",
+              "items": [
+                {
+                  "__type__": "CornerIdx",
+                  "r": 7,
+                  "c": 6
+                }
+              ]
+            },
+            "values": "2,5,6,7"
           }
         }
       ]

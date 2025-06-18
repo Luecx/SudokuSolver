@@ -74,12 +74,21 @@ Region<CellIdx> generate_random_path(Board *board, //
                                      Region<CellIdx> *available_path = nullptr);
 
 /**
- * @brief Generate a random, connected edges of given size inside available_edges.
+ * @brief Generate random edges of given size inside available_edges.
  * @param max_edge_count The edges may not reach this size if no more edges are available.
  * @param available_edges The edges will be updated inside the function.
  */
 Region<EdgeIdx> generate_random_edges(Board *board, //
                                       const int max_edge_count, //
-                                      Region<EdgeIdx> *available_edges);
+                                      Region<EdgeIdx> &available_edges);
+
+/**
+ * @brief Generate random corners of given size inside available_corners.
+ * @param max_edge_count The corners may not reach this size if no more corners are available.
+ * @param available_edges The corners will be updated inside the function.
+ */
+Region<CornerIdx> generate_random_corners(Board *board, //
+                                          const int max_corner_count, //
+                                          Region<CornerIdx> &available_corners);
 
 } // namespace sudoku::rule_utils

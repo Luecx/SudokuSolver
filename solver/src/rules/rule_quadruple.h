@@ -18,18 +18,20 @@ public:
     void from_json(JSON &json) override;
     JSON to_json() const override;
 
-    void init_randomly() override { };
+    void init_randomly() override;
 
 private:
     struct QuadruplePair {
         Region<CornerIdx> region;
-        NumberSet values; 
+        NumberSet values;
     };
 
     // hyperparameters
+    const int MIN_PAIRS = 1;
+    const int MAX_PAIRS = 3;
 
     // standard parameter
-    std::vector<QuadruplePair> m_pairs;    
+    std::vector<QuadruplePair> m_pairs;
 };
 
 } // namespace sudoku

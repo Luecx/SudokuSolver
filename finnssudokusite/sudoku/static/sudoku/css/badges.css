@@ -29,7 +29,7 @@
 }
 
 .badge-Parity {
-    background-color: #6610f2; /* violet */
+    background-color: #4d03c5; /* violet */
     color: white;
 }
 
@@ -111,5 +111,10 @@
 
 .badge-Numbered-Rooms {
     background-color: #795548; /* brown */
+    color: white;
+}
+
+.badge-Quadruple {
+    background-color: #ff6b6b; /* coral red */
     color: white;
 }

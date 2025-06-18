@@ -251,20 +251,38 @@ Region<CellIdx> generate_random_path(Board *board, const int max_path_size, Regi
     return path;
 }
 
-Region<EdgeIdx> generate_random_edges(Board *board, const int max_edge_count, Region<EdgeIdx> *available_edges) {
+Region<EdgeIdx> generate_random_edges(Board *board, const int max_edge_count, Region<EdgeIdx> &available_edges) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
     Region<EdgeIdx> edges;
 
-    while ((int) edges.items().size() < max_edge_count && available_edges->size() > 0) {
-        EdgeIdx random_edge = select_random(*available_edges, gen);
+    while ((int) edges.items().size() < max_edge_count && available_edges.size() > 0) {
+        EdgeIdx random_edge = select_random(available_edges, gen);
         edges.add(random_edge);
 
-        *available_edges = *available_edges - random_edge;
+        available_edges = available_edges - random_edge;
     }
 
     return edges;
 }
+
+
+Region<CornerIdx> generate_random_corners(Board *board, const int max_corner_count, Region<CornerIdx> &available_corners) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    Region<CornerIdx> corners;
+
+    while ((int) corners.items().size() < max_corner_count && available_corners.size() > 0) {
+        CornerIdx random_edge = select_random(available_corners, gen);
+        corners.add(random_edge);
+
+        available_corners = available_corners - random_edge;
+    }
+
+    return corners;
+}
+
 
 } // namespace sudoku::rule_utils

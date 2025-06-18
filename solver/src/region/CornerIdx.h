@@ -61,7 +61,14 @@ struct CornerIdx {
      * @return A vector of four CellIdx instances.
      */
     std::vector<CellIdx> attached_cells() const {
-        return {CellIdx(r - 1, c - 1), CellIdx(r - 1, c), CellIdx(r, c - 1), CellIdx(r, c)};
+        std::vector<CellIdx> cells{{r, c}};
+        if (r > 0)
+            cells.emplace_back(r - 1, c);
+        if (c > 0)
+            cells.emplace_back(r, c - 1);
+        if (r > 0 && c > 0)
+            cells.emplace_back(r - 1, c - 1);
+        return cells;
     }
 
     /**

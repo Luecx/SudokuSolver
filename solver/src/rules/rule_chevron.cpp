@@ -142,8 +142,8 @@ void RuleChevron::init_randomly() {
         }
     }
 
-    m_up_edges = rule_utils::generate_random_edges(board_, num_up, &available_ver_edges);
-    m_down_edges = rule_utils::generate_random_edges(board_, num_down, &available_ver_edges);
+    m_up_edges = rule_utils::generate_random_edges(board_, num_up, available_ver_edges);
+    m_down_edges = rule_utils::generate_random_edges(board_, num_down, available_ver_edges);
 
     std::uniform_int_distribution<int> right_dist(MIN_RIGHT_EDGES, MAX_RIGHT_EDGES);
     const int num_right = right_dist(gen);
@@ -162,8 +162,8 @@ void RuleChevron::init_randomly() {
         }
     }
 
-    m_right_edges = rule_utils::generate_random_edges(board_, num_right, &available_hor_edges);
-    m_left_edges = rule_utils::generate_random_edges(board_, num_left, &available_hor_edges);
+    m_right_edges = rule_utils::generate_random_edges(board_, num_right, available_hor_edges);
+    m_left_edges = rule_utils::generate_random_edges(board_, num_left, available_hor_edges);
 }
 
 

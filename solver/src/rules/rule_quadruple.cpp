@@ -95,7 +95,7 @@ JSON RuleQuadruple::to_json() const {
     json["type"] = "Quadruple";
     json["fields"] = JSON(JSON::object{});
 
-    JSON::array rules_array;
+    JSON::array rules;
     for (const auto &pair: m_pairs) {
         JSON::object fields;
         fields["region"] = pair.region.to_json();
@@ -112,10 +112,42 @@ JSON RuleQuadruple::to_json() const {
         JSON::object rule;
         rule["fields"] = fields;
 
-        rules_array.push_back(rule);
+        rules.push_back(rule);
     }
 
-    return JSON(JSON::object{{"__type__", "RuleQuadruple"}, {"rules", rules_array}});
+    json["rules"] = rules;
+    return json;
 }
+
+void RuleQuadruple::init_randomly() {
+    m_pairs.clear();
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    const int board_size = board_->size();
+
+    std::uniform_int_distribution<int> pair_count_dist(MIN_PAIRS, MAX_PAIRS);
+    const int pair_count = pair_count_dist(gen);
+
+    std::uniform_int_distribution<int> value_dist(1, board_size);
+
+    Region<CornerIdx> available_corners = Region<CornerIdx>::all(board_->size());
+    Region<CornerIdx> random_corners = rule_utils::generate_random_corners(board_, pair_count, available_corners);
+
+    for (const auto &corner: random_corners) {
+        Region<CornerIdx> region;
+        region.add(corner);
+
+        std::uniform_int_distribution<int> value_size_dist(1, corner.attached_cells().size());
+        const int value_size = value_size_dist(gen);
+
+        NumberSet values(board_size);
+        for (int i = 0; i < value_size; i++)
+            values.add(value_dist(gen));
+
+        m_pairs.push_back({region, values});
+    }
+};
 
 } // namespace sudoku

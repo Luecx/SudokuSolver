@@ -267,29 +267,35 @@ public:
     static Region all(const int board_size) {
         Region<IdxT> all_;
 
-        for (Row r = 0; r < board_size; ++r)
-            for (Col c = 0; c < board_size; ++c) {
-                if constexpr (std::is_same_v<IdxT, EdgeIdx>) {
+        if constexpr (std::is_same_v<IdxT, CellIdx>) {
+            for (Row r = 0; r < board_size; r++)
+                for (Col c = 0; c < board_size; c++)
+                    all_.add(IdxT(r, c));
+            return all_;
+        }
+
+        if constexpr (std::is_same_v<IdxT, CornerIdx>) {
+            for (Row r = 0; r <= board_size; r++)
+                for (Col c = 0; c <= board_size; c++)
+                    all_.add(IdxT(r, c));
+            return all_;
+        }
+
+        if constexpr (std::is_same_v<IdxT, EdgeIdx>) {
+            for (Row r = 0; r < board_size; r++) {
+                for (Col c = 0; c < board_size; c++) {
                     if (r + 1 < board_size)
                         all_.add(IdxT(r, c, r + 1, c));
                     if (c + 1 < board_size)
                         all_.add(IdxT(r, c, r, c + 1));
-                } else if constexpr (std::is_same_v<IdxT, CornerIdx>) {
-                    all_.add(IdxT(r, c));
-                    all_.add(IdxT(r + 1, c));
-                    all_.add(IdxT(r, c + 1));
-                    all_.add(IdxT(r + 1, c + 1));
-                } else if constexpr (std::is_same_v<IdxT, CellIdx>) {
-                    all_.add(IdxT(r, c));
-                } else {
-                    throw std::runtime_error("Unsupported index type for Region");
                 }
             }
+            return all_;
+        }
 
-
+        throw std::runtime_error("Unsupported index type for Region");
         return all_;
     }
-
 
 private:
     std::vector<IdxT> items_;

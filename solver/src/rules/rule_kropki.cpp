@@ -263,8 +263,8 @@ void RuleKropki::init_randomly() {
 
     Region<EdgeIdx> available_edges = Region<EdgeIdx>::all(board_->size());
 
-    m_white_edges = rule_utils::generate_random_edges(board_, num_white, &available_edges);
-    m_black_edges = rule_utils::generate_random_edges(board_, num_black, &available_edges);
+    m_white_edges = rule_utils::generate_random_edges(board_, num_white, available_edges);
+    m_black_edges = rule_utils::generate_random_edges(board_, num_black, available_edges);
     m_combined_edges = m_white_edges | m_black_edges;
     m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }

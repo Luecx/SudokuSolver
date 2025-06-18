@@ -147,8 +147,8 @@ void RuleXV::init_randomly() {
 
     Region<EdgeIdx> available_edges = Region<EdgeIdx>::all(board_->size());
 
-    m_x_edges = rule_utils::generate_random_edges(board_, num_x, &available_edges);
-    m_v_edges = rule_utils::generate_random_edges(board_, num_v, &available_edges);
+    m_x_edges = rule_utils::generate_random_edges(board_, num_x, available_edges);
+    m_v_edges = rule_utils::generate_random_edges(board_, num_v, available_edges);
     m_combined_edges = m_x_edges | m_v_edges;
     m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_combined_edges;
 }

@@ -21,7 +21,7 @@ void generate_random_puzzle(const std::string &output_dir, int solutions_limit, 
 
     // initialize all handlers needed
     board.add_handler(std::make_shared<RuleStandard>(&board));
-    board.add_handler(std::make_shared<RuleKiller>(&board));
+    board.add_handler(std::make_shared<RuleWildApples>(&board));
 
     std::vector<CellIdx> filled_pos;
 

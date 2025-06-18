@@ -117,7 +117,10 @@ void RuleWildApples::init_randomly() {
 
     Region<EdgeIdx> available_edges = Region<EdgeIdx>::all(board_->size());
 
-    m_apple_edges = rule_utils::generate_random_edges(board_, num_apples, &available_edges);
+    std::cout << available_edges.to_json() << std::endl;
+    exit(0);
+
+    m_apple_edges = rule_utils::generate_random_edges(board_, num_apples, available_edges);
     m_missing_edges = Region<EdgeIdx>::all(board_->size()) - m_apple_edges;
 }
 
