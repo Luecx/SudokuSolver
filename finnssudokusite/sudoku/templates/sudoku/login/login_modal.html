@@ -8,7 +8,7 @@
 		<div class="modal-content border rounded-5 shadow-sm">
 			<div id="modalContentContainer" class="modal-body p-4">
 				<h3 class="card-title text-center mb-4">Login</h3>
-				<form method="post" action="{% url 'modal_login' %}" novalidate>
+				<form id="loginForm" method="post" action="{% url 'modal_login' %}" novalidate data-ajax="true">
 					{% csrf_token %}
 					{% if login_form.non_field_errors %}
 					<div class="alert alert-danger">
@@ -52,7 +52,61 @@
 					<button class="btn btn-link m-0 p-0 link link--io my-text-btn" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">{% trans "No account yet? Register now" %}</button>
 				</div>
 			</div>
+			<script>
+			function bindLoginFormHandler() {
+				const loginForm = document.getElementById("loginForm");
+				if (!loginForm || loginForm.dataset.bound === "true") return;
+				loginForm.dataset.bound = "true"; // Doppelte Bindung verhindern
+
+				loginForm.addEventListener("submit", async function (e) {
+					e.preventDefault(); // verhindert Seitensprung
+					const formData = new FormData(loginForm);
+
+					const response = await fetch(loginForm.action, {
+						method: "POST",
+						body: formData,
+						headers: {
+							"X-Requested-With": "XMLHttpRequest"
+						}
+					});
+
+					const contentType = response.headers.get("content-type") || "";
+
+					if (contentType.includes("application/json")) {
+						const data = await response.json();
+						if (data.success) {
+							bootstrap.Modal.getInstance(document.getElementById("loginModal"))?.hide();
+							window.location.reload(); // oder weiterleiten
+						} else {
+							showLoginErrors(data.errors);
+						}
+					} else {
+						const html = await response.text();
+						document.getElementById("modalContentContainer").innerHTML = html;
+						bindLoginFormHandler(); // nach Austausch neu binden
+					}
+				});
+			}
+
+			function showLoginErrors(errors) {
+				const errorContainer = document.getElementById("loginErrors");
+				if (!errorContainer) return;
+				errorContainer.innerHTML = "";
+				for (const [field, messages] of Object.entries(errors)) {
+					messages.forEach(msg => {
+						const div = document.createElement("div");
+						div.className = "alert alert-danger py-1 mb-1";
+						div.textContent = msg.message;
+						errorContainer.appendChild(div);
+					});
+				}
+			}
+
+			document.addEventListener("DOMContentLoaded", bindLoginFormHandler);
+			document.getElementById("loginModal")?.addEventListener("shown.bs.modal", () => {
+				requestAnimationFrame(bindLoginFormHandler);
+			});
+			</script>
 		</div>
 	</div>
 </div>
-

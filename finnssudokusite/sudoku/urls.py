@@ -45,13 +45,13 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # --- Password Reset Workflow ---
-    path('password_reset/', auth_views.PasswordResetView.as_view(
-        template_name='sudoku/password/password_reset_modal.html',
-        form_class=UsernameOrEmailPasswordResetForm,
-        email_template_name='sudoku/password/password_reset_email.html',
-        subject_template_name='sudoku/password/password_reset_subject.txt',
-        success_url=reverse_lazy('password_reset_done'),
-    ), name='password_reset'),
+path('auth/password_reset/', auth_views.PasswordResetView.as_view(
+    template_name='sudoku/password/password_reset_modal.html',
+    form_class=UsernameOrEmailPasswordResetForm,
+    email_template_name='sudoku/password/password_reset_email.html',
+    subject_template_name='sudoku/password/password_reset_subject.txt',
+    success_url=reverse_lazy('password_reset_done'),
+), name='modal_reset'),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(
         template_name='sudoku/password/password_reset_done.html'
     ), name='password_reset_done'),
