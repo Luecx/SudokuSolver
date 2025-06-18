@@ -22,6 +22,7 @@ from django.views.decorators.csrf import csrf_protect
 # Added for modal_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import PasswordResetForm
 
 from ..models import Sudoku, UserSudokuDone, UserSudokuOngoing, Tag
 from ..forms import UserRegisterForm
@@ -183,35 +184,6 @@ def user_profile(request, username):
     })
 
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-
-            current_site = get_current_site(request)
-            subject = 'Activate your Sudoku account'
-            message = render_to_string('sudoku/login/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            send_mail(subject, message, 'noreply@sudoku.com', [user.email])
-
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({"success": True})
-            return render(request, 'sudoku/login/activation_sent.html')
-        else:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return render(request, 'sudoku/login/register_modal.html', {'form': form})
-    else:
-        form = UserRegisterForm()
-
-    return render(request, 'sudoku/login/register.html', {'form': form})
-
 
 def activate(request, uid, token):
     try:
@@ -234,3 +206,52 @@ def game_selection_view(request):
 
 def help(request):
     return render(request, 'sudoku/help.html')
+
+
+@csrf_protect
+def modal_password_reset(request):
+    form = PasswordResetForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                from_email='noreply@sudoku.com',
+                email_template_name='sudoku/password/password_reset_email.html',
+                subject_template_name='sudoku/password/password_reset_subject.txt',
+            )
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True})
+            return render(request, 'sudoku/password/password_reset_done.html')
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    "success": False,
+                    "html": render_to_string('sudoku/password/password_reset_modal.html', {'form': form}, request=request)
+                }, status=400)
+    else:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return render(request, 'sudoku/password/password_reset_modal.html', {'form': form})
+        return JsonResponse({
+            "success": False,
+            "html": render_to_string('sudoku/password/password_reset_modal.html', {'form': form}, request=request)
+        }, status=400)
+
+@csrf_protect
+def modal_register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            # Registrierung, Mail senden ...
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True})
+            return render(request, 'sudoku/login/activation_sent.html')
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                html = render_to_string('sudoku/login/register_modal.html', {'form': form}, request=request)
+                return JsonResponse({"success": False, "html": html}, status=400)
+            return render(request, 'sudoku/login/register_modal.html', {'form': form})
+    else:
+        form = UserRegisterForm()
+    return render(request, 'sudoku/login/register_modal.html', {'form': form})
+

@@ -9,12 +9,10 @@
 			<div id="modalContentContainer" class="modal-body p-4">
 				<h3 class="card-title text-center mb-4">Login</h3>
 				<form id="loginForm" method="post" action="{% url 'modal_login' %}" novalidate data-ajax="true">
-					{% csrf_token %}
-					{% if login_form.non_field_errors %}
-					<div class="alert alert-danger">
-						{{ login_form.non_field_errors }}
-					</div>
-					{% endif %}
+				{% csrf_token %}
+					{% for error in login_form.non_field_errors %}
+					<div class="alert alert-danger py-1 mb-1">{{ error }}</div>
+					{% endfor %}
 					
 					{% for field in login_form %}
 					<div class="mb-2">
@@ -36,7 +34,7 @@
 					<button type="submit" class="btn btn-primary w-100 mt-2">{% trans "Log In" %}</button>
 				</form>
 				<div class="col-auto d-flex justify-content-center mt-2">
-					<button class="btn btn-link my-text-btn" data-bs-toggle="modal" data-bs-target="#passwordresetModal" data-bs-dismiss="modal">{% trans "Forgot your password?" %}</button>
+					<button class="btn btn-link my-text-btn" data-bs-toggle="modal" data-bs-target="#passwordResetModal" data-bs-dismiss="modal">{% trans "Forgot your password?" %}</button>
 				</div>
 				<hr class="my-4">
 				
@@ -51,62 +49,98 @@
 				<div class="text-center mt-3">
 					<button class="btn btn-link m-0 p-0 link link--io my-text-btn" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">{% trans "No account yet? Register now" %}</button>
 				</div>
+
+            <script>
+function bindLoginFormHandler() {
+    const loginForm = document.getElementById("loginForm");
+    const modalContent = document.getElementById("modalContentContainer") || document.getElementById("loginFormContainer");
+    const errorContainer = document.getElementById("loginErrors");
+    if (!loginForm || !modalContent) {
+        console.warn("LoginForm oder modalContent nicht gefunden");
+        return;
+    }
+    console.log("Login-Form gebunden");
+
+    // Entferne alte Listener, falls vorhanden (Sicherheit bei mehrfacher Bindung)
+    loginForm.removeEventListener("submit", loginForm._submitHandler);
+
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        console.log("Login-Form submit intercepted");
+
+        const formData = new FormData(loginForm);
+
+        try {
+            const response = await fetch(loginForm.action, {
+                method: loginForm.method,
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            const text = await response.text();
+
+            let data;
+            try {
+                data = JSON.parse(text);
+                console.log("Login response", data);
+            } catch {
+                data = null;
+            }
+
+            if (data && data.success) {
+                const modalInstance = bootstrap.Modal.getInstance(document.getElementById("loginModal"));
+                modalInstance?.hide();
+                document.body.classList.remove("modal-open");
+                document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                if (errorContainer) {
+                    errorContainer.innerHTML = "";
+                    loginForm.querySelectorAll(".is-invalid").forEach(el => el.classList.remove("is-invalid"));
+                    if (data && data.errors) {
+                        for (const [field, errorList] of Object.entries(data.errors)) {
+                            errorList.forEach(err => {
+                                const div = document.createElement("div");
+                                div.classList.add("alert", "alert-danger", "py-1", "mb-1");
+                                div.textContent = err.message;
+                                errorContainer.appendChild(div);
+                            });
+                            const fieldEl = loginForm.querySelector(`[name="${field}"]`);
+                            if (fieldEl) {
+                                fieldEl.classList.add("is-invalid");
+                            }
+                        }
+                    }
+                } else {
+                    modalContent.innerHTML = text;
+                }
+            }
+        } catch (error) {
+            console.error("Fehler beim Login-Request:", error);
+            modalContent.innerHTML = '<div class="alert alert-danger">Fehler beim Senden des Formulars. Bitte versuche es erneut.</div>';
+        }
+    };
+
+    loginForm.addEventListener("submit", submitHandler);
+    loginForm._submitHandler = submitHandler; // Zum späteren Entfernen
+}
+
+// Initiale Bindung nach Laden des Modals
+document.addEventListener("DOMContentLoaded", bindLoginFormHandler);
+
+document.getElementById("loginModal")?.addEventListener("shown.bs.modal", () => {
+    setTimeout(() => {
+        bindLoginFormHandler();
+    }, 50);
+});
+</script>
 			</div>
-			<script>
-			function bindLoginFormHandler() {
-				const loginForm = document.getElementById("loginForm");
-				if (!loginForm || loginForm.dataset.bound === "true") return;
-				loginForm.dataset.bound = "true"; // Doppelte Bindung verhindern
-
-				loginForm.addEventListener("submit", async function (e) {
-					e.preventDefault(); // verhindert Seitensprung
-					const formData = new FormData(loginForm);
-
-					const response = await fetch(loginForm.action, {
-						method: "POST",
-						body: formData,
-						headers: {
-							"X-Requested-With": "XMLHttpRequest"
-						}
-					});
-
-					const contentType = response.headers.get("content-type") || "";
-
-					if (contentType.includes("application/json")) {
-						const data = await response.json();
-						if (data.success) {
-							bootstrap.Modal.getInstance(document.getElementById("loginModal"))?.hide();
-							window.location.reload(); // oder weiterleiten
-						} else {
-							showLoginErrors(data.errors);
-						}
-					} else {
-						const html = await response.text();
-						document.getElementById("modalContentContainer").innerHTML = html;
-						bindLoginFormHandler(); // nach Austausch neu binden
-					}
-				});
-			}
-
-			function showLoginErrors(errors) {
-				const errorContainer = document.getElementById("loginErrors");
-				if (!errorContainer) return;
-				errorContainer.innerHTML = "";
-				for (const [field, messages] of Object.entries(errors)) {
-					messages.forEach(msg => {
-						const div = document.createElement("div");
-						div.className = "alert alert-danger py-1 mb-1";
-						div.textContent = msg.message;
-						errorContainer.appendChild(div);
-					});
-				}
-			}
-
-			document.addEventListener("DOMContentLoaded", bindLoginFormHandler);
-			document.getElementById("loginModal")?.addEventListener("shown.bs.modal", () => {
-				requestAnimationFrame(bindLoginFormHandler);
-			});
-			</script>
 		</div>
 	</div>
 </div>

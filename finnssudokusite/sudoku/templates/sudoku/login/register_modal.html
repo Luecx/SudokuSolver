@@ -19,7 +19,7 @@
 						</div>
 						{% endif %}
 						
-						{% if form.visible_fields %}
+						{{ form }} {# DEBUG-Zeile – zeigt das Formularobjekt roh an #}
 						{% for field in form %}
 						<div class="mb-3">
 							<label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
@@ -32,10 +32,6 @@
 							{% endfor %}
 						</div>
 						{% endfor %}
-						{% else %}
-						<pre class="text-muted small">{{ form }}</pre>
-						<p class="text-danger">Fehler: Das Formular enthält keine Felder.</p>
-						{% endif %}
 						
 						<button type="submit" class="btn btn-primary w-100">{% trans "Create Account" %}</button>
 					</form>
@@ -47,4 +43,47 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		function bindRegisterFormHandler() {
+			const form = document.querySelector("#registerModal form");
+			if (!form || form.dataset.bound === "true") return;
+			form.dataset.bound = "true";
+			
+			form.addEventListener("submit", async function (e) {
+				e.preventDefault();
+				
+				try {
+					const response = await fetch(form.action, {
+						method: "POST",
+						body: new FormData(form),
+						headers: {"X-Requested-With": "XMLHttpRequest"},
+						credentials: "same-origin"
+					});
+					
+					const contentType = response.headers.get("content-type") || "";
+					if (contentType.includes("application/json")) {
+						const data = await response.json();
+						if (data.success) {
+							bootstrap.Modal.getInstance(document.getElementById("registerModal"))?.hide();
+							alert("Bitte bestätige deine Registrierung per E-Mail.");
+						} else if (data.html) {
+							document.getElementById("registerModal").outerHTML = data.html;
+							requestAnimationFrame(bindRegisterFormHandler);
+						}
+					} else {
+						const html = await response.text();
+						document.getElementById("registerModal").outerHTML = html;
+						requestAnimationFrame(bindRegisterFormHandler);
+					}
+				} catch (err) {
+					console.error("Fehler beim Registrieren:", err);
+				}
+			});
+		}
+		
+		document.addEventListener("DOMContentLoaded", bindRegisterFormHandler);
+		document.getElementById("registerModal")?.addEventListener("shown.bs.modal", () => {
+			requestAnimationFrame(bindRegisterFormHandler);
+		});
+	</script>
 </div>
