@@ -14,6 +14,7 @@
 
 #include <string>
 #include <vector>
+
 #include "../defs.h"
 #include "../json/json.h"
 #include "CellIdx.h"
@@ -60,11 +61,13 @@ struct CornerIdx {
      *
      * @return A vector of four CellIdx instances.
      */
-    std::vector<CellIdx> attached_cells() const {
-        std::vector<CellIdx> cells{{r, c}};
-        if (r > 0)
+    std::vector<CellIdx> attached_cells(int board_size) const {
+        std::vector<CellIdx> cells;
+        if (r < board_size && c < board_size)
+            cells.emplace_back(r, c);
+        if (r > 0 && c < board_size)
             cells.emplace_back(r - 1, c);
-        if (c > 0)
+        if (c > 0 && r < board_size)
             cells.emplace_back(r, c - 1);
         if (r > 0 && c > 0)
             cells.emplace_back(r - 1, c - 1);

@@ -209,7 +209,6 @@ void RuleAntiChess::from_json(JSON &json) {
         std::string label = rule["label"].get<std::string>();
         bool enabled = rule["fields"]["enabled"].get<bool>();
         bool number_can_repeat = rule["fields"]["NumberCanRepeat"].get<bool>();
-        std::string forbidden_sums = rule["fields"]["sums"].get<std::string>();
 
         Region<CellIdx> region;
         if (rule["fields"]["region"].is_object())
@@ -217,11 +216,19 @@ void RuleAntiChess::from_json(JSON &json) {
         else
             region = Region<CellIdx>(); // anti-chess allows null regions
 
+        std::vector<int> forbidden_sums;
+        if (rule["fields"]["sums"].is_array()) {
+            for (const auto &sum: rule["fields"]["sums"].get<JSON::array>()) {
+                if (sum.is_number())
+                    forbidden_sums.push_back(sum.get<double>());
+            }
+        }
+
         m_pair[count].label = label;
         m_pair[count].enabled = enabled;
         m_pair[count].allow_repeats = number_can_repeat;
         m_pair[count].region = region;
-        m_pair[count].forbidden_sums = rule_utils::parseValues(forbidden_sums, board_->size());
+        m_pair[count].forbidden_sums = forbidden_sums;
 
         count++;
 
@@ -248,14 +255,10 @@ JSON RuleAntiChess::to_json() const {
         fields["NumberCanRepeat"] = pair.allow_repeats;
         fields["region"] = pair.region.to_json();
 
-        // convert forbidden sums to comma-separated string
-        std::string sums_str;
-        for (size_t j = 0; j < pair.forbidden_sums.size(); j++) {
-            if (j > 0)
-                sums_str += ", ";
-            sums_str += std::to_string(pair.forbidden_sums[j]);
-        }
-        fields["sums"] = sums_str;
+        JSON::array sums_array = JSON::array{};
+        for (const auto &sum: pair.forbidden_sums)
+            sums_array.push_back(static_cast<double>(sum));
+        fields["sums"] = sums_array;
 
         rule["fields"] = fields;
         rules.push_back(rule);
@@ -281,10 +284,9 @@ void RuleAntiChess::init_randomly() {
     }
 
     const int board_size = board_->size();
-    const int region_size_max = std::min(REGION_SIZE_ABS_MAX, board_size * board_size / REGION_SIZE_MAX_FACTOR);
 
     std::uniform_int_distribution<> cell_dist(0, board_size - 1);
-    std::uniform_int_distribution<> region_size_dist(REGION_SIZE_MIN, region_size_max);
+    std::uniform_int_distribution<> region_size_dist(REGION_SIZE_MIN, REGION_SIZE_MAX);
 
     // generate random regions for each pair
     for (int i = 0; i < 2; i++) {
@@ -316,7 +318,7 @@ void RuleAntiChess::init_randomly() {
     }
 
     // generate random forbidden sums for enabled pairs with regions
-    std::uniform_int_distribution<> sum_count_dist(FORBIDDEN_SUMS_MIN, FORBIDDEN_SUMS_MAX);
+    std::uniform_int_distribution<> sum_count_dist(0, 4);
     std::uniform_int_distribution<> sum_value_dist(2, board_size * 2);
 
     for (int i = 0; i < 2; i++) {

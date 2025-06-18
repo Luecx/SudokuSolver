@@ -84,7 +84,7 @@ void Board::from_json(JSON &json) {
                 handler = std::make_shared<RuleCustomSum>(this);
             } else if (normalized_type == "quadruple") {
                 handler = std::make_shared<RuleQuadruple>(this);
-            }  else {
+            } else {
                 throw std::runtime_error("Unknown rule type: " + type);
             }
 

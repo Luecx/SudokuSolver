@@ -44,87 +44,31 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             },
             {
                 key: "sums",
-                type: "string",
-                default: "",
-                label: gettext("Optional: Forbidden Sums (comma-sep)")
+                type: "list",
+                label: gettext("Optional: Forbidden Sums"),
+                default: [],
+                max_num_count: 4,
+                min: 2,
+                max: this.board.getGridSize() * 2 - 1,
             }
         ];
     }
 
     getRuleWarnings(rule) {
         const warnings = [];
-        const sums = rule.fields?.sums;
+        const sums = rule.fields.sums || [];
 
-        if (sums == null || sums === '')
-            return warnings;
+        if (!Array.isArray(sums)) return warnings;
 
-        const trimmed = sums.trim();
-        if (trimmed === '') {
-            warnings.push(gettext("'sums' cannot be empty"));
-            return warnings;
-        }
-
-        if (!trimmed.includes(',')) {
-            // Single number validation
-            if (isNaN(Number(trimmed))) {
-                warnings.push(gettext("“%(value)s” is not a valid number").replace("%(value)s", trimmed));
-            } else {
-                const num = Number(trimmed);
-                if (num < 3 || num > 17) {
-                    warnings.push(gettext("Sum %(sum)s is out of valid range (3 to 17)").replace("%(sum)s", num));
-                }
+        const seen = new Set();
+        for (const d of sums) {
+            if (seen.has(d)) {
+                warnings.push(gettext(`Digit ${d} is duplicated.`));
+                break;
             }
-            return warnings;
+            seen.add(d);
         }
-
-        // Multiple numbers validation
-        const parts = trimmed.split(',');
-        if (parts.length > 5) {
-            warnings.push(gettext("Too many forbidden sums: maximum allowed is 5"));
-        }
-
-        const invalidParts = [];
-        const validNumbers = [];
-        const outOfRangeNumbers = [];
-        const duplicates = new Set();
-        const seenNumbers = new Set();
-
-        for (const part of parts) {
-            const numStr = part.trim();
-            if (numStr === '' || isNaN(Number(numStr))) {
-                invalidParts.push(part);
-                continue;
-            }
-
-            const num = Number(numStr);
-
-            // Check range
-            if (num < 3 || num > 17) {
-                outOfRangeNumbers.push(num);
-                continue;
-            }
-
-            // Check for duplicates
-            if (seenNumbers.has(num)) {
-                duplicates.add(num);
-            } else {
-                seenNumbers.add(num);
-                validNumbers.push(num);
-            }
-        }
-
-        if (invalidParts.length > 0) {
-            warnings.push(gettext("Invalid numbers: %(numbers)s").replace("%(numbers)s", invalidParts.join(', ')));
-        }
-
-        if (outOfRangeNumbers.length > 0) {
-            warnings.push(gettext("Numbers %(numbers)s are out of valid range (3 to 17)").replace("%(numbers)s", outOfRangeNumbers.join(', ')));
-        }
-
-        if (duplicates.size > 0) {
-            warnings.push(gettext("Duplicate sums found: %(numbers)s").replace("%(numbers)s", Array.from(duplicates).join(', ')));
-        }
-
+        
         return warnings;
     }
 
@@ -233,9 +177,8 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             ctx.stroke();
         }
 
-        const forbiddenSums = this.getForbiddenSums(rule);
-        const totalNumbers = forbiddenSums.length;
-        if (!forbiddenSums || totalNumbers === 0) {
+        const forbiddenSums = rule.fields?.sums;
+        if (!forbiddenSums || !Array.isArray(forbiddenSums) || forbiddenSums.length === 0) {
             ctx.restore();
             return;
         }
@@ -247,7 +190,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         const baseFontSize = s * 0.22;
         const fontSize = Math.max(baseFontSize * devicePixelRatio, 10);
 
-        const boxWidth = s * 0.22 * totalNumbers;
+        const boxWidth = s * 0.22 * forbiddenSums.length;
         const boxHeight = s * 0.25;
 
         const rectX = topLeft.x + s * 0.03;
@@ -280,26 +223,5 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
         ctx.stroke();
 
         ctx.restore();
-    }
-
-    // helper function
-    getForbiddenSums(rule) {
-        if (!rule?.fields) return [];
-
-        const sumsInput = rule.fields.sums;
-
-        if (sumsInput == null) return [];
-        if (sumsInput.trim() === '') return [];
-
-        return sumsInput
-            .split(',')
-            .map(part => {
-                const trimmed = part.trim();
-                return trimmed === '' ? NaN : Number(trimmed);
-            })
-            .filter(num => {
-                return !isNaN(num) && Number.isInteger(num);
-            })
-            .slice(0, 18); // take only the first 18 numbers
     }
 }

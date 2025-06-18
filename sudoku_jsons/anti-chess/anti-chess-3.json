@@ -92,7 +92,7 @@
                         "enabled": true,
                         "region": null,
                         "NumberCanRepeat": true,
-                        "sums": ""
+                        "sums": []
                     }
                 },
                 {

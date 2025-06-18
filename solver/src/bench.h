@@ -147,7 +147,7 @@ void bench(const char *directory_path, int max_solutions, int max_nodes, bool so
     // Total guesses row
     std::cout << "| " << std::setw(26) << std::left << "Total guesses:";
     std::cout << std::setw(12) << std::right << total_guesses << " |\n";
-    
+
     // Total time row
     std::cout << "| " << std::setw(26) << std::left << "Total time (ms):";
     std::stringstream time_ss;

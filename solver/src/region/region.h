@@ -303,7 +303,7 @@ private:
     // Dispatch for different attached_cells() signatures
     static std::vector<CellIdx> call_attached_cells(const CellIdx &idx, int) { return idx.attached_cells(); }
     static std::vector<CellIdx> call_attached_cells(const EdgeIdx &idx, int) { return idx.attached_cells(); }
-    static std::vector<CellIdx> call_attached_cells(const CornerIdx &idx, int) { return idx.attached_cells(); }
+    static std::vector<CellIdx> call_attached_cells(const CornerIdx &idx, int n) { return idx.attached_cells(n); }
     static std::vector<CellIdx> call_attached_cells(const RCIdx &idx, int n) { return idx.attached_cells(n); }
     static std::vector<CellIdx> call_attached_cells(const DiagonalIdx &idx, int n) { return idx.attached_cells(n); }
     static std::vector<CellIdx> call_attached_cells(const ORCIdx &idx, int n) { return idx.attached_cells(n); }

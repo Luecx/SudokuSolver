@@ -296,7 +296,11 @@
                             ]
                         },
                         "NumberCanRepeat": true,
-                        "sums": "5, 10, 15"
+                        "sums": [
+                            5,
+                            10,
+                            15
+                        ]
                     }
                 }
             ]

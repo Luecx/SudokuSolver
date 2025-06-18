@@ -30,13 +30,11 @@ private:
     };
 
     // hyperparameters
-    const float REGION_EXIST_CHANCE = 0.30;
-    const int REGION_SIZE_MIN = 3;
-    const int REGION_SIZE_MAX_FACTOR = 4; // region max size = board_size^2 / this
-    const int REGION_SIZE_ABS_MAX = 18;
-    const float BOTH_REGIONS_ENABLED_CHANCE = 0.75;
-    const int FORBIDDEN_SUMS_MIN = 0;
-    const int FORBIDDEN_SUMS_MAX = 5;
+    const double REGION_EXIST_CHANCE = 0.30;
+    const double BOTH_REGIONS_ENABLED_CHANCE = 0.75;
+
+    const int REGION_SIZE_MIN = 8;
+    const int REGION_SIZE_MAX = 16;
 
     // standard parameters
     AntiChessPair m_pair[2];

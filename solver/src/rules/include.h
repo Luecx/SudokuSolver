@@ -16,6 +16,7 @@
 #include "rule_numbered_rooms.h"
 #include "rule_palindrome.h"
 #include "rule_parity.h"
+#include "rule_quadruple.h"
 #include "rule_renban.h"
 #include "rule_sandwich.h"
 #include "rule_standard.h"
@@ -23,4 +24,3 @@
 #include "rule_whisper.h"
 #include "rule_wild_apples.h"
 #include "rule_xv.h"
-#include "rule_quadruple.h"

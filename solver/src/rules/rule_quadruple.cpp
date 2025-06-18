@@ -78,13 +78,17 @@ void RuleQuadruple::from_json(JSON &json) {
             continue;
 
         Region<CornerIdx> region = Region<CornerIdx>::from_json(rule["fields"]["region"]);
-        std::string values = rule["fields"]["values"].get<std::string>();
 
         if (region.size() > 0) {
-            std::vector<int> values_vec = rule_utils::parseValues(values, board_->size());
             NumberSet values_set(board_->size());
-            for (int value: values_vec)
-                values_set.add(value);
+
+            if (rule["fields"].get<JSON::object>().count("values") && rule["fields"]["values"].is_array()) {
+                for (const auto &value: rule["fields"]["values"].get<JSON::array>()) {
+                    if (value.is_number())
+                        values_set.add(value.get<double>());
+                }
+            }
+
             m_pairs.push_back({region, values_set});
         }
     }
@@ -97,19 +101,15 @@ JSON RuleQuadruple::to_json() const {
 
     JSON::array rules;
     for (const auto &pair: m_pairs) {
-        JSON::object fields;
+        JSON::object fields = JSON::object{};
         fields["region"] = pair.region.to_json();
 
-        std::string values_str;
-        int i = 0;
-        for (const auto n: pair.values) {
-            if (i++ > 0)
-                values_str += ",";
-            values_str += std::to_string(n);
-        }
-        fields["values"] = values_str;
+        JSON::array values_array = JSON::array{};
+        for (const auto n: pair.values)
+            values_array.push_back(static_cast<double>(n));
+        fields["values"] = values_array;
 
-        JSON::object rule;
+        JSON::object rule = JSON::object{};
         rule["fields"] = fields;
 
         rules.push_back(rule);
@@ -139,7 +139,7 @@ void RuleQuadruple::init_randomly() {
         Region<CornerIdx> region;
         region.add(corner);
 
-        std::uniform_int_distribution<int> value_size_dist(1, corner.attached_cells().size());
+        std::uniform_int_distribution<int> value_size_dist(1, corner.attached_cells(board_size).size());
         const int value_size = value_size_dist(gen);
 
         NumberSet values(board_size);

@@ -27,8 +27,8 @@ private:
     };
 
     // hyperparameters
-    const int MIN_PAIRS = 1;
-    const int MAX_PAIRS = 3;
+    const int MIN_PAIRS = 2;
+    const int MAX_PAIRS = 5;
 
     // standard parameter
     std::vector<QuadruplePair> m_pairs;

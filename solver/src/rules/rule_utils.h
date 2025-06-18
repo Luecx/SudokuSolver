@@ -31,11 +31,6 @@ bool is_group_valid(const std::vector<Cell *> &unit);
 bool hidden_singles(Board *board_, std::vector<Cell *> &unit);
 
 /**
- * @brief Get comma-separated values from a string input.
- */
-std::vector<int> parseValues(const std::string input, int board_size);
-
-/**
  * @brief Computes the minimum and maximum possible values for a cell in a sum constraint.
  */
 std::pair<int, int> getSoftBounds(int N, int sum, int minC, int maxC, int size, bool number_can_repeat_ = true);
