@@ -17,6 +17,8 @@ from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
+from django.urls import reverse
+
 # Added for modal_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login
@@ -41,7 +43,6 @@ def index(request):
         'user_stats': user_stats,
     })
 
-
 @csrf_protect
 def modal_login(request):
     form = AuthenticationForm(request, data=request.POST or None)
@@ -50,7 +51,10 @@ def modal_login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            return JsonResponse({"success": True})
+
+            # Always reload the current page
+            redirect_url = request.POST.get("current_url") or request.META.get("HTTP_REFERER") or reverse("index")
+            return JsonResponse({"success": True, "redirect_url": redirect_url})
 
         errors = {
             field: [{"message": str(e)} for e in error_list]
@@ -61,12 +65,13 @@ def modal_login(request):
         else:
             return render(request, "sudoku/login/login_modal.html", {"login_form": form})
 
-    # GET request
+    # GET (modal load)
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         html = render_to_string("sudoku/login/login_modal.html", {"login_form": form}, request=request)
         return JsonResponse({"success": True, "html": html})
 
     return render(request, "sudoku/login/login_modal.html", {"login_form": form})
+
 
 def game(request):
     return render(request, "sudoku/game/game.html")
