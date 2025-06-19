@@ -21,6 +21,7 @@
 .badge-Sandwich {
     background-color: #ffc107; /* yellow */
     color: black;
+    border: 1px solid #a07f00;
 }
 
 .badge-Arrow {
@@ -36,11 +37,13 @@
 .badge-Palindrome {
     background-color: #fd7e14; /* orange */
     color: black;
+    border: 1px solid #bb4e00;
 }
 
 .badge-Thermo {
-    background-color: #e83e8c; /* pink */
-    color: white;
+    background: linear-gradient(to right, #dc3545, #ffc107); /* red to yellow */
+    color: black;
+    border: 1px solid #661010;
 }
 
 .badge-Renban {
@@ -70,22 +73,36 @@
 }
 
 .badge-Magic-Square {
-    background-color: #1982c4; /* deep blue */
+    background: repeating-linear-gradient(
+            45deg,
+            #1982c4,
+            #1982c4 10px,
+            #145ea8 10px,
+            #145ea8 20px
+    );
     color: white;
 }
 
 .badge-Clone {
     background-color: #a996ba; /* blue violet */
     color: white;
+    border: 2px dashed white;
 }
 
 .badge-Extra-Regions {
     background-color: #8e44ad; /* amethyst purple */
     color: white;
+    box-shadow: inset 0 0 0 2px white;
 }
 
 .badge-Irregular-Regions {
-    background-color: #3498db; /* bright blue */
+    background: repeating-linear-gradient(
+            135deg,
+            #3498db,
+            #3498db 10px,
+            #2980b9 10px,
+            #2980b9 20px
+    );
     color: white;
 }
 
@@ -100,8 +117,9 @@
 }
 
 .badge-Dutch-Flat {
-    background-color: #34495e; /* wet asphalt */
-    color: white;
+    background: linear-gradient(to bottom, #ae1c28 33%, #ffffff 33% 66%, #21468b 66%);
+    color: black;
+    border: 1px solid #000;
 }
 
 .badge-Wild-Apples {
@@ -117,4 +135,5 @@
 .badge-Quadruple {
     background-color: #ff6b6b; /* coral red */
     color: white;
+    border: 1px solid #aa3b3b;
 }
