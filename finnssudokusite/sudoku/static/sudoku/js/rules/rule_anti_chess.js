@@ -68,7 +68,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
             }
             seen.add(d);
         }
-        
+
         return warnings;
     }
 
@@ -104,8 +104,8 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
                 const region = rule.fields?.region;
                 const regionSet = region?.items?.length > 0;
                 const allowRepeats = rule.fields?.NumberCanRepeat !== false;
-                const sums = rule.fields?.sums?.trim();
-                const hasForbiddenSums = sums && sums.length > 0;
+                const sums = rule.fields?.sums;
+                const hasForbiddenSums = Array.isArray(sums) && sums.length > 0;
 
                 const piece = label === "Anti-Knight"
                     ? gettext("knight's move")
@@ -123,7 +123,7 @@ export class AntiChessRuleHandler extends RuleTypeHandler {
                     const extras = [];
 
                     if (hasForbiddenSums)
-                        extras.push(gettext("must not sum to %(sums)s").replace("%(sums)s", sums));
+                        extras.push(gettext("must not sum to %(sums)s").replace("%(sums)s", sums.join(", ")));
 
                     if (!allowRepeats)
                         extras.push(gettext("must be distinct"));
