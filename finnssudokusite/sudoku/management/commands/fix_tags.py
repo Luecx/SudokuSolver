@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from yourapp.models import Tag
-
+from sudoku.models import Tag, Sudoku  # ✅ Update this if your app name differs
 
 class Command(BaseCommand):
     help = "Merge tag variants into a canonical tag name"
@@ -24,26 +23,33 @@ class Command(BaseCommand):
         canonical_name = options['canonical']
         aliases = options['aliases']
 
-        try:
-            canonical_tag = Tag.objects.get(name=canonical_name)
-            self.stdout.write(self.style.SUCCESS(f"✅ Found canonical tag: {canonical_tag.name}"))
-        except Tag.DoesNotExist:
-            canonical_tag = Tag.objects.create(name=canonical_name)
+        # Ensure the canonical tag exists
+        canonical_tag, created = Tag.objects.get_or_create(name=canonical_name)
+        if created:
             self.stdout.write(self.style.WARNING(f"🆕 Created new canonical tag: {canonical_name}"))
+        else:
+            self.stdout.write(self.style.SUCCESS(f"✅ Found canonical tag: {canonical_tag.name}"))
+
+        merged_count = 0
 
         for alias in aliases:
             if alias == canonical_name:
                 continue
+
             try:
                 alias_tag = Tag.objects.get(name=alias)
             except Tag.DoesNotExist:
                 self.stdout.write(self.style.WARNING(f"⚠️ Alias tag '{alias}' not found. Skipping."))
                 continue
 
+            # Reassign all sudokus
             sudokus = alias_tag.sudokus.all()
             for sudoku in sudokus:
-                sudoku.tags.add(canonical_tag)
-            alias_tag.delete()
-            self.stdout.write(self.style.SUCCESS(f"🔁 Merged '{alias}' into '{canonical_name}'"))
+                if not sudoku.tags.filter(id=canonical_tag.id).exists():
+                    sudoku.tags.add(canonical_tag)
+            merged_count += sudokus.count()
 
-        self.stdout.write(self.style.SUCCESS("🎉 Tag fix complete."))
+            alias_tag.delete()
+            self.stdout.write(self.style.SUCCESS(f"🔁 Merged '{alias}' into '{canonical_name}' and deleted alias."))
+
+        self.stdout.write(self.style.SUCCESS(f"\n🎉 Tag merge complete. Updated {merged_count} tag assignments."))
