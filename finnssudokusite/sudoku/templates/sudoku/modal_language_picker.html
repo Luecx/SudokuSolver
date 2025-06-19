@@ -3,6 +3,12 @@
 {% load static %}
 {% load widget_tweaks %}
 
+
+<script>
+	const currentLang = "{{ LANGUAGE_CODE|default:'en' }}";
+	localStorage.setItem("preferredLanguage", currentLang);
+</script>
+
 <style>
 	.modal-language-picker-list {
 		display: grid;
@@ -243,4 +249,11 @@
 	});
 
 
+</script>
+
+<script>
+	const currentLangSpan = document.getElementById('currentLang');
+	if (currentLangSpan && languages[currentLang]) {
+		currentLangSpan.textContent = languages[currentLang].n;
+	}
 </script>

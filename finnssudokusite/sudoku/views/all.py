@@ -1,5 +1,3 @@
-# sudoku/views/all.py
-
 import json
 import zlib
 from django.shortcuts import render, redirect, get_object_or_404
@@ -46,26 +44,29 @@ def index(request):
 
 @csrf_protect
 def modal_login(request):
+    form = AuthenticationForm(request, data=request.POST or None)
+
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
             return JsonResponse({"success": True})
-        else:
-            errors = {
-                field: [{"message": str(e)} for e in error_list]
-                for field, error_list in form.errors.items()
-            }
-            return JsonResponse({"success": False, "errors": errors}, status=400)
-    else:
-        form = AuthenticationForm()
+
+        errors = {
+            field: [{"message": str(e)} for e in error_list]
+            for field, error_list in form.errors.items()
+        }
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"success": False, "errors": errors}, status=400)
+        else:
             return render(request, "sudoku/login/login_modal.html", {"login_form": form})
-        return JsonResponse({
-            "success": False,
-            "html": render_to_string("sudoku/login/login_modal.html", {"login_form": form}, request=request)
-        }, status=400)
+
+    # GET request
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        html = render_to_string("sudoku/login/login_modal.html", {"login_form": form}, request=request)
+        return JsonResponse({"success": True, "html": html})
+
+    return render(request, "sudoku/login/login_modal.html", {"login_form": form})
 
 def game(request):
     return render(request, "sudoku/game/game.html")
@@ -211,12 +212,13 @@ def help(request):
 @csrf_protect
 def modal_password_reset(request):
     form = PasswordResetForm(request.POST or None)
+
     if request.method == 'POST':
         if form.is_valid():
             form.save(
                 request=request,
                 use_https=request.is_secure(),
-                from_email='noreply@sudoku.com',
+                from_email='noreply@sudokusphere.com',
                 email_template_name='sudoku/password/password_reset_email.html',
                 subject_template_name='sudoku/password/password_reset_subject.txt',
             )
@@ -224,34 +226,43 @@ def modal_password_reset(request):
                 return JsonResponse({"success": True})
             return render(request, 'sudoku/password/password_reset_done.html')
         else:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({
-                    "success": False,
-                    "html": render_to_string('sudoku/password/password_reset_modal.html', {'form': form}, request=request)
-                }, status=400)
-    else:
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return render(request, 'sudoku/password/password_reset_modal.html', {'form': form})
-        return JsonResponse({
-            "success": False,
-            "html": render_to_string('sudoku/password/password_reset_modal.html', {'form': form}, request=request)
-        }, status=400)
+            html = render_to_string('sudoku/password/password_reset_form.html', {'form': form}, request=request)
+            return JsonResponse({"success": False, "html": html}, status=400)
+
+    html = render_to_string('sudoku/password/password_reset_form.html', {'form': form}, request=request)
+    return JsonResponse({"success": True, "html": html})
 
 @csrf_protect
 def modal_register(request):
+    form = UserRegisterForm(request.POST or None)
+
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
         if form.is_valid():
-            # Registrierung, Mail senden ...
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+
+            current_site = get_current_site(request)
+            subject = 'Activate your Sudoku account'
+            message = render_to_string('sudoku/login/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+            send_mail(subject, message, 'noreply@sudokusphere.com', [user.email])
+
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({"success": True})
             return render(request, 'sudoku/login/activation_sent.html')
         else:
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                html = render_to_string('sudoku/login/register_modal.html', {'form': form}, request=request)
+                html = render_to_string("sudoku/login/register_form.html", {"form": form}, request=request)
                 return JsonResponse({"success": False, "html": html}, status=400)
-            return render(request, 'sudoku/login/register_modal.html', {'form': form})
-    else:
-        form = UserRegisterForm()
-    return render(request, 'sudoku/login/register_modal.html', {'form': form})
 
+    # GET request or fallback
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string("sudoku/login/register_form.html", {"form": form}, request=request)
+        return JsonResponse({"success": True, "html": html})
+
+    return render(request, "sudoku/login/register_modal.html", {"form": form})
