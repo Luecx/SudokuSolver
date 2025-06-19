@@ -50,10 +50,11 @@ def kontaktformular_view(request):
 
         text_content = _(
             "Hello %(name)s,\n\n"
-            "Thank you for your message to SudokuSphere.\n"
-            "We will get back to you as soon as possible.\n\n"
-            "Best regards,\n"
-            "Finn and the SudokuSphere Team"
+            "Thank you so much for reaching out to SudokuSphere!\n"
+            "We truly appreciate your message and will get back to you as soon as possible.\n\n"
+            "Warm regards,\n"
+            "Finn and the SudokuSphere Team\n\n\n"
+            "This is an automated email—please do not reply directly to this message. If you have further questions, feel free to contact us through our website."
         ) % {'name': name}
 
         html_content = _(
@@ -75,11 +76,14 @@ def kontaktformular_view(request):
                 <p>SUDOKUSPHERE.COM</p>
                 <p style="text-align: left; margin-top: 6vh;">
                     Hello %(name)s,<br><br>
-                    Thank you for your message to SudokuSphere.<br>
-                    We will get back to you as soon as possible.<br><br>
-                    Best regards,<br>
+                    Thank you so much for reaching out to SudokuSphere!<br>
+                    We truly appreciate your message and will get back to you as soon as possible.<br><br>
+                    Warm regards,<br>
                     Finn and the SudokuSphere Team
                 </p>
+                <small style="color:#666666">
+                    This is an automated email—please do not reply directly to this message. If you have further questions, feel free to contact us through our website.
+                </small>
             </div>
             <p style="padding:5rem"></p>
             """
