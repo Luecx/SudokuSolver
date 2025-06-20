@@ -18,6 +18,27 @@ void solve(const char *json, int max_solutions, int max_nodes);
 void solveComplete(const char *json, int unused, int max_nodes);
 }
 
+bool use_smart_mode = false;
+
+std::unordered_map<std::string, std::string> parse_named_args(int argc, char *argv[], int start_idx) {
+    std::unordered_map<std::string, std::string> options;
+    for (int i = start_idx; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg.rfind("--", 0) == 0) {
+            auto eq = arg.find('=');
+            if (eq != std::string::npos) {
+                std::string key = arg.substr(2, eq - 2);
+                std::string val = arg.substr(eq + 1);
+                options[key] = val;
+            } else {
+                options[arg.substr(2)] = "1"; // treat --flag as --flag=1
+            }
+        }
+    }
+    return options;
+}
+
+
 void print_help() {
     std::cout << "Usage:\n"
               << "  ./solver solve <json_path> <solution_limit> <node_limit>\n"
@@ -35,7 +56,7 @@ int main(int argc, char *argv[]) {
     std::string command = argv[1];
 
     if (command == "solve") {
-        if (argc != 5) {
+        if (argc < 5) {
             std::cerr << "Error: 'solve' requires <json_path> <solution_limit> <node_limit>\n";
             print_help();
             return 1;
@@ -43,7 +64,10 @@ int main(int argc, char *argv[]) {
 
         const char *json_path = argv[2];
         int max_solutions = std::atoi(argv[3]);
-        int max_nodes = std::atoi(argv[4]);
+        int max_nodes     = std::atoi(argv[4]);
+
+        auto options   = parse_named_args(argc, argv, 5);
+        use_smart_mode = options["smart"] == "1";
 
         std::ifstream in(json_path);
         if (!in) {
@@ -52,9 +76,15 @@ int main(int argc, char *argv[]) {
         }
 
         std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+        if (use_smart_mode) {
+            std::cout << "[INFO]Smart mode enabled.\n";
+        }
+
         solve(json.c_str(), max_solutions, max_nodes);
         return 0;
     }
+
 
     if (command == "complete") {
         if (argc != 4) {
@@ -122,6 +152,7 @@ void solve(const char *json, int max_solutions, int max_nodes) {
         auto root = JSON::parse(json);
         Board board{9};
         board.from_json(root);
+        board.use_smart_hints(use_smart_mode);
 
         SolverStats stats;
         auto solutions = board.solve(max_solutions, max_nodes, &stats);

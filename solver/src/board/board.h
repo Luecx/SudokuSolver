@@ -180,6 +180,12 @@ public:
      */
     void clear();
 
+    /**
+     * Enable or disable smart hints.
+     * @param enabled
+     */
+    void use_smart_hints(bool enabled) { use_smart_hints_ = enabled; }
+
     std::vector<Solution> solve(int max_solutions = 1, int max_nodes = 1024, SolverStats *stats_out = nullptr);
     CellIdx get_next_cell() const;
     std::vector<Number> get_random_candidates(const CellIdx &idx) const;
@@ -208,6 +214,9 @@ private:
 
 
     ImpactMap impact_map_; ///< Per-cell heuristic values computed by rule handlers
+
+    // smart hints enabled
+    bool use_smart_hints_ = false;
 
     void initialize_accessors();
     void initialize_blocks();
