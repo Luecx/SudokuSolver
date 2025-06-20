@@ -184,7 +184,13 @@ public:
      * Enable or disable smart hints.
      * @param enabled
      */
-    void use_smart_hints(bool enabled) { use_smart_hints_ = enabled; }
+    void set_smart_hints(bool enabled) { use_smart_hints_ = enabled; }
+
+    /**
+     * Returns whether smart hints are enabled.
+     * @return
+     */
+    bool use_smart_hints() const { return use_smart_hints_; }
 
     std::vector<Solution> solve(int max_solutions = 1, int max_nodes = 1024, SolverStats *stats_out = nullptr);
     CellIdx get_next_cell() const;

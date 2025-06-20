@@ -16,7 +16,7 @@ EMFLAGS := \
 	-s EXPORT_ES6=1 \
 	-s MODULARIZE=1 \
 	-s EXPORT_NAME=SolverEngine \
-	-s EXPORTED_FUNCTIONS="['_solve','_solveComplete']" \
+	-s EXPORTED_FUNCTIONS="['_run']" \
 	-s EXPORTED_RUNTIME_METHODS="['ccall']" \
   	--pre-js pre.js \
 	--no-entry

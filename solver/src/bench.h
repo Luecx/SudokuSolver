@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+
 #include "board/board.h"
 #include "json/json.h"
 
@@ -28,7 +29,7 @@ void print_header(const std::string &title) {
  * @param max_nodes Max decision nodes to explore per puzzle
  * @param solve_complete If true, does a complete solve
  */
-void bench(const char *directory_path, int max_solutions, int max_nodes, bool solve_complete) {
+void bench(const std::string &directory_path, int max_solutions, int max_nodes, bool solve_complete) {
     print_header("BENCHMARK STARTING");
 
     std::vector<std::string> json_files;

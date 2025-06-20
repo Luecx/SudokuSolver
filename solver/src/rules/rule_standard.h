@@ -26,6 +26,10 @@ public:
     }
 
     void init_randomly() override {}
+
+private:
+
+    bool apply_pointing();
 };
 
 } // namespace sudoku

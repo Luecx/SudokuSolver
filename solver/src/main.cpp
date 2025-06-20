@@ -1,223 +1,166 @@
 #include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
 
-#include <chrono>
-#include <cstdlib> // for std::atoi
-#include <functional>
-#include <random>
-#include <unordered_set>
-
+#include "argparser/arg_parser.h"
 #include "bench.h"
 #include "board/board.h"
 #include "json/json.h"
 #include "solver_stats.h"
-
 #include "datagen.h"
 
-extern "C" {
-void solve(const char *json, int max_solutions, int max_nodes);
-void solveComplete(const char *json, int unused, int max_nodes);
-}
+// ---- Core solve logic ----
 
-bool use_smart_mode = false;
-
-std::unordered_map<std::string, std::string> parse_named_args(int argc, char *argv[], int start_idx) {
-    std::unordered_map<std::string, std::string> options;
-    for (int i = start_idx; i < argc; ++i) {
-        std::string arg = argv[i];
-        if (arg.rfind("--", 0) == 0) {
-            auto eq = arg.find('=');
-            if (eq != std::string::npos) {
-                std::string key = arg.substr(2, eq - 2);
-                std::string val = arg.substr(eq + 1);
-                options[key] = val;
-            } else {
-                options[arg.substr(2)] = "1"; // treat --flag as --flag=1
-            }
-        }
-    }
-    return options;
-}
-
-
-void print_help() {
-    std::cout << "Usage:\n"
-              << "  ./solver solve <json_path> <solution_limit> <node_limit>\n"
-              << "  ./solver complete <json_path> <node_limit>\n"
-              << "  ./solver bench <json_path>\n";
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        std::cerr << "Error: No command provided.\n";
-        print_help();
-        return 1;
-    }
-
-    std::string command = argv[1];
-
-    if (command == "solve") {
-        if (argc < 5) {
-            std::cerr << "Error: 'solve' requires <json_path> <solution_limit> <node_limit>\n";
-            print_help();
-            return 1;
-        }
-
-        const char *json_path = argv[2];
-        int max_solutions = std::atoi(argv[3]);
-        int max_nodes     = std::atoi(argv[4]);
-
-        auto options   = parse_named_args(argc, argv, 5);
-        use_smart_mode = options["smart"] == "1";
-
-        std::ifstream in(json_path);
-        if (!in) {
-            std::cerr << "Error: Cannot open file '" << json_path << "'\n";
-            return 1;
-        }
-
-        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-
-        if (use_smart_mode) {
-            std::cout << "[INFO]Smart mode enabled.\n";
-        }
-
-        solve(json.c_str(), max_solutions, max_nodes);
-        return 0;
-    }
-
-
-    if (command == "complete") {
-        if (argc != 4) {
-            std::cerr << "Error: 'complete' requires <json_path> <node_limit>\n";
-            print_help();
-            return 1;
-        }
-
-        const char *json_path = argv[2];
-        int max_nodes = std::atoi(argv[3]);
-
-        std::ifstream in(json_path);
-        if (!in) {
-            std::cerr << "Error: Cannot open file '" << json_path << "'\n";
-            return 1;
-        }
-
-        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-        solveComplete(json.c_str(), 0, max_nodes);
-        return 0;
-    }
-
-    if (command == "bench") {
-        if (argc != 3) {
-            std::cerr << "Error: 'bench' requires <json_path>\n";
-            print_help();
-            return 1;
-        }
-
-        bench::bench(argv[2], 17, 128000, false);
-        return 0;
-    } else if (command == "datagen") {
-        if (argc != 3) {
-            std::cerr << "Error: 'datagen' requires <output_path>\n";
-            print_help();
-            return 1;
-        }
-
-        const int puzzle_count = 3;
-        for (int i = 0; i < puzzle_count; i++) {
-            std::cout << "Generating puzzle " << (i + 1) << "/" << puzzle_count << "...\n";
-            datagen::generate_random_puzzle(argv[2], 17, 128000);
-        }
-
-        return 0;
-    }
-
-    std::cerr << "Error: Unknown command '" << command << "'\n";
-    print_help();
-    return 1;
-}
-
-extern "C" {
-
-/**
- * @brief Solve with configurable limits and output summary.
- *        Prints "STARTING" at start and "FINISHED" at end.
- * @param json Input puzzle JSON as string.
- * @param max_solutions How many solutions to find (-1 for unlimited).
- * @param max_nodes Max decision nodes to explore (-1 for unlimited).
- */
-void solve(const char *json, int max_solutions, int max_nodes) {
+void solve(const std::string& json, int max_solutions, int max_nodes, bool smart_mode) {
     std::cout << "STARTING\n";
     try {
         auto root = JSON::parse(json);
         Board board{9};
         board.from_json(root);
-        board.use_smart_hints(use_smart_mode);
+        board.set_smart_hints(smart_mode);
 
         SolverStats stats;
         auto solutions = board.solve(max_solutions, max_nodes, &stats);
 
-        for (auto &sol: solutions) {
-            std::cout << "[SOLUTION]" << sol << std::endl;
-        }
+        for (auto& sol : solutions)
+            std::cout << "[SOLUTION]" << sol << "\n";
 
         std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
         std::cout << "[INFO]nodes_explored=" << stats.nodes_explored << "\n";
         std::cout << "[INFO]guesses_made=" << stats.guesses_made << "\n";
         std::cout << "[INFO]time_taken_ms=" << std::fixed << std::setprecision(3) << stats.time_taken_ms << "\n";
         std::cout << "[INFO]interrupted_by_node_limit=" << (stats.interrupted_by_node_limit ? "true" : "false") << "\n";
-        std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false")
-                  << "\n";
-    } catch (const std::exception &e) {
+        std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false") << "\n";
+    } catch (const std::exception& e) {
         std::cout << "[INFO]error=" << e.what() << "\n";
     }
     std::cout << "[DONE]\n";
 }
 
-
-/**
- * @brief Solve using complete method with progress logging.
- *        Prints "STARTING" at start, regular progress updates, and "DONE" at end.
- * @param json Input puzzle JSON as string.
- * @param unused Not used; kept for signature consistency.
- * @param max_nodes Max decision nodes to explore (-1 for unlimited).
- */
-void solveComplete(const char *json, int /*unused*/, int max_nodes) {
+void solve_complete(const std::string& json, int max_nodes, bool smart_mode) {
     std::cout << "STARTING\n";
     try {
         auto root = JSON::parse(json);
         Board board{9};
         board.from_json(root);
+        board.set_smart_hints(smart_mode);
 
         SolverStats stats;
+        float last_progress = -1.0f;
 
-        float last_progress_reported = -1.0f;
-
-        auto solutions = board.solve_complete(
-                &stats, max_nodes,
-                [&](float progress) {
-                    float rounded = std::floor(progress * 100.0f) / 100.0f;
-                    if (rounded > last_progress_reported) {
-                        last_progress_reported = rounded;
-                        std::cout << "[PROGRESS]" << std::fixed << std::setprecision(2) << rounded << "\n";
-                    }
-                },
-                [&](Solution &sol) {
-                    std::cout << "[SOLUTION]" << sol << std::endl;
-                    ;
-                });
+        board.solve_complete(&stats, max_nodes,
+                             [&](float progress) {
+                                 float rounded = std::floor(progress * 100.0f) / 100.0f;
+                                 if (rounded > last_progress) {
+                                     last_progress = rounded;
+                                     std::cout << "[PROGRESS]" << std::fixed << std::setprecision(2) << rounded << "\n";
+                                 }
+                             },
+                             [&](Solution& sol) {
+                                 std::cout << "[SOLUTION]" << sol << "\n";
+                             });
 
         std::cout << "[INFO]solutions_found=" << stats.solutions_found << "\n";
         std::cout << "[INFO]nodes_explored=" << stats.nodes_explored << "\n";
         std::cout << "[INFO]time_taken_ms=" << std::fixed << std::setprecision(3) << stats.time_taken_ms << "\n";
         std::cout << "[INFO]interrupted_by_node_limit=" << (stats.interrupted_by_node_limit ? "true" : "false") << "\n";
-        std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false")
-                  << "\n";
-    } catch (const std::exception &e) {
+        std::cout << "[INFO]interrupted_by_solution_limit=" << (stats.interrupted_by_solution_limit ? "true" : "false") << "\n";
+    } catch (const std::exception& e) {
         std::cout << "[INFO]error=" << e.what() << "\n";
     }
     std::cout << "[DONE]\n";
 }
 
+// ---- Setup and execution ----
 
-} // extern "C"
+int run_internal(const std::string& commandline) {
+    ArgParser parser;
+
+    auto& opt_json      = parser.add_option("json", "Input JSON file");
+    auto& opt_sol_limit = parser.add_option("sol_limit", "Max number of solutions");
+    auto& opt_node_lim  = parser.add_option("node_limit", "Max number of nodes");
+    auto& opt_smart     = parser.add_option("smart", "Enable smart solving");
+    auto& opt_out       = parser.add_option("out", "Output path");
+
+    auto& solve_cmd = parser.add_command("solve", [&](ArgParser& p) {
+        std::ifstream in(p.require<std::string>("json"));
+        if (!in) throw std::runtime_error("Cannot open JSON file.");
+        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+        solve(json,
+              p.require<int>("sol_limit"),
+              p.require<int>("node_limit"),
+              p.get<bool>("smart", false));
+    });
+    parser.add_required(solve_cmd, opt_json);
+    parser.add_required(solve_cmd, opt_sol_limit);
+    parser.add_required(solve_cmd, opt_node_lim);
+    parser.add_optional(solve_cmd, opt_smart);
+
+    auto& complete_cmd = parser.add_command("complete", [&](ArgParser& p) {
+        std::ifstream in(p.require<std::string>("json"));
+        if (!in) throw std::runtime_error("Cannot open JSON file.");
+        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+        solve_complete(json,
+                       p.require<int>("node_limit"),
+                       p.get<bool>("smart", false));
+    });
+    parser.add_required(complete_cmd, opt_json);
+    parser.add_required(complete_cmd, opt_node_lim);
+    parser.add_optional(complete_cmd, opt_smart);
+
+    auto& bench_cmd = parser.add_command("bench", [&](ArgParser& p) {
+        bench::bench(p.require<std::string>("json"), 17, 128000, p.get<bool>("smart", false));
+    });
+    parser.add_required(bench_cmd, opt_json);
+    parser.add_optional(bench_cmd, opt_smart);
+
+    auto& datagen_cmd = parser.add_command("datagen", [&](ArgParser& p) {
+        std::string out = p.require<std::string>("out");
+        for (int i = 0; i < 3; ++i) {
+            std::cout << "Generating puzzle " << (i + 1) << "/3...\n";
+            datagen::generate_random_puzzle(out, 17, 128000);
+        }
+    });
+    parser.add_required(datagen_cmd, opt_out);
+
+    try {
+        parser.parse(commandline);
+        parser.run();
+        return 0;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        parser.print_help("solver");
+        return 1;
+    }
+}
+
+// ---- C/WASM entrypoint ----
+
+extern "C" int run(const char* commandline) {
+    try {
+        return run_internal(std::string(commandline));
+    } catch (...) {
+        return 1;
+    }
+}
+
+// ---- CLI main() entry ----
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Error: No command provided.\n";
+        return run_internal("");
+    }
+
+    std::ostringstream oss;
+    for (int i = 1; i < argc; ++i) {
+        oss << argv[i] << " ";
+    }
+
+    return run_internal(oss.str());
+}
