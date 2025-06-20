@@ -10,9 +10,11 @@
 				<h3 class="card-title text-center mb-4">Login</h3>
 				<form id="loginForm" method="post" action="{% url 'modal_login' %}" novalidate data-ajax="true">
 				{% csrf_token %}
-					{% for error in login_form.non_field_errors %}
-					<div class="alert alert-danger py-1 mb-1">{{ error }}</div>
-					{% endfor %}
+					<div id="loginErrors" class="alert alert-danger py-1 mb-1 d-none">
+						{% for error in login_form.non_field_errors %}
+							{{ error }}
+						{% endfor %}
+					</div>
 					
 					{% for field in login_form %}
 					<div class="mb-2">
