@@ -1,21 +1,7 @@
 (() => {
     let isReady = false;
-    let pending = null;       // holds one [cmd, puzzle, opt1, opt2] tuple
+    let pending = null;
     const listeners = new Set();
-
-    // Internal dispatcher: only "solve" or "solveComplete" allowed
-    const dispatch = ([cmd, puzzle, opt1, opt2]) => {
-        if (cmd !== "solve" && cmd !== "solveComplete") {
-            console.warn(`Unknown solver command: ${cmd}`);
-            return;
-        }
-        Module.ccall(
-            cmd,             // name of C function
-            "number",        // return type
-            ["string", "number", "number"], // arg types
-            [puzzle, opt1, opt2]
-        );
-    };
 
     // Expose add/remove listener APIs
     Module.addMessageListener = fn => listeners.add(fn);
@@ -26,21 +12,29 @@
         for (const fn of listeners) fn(text);
     };
 
-    // Your page calls this once per worker:
-    Module.postMessage = (...args) => {
+    // Your page calls this to send a command (e.g., "solve --json=... --sol_limit=1 ...")
+    Module.postMessage = (commandLine) => {
+        if (typeof commandLine !== "string") {
+            console.warn(`Invalid command type: expected string, got ${typeof commandLine}`);
+            return;
+        }
         if (!isReady) {
-            // buffer the very first command
-            pending = args;
+            pending = commandLine;
         } else {
-            dispatch(args);
+            Module.ccall(
+                "run",           // C function name
+                "number",        // return type
+                ["string"],      // argument types
+                [commandLine]    // argument values
+            );
         }
     };
 
-    // When WASM is up, run the one pending command (if any)
+    // Called automatically by Emscripten when WASM is loaded
     Module.postRun = () => {
         isReady = true;
         if (pending) {
-            dispatch(pending);
+            Module.postMessage(pending);
             pending = null;
         }
     };

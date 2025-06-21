@@ -189,9 +189,10 @@ export class CreatorAnalysis {
         this.lastCommand = "solve";
         this.preSolveNumbers = this.board.getFixedNumbers();
 
-        const json = this.board.saveBoard();
-        console.log(json);
-        this.worker.postMessage(["solve", json, 32, this.normalDepth]);
+        const json = this.board.saveBoard();  // raw JSON string
+        const cmd = `solve --json ${json} --sol_limit 32 --node_limit ${this.normalDepth}`;
+
+        this.worker.postMessage([cmd]);
     }
 
     runCompleteAnalysis() {
@@ -215,7 +216,8 @@ export class CreatorAnalysis {
         this.preSolveNumbers = this.board.getFixedNumbers();
 
         const json = this.board.saveBoard();
-        this.worker.postMessage(["solveComplete", json, 0, this.completeDepth]);
+        const cmd = `complete --json ${json} --node_limit ${this.completeDepth}`;
+        this.worker.postMessage([cmd]);
     }
 
     finishSolverRun() {

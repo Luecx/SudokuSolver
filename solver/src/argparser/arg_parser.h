@@ -59,22 +59,24 @@ public:
         if (!commands.count(active_command))
             throw std::runtime_error("Unknown command: " + active_command);
 
-        for (size_t i = 1; i < tokens.size(); ++i) {
+        for (size_t i = 1; i < tokens.size();) {
             const std::string& arg = tokens[i];
             if (arg.rfind("--", 0) == 0) {
-                auto eq = arg.find('=');
-                std::string key = arg.substr(2, eq - 2);
+                std::string key = arg.substr(2);
+                ++i;
 
-                std::string val;
-                if (eq != std::string::npos) {
-                    val = arg.substr(eq + 1);
-                } else if (i + 1 < tokens.size() && tokens[i + 1].rfind("--", 0) != 0) {
-                    val = tokens[++i];
-                } else {
-                    val = "1";  // for flags like --smart
+                std::ostringstream oss;
+                while (i < tokens.size() && tokens[i].rfind("--", 0) != 0) {
+                    if (oss.tellp() > 0) oss << " ";
+                    oss << tokens[i++];
                 }
 
+                std::string val = oss.str();
+                if (val.empty()) val = "1";  // flag like --smart
+
                 parsed_values[key] = val;
+            } else {
+                ++i;  // skip unknown positional args
             }
         }
 
@@ -138,4 +140,13 @@ private:
 
     template<>
     std::string convert<std::string>(const std::string& s) const { return s; }
+
+public:
+    const std::string& command_name() const {
+        return active_command;
+    }
+
+    const std::unordered_map<std::string, std::string>& values() const {
+        return parsed_values;
+    }
 };

@@ -12,6 +12,16 @@
 #include "solver_stats.h"
 #include "datagen.h"
 
+// ---- Utility function ----
+
+std::string load_json_input(const std::string& input) {
+    std::ifstream in(input);
+    if (in) {
+        return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    }
+    return input; // fallback: treat as inline JSON string
+}
+
 // ---- Core solve logic ----
 
 void solve(const std::string& json, int max_solutions, int max_nodes, bool smart_mode) {
@@ -77,19 +87,20 @@ void solve_complete(const std::string& json, int max_nodes, bool smart_mode) {
 // ---- Setup and execution ----
 
 int run_internal(const std::string& commandline) {
+
+
+    std::cout << "[DEBUG] Input : " << commandline << "\n";
+
     ArgParser parser;
 
-    auto& opt_json      = parser.add_option("json", "Input JSON file");
+    auto& opt_json      = parser.add_option("json", "Input JSON file or raw JSON string");
     auto& opt_sol_limit = parser.add_option("sol_limit", "Max number of solutions");
     auto& opt_node_lim  = parser.add_option("node_limit", "Max number of nodes");
     auto& opt_smart     = parser.add_option("smart", "Enable smart solving");
     auto& opt_out       = parser.add_option("out", "Output path");
 
     auto& solve_cmd = parser.add_command("solve", [&](ArgParser& p) {
-        std::ifstream in(p.require<std::string>("json"));
-        if (!in) throw std::runtime_error("Cannot open JSON file.");
-        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-
+        std::string json = load_json_input(p.require<std::string>("json"));
         solve(json,
               p.require<int>("sol_limit"),
               p.require<int>("node_limit"),
@@ -101,10 +112,7 @@ int run_internal(const std::string& commandline) {
     parser.add_optional(solve_cmd, opt_smart);
 
     auto& complete_cmd = parser.add_command("complete", [&](ArgParser& p) {
-        std::ifstream in(p.require<std::string>("json"));
-        if (!in) throw std::runtime_error("Cannot open JSON file.");
-        std::string json((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-
+        std::string json = load_json_input(p.require<std::string>("json"));
         solve_complete(json,
                        p.require<int>("node_limit"),
                        p.get<bool>("smart", false));
@@ -114,7 +122,8 @@ int run_internal(const std::string& commandline) {
     parser.add_optional(complete_cmd, opt_smart);
 
     auto& bench_cmd = parser.add_command("bench", [&](ArgParser& p) {
-        bench::bench(p.require<std::string>("json"), 17, 128000, p.get<bool>("smart", false));
+        std::string json = load_json_input(p.require<std::string>("json"));
+        bench::bench(json, 17, 128000, p.get<bool>("smart", false));
     });
     parser.add_required(bench_cmd, opt_json);
     parser.add_optional(bench_cmd, opt_smart);
@@ -130,6 +139,12 @@ int run_internal(const std::string& commandline) {
 
     try {
         parser.parse(commandline);
+
+        std::cout << "[DEBUG] Command: " << parser.command_name() << "\n";
+        for (const auto& [key, val] : parser.values()) {
+            std::cout << "[DEBUG] Option: " << key << " = " << val << "\n";
+        }
+
         parser.run();
         return 0;
     } catch (const std::exception& e) {
@@ -142,6 +157,7 @@ int run_internal(const std::string& commandline) {
 // ---- C/WASM entrypoint ----
 
 extern "C" int run(const char* commandline) {
+    std::printf("[DEBUG] raw input: \"%s\"\n", commandline);
     try {
         return run_internal(std::string(commandline));
     } catch (...) {
