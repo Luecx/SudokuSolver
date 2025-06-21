@@ -1,0 +1,41 @@
+{% load form_filters %}
+{% load static %}
+{% load widget_tweaks %}
+{% load i18n %}
+
+<form method="post" novalidate id="passwordChangeForm">
+	{% csrf_token %}
+	{% if form.non_field_errors %}
+	<div class="alert alert-danger">
+		{{ form.non_field_errors }}
+	</div>
+	{% endif %}
+	
+	{% for field in form %}
+	<div class="py-3">
+		<label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+		{{ field|add_class:"form-control" }}
+		
+		{% if field.name == "new_password1" %}
+		<!-- Passwortstärke-Anzeige -->
+		<div class="mt-2">
+			<div class="progress">
+				<div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+			</div>
+			<small id="passwordStrengthText" class="form-text text-muted"></small>
+		</div>
+		{% endif %}
+		
+		{% if field.help_text %}
+		<div class="form-text">{{ field.help_text }}</div>
+		{% endif %}
+		{% for error in field.errors %}
+		<div class="invalid-feedback d-block">{{ error }}</div>
+		{% endfor %}
+	</div>
+	{% endfor %}
+	
+	<div class="py-3">
+		<button type="submit" class="btn btn-primary w-100">{% trans "Change password" %}</button>
+	</div>
+</form>

@@ -44,7 +44,7 @@ urlpatterns = [
     path('auth/login/', views.modal_login, name='modal_login'),
     path("auth/register/", views.modal_register, name="modal_register"),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-
+    path('change-password/', views.change_password, name='change_password'),
 
     # --- Password Reset Workflow ---
     path('auth/password_reset/', views.modal_password_reset, name='modal_reset'),

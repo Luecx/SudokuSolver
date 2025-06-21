@@ -172,6 +172,26 @@ def profile(request):
         'all_tags': all_tags,
     })
 
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)  # Wichtig, damit der User nicht ausgeloggt wird
+            return JsonResponse({'success': True, 'message': 'Passwort erfolgreich geändert.'})
+        else:
+            from django.template.loader import render_to_string
+            context = {'form': form}
+            html = render_to_string('sudoku/profile/change_pw_form.html', context, request=request)
+            return JsonResponse({'success': False, 'html': html})
+    else:
+        form = PasswordChangeForm(user=request.user)
+        context = {'form': form}
+        # return render(request, 'sudoku/profile/profile_user.html', context)  # Optional, falls du GET brauchst
+        # Für AJAX-Only besser:
+        html = render_to_string('sudoku/profile/change_pw_form.html', context, request=request)
+        return JsonResponse({'form_html': html})
 
 def user_profile(request, username):
     target_user = get_object_or_404(User, username=username)
@@ -188,8 +208,6 @@ def user_profile(request, username):
         "attempted_stats": attempted_stats,
         "created_puzzles": created_puzzles,
     })
-
-
 
 def activate(request, uid, token):
     try:

@@ -1,5 +1,6 @@
 <!-- profile_user.html -->
 {% load form_filters %}
+{% load widget_tweaks %}
 {% load i18n %}
 
 <div class="card border-0">
@@ -28,7 +29,9 @@
 		
 		<!-- Password Change  - Button open the Modal -->
 		<div class="text-center mb-3">
-			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#password_change">{% trans "Change password" %}</button>
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#password_change" id="openPasswordModal">
+				{% trans "Change password" %}
+			</button>
 		</div>
 		<!-- Modal -->
 		<div class="modal fade" id="password_change" tabindex="-1" aria-labelledby="passwordChangeLabel" aria-hidden="true">
@@ -42,43 +45,8 @@
 					</div>
 					
 					<!-- Modal Body mit Formular -->
-					<div class="modal-body py-3">
-						<form method="post" novalidate>
-							{% csrf_token %}
-							{% if form.non_field_errors %}
-							<div class="alert alert-danger">
-								{{ form.non_field_errors }}
-							</div>
-							{% endif %}
-							
-							{% for field in form %}
-							<div class="py-3">
-								<label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-								{{ field|add_class:"form-control" }}
-								
-								{% if field.name == "new_password1" %}
-								<!-- Passwortstärke-Anzeige -->
-								<div class="mt-2">
-									<div class="progress">
-										<div id="passwordStrengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
-									</div>
-									<small id="passwordStrengthText" class="form-text text-muted"></small>
-								</div>
-								{% endif %}
-								
-								{% if field.help_text %}
-								<div class="form-text">{{ field.help_text }}</div>
-								{% endif %}
-								{% for error in field.errors %}
-								<div class="invalid-feedback d-block">{{ error }}</div>
-								{% endfor %}
-							</div>
-							{% endfor %}
-							
-							<div class="py-3">
-								<button type="submit" class="btn btn-primary w-100">{% trans "Change password" %}</button>
-							</div>
-						</form>
+					<div id="changePWFormContainer" class="modal-body py-3">
+						{% include "sudoku/profile/change_pw_form.html" %}
 					</div>
 				
 				</div>
@@ -88,23 +56,70 @@
 	</div>
 </div>
 
+{% if form.errors %}
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
+		var myModal = new bootstrap.Modal(document.getElementById('password_change'));
+		myModal.show();
+	});
+</script>
+{% endif %}
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
 		const passwordInput = document.querySelector('#id_new_password1');
 		const strengthBar = document.getElementById('passwordStrengthBar');
 		const strengthText = document.getElementById('passwordStrengthText');
 		
 		if (passwordInput) {
-			passwordInput.addEventListener('input', function () {
+			passwordInput.addEventListener('input', function() {
 				const val = passwordInput.value;
 				const result = checkPasswordStrength(val);
-				
-				// Setze Farbe und Breite
 				strengthBar.style.width = result.percent + '%';
 				strengthBar.className = 'progress-bar bg-' + result.color;
-				
-				// Text anzeigen
 				strengthText.textContent = result.message;
+			});
+		}
+		
+		// AJAX-Formular-Submit
+		const form = document.querySelector('#passwordChangeForm');
+		if (form) {
+			form.addEventListener('submit', function(e) {
+				e.preventDefault();
+				fetch(form.action, {
+					method: 'POST',
+					body: new FormData(form),
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest'
+					}
+				})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							// Erfolg: Modal schließen und ggf. Meldung anzeigen
+							var modal = bootstrap.Modal.getInstance(document.getElementById('password_change'));
+							modal.hide();
+							// Hier kannst du eine Erfolgsmeldung anzeigen, z.B. mit Toast
+							alert(data.message);
+						} else {
+							// Fehler: Formular aktualisieren
+							document.getElementById('changePWFormContainer').innerHTML = data.html;
+							// Passwortstärke-Listener wieder setzen
+							const newPasswordInput = document.querySelector('#id_new_password1');
+							if (newPasswordInput) {
+								newPasswordInput.addEventListener('input', function() {
+									const val = newPasswordInput.value;
+									const result = checkPasswordStrength(val);
+									strengthBar.style.width = result.percent + '%';
+									strengthBar.className = 'progress-bar bg-' + result.color;
+									strengthText.textContent = result.message;
+								});
+							}
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+					});
 			});
 		}
 		
@@ -131,20 +146,17 @@
 					message: 'Zu kurz (min. 8 Zeichen)'
 				};
 			}
-			
-			// Stärke abhängig von Vielfalt an Zeichenarten
 			switch (strength) {
 				case 0:
 				case 1:
-					return { percent: 25, color: 'danger', message: 'Very weak' };
+					return {percent: 25, color: 'danger', message: 'Very weak'};
 				case 2:
-					return { percent: 50, color: 'warning', message: 'Weak' };
+					return {percent: 50, color: 'warning', message: 'Weak'};
 				case 3:
-					return { percent: 75, color: 'info', message: 'Good' };
+					return {percent: 75, color: 'info', message: 'Good'};
 				case 4:
-					return { percent: 100, color: 'success', message: 'Very strong' };
+					return {percent: 100, color: 'success', message: 'Very strong'};
 			}
 		}
-		
 	});
 </script>
